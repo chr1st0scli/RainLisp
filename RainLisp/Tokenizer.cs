@@ -65,6 +65,8 @@ namespace RainLisp
             }
             RegisterToken();
 
+            tokens.Add(new Token { Type = TokenType.EOF });
+
             return tokens;
         }
 

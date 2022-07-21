@@ -13,6 +13,7 @@
         Definition,
         If,
         Begin,
-        Lambda
+        Lambda,
+        EOF
     }
 }

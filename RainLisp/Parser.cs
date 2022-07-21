@@ -9,40 +9,196 @@ namespace RainLisp
 {
     internal class Parser
     {
-        public void Parse(List<string> tokens)
+        private List<Token> _tokens;
+        private int currPosition;
+
+        public Parser()
         {
-            // (if (> a 0) (+ 1 1 1) (foo1 (foo2 (foo3))))
-            // (if (> a 0) (+ 1 1 1) (+ 2 2))
-            // (if (lambda (a) (> a 0) 4) (+ 1 1 1) (+ 2 2))
+            _tokens = new List<Token>();
+        }
 
-            
+        public void Parse(List<Token> tokens)
+        {
+            _tokens = tokens;
+            currPosition = 0;
+            Program();
+        }
 
-            int[,] arr = new int[3, 4];
-            arr[0, 2] = 3;
+        private bool Check(TokenType tokenType) => _tokens[currPosition].Type == tokenType;
 
-            string[][] arr2 = new string[4][];
-            arr2[0] = new string[1];
-            arr2[1] = new string[3];
-            arr2[2] = new string[4];
-            arr2[3] = new string[3];
+        private bool Match(TokenType tokenType)
+        {
+            if (!Check(tokenType))
+                return false;
 
-            Expression? currExpression = null;
+            NextToken();
+            return true;
+        }
 
-            for (int i = 0; i < tokens.Count; i++)
+        private void Require(TokenType tokenType)
+        {
+            if (!Match(tokenType))
+                throw new InvalidOperationException($"Missing required symbol {tokenType.ToString()}.");
+        }
+
+        private void NextToken() => currPosition++;
+
+        private void ChainAlternativeNonTerminals(params Action[] nonTerminalActions)
+        {
+            for (int i = 0; i < nonTerminalActions.Length; i++)
             {
-                var currToken = tokens[i];
-
-                if (currToken == "(")
+                var action = nonTerminalActions[i];
+                try
                 {
-                    // start expression
+                    action();
+                    // if non terminal is matched stop
+                    break;
                 }
-                else if (currToken == ")")
+                catch
                 {
-                    // close expression
+                    // If the last non terminal is not matched, throw the exception.
+                    if (i == nonTerminalActions.Length - 1)
+                        throw;
                 }
             }
         }
 
-        private IfExpression GetIfExpression() => new IfExpression();
+        private void Program()
+        {
+            NextToken();
+            do
+            {
+                ExprExt();
+            } while (!Check(TokenType.EOF));
+        }
+
+        private void Quote()
+        {
+            Require(TokenType.LParen);
+            Require(TokenType.Quote);
+            // Can there be more than one?
+            Require(TokenType.Identifier);
+            Require(TokenType.RParen);
+        }
+
+        private void Assignment()
+        {
+            Require(TokenType.LParen);
+            Require(TokenType.Assignment);
+            Require(TokenType.Identifier);
+            Expr();
+            Require(TokenType.RParen);
+        }
+
+        private void Definition()
+        {
+            Require(TokenType.LParen);
+            Require(TokenType.Definition);
+            if (Match(TokenType.Identifier))
+            {
+                Expr();
+            }
+            else if (Match(TokenType.RParen))
+            {
+                // Method name
+                Require(TokenType.Identifier);
+                // Formal arguments
+                while (Match(TokenType.Identifier))
+                {
+
+                }
+                Require(TokenType.RParen);
+                ExprExt();
+            }
+            else
+                throw new InvalidOperationException("Expected either an identifier or ( symbol.");
+
+            Require(TokenType.RParen);
+        }
+
+        private void If()
+        {
+            Require(TokenType.LParen);
+            Require(TokenType.If);
+            Cond();
+            // Consequent
+            ExprExt();
+
+            // Optional alternative
+            if (!Match(TokenType.RParen))
+            {
+                ExprExt();
+                Require(TokenType.RParen);
+            }
+        }
+
+        private void Cond()
+        {
+            if (!Match(TokenType.Boolean) && !Match(TokenType.Identifier))
+            {
+                ChainAlternativeNonTerminals(If, Block, Application);
+            }
+        }
+
+        private void Application()
+        {
+            Require(TokenType.LParen);
+            if (Match(TokenType.Identifier))
+            {
+                if (!Match(TokenType.RParen))
+                    Expr();
+            }
+            else
+            {
+                Lambda();
+                Expr();
+            }
+            Require(TokenType.RParen);
+        }
+
+        private void Block()
+        {
+            Require(TokenType.LParen);
+            Require(TokenType.Begin);
+            ExprExt();
+            
+            // Rest of optional expressions.
+            while (!Check(TokenType.RParen))
+            {
+                ExprExt();
+            }
+            Require(TokenType.RParen);
+        }
+
+        private void Lambda()
+        {
+            Require(TokenType.LParen);
+            Require(TokenType.Lambda);
+            Require(TokenType.LParen);
+
+            // Optional lambda formal arguments
+            while (Match(TokenType.Identifier))
+            {
+
+            }
+
+            Require(TokenType.RParen);
+            ExprExt();
+            Require(TokenType.RParen);
+        }
+
+        private void ExprExt()
+        {
+            ChainAlternativeNonTerminals(Expr, Assignment, Definition);
+        }
+
+        private void Expr()
+        {
+            if (!Match(TokenType.Number) && 
+                !Match(TokenType.String) && 
+                !Match(TokenType.Boolean) &&
+                !Match(TokenType.Identifier))
+                ChainAlternativeNonTerminals(Quote, If, Block, Application);
+        }
     }
 }
