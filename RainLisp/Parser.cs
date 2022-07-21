@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RainLisp
 {
-    internal class Parser
+    public class Parser
     {
         private List<Token> _tokens;
         private int currPosition;
@@ -45,6 +45,7 @@ namespace RainLisp
 
         private void ChainAlternativeNonTerminals(params Action[] nonTerminalActions)
         {
+            int currPositionSnapshot = currPosition;
             for (int i = 0; i < nonTerminalActions.Length; i++)
             {
                 var action = nonTerminalActions[i];
@@ -56,6 +57,7 @@ namespace RainLisp
                 }
                 catch
                 {
+                    currPosition = currPositionSnapshot;
                     // If the last non terminal is not matched, throw the exception.
                     if (i == nonTerminalActions.Length - 1)
                         throw;
@@ -65,7 +67,6 @@ namespace RainLisp
 
         private void Program()
         {
-            NextToken();
             do
             {
                 ExprExt();
@@ -145,13 +146,16 @@ namespace RainLisp
             Require(TokenType.LParen);
             if (Match(TokenType.Identifier))
             {
-                if (!Match(TokenType.RParen))
+                while (!Check(TokenType.RParen))
                     Expr();
             }
             else
             {
                 Lambda();
-                Expr();
+                do
+                {
+                    Expr(); 
+                } while (!Check(TokenType.RParen));
             }
             Require(TokenType.RParen);
         }
