@@ -1,11 +1,4 @@
-﻿using RainLisp.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RainLisp
+﻿namespace RainLisp
 {
     public class Parser
     {
@@ -24,7 +17,17 @@ namespace RainLisp
             Program();
         }
 
-        private bool Check(TokenType tokenType) => _tokens[currPosition].Type == tokenType;
+        private bool Check(TokenType tokenType)
+            => currPosition >= _tokens.Count ? false : _tokens[currPosition].Type == tokenType;
+
+        private bool CheckFurther(TokenType tokenType)
+        {
+            int pos = currPosition + 1;
+            if (pos >= _tokens.Count)
+                return false;
+
+            return _tokens[pos].Type == tokenType;
+        }
 
         private bool Match(TokenType tokenType)
         {
@@ -38,171 +41,125 @@ namespace RainLisp
         private void Require(TokenType tokenType)
         {
             if (!Match(tokenType))
-                throw new InvalidOperationException($"Missing required symbol {tokenType.ToString()}.");
+                throw new InvalidOperationException($"Missing required symbol {tokenType}.");
         }
 
         private void NextToken() => currPosition++;
 
-        private void ChainAlternativeNonTerminals(params Action[] nonTerminalActions)
-        {
-            int currPositionSnapshot = currPosition;
-            for (int i = 0; i < nonTerminalActions.Length; i++)
-            {
-                var action = nonTerminalActions[i];
-                try
-                {
-                    action();
-                    // if non terminal is matched stop
-                    break;
-                }
-                catch
-                {
-                    currPosition = currPositionSnapshot;
-                    // If the last non terminal is not matched, throw the exception.
-                    if (i == nonTerminalActions.Length - 1)
-                        throw;
-                }
-            }
-        }
-
         private void Program()
         {
-            do
+            while (!Check(TokenType.EOF))
             {
-                ExprExt();
-            } while (!Check(TokenType.EOF));
-        }
-
-        private void Quote()
-        {
-            Require(TokenType.LParen);
-            Require(TokenType.Quote);
-            // Can there be more than one?
-            Require(TokenType.Identifier);
-            Require(TokenType.RParen);
-        }
-
-        private void Assignment()
-        {
-            Require(TokenType.LParen);
-            Require(TokenType.Assignment);
-            Require(TokenType.Identifier);
-            Expr();
-            Require(TokenType.RParen);
+                if (CheckFurther(TokenType.Definition))
+                    Definition();
+                else
+                    Expr();
+            }
         }
 
         private void Definition()
         {
             Require(TokenType.LParen);
             Require(TokenType.Definition);
+
             if (Match(TokenType.Identifier))
             {
                 Expr();
             }
-            else if (Match(TokenType.RParen))
+            else if (Match(TokenType.LParen))
             {
-                // Method name
+                // Function name
                 Require(TokenType.Identifier);
+
                 // Formal arguments
                 while (Match(TokenType.Identifier))
                 {
 
                 }
                 Require(TokenType.RParen);
-                ExprExt();
+                Body();
             }
             else
-                throw new InvalidOperationException("Expected either an identifier or ( symbol.");
+                throw new InvalidOperationException($"Expected either an {TokenType.Identifier} or {TokenType.LParen}.");
 
             Require(TokenType.RParen);
         }
 
-        private void If()
+        private void Body()
         {
-            Require(TokenType.LParen);
-            Require(TokenType.If);
-            Cond();
-            // Consequent
-            ExprExt();
-
-            // Optional alternative
-            if (!Match(TokenType.RParen))
+            while (CheckFurther(TokenType.Definition))
             {
-                ExprExt();
-                Require(TokenType.RParen);
-            }
-        }
-
-        private void Cond()
-        {
-            if (!Match(TokenType.Boolean) && !Match(TokenType.Identifier))
-            {
-                ChainAlternativeNonTerminals(If, Block, Application);
-            }
-        }
-
-        private void Application()
-        {
-            Require(TokenType.LParen);
-            if (Match(TokenType.Identifier))
-            {
-                while (!Check(TokenType.RParen))
-                    Expr();
-            }
-            else
-            {
-                Lambda();
-                do
-                {
-                    Expr(); 
-                } while (!Check(TokenType.RParen));
-            }
-            Require(TokenType.RParen);
-        }
-
-        private void Block()
-        {
-            Require(TokenType.LParen);
-            Require(TokenType.Begin);
-            ExprExt();
-            
-            // Rest of optional expressions.
-            while (!Check(TokenType.RParen))
-            {
-                ExprExt();
-            }
-            Require(TokenType.RParen);
-        }
-
-        private void Lambda()
-        {
-            Require(TokenType.LParen);
-            Require(TokenType.Lambda);
-            Require(TokenType.LParen);
-
-            // Optional lambda formal arguments
-            while (Match(TokenType.Identifier))
-            {
-
+                Definition();
             }
 
-            Require(TokenType.RParen);
-            ExprExt();
-            Require(TokenType.RParen);
-        }
-
-        private void ExprExt()
-        {
-            ChainAlternativeNonTerminals(Expr, Assignment, Definition);
+            Expr();
         }
 
         private void Expr()
         {
-            if (!Match(TokenType.Number) && 
-                !Match(TokenType.String) && 
+            if (!Match(TokenType.Number) &&
+                !Match(TokenType.String) &&
                 !Match(TokenType.Boolean) &&
                 !Match(TokenType.Identifier))
-                ChainAlternativeNonTerminals(Quote, If, Block, Application);
+            {
+                Require(TokenType.LParen);
+
+                if (Match(TokenType.Quote))
+                {
+                    // Can there be more than one?
+                    Require(TokenType.Identifier);
+                }
+                else if (Match(TokenType.Assignment))
+                {
+                    Require(TokenType.Identifier);
+                    Expr();
+                }
+                else if (Match(TokenType.If))
+                {
+                    // Condition
+                    Expr();
+                    // Consequent
+                    Expr();
+
+                    // Optional alternative
+                    if (!Check(TokenType.RParen))
+                    {
+                        Expr();
+                    }
+                }
+                else if (Match(TokenType.Begin))
+                {
+                    do
+                    {
+                        Expr();
+                    } while (!Check(TokenType.RParen));
+                }
+                else if (Match(TokenType.Lambda))
+                {
+                    Require(TokenType.LParen);
+
+                    // Optional lambda formal arguments
+                    while (Match(TokenType.Identifier))
+                    {
+
+                    }
+
+                    Require(TokenType.RParen);
+                    Body();
+                }
+                else
+                {
+                    // Application
+                    // Function to be applied
+                    Expr();
+
+                    // Arguments
+                    while (!Check(TokenType.RParen))
+                        Expr();
+                }
+
+                Require(TokenType.RParen);
+            }
         }
     }
 }
