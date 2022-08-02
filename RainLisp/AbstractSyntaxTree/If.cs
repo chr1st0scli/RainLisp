@@ -14,5 +14,8 @@
         public Expression Consequent { get; init; }
 
         public Expression? Alternative { get; init; }
+
+        public override void AcceptVisitor(IVisitor visitor)
+            => visitor.VisitIf(this);
     }
 }

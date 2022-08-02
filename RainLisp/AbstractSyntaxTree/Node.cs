@@ -1,8 +1,11 @@
 ﻿namespace RainLisp.AbstractSyntaxTree
 {
-    public class Node
+    public abstract class Node
     {
-        //public string ExpressionText { get; set; }
         public string TypeName => GetType().Name;
+
+        public object? EvaluationResult { get; set; }
+
+        public abstract void AcceptVisitor(IVisitor visitor);
     }
 }

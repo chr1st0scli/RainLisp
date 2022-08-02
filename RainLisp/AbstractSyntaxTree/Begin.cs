@@ -8,5 +8,8 @@
         }
 
         public IList<Expression> Expressions { get; init; }
+
+        public override void AcceptVisitor(IVisitor visitor)
+            => visitor.VisitBegin(this);
     }
 }

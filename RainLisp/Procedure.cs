@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace RainLisp
 {
-    internal class Procedure : Node
-    {
-        public string[] Parameters { get; set; }
+    //internal class Procedure : Node
+    //{
+    //    public string[] Parameters { get; set; }
 
-        public Node Body { get; set; }
+    //    public Node Body { get; set; }
 
-        public Environment Environment { get; set; }
-    }
+    //    public Environment Environment { get; set; }
+    //}
 }

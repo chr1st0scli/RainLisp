@@ -1,6 +1,6 @@
 ﻿namespace RainLisp.AbstractSyntaxTree
 {
-    public class Expression : Node
+    public abstract class Expression : Node
     {
     }
 }

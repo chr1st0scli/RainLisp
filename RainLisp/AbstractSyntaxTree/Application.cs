@@ -11,5 +11,8 @@
         public Expression Operator { get; init; }
 
         public IList<Expression>? Operands { get; init; }
+
+        public override void AcceptVisitor(IVisitor visitor)
+            => visitor.VisitApplication(this);
     }
 }

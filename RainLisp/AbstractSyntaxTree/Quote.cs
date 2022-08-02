@@ -8,5 +8,8 @@
         }
 
         public string Text { get; init; } = string.Empty;
+
+        public override void AcceptVisitor(IVisitor visitor)
+            => visitor.VisitQuote(this);
     }
 }

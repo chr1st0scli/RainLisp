@@ -11,5 +11,8 @@
         public IList<string>? Parameters { get; init; }
 
         public Body Body { get; init; }
+
+        public override void AcceptVisitor(IVisitor visitor)
+            => visitor.VisitLambda(this);
     }
 }

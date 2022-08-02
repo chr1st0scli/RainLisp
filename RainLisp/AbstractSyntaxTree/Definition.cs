@@ -11,5 +11,8 @@
         public string IdentifierName { get; init; }
 
         public Expression Value { get; init; }
+
+        public override void AcceptVisitor(IVisitor visitor)
+            => visitor.VisitDefinition(this);
     }
 }

@@ -8,5 +8,8 @@
         }
 
         public string Value { get; init; }
+
+        public override void AcceptVisitor(IVisitor visitor)
+            => visitor.VisitStringLiteral(this);
     }
 }

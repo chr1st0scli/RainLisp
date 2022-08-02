@@ -5,5 +5,8 @@
         public BooleanLiteral(bool value) => Value = value;
 
         public bool Value { get; init; }
+
+        public override void AcceptVisitor(IVisitor visitor)
+            => visitor.VisitBooleanLiteral(this);
     }
 }

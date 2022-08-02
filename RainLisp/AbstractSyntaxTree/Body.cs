@@ -11,5 +11,8 @@
         public IList<Definition>? Definitions { get; init; }
 
         public Expression Expression { get; init; }
+
+        public override void AcceptVisitor(IVisitor visitor)
+            => visitor.VisitBody(this);
     }
 }
