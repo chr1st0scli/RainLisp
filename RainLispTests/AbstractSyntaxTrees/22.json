@@ -1,0 +1,27 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Operator": {
+        "Name": "foo",
+        "TypeName": "Identifier"
+      },
+      "Operands": [
+        {
+          "Value": 1.0,
+          "TypeName": "NumberLiteral"
+        },
+        {
+          "Value": 2.0,
+          "TypeName": "NumberLiteral"
+        },
+        {
+          "Value": 3.0,
+          "TypeName": "NumberLiteral"
+        }
+      ],
+      "TypeName": "Application"
+    }
+  ],
+  "TypeName": "Program"
+}

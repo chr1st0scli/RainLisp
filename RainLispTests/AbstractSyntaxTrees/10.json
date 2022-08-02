@@ -1,0 +1,38 @@
+{
+  "Definitions": [
+    {
+      "IdentifierName": "a",
+      "Value": {
+        "Parameters": [
+          "b",
+          "c"
+        ],
+        "Body": {
+          "Definitions": null,
+          "Expression": {
+            "Operator": {
+              "Name": "+",
+              "TypeName": "Identifier"
+            },
+            "Operands": [
+              {
+                "Name": "b",
+                "TypeName": "Identifier"
+              },
+              {
+                "Name": "c",
+                "TypeName": "Identifier"
+              }
+            ],
+            "TypeName": "Application"
+          },
+          "TypeName": "Body"
+        },
+        "TypeName": "Lambda"
+      },
+      "TypeName": "Definition"
+    }
+  ],
+  "Expressions": [],
+  "TypeName": "Program"
+}

@@ -1,0 +1,14 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Operator": {
+        "Name": "foo",
+        "TypeName": "Identifier"
+      },
+      "Operands": null,
+      "TypeName": "Application"
+    }
+  ],
+  "TypeName": "Program"
+}

@@ -1,4 +1,7 @@
-﻿namespace RainLisp
+﻿using RainLisp.AbstractSyntaxTree;
+using System.Globalization;
+
+namespace RainLisp
 {
     public class Parser
     {
@@ -10,15 +13,18 @@
             _tokens = new List<Token>();
         }
 
-        public void Parse(List<Token> tokens)
+        public Program Parse(List<Token> tokens)
         {
             _tokens = tokens;
             currPosition = 0;
-            Program();
+
+            return Program();
         }
 
+        private Token Token() => _tokens[currPosition];
+
         private bool Check(TokenType tokenType)
-            => currPosition >= _tokens.Count ? false : _tokens[currPosition].Type == tokenType;
+            => currPosition < _tokens.Count && _tokens[currPosition].Type == tokenType;
 
         private bool CheckFurther(TokenType tokenType)
         {
@@ -34,7 +40,7 @@
             if (!Check(tokenType))
                 return false;
 
-            NextToken();
+            currPosition++;
             return true;
         }
 
@@ -44,121 +50,178 @@
                 throw new InvalidOperationException($"Missing required symbol {tokenType}.");
         }
 
-        private void NextToken() => currPosition++;
-
-        private void Program()
+        private Program Program()
         {
+            var programExpression = new Program();
+
             while (!Check(TokenType.EOF))
             {
                 if (CheckFurther(TokenType.Definition))
-                    Definition();
+                    programExpression.Definitions.Add(Definition());
                 else
-                    Expr();
+                    programExpression.Expressions.Add(Expression());
             }
+
+            return programExpression;
         }
 
-        private void Definition()
+        private Definition Definition()
         {
             Require(TokenType.LParen);
             Require(TokenType.Definition);
 
+            var token = Token();
+            Definition definitionExpression;
+
             if (Match(TokenType.Identifier))
             {
-                Expr();
+                definitionExpression = new Definition(token.Value, Expression());
             }
             else if (Match(TokenType.LParen))
             {
+                token = Token();
+
                 // Function name
                 Require(TokenType.Identifier);
 
-                // Formal arguments
-                while (Match(TokenType.Identifier))
-                {
+                List<string>? parameters = null;
 
+                // Formal arguments
+                while (!Check(TokenType.RParen))
+                {
+                    parameters ??= new List<string>();
+                    parameters.Add(Token().Value);
+                    Require(TokenType.Identifier);
                 }
                 Require(TokenType.RParen);
-                Body();
+
+                var lambda = new Lambda(parameters, Body());
+                definitionExpression = new Definition(token.Value, lambda);
             }
             else
                 throw new InvalidOperationException($"Expected either an {TokenType.Identifier} or {TokenType.LParen}.");
 
             Require(TokenType.RParen);
+
+            return definitionExpression;
         }
 
-        private void Body()
+        private Body Body()
         {
+            List<Definition>? definitions = null;
+
             while (CheckFurther(TokenType.Definition))
             {
-                Definition();
+                definitions ??= new List<Definition>();
+                definitions.Add(Definition());
             }
 
-            Expr();
+            return new Body(definitions, Expression());
         }
 
-        private void Expr()
+        private Expression Expression()
         {
-            if (!Match(TokenType.Number) &&
-                !Match(TokenType.String) &&
-                !Match(TokenType.Boolean) &&
-                !Match(TokenType.Identifier))
+            var token = Token();
+
+            if (Match(TokenType.Number))
+            {
+                return new NumberLiteral(double.Parse(token.Value, CultureInfo.InvariantCulture));
+            }
+            else if (Match(TokenType.String))
+            {
+                return new StringLiteral(token.Value);
+            }
+            else if (Match(TokenType.Boolean))
+            {
+                return new BooleanLiteral(bool.Parse(token.Value));
+            }
+            else if (Match(TokenType.Identifier))
+            {
+                return new Identifier(token.Value);
+            }
+            else
             {
                 Require(TokenType.LParen);
+                Expression expression;
 
                 if (Match(TokenType.Quote))
                 {
+                    var quoteExpression = new Quote(Token().Value);
+
                     // Can there be more than one?
                     Require(TokenType.Identifier);
+                    expression = quoteExpression;
                 }
                 else if (Match(TokenType.Assignment))
                 {
+                    string identifierName = Token().Value;
+
                     Require(TokenType.Identifier);
-                    Expr();
+
+                    expression = new Assignment(identifierName, Expression());
                 }
                 else if (Match(TokenType.If))
                 {
-                    // Condition
-                    Expr();
-                    // Consequent
-                    Expr();
+                    var predicate = Expression();
+                    var consequent = Expression();
+                    Expression? alternative = null;
 
                     // Optional alternative
                     if (!Check(TokenType.RParen))
                     {
-                        Expr();
+                        alternative = Expression();
                     }
+
+                    expression = new If(predicate, consequent, alternative);
                 }
                 else if (Match(TokenType.Begin))
                 {
+                    var expressions = new List<Expression>();
                     do
                     {
-                        Expr();
+                        expressions.Add(Expression());
                     } while (!Check(TokenType.RParen));
+
+                    expression = new Begin(expressions);
                 }
                 else if (Match(TokenType.Lambda))
                 {
                     Require(TokenType.LParen);
 
-                    // Optional lambda formal arguments
-                    while (Match(TokenType.Identifier))
-                    {
+                    List<string>? parameters = null;
 
+                    // Optional lambda parameters
+                    while (!Check(TokenType.RParen))
+                    {
+                        parameters ??= new List<string>();
+                        parameters.Add(Token().Value);
+                        Require(TokenType.Identifier);
                     }
 
                     Require(TokenType.RParen);
-                    Body();
+
+                    expression = new Lambda(parameters, Body());
                 }
                 else
                 {
                     // Application
                     // Function to be applied
-                    Expr();
+                    var @operator = Expression();
 
-                    // Arguments
+                    // Parameter values
+                    List<Expression>? operands = null;
                     while (!Check(TokenType.RParen))
-                        Expr();
+                    {
+                        operands ??= new List<Expression>();
+                        operands.Add(Expression());
+                    }
+
+                    expression = new Application(@operator, operands);
                 }
 
                 Require(TokenType.RParen);
+
+                return expression;
             }
         }
     }

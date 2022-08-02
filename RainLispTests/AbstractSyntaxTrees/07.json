@@ -1,0 +1,14 @@
+{
+  "Definitions": [
+    {
+      "IdentifierName": "a",
+      "Value": {
+        "Value": 1.0,
+        "TypeName": "NumberLiteral"
+      },
+      "TypeName": "Definition"
+    }
+  ],
+  "Expressions": [],
+  "TypeName": "Program"
+}

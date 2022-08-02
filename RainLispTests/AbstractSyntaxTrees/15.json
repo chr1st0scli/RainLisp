@@ -1,0 +1,23 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Expressions": [
+        {
+          "Value": 1.0,
+          "TypeName": "NumberLiteral"
+        },
+        {
+          "Value": 2.0,
+          "TypeName": "NumberLiteral"
+        },
+        {
+          "Value": 3.0,
+          "TypeName": "NumberLiteral"
+        }
+      ],
+      "TypeName": "Begin"
+    }
+  ],
+  "TypeName": "Program"
+}

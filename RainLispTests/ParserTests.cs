@@ -1,4 +1,5 @@
-﻿using RainLisp;
+﻿using Newtonsoft.Json;
+using RainLisp;
 
 namespace RainLispTests
 {
@@ -19,40 +20,44 @@ namespace RainLispTests
         }
 
         [Theory]
-        [InlineData("1")]
-        [InlineData("1.5")]
-        [InlineData("true")]
-        [InlineData("false")]
-        [InlineData("foo")]
-        [InlineData("(quote a)")]
-        [InlineData("(set! a 1)")]
-        [InlineData("(define a 1)")]
-        [InlineData("(define (a) 1)")]
-        [InlineData("(define (a b) 1)")]
-        [InlineData("(define (a b c) (+ b c))")]
-        [InlineData("(define (foo x) (define (innerfoo y) (+ x y)) (innerfoo 1))")]
-        [InlineData("(if true 1)")]
-        [InlineData("(if true 1 0)")]
-        [InlineData("(begin 1)")]
-        [InlineData("(begin 1 2 3)")]
-        [InlineData("(lambda () 1)")]
-        [InlineData("(lambda (x) x)")]
-        [InlineData("(lambda (x y) 1)")]
-        [InlineData("(lambda (x y) (+ x y))")]
-        [InlineData("(foo)")]
-        [InlineData("(foo 1)")]
-        [InlineData("(foo 1 2 3)")]
-        [InlineData("((lambda () 1))")]
-        [InlineData("((lambda (x) x) 1)")]
-        public void Parse_ValidExpression_DoesNotThrow(string expression)
+        [InlineData(0, "1")]
+        [InlineData(1, "1.5")]
+        [InlineData(2, "true")]
+        [InlineData(3, "false")]
+        [InlineData(4, "foo")]
+        [InlineData(5, "(quote a)")]
+        [InlineData(6, "(set! a 1)")]
+        [InlineData(7, "(define a 1)")]
+        [InlineData(8, "(define (a) 1)")]
+        [InlineData(9, "(define (a b) 1)")]
+        [InlineData(10, "(define (a b c) (+ b c))")]
+        [InlineData(11, "(define (foo x) (define (innerfoo y) (+ x y)) (innerfoo 1))")]
+        [InlineData(12, "(if true 1)")]
+        [InlineData(13, "(if true 1 0)")]
+        [InlineData(14, "(begin 1)")]
+        [InlineData(15, "(begin 1 2 3)")]
+        [InlineData(16, "(lambda () 1)")]
+        [InlineData(17, "(lambda (x) x)")]
+        [InlineData(18, "(lambda (x y) 1)")]
+        [InlineData(19, "(lambda (x y) (+ x y))")]
+        [InlineData(20, "(foo)")]
+        [InlineData(21, "(foo 1)")]
+        [InlineData(22, "(foo 1 2 3)")]
+        [InlineData(23, "((lambda () 1))")]
+        [InlineData(24, "((lambda (x) x) 1)")]
+        public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             // Arrange
             var parser = new Parser();
             var tokens = Tokenizer.TokenizeExt(expression);
 
             // Act
+            var program = parser.Parse(tokens);
+            string ast = JsonConvert.SerializeObject(program, Formatting.Indented);
+            string expectedAst = File.ReadAllText($"AbstractSyntaxTrees\\{astIndex:00}.json");
+
             // Assert
-            parser.Parse(tokens);
+            Assert.Equal(expectedAst, ast);
         }
 
         [Theory]

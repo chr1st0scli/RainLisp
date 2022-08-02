@@ -1,0 +1,10 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Name": "foo",
+      "TypeName": "Identifier"
+    }
+  ],
+  "TypeName": "Program"
+}

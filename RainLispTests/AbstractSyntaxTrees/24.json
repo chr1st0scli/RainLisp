@@ -1,0 +1,29 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Operator": {
+        "Parameters": [
+          "x"
+        ],
+        "Body": {
+          "Definitions": null,
+          "Expression": {
+            "Name": "x",
+            "TypeName": "Identifier"
+          },
+          "TypeName": "Body"
+        },
+        "TypeName": "Lambda"
+      },
+      "Operands": [
+        {
+          "Value": 1.0,
+          "TypeName": "NumberLiteral"
+        }
+      ],
+      "TypeName": "Application"
+    }
+  ],
+  "TypeName": "Program"
+}

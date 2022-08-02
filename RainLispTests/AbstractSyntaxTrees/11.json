@@ -1,0 +1,65 @@
+{
+  "Definitions": [
+    {
+      "IdentifierName": "foo",
+      "Value": {
+        "Parameters": [
+          "x"
+        ],
+        "Body": {
+          "Definitions": [
+            {
+              "IdentifierName": "innerfoo",
+              "Value": {
+                "Parameters": [
+                  "y"
+                ],
+                "Body": {
+                  "Definitions": null,
+                  "Expression": {
+                    "Operator": {
+                      "Name": "+",
+                      "TypeName": "Identifier"
+                    },
+                    "Operands": [
+                      {
+                        "Name": "x",
+                        "TypeName": "Identifier"
+                      },
+                      {
+                        "Name": "y",
+                        "TypeName": "Identifier"
+                      }
+                    ],
+                    "TypeName": "Application"
+                  },
+                  "TypeName": "Body"
+                },
+                "TypeName": "Lambda"
+              },
+              "TypeName": "Definition"
+            }
+          ],
+          "Expression": {
+            "Operator": {
+              "Name": "innerfoo",
+              "TypeName": "Identifier"
+            },
+            "Operands": [
+              {
+                "Value": 1.0,
+                "TypeName": "NumberLiteral"
+              }
+            ],
+            "TypeName": "Application"
+          },
+          "TypeName": "Body"
+        },
+        "TypeName": "Lambda"
+      },
+      "TypeName": "Definition"
+    }
+  ],
+  "Expressions": [],
+  "TypeName": "Program"
+}
