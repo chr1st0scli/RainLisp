@@ -4,8 +4,6 @@
     {
         public string TypeName => GetType().Name;
 
-        public object? EvaluationResult { get; set; }
-
-        public abstract void AcceptVisitor(IVisitor visitor);
+        public abstract object AcceptVisitor(IVisitor visitor, Environment environment);
     }
 }

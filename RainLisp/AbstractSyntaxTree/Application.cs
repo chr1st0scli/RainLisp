@@ -12,7 +12,7 @@
 
         public IList<Expression>? Operands { get; init; }
 
-        public override void AcceptVisitor(IVisitor visitor)
-            => visitor.VisitApplication(this);
+        public override object AcceptVisitor(IVisitor visitor, Environment environment)
+            => visitor.VisitApplication(this, environment);
     }
 }

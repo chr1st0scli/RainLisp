@@ -12,7 +12,7 @@
 
         public Body Body { get; init; }
 
-        public override void AcceptVisitor(IVisitor visitor)
-            => visitor.VisitLambda(this);
+        public override object AcceptVisitor(IVisitor visitor, Environment environment)
+            => visitor.VisitLambda(this, environment);
     }
 }

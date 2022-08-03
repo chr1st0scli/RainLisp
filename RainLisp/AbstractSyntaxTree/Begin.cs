@@ -9,7 +9,7 @@
 
         public IList<Expression> Expressions { get; init; }
 
-        public override void AcceptVisitor(IVisitor visitor)
-            => visitor.VisitBegin(this);
+        public override object AcceptVisitor(IVisitor visitor, Environment environment)
+            => visitor.VisitBegin(this, environment);
     }
 }

@@ -9,7 +9,7 @@
 
         public string Name { get; init; }
 
-        public override void AcceptVisitor(IVisitor visitor)
-            => visitor.VisitIdentifier(this);
+        public override object AcceptVisitor(IVisitor visitor, Environment environment)
+            => visitor.VisitIdentifier(this, environment);
     }
 }

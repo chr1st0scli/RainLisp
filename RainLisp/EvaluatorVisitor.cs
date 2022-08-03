@@ -4,87 +4,98 @@ namespace RainLisp
 {
     public class EvaluatorVisitor : IVisitor
     {
-        public void VisitApplication(Application application)
+        public object VisitApplication(Application application, Environment environment)
         {
             throw new NotImplementedException();
         }
 
-        public void VisitAssignment(Assignment assignment)
+        public object VisitAssignment(Assignment assignment, Environment environment)
         {
             throw new NotImplementedException();
         }
 
-        public void VisitBegin(Begin begin)
+        public object VisitBegin(Begin begin, Environment environment)
+        {
+            object result = "undefined";
+            foreach (var expression in begin.Expressions)
+                result = expression.AcceptVisitor(this, environment);
+
+            return result;
+        }
+
+        public object VisitBody(Body body, Environment environment)
         {
             throw new NotImplementedException();
         }
 
-        public void VisitBody(Body body)
+        public object VisitBooleanLiteral(BooleanLiteral boolLiteral)
         {
-            throw new NotImplementedException();
+            return boolLiteral.Value;
         }
 
-        public void VisitBooleanLiteral(BooleanLiteral boolLiteral)
+        public object VisitDefinition(Definition definition, Environment environment)
         {
-            boolLiteral.EvaluationResult = boolLiteral.Value;
+            var value = definition.Value.AcceptVisitor(this, environment);
+
+            environment.SetIdentifier(definition.IdentifierName, value);
+
+            return "undefined";
         }
 
-        public void VisitDefinition(Definition definition)
+        public object VisitIdentifier(Identifier identifier, Environment environment)
         {
-            throw new NotImplementedException();
+            return environment.LookupIdentifier(identifier.Name);
         }
 
-        public void VisitIdentifier(Identifier identifier)
+        public object VisitIf(If ifExpression, Environment environment)
         {
-            throw new NotImplementedException();
-        }
-
-        public void VisitIf(If ifExpression)
-        {
-            ifExpression.Predicate.AcceptVisitor(this);
-
-            if (ifExpression.Predicate.EvaluationResult is bool condition)
+            if (ifExpression.Predicate.AcceptVisitor(this, environment) is bool condition)
             {
                 if (condition)
                 {
-                    ifExpression.Consequent.AcceptVisitor(this);
-                    ifExpression.EvaluationResult = ifExpression.Consequent.EvaluationResult;
+                    return ifExpression.Consequent.AcceptVisitor(this, environment);
                 }
                 else if (ifExpression.Alternative != null)
                 {
-                    ifExpression.Alternative.AcceptVisitor(this);
-                    ifExpression.EvaluationResult = ifExpression.Alternative.EvaluationResult;
+                    return ifExpression.Alternative.AcceptVisitor(this, environment);
                 }
                 else
-                    ifExpression.EvaluationResult = "undefined";
+                    return "undefined";
             }
             else
                 throw new InvalidOperationException();
         }
 
-        public void VisitLambda(Lambda lambda)
+        public object VisitLambda(Lambda lambda, Environment environment)
         {
             throw new NotImplementedException();
         }
 
-        public void VisitNumberLiteral(NumberLiteral numberLiteral)
+        public object VisitNumberLiteral(NumberLiteral numberLiteral)
         {
-            numberLiteral.EvaluationResult = numberLiteral.Value;
+            return numberLiteral.Value;
         }
 
-        public void VisitProgram(Program program)
+        public object VisitProgram(Program program)
+        {
+            foreach (var definition in program.Definitions)
+                definition.AcceptVisitor(this, Environment.RootEnvironment);
+
+            object result = "undefined";
+            foreach (var expression in program.Expressions)
+                result = expression.AcceptVisitor(this, Environment.RootEnvironment);
+
+            return result;
+        }
+
+        public object VisitQuote(Quote quote)
         {
             throw new NotImplementedException();
         }
 
-        public void VisitQuote(Quote quote)
+        public object VisitStringLiteral(StringLiteral stringLiteral)
         {
-            throw new NotImplementedException();
-        }
-
-        public void VisitStringLiteral(StringLiteral stringLiteral)
-        {
-            stringLiteral.EvaluationResult = stringLiteral.Value;
+            return stringLiteral.Value;
         }
     }
 }

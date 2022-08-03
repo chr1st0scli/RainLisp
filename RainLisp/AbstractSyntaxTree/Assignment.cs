@@ -12,7 +12,7 @@
 
         public Expression Value { get; init; }
 
-        public override void AcceptVisitor(IVisitor visitor)
-            => visitor.VisitAssignment(this);
+        public override object AcceptVisitor(IVisitor visitor, Environment environment)
+            => visitor.VisitAssignment(this, environment);
     }
 }

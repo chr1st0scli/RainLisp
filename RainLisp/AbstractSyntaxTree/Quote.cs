@@ -9,7 +9,7 @@
 
         public string Text { get; init; } = string.Empty;
 
-        public override void AcceptVisitor(IVisitor visitor)
+        public override object AcceptVisitor(IVisitor visitor, Environment environment)
             => visitor.VisitQuote(this);
     }
 }

@@ -6,7 +6,7 @@
 
         public double Value { get; init; }
 
-        public override void AcceptVisitor(IVisitor visitor)
+        public override object AcceptVisitor(IVisitor visitor, Environment environment)
             => visitor.VisitNumberLiteral(this);
     }
 }

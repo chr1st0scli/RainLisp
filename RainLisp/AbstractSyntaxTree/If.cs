@@ -15,7 +15,7 @@
 
         public Expression? Alternative { get; init; }
 
-        public override void AcceptVisitor(IVisitor visitor)
-            => visitor.VisitIf(this);
+        public override object AcceptVisitor(IVisitor visitor, Environment environment)
+            => visitor.VisitIf(this, environment);
     }
 }

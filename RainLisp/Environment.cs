@@ -1,12 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RainLisp
+﻿namespace RainLisp
 {
     public class Environment
     {
+        private readonly IDictionary<string, object> definitions;
+
+        private Environment? previousEnvironment;
+        private Environment? nextEnvironment;
+
+        public static Environment RootEnvironment { get; } = new Environment();
+
+        public Environment()
+        {
+            definitions = new Dictionary<string, object>();
+        }
+
+        public Environment ExtendEnvironment()
+        {
+            nextEnvironment = new Environment { previousEnvironment = this };
+
+            return nextEnvironment;
+        }
+
+        public void SetIdentifier(string identifierName, object value)
+        {
+            if (string.IsNullOrWhiteSpace(identifierName))
+                throw new ArgumentException("Identifier name is required.", nameof(identifierName));
+
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
+
+            definitions[identifierName] = value;
+        }
+
+        public object LookupIdentifier(string identifierName)
+        {
+            if (string.IsNullOrWhiteSpace(identifierName))
+                throw new ArgumentException("Identifier name is required.", nameof(identifierName));
+
+            for (var env = this; env != null; env = env.previousEnvironment)
+            {
+                if (env.definitions.TryGetValue(identifierName, out object? value))
+                    return value;
+            }
+
+            throw new InvalidOperationException($"{identifierName} is undefined.");
+        }
     }
 }

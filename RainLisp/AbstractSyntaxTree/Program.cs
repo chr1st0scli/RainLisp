@@ -6,7 +6,7 @@
 
         public IList<Node> Expressions { get; set; } = new List<Node>();
 
-        public override void AcceptVisitor(IVisitor visitor)
+        public override object AcceptVisitor(IVisitor visitor, Environment environment)
             => visitor.VisitProgram(this);
     }
 }

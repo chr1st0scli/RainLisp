@@ -4,30 +4,30 @@ namespace RainLisp
 {
     public interface IVisitor
     {
-        void VisitNumberLiteral(NumberLiteral numberLiteral);
+        object VisitNumberLiteral(NumberLiteral numberLiteral);
 
-        void VisitStringLiteral(StringLiteral stringLiteral);
+        object VisitStringLiteral(StringLiteral stringLiteral);
 
-        void VisitBooleanLiteral(BooleanLiteral boolLiteral);
-
-        void VisitIdentifier(Identifier identifier);
-
-        void VisitQuote(Quote quote);
-
-        void VisitAssignment(Assignment assignment);
-
-        void VisitIf(If ifExpression);
-
-        void VisitBegin(Begin begin);
-
-        void VisitLambda(Lambda lambda);
-
-        void VisitApplication(Application application);
-
-        void VisitBody(Body body);
-
-        void VisitDefinition(Definition definition);
-
-        void VisitProgram(Program program);
+        object VisitBooleanLiteral(BooleanLiteral boolLiteral);
+        
+        object VisitIdentifier(Identifier identifier, Environment environment);
+        
+        object VisitQuote(Quote quote);
+        
+        object VisitAssignment(Assignment assignment, Environment environment);
+        
+        object VisitIf(If ifExpression, Environment environment);
+        
+        object VisitBegin(Begin begin, Environment environment);
+        
+        object VisitLambda(Lambda lambda, Environment environment);
+        
+        object VisitApplication(Application application, Environment environment);
+        
+        object VisitBody(Body body, Environment environment);
+        
+        object VisitDefinition(Definition definition, Environment environment);
+        
+        object VisitProgram(Program program);
     }
 }
