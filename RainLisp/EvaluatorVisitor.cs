@@ -1,4 +1,5 @@
 ﻿using RainLisp.AbstractSyntaxTree;
+using RainLisp.Evaluator;
 
 namespace RainLisp
 {
@@ -6,7 +7,37 @@ namespace RainLisp
     {
         public object VisitApplication(Application application, Environment environment)
         {
-            throw new NotImplementedException();
+            var evaluatedOperator = application.Operator
+                .AcceptVisitor(this, environment);
+
+            var arguments = application.Operands
+                ?.Select(expr => expr.AcceptVisitor(this, environment))
+                .ToArray();
+
+            // Primitive procedure
+            if (evaluatedOperator is Func<double[], object> func)
+            {
+                return func(arguments?.Cast<double>().ToArray() ?? Array.Empty<double>());
+            }
+            else if (evaluatedOperator is Procedure procedure)
+            {
+                if (procedure.Parameters?.Count != application.Operands?.Count)
+                    throw new InvalidOperationException("Wrong number of arguments.");
+
+                // We extend the procedure environment instead of the give one?
+                var env = procedure.Environment.ExtendEnvironment();
+
+                if (procedure.Parameters?.Count > 0 && arguments?.Length > 0)
+                {
+                    for (int i = 0; i < procedure.Parameters.Count; i++)
+                        env.SetIdentifier(procedure.Parameters[i], arguments[i]);
+                }
+
+                return VisitBody(procedure.Body, env);
+
+            }
+            else
+                throw new InvalidOperationException("Unknown procedure type.");
         }
 
         public object VisitAssignment(Assignment assignment, Environment environment)
@@ -25,7 +56,13 @@ namespace RainLisp
 
         public object VisitBody(Body body, Environment environment)
         {
-            throw new NotImplementedException();
+            if (body.Definitions?.Count > 0)
+            {
+                foreach (var definition in body.Definitions)
+                    definition.AcceptVisitor(this, environment);
+            }
+
+            return body.Expression.AcceptVisitor(this, environment);
         }
 
         public object VisitBooleanLiteral(BooleanLiteral boolLiteral)
@@ -44,6 +81,11 @@ namespace RainLisp
 
         public object VisitIdentifier(Identifier identifier, Environment environment)
         {
+            var primitiveProcedure = PrimitiveProcedures.GetPrimitiveProcedure(identifier.Name);
+
+            if (primitiveProcedure != null)
+                return primitiveProcedure;
+
             return environment.LookupIdentifier(identifier.Name);
         }
 
@@ -68,7 +110,7 @@ namespace RainLisp
 
         public object VisitLambda(Lambda lambda, Environment environment)
         {
-            throw new NotImplementedException();
+            return new Procedure(lambda.Parameters, lambda.Body, environment);
         }
 
         public object VisitNumberLiteral(NumberLiteral numberLiteral)

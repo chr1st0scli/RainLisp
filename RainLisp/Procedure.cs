@@ -1,18 +1,20 @@
 ﻿using RainLisp.AbstractSyntaxTree;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RainLisp
 {
-    //internal class Procedure : Node
-    //{
-    //    public string[] Parameters { get; set; }
+    public class Procedure
+    {
+        public Procedure(IList<string>? parameters, Body body, Environment environment)
+        {
+            Parameters = parameters;
+            Body = body ?? throw new ArgumentNullException(nameof(body));
+            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
+        }
 
-    //    public Node Body { get; set; }
+        public IList<string>? Parameters { get; init; }
 
-    //    public Environment Environment { get; set; }
-    //}
+        public Body Body { get; init; }
+
+        public Environment Environment { get; init; }
+    }
 }
