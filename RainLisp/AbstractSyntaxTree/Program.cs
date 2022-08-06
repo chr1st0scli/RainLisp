@@ -4,7 +4,7 @@
     {
         public IList<Definition> Definitions { get; set; } = new List<Definition>();
 
-        public IList<Node> Expressions { get; set; } = new List<Node>();
+        public IList<Expression> Expressions { get; set; } = new List<Expression>();
 
         public override object AcceptVisitor(IVisitor visitor, Environment environment)
             => visitor.VisitProgram(this);

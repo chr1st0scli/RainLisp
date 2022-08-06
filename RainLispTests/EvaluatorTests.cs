@@ -57,6 +57,7 @@ namespace RainLispTests
         [InlineData("(% 4 2)", 0d)]
         [InlineData("(% 5 2)", 1d)]
         [InlineData("(% 15 6 2)", 1d)]
+        [InlineData("(+ 1 (* 2 3))", 7d)]
         public void Evaluate_Expression_Correctly(string expression, double expectedResult)
         {
             // Arrange

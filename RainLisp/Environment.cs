@@ -7,13 +7,14 @@
         private Environment? previousEnvironment;
         private Environment? nextEnvironment;
 
-        public static Environment RootEnvironment { get; } = new Environment();
+        public static Environment GlobalEnvironment { get; } = new Environment();
 
         public Environment()
         {
             definitions = new Dictionary<string, object>();
         }
 
+        // consider puting parameters and arguments as parameters for this method
         public Environment ExtendEnvironment()
         {
             nextEnvironment = new Environment { previousEnvironment = this };

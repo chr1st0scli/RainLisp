@@ -116,6 +116,9 @@ namespace RainLisp
                 definitions.Add(Definition());
             }
 
+            // If I wanted more than one expression, I would have a problem between detecting an additional expression or an erroneous one.
+            // I.e. calling Expression again, I would have to catch the exception. But what would it mean? There is an additional erroneous expression,
+            // or there is no addition expression? Maybe this indicates a problem with my grammar, but why don't I use a singe begin expression to combine many?
             return new Body(definitions, Expression());
         }
 
@@ -149,6 +152,7 @@ namespace RainLisp
                     var quoteExpression = new Quote(Token().Value);
 
                     // Can there be more than one?
+                    // Support the 'a syntax or not
                     Require(TokenType.Identifier);
                     expression = quoteExpression;
                 }
