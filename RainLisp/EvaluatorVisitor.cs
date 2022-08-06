@@ -42,7 +42,13 @@ namespace RainLisp
 
         public object VisitAssignment(Assignment assignment, Environment environment)
         {
-            throw new NotImplementedException();
+            environment.LookupIdentifier(assignment.IdentifierName);
+
+            var value = assignment.Value.AcceptVisitor(this, environment);
+
+            environment.SetIdentifier(assignment.IdentifierName, value);
+
+            return "undefined";
         }
 
         public object VisitBegin(Begin begin, Environment environment)

@@ -42,6 +42,8 @@ namespace RainLispTests
         [InlineData("(begin 0 1 2)", 2d)]
         [InlineData("(define (foo) 1) (foo)", 1d)]
         [InlineData("(define (foo x y) (+ x y)) (foo 3 4)", 7d)]
+        [InlineData("(define a 1) (set! a 2) a", 2d)]
+        [InlineData("(define a 1) (set! a (+ a 3)) a", 4d)]
         [InlineData("(+ 1 2)", 3d)]
         [InlineData("(+ -1 2)", 1d)]
         [InlineData("(+ 1 2 3 4)", 10d)]
