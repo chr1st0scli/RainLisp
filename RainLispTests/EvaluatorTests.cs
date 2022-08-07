@@ -1,16 +1,24 @@
 ﻿using RainLisp;
+using RainLisp.Evaluator;
 
 namespace RainLispTests
 {
     public class EvaluatorTests
     {
-        private readonly IVisitor _evaluator;
+        private readonly IEvaluatorVisitor _evaluator;
         private readonly Parser _parser;
 
         public EvaluatorTests()
         {
-            _evaluator = new EvaluatorVisitor();
+            _evaluator = new EvaluatorVisitor(new ProcedureApplicationVisitor());
             _parser = new Parser();
+        }
+
+        private object Evaluate(string expression)
+        {
+            var tokens = Tokenizer.TokenizeExt(expression);
+            var ast = _parser.Parse(tokens);
+            return _evaluator.VisitProgram(ast);
         }
 
         [Theory]
@@ -25,9 +33,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var tokens = Tokenizer.TokenizeExt(expression);
-            var ast = _parser.Parse(tokens);
-            var result = _evaluator.VisitProgram(ast);
+            var result = Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -62,12 +68,54 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var tokens = Tokenizer.TokenizeExt(expression);
-            var ast = _parser.Parse(tokens);
-            var result = _evaluator.VisitProgram(ast);
+            var result = Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
+        }
+
+        [Theory]
+        [InlineData("(> 2 1)", true)]
+        [InlineData("(>= 2 1)", true)]
+        [InlineData("(>= 2 2)", true)]
+        [InlineData("(> 2 3)", false)]
+        [InlineData("(>= 2 3)", false)]
+        [InlineData("(< 1 2)", true)]
+        [InlineData("(<= 1 2)", true)]
+        [InlineData("(<= 2 2)", true)]
+        [InlineData("(< 3 2)", false)]
+        [InlineData("(<= 3 2)", false)]
+        [InlineData("(not true)", false)]
+        [InlineData("(not false)", true)]
+        [InlineData("(not (not true))", true)]
+        [InlineData("(and true true true)", true)]
+        [InlineData("(and true false true)", false)]
+        [InlineData("(or true true true)", true)]
+        [InlineData("(or true false true)", true)]
+        [InlineData("(and (or true false) false)", false)]
+        [InlineData("(or (or true false) false)", true)]
+        [InlineData("(or (and true false) false)", false)]
+        [InlineData("(or (and true false) true)", true)]
+        [InlineData("(or (and true false) (and false true))", false)]
+        [InlineData("(and (or true false) (or false true))", true)]
+        [InlineData("(not (and (or true false) (or false true)))", false)]
+        [InlineData("(and (or (> 3 1) (>= 1 4)) (< 5 2))", false)]
+        [InlineData("(or (or (>= 6 2) (<= 9 4)) (< 7 4))", true)]
+        [InlineData("(or (and (> 9 3) (> 9 11)) (< 9 5))", false)]
+        [InlineData("(or (and (> 10 8) (< 11 19)) true)", true)]
+        [InlineData("(or (and (>= 10 10) (<= 10 9)) (and (> 5 6) (<= 4 4)))", false)]
+        [InlineData("(and (or (>= 5 5) (> 5 5)) (or (> 5 6) (<= 5 6)))", true)]
+        [InlineData("(not (and (or (> 6 2) (< 6 2)) (or (< 4 2) (> 4 2))))", false)]
+        [InlineData("(and (> (+ 5 4) (- 5 4)) (> (/ 4 5) (* 4 5)))", false)]
+        [InlineData("(or (> (+ 5 4) (- 5 4)) (> (/ 4 5) (* 4 5)))", true)]
+        public void Evaluate_BooleanPrimitiveExpressions_Correctly(string expression, bool expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, (bool)result);
         }
     }
 }

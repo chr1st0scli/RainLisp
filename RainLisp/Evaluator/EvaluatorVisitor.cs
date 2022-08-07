@@ -1,10 +1,14 @@
 ﻿using RainLisp.AbstractSyntaxTree;
-using RainLisp.Evaluator;
 
-namespace RainLisp
+namespace RainLisp.Evaluator
 {
-    public class EvaluatorVisitor : IVisitor
+    public class EvaluatorVisitor : IEvaluatorVisitor
     {
+        private readonly IProcedureApplicationVisitor _procedureVisitor;
+
+        public EvaluatorVisitor(IProcedureApplicationVisitor procedureVisitor)
+            => _procedureVisitor = procedureVisitor ?? throw new ArgumentNullException(nameof(procedureVisitor));
+
         public object VisitNumberLiteral(NumberLiteral numberLiteral)
             => numberLiteral.Value;
 
@@ -17,7 +21,8 @@ namespace RainLisp
         public object VisitIdentifier(Identifier identifier, Environment environment)
         {
             // This should be handled in the environment!
-            var primitiveProcedure = PrimitiveProcedures.GetPrimitiveProcedure(identifier.Name);
+            // User cannot redefine primitive procedures.
+            var primitiveProcedure = PrimitiveProcedure.CreatePrimitiveProcedure(identifier.Name);
 
             if (primitiveProcedure != null)
                 return primitiveProcedure;
@@ -52,7 +57,7 @@ namespace RainLisp
         }
 
         public object VisitLambda(Lambda lambda, Environment environment)
-            => new Procedure(lambda.Parameters, lambda.Body, environment);
+            => new UserProcedure(lambda.Parameters, lambda.Body, environment);
 
         public object VisitIf(If ifExpression, Environment environment)
         {
@@ -87,6 +92,8 @@ namespace RainLisp
 
         public object VisitApplication(Application application, Environment environment)
         {
+            // Operator is either a lambda that is evaluate to a user procedure
+            // or an identifier that evaluates to a defined procedure (either user or primitive).
             var evaluatedOperator = application.Operator
                 .AcceptVisitor(this, environment);
 
@@ -95,29 +102,8 @@ namespace RainLisp
                 ?.Select(expr => expr.AcceptVisitor(this, environment))
                 .ToArray();
 
-            // Refactor to avoid type checking.
-            // Primitive procedure
-            if (evaluatedOperator is Func<double[], object> func)
-            {
-                return func(evaluatedArguments?.Cast<double>().ToArray() ?? Array.Empty<double>());
-            }
-            else if (evaluatedOperator is Procedure procedure)
-            {
-                if (procedure.Parameters?.Count != application.Operands?.Count)
-                    throw new InvalidOperationException("Wrong number of arguments.");
-
-                // We extend the procedure environment instead of the given one?
-                var extendedEnvironment = procedure.Environment.ExtendEnvironment();
-
-                if (procedure.Parameters?.Count > 0 && evaluatedArguments?.Length > 0)
-                {
-                    for (int i = 0; i < procedure.Parameters.Count; i++)
-                        extendedEnvironment.SetIdentifier(procedure.Parameters[i], evaluatedArguments[i]);
-                }
-
-                return VisitBody(procedure.Body, extendedEnvironment);
-
-            }
+            if (evaluatedOperator is Procedure procedure)
+                return procedure.AcceptVisitor(_procedureVisitor, evaluatedArguments, environment, this);
             else
                 throw new InvalidOperationException("Unknown procedure type.");
         }
@@ -140,7 +126,7 @@ namespace RainLisp
             // Establish all definitions in the environment.
             foreach (var definition in program.Definitions)
                 VisitDefinition(definition, Environment.GlobalEnvironment);
-                //definition.AcceptVisitor(this, Environment.RootEnvironment);
+            //definition.AcceptVisitor(this, Environment.RootEnvironment);
 
             object result = "undefined";
             // Evaluate all program expressions and the return the last result.

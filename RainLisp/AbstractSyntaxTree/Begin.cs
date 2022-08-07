@@ -1,4 +1,6 @@
-﻿namespace RainLisp.AbstractSyntaxTree
+﻿using RainLisp.Evaluator;
+
+namespace RainLisp.AbstractSyntaxTree
 {
     public class Begin : Expression
     {
@@ -9,7 +11,7 @@
 
         public IList<Expression> Expressions { get; init; }
 
-        public override object AcceptVisitor(IVisitor visitor, Environment environment)
+        public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
             => visitor.VisitBegin(this, environment);
     }
 }

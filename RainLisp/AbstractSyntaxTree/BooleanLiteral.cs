@@ -1,4 +1,6 @@
-﻿namespace RainLisp.AbstractSyntaxTree
+﻿using RainLisp.Evaluator;
+
+namespace RainLisp.AbstractSyntaxTree
 {
     public class BooleanLiteral : Expression
     {
@@ -6,7 +8,7 @@
 
         public bool Value { get; init; }
 
-        public override object AcceptVisitor(IVisitor visitor, Environment environment)
+        public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
             => visitor.VisitBooleanLiteral(this);
     }
 }

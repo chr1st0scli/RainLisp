@@ -1,4 +1,6 @@
-﻿namespace RainLisp.AbstractSyntaxTree
+﻿using RainLisp.Evaluator;
+
+namespace RainLisp.AbstractSyntaxTree
 {
     public class Definition : Node
     {
@@ -12,7 +14,7 @@
 
         public Expression Value { get; init; }
 
-        public override object AcceptVisitor(IVisitor visitor, Environment environment)
+        public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
             => visitor.VisitDefinition(this, environment);
     }
 }
