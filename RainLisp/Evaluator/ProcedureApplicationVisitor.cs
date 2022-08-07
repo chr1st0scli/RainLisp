@@ -19,76 +19,65 @@
             return evaluatorVisitor.VisitBody(procedure.Body, extendedEnvironment);
         }
 
-        public object VisitPrimitiveProcedure(PrimitiveProcedure procedure, object[]? evaluatedArguments)
+        public object VisitPrimitiveProcedure(PrimitiveProcedure procedure, object[] evaluatedArguments)
         {
             // Dispatch to different methods based on enum instead of different procedure runtime types to avoid class explosion for primitive operations.
             return procedure.ProcedureType switch
             {
-                PrimitiveProcedureType.Add => Add(GetPrimitiveTypeSafeValues<double>(evaluatedArguments)),
-                PrimitiveProcedureType.Subtract => Subtract(GetPrimitiveTypeSafeValues<double>(evaluatedArguments)),
-                PrimitiveProcedureType.Multiply => Multiply(GetPrimitiveTypeSafeValues<double>(evaluatedArguments)),
-                PrimitiveProcedureType.Divide => Divide(GetPrimitiveTypeSafeValues<double>(evaluatedArguments)),
-                PrimitiveProcedureType.Remainder => Remainder(GetPrimitiveTypeSafeValues<double>(evaluatedArguments)),
-                PrimitiveProcedureType.GreaterThan => GreaterThan(GetPrimitiveTypeSafeValues<double>(evaluatedArguments)),
-                PrimitiveProcedureType.GreaterThanOrEqualTo => GreaterThanOrEqualTo(GetPrimitiveTypeSafeValues<double>(evaluatedArguments)),
-                PrimitiveProcedureType.LessThan => LessThan(GetPrimitiveTypeSafeValues<double>(evaluatedArguments)),
-                PrimitiveProcedureType.LessThanOrEqualTo => LessThanOrEqualTo(GetPrimitiveTypeSafeValues<double>(evaluatedArguments)),
-                PrimitiveProcedureType.LogicalAnd => LogicalAnd(GetPrimitiveTypeSafeValues<bool>(evaluatedArguments)),
-                PrimitiveProcedureType.LogicalOr => LogicalOr(GetPrimitiveTypeSafeValues<bool>(evaluatedArguments)),
-                PrimitiveProcedureType.LogicalNot => LogicalNot(GetPrimitiveTypeSafeValues<bool>(evaluatedArguments)),
+                PrimitiveProcedureType.Add => Add(evaluatedArguments),
+                PrimitiveProcedureType.Subtract => Subtract(evaluatedArguments),
+                PrimitiveProcedureType.Multiply => Multiply(evaluatedArguments),
+                PrimitiveProcedureType.Divide => Divide(evaluatedArguments),
+                PrimitiveProcedureType.Remainder => Remainder(evaluatedArguments),
+                PrimitiveProcedureType.GreaterThan => GreaterThan(evaluatedArguments),
+                PrimitiveProcedureType.GreaterThanOrEqualTo => GreaterThanOrEqualTo(evaluatedArguments),
+                PrimitiveProcedureType.LessThan => LessThan(evaluatedArguments),
+                PrimitiveProcedureType.LessThanOrEqualTo => LessThanOrEqualTo(evaluatedArguments),
+                PrimitiveProcedureType.LogicalAnd => LogicalAnd(evaluatedArguments),
+                PrimitiveProcedureType.LogicalOr => LogicalOr(evaluatedArguments),
+                PrimitiveProcedureType.LogicalNot => LogicalNot(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
 
-        private static T[] GetPrimitiveTypeSafeValues<T>(object[]? values)
-        {
-            try
-            {
-                return values?.Cast<T>().ToArray() ?? Array.Empty<T>();
-            }
-            catch (InvalidCastException ex)
-            {
-                throw new InvalidOperationException($"All arguments must be of type {typeof(T).Name}.", ex);
-            }
-        }
+        #region Primitive Operations
+        private static object Add(object[] values)
+            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<double>(val1) + ValueForPrimitive<double>(val2), values);
 
-        private static object Add(params double[] values)
-            => ApplyMultivalueOperator((val1, val2) => val1 + val2, values);
+        private static object Subtract(object[] values)
+            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<double>(val1) - ValueForPrimitive<double>(val2), values);
 
-        private static object Subtract(params double[] values)
-            => ApplyMultivalueOperator((val1, val2) => val1 - val2, values);
+        private static object Multiply(object[] values)
+            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<double>(val1) * ValueForPrimitive<double>(val2), values);
 
-        private static object Multiply(params double[] values)
-            => ApplyMultivalueOperator((val1, val2) => val1 * val2, values);
+        private static object Divide(object[] values)
+            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<double>(val1) / ValueForPrimitive<double>(val2), values);
 
-        private static object Divide(params double[] values)
-            => ApplyMultivalueOperator((val1, val2) => val1 / val2, values);
+        private static object Remainder(object[] values)
+            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<double>(val1) % ValueForPrimitive<double>(val2), values);
 
-        private static object Remainder(params double[] values)
-            => ApplyMultivalueOperator((val1, val2) => val1 % val2, values);
+        private static object GreaterThan(object[] values)
+            => ApplyBinaryOperator((val1, val2) => ValueForPrimitive<double>(val1) > ValueForPrimitive<double>(val2), values);
 
-        private static object GreaterThan(params double[] values)
-            => ApplyBinaryOperator((val1, val2) => val1 > val2, values);
+        private static object GreaterThanOrEqualTo(object[] values)
+            => ApplyBinaryOperator((val1, val2) => ValueForPrimitive<double>(val1) >= ValueForPrimitive<double>(val2), values);
 
-        private static object GreaterThanOrEqualTo(params double[] values)
-            => ApplyBinaryOperator((val1, val2) => val1 >= val2, values);
+        private static object LessThan(object[] values)
+            => ApplyBinaryOperator((val1, val2) => ValueForPrimitive<double>(val1) < ValueForPrimitive<double>(val2), values);
 
-        private static object LessThan(params double[] values)
-            => ApplyBinaryOperator((val1, val2) => val1 < val2, values);
+        private static object LessThanOrEqualTo(object[] values)
+            => ApplyBinaryOperator((val1, val2) => ValueForPrimitive<double>(val1) <= ValueForPrimitive<double>(val2), values);
 
-        private static object LessThanOrEqualTo(params double[] values)
-            => ApplyBinaryOperator((val1, val2) => val1 <= val2, values);
+        private static object LogicalAnd(object[] values)
+            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<bool>(val1) && ValueForPrimitive<bool>(val2), values);
 
-        private static object LogicalAnd(params bool[] values)
-            => ApplyMultivalueOperator((val1, val2) => val1 && val2, values);
+        private static object LogicalOr(object[] values)
+            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<bool>(val1) || ValueForPrimitive<bool>(val2), values);
 
-        private static object LogicalOr(params bool[] values)
-            => ApplyMultivalueOperator((val1, val2) => val1 || val2, values);
+        private static object LogicalNot(object[] values)
+            => ApplyUnaryOperator(val => !ValueForPrimitive<bool>(val), values);
 
-        private static object LogicalNot(params bool[] values)
-            => ApplyUnaryOperator(val => !val, values);
-
-        private static T ApplyMultivalueOperator<T>(Func<T, T, T> primitiveOperator, params T[] values)
+        private static T ApplyMultivalueOperator<T>(Func<T, T, T> primitiveOperator, T[] values)
         {
             ArgumentNullException.ThrowIfNull(primitiveOperator, nameof(primitiveOperator));
             ArgumentNullException.ThrowIfNull(values, nameof(values));
@@ -103,7 +92,7 @@
             return accumulator;
         }
 
-        private static bool ApplyBinaryOperator(Func<double, double, bool> primitiveOperator, params double[] values)
+        private static TResult ApplyBinaryOperator<T, TResult>(Func<T, T, TResult> primitiveOperator, T[] values)
         {
             ArgumentNullException.ThrowIfNull(primitiveOperator, nameof(primitiveOperator));
             ArgumentNullException.ThrowIfNull(values, nameof(values));
@@ -114,7 +103,7 @@
             return primitiveOperator(values[0], values[1]);
         }
 
-        private static bool ApplyUnaryOperator(Func<bool, bool> primitiveOperator, params bool[] values)
+        private static T ApplyUnaryOperator<T>(Func<T, T> primitiveOperator, T[] values)
         {
             ArgumentNullException.ThrowIfNull(primitiveOperator, nameof(primitiveOperator));
             ArgumentNullException.ThrowIfNull(values, nameof(values));
@@ -124,5 +113,18 @@
 
             return primitiveOperator(values[0]);
         }
+
+        private static T ValueForPrimitive<T>(object value)
+        {
+            try
+            {
+                return (T)value;
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new InvalidOperationException($"{value} must be of type {typeof(T).Name}.", ex);
+            }
+        } 
+        #endregion
     }
 }

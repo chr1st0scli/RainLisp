@@ -4,6 +4,6 @@
     {
         object VisitUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, Environment environment, IEvaluatorVisitor evaluatorVisitor);
 
-        object VisitPrimitiveProcedure(PrimitiveProcedure procedure, object[]? evaluatedArguments);
+        object VisitPrimitiveProcedure(PrimitiveProcedure procedure, object[] evaluatedArguments);
     }
 }
