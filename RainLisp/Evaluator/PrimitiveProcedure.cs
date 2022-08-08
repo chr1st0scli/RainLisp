@@ -27,6 +27,7 @@
                 "<=" => PrimitiveProcedureType.LessThanOrEqualTo,
                 "and" => PrimitiveProcedureType.LogicalAnd,
                 "or" => PrimitiveProcedureType.LogicalOr,
+                "xor" => PrimitiveProcedureType.LogicalXor,
                 "not" => PrimitiveProcedureType.LogicalNot,
                 _ => null
             };

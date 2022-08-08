@@ -50,20 +50,6 @@ namespace RainLispTests
         [InlineData("(define (foo x y) (+ x y)) (foo 3 4)", 7d)]
         [InlineData("(define a 1) (set! a 2) a", 2d)]
         [InlineData("(define a 1) (set! a (+ a 3)) a", 4d)]
-        [InlineData("(+ 1 2)", 3d)]
-        [InlineData("(+ -1 2)", 1d)]
-        [InlineData("(+ 1 2 3 4)", 10d)]
-        [InlineData("(- 5 2 1)", 2d)]
-        [InlineData("(- 5 8)", -3d)]
-        [InlineData("(* 5 8)", 40d)]
-        [InlineData("(* 2 3 4)", 24d)]
-        [InlineData("(/ 6 3)", 2d)]
-        [InlineData("(/ 24 6 2)", 2d)]
-        [InlineData("(/ 3 2)", 1.5)]
-        [InlineData("(% 4 2)", 0d)]
-        [InlineData("(% 5 2)", 1d)]
-        [InlineData("(% 15 6 2)", 1d)]
-        [InlineData("(+ 1 (* 2 3))", 7d)]
         public void Evaluate_Expression_Correctly(string expression, double expectedResult)
         {
             // Arrange
@@ -72,6 +58,37 @@ namespace RainLispTests
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
+        }
+
+        [Theory]
+        [InlineData("(+ 1 2)", 3d)]
+        [InlineData("(+ -1 2)", 1d)]
+        [InlineData("(+ -1 -2)", -3d)]
+        [InlineData("(+ 1 2 3 4)", 10d)]
+        [InlineData("(- 5 2 1)", 2d)]
+        [InlineData("(- 5 8)", -3d)]
+        [InlineData("(+ -5 -8)", -13d)]
+        [InlineData("(- -5 -8)", 3d)]
+        [InlineData("(* 5 8)", 40d)]
+        [InlineData("(* 5 -8)", -40d)]
+        [InlineData("(* 2 3 4)", 24d)]
+        [InlineData("(/ 6 3)", 2d)]
+        [InlineData("(/ 24 6 2)", 2d)]
+        [InlineData("(/ 3 2)", 1.5)]
+        [InlineData("(/ -3 2)", -1.5)]
+        [InlineData("(% 4 2)", 0d)]
+        [InlineData("(% 5 2)", 1d)]
+        [InlineData("(% 15 6 2)", 1d)]
+        [InlineData("(+ 1 (* 2 3))", 7d)]
+        [InlineData("(+ 6 (- 7 (* (+ 8 (/ 3 (+ 2 (- 1 (+ (- 5 (* 3 6)) 3)))) 4) 9)))", -97.08)]
+        public void Evaluate_NumberPrimitiveExpression_Correctly(string expression, double expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, Math.Round((double)result, 2, MidpointRounding.AwayFromZero));
         }
 
         [Theory]
@@ -88,10 +105,23 @@ namespace RainLispTests
         [InlineData("(not true)", false)]
         [InlineData("(not false)", true)]
         [InlineData("(not (not true))", true)]
+        [InlineData("(and true false)", false)]
+        [InlineData("(and false true)", false)]
+        [InlineData("(and true true)", true)]
+        [InlineData("(and false false)", false)]
         [InlineData("(and true true true)", true)]
         [InlineData("(and true false true)", false)]
+        [InlineData("(or true false)", true)]
+        [InlineData("(or false true)", true)]
+        [InlineData("(or true true)", true)]
+        [InlineData("(or false false)", false)]
         [InlineData("(or true true true)", true)]
         [InlineData("(or true false true)", true)]
+        [InlineData("(xor true false)", true)]
+        [InlineData("(xor false true)", true)]
+        [InlineData("(xor true true)", false)]
+        [InlineData("(xor false false)", false)]
+        [InlineData("(xor false false true)", true)]
         [InlineData("(and (or true false) false)", false)]
         [InlineData("(or (or true false) false)", true)]
         [InlineData("(or (and true false) false)", false)]
@@ -108,7 +138,7 @@ namespace RainLispTests
         [InlineData("(not (and (or (> 6 2) (< 6 2)) (or (< 4 2) (> 4 2))))", false)]
         [InlineData("(and (> (+ 5 4) (- 5 4)) (> (/ 4 5) (* 4 5)))", false)]
         [InlineData("(or (> (+ 5 4) (- 5 4)) (> (/ 4 5) (* 4 5)))", true)]
-        public void Evaluate_BooleanPrimitiveExpressions_Correctly(string expression, bool expectedResult)
+        public void Evaluate_LogicalPrimitiveExpression_Correctly(string expression, bool expectedResult)
         {
             // Arrange
             // Act

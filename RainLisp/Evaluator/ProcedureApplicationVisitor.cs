@@ -35,6 +35,7 @@
                 PrimitiveProcedureType.LessThanOrEqualTo => LessThanOrEqualTo(evaluatedArguments),
                 PrimitiveProcedureType.LogicalAnd => LogicalAnd(evaluatedArguments),
                 PrimitiveProcedureType.LogicalOr => LogicalOr(evaluatedArguments),
+                PrimitiveProcedureType.LogicalXor => LogicalXor(evaluatedArguments),
                 PrimitiveProcedureType.LogicalNot => LogicalNot(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
@@ -73,6 +74,9 @@
 
         private static object LogicalOr(object[] values)
             => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<bool>(val1) || ValueForPrimitive<bool>(val2), values);
+
+        private static object LogicalXor(object[] values)
+            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<bool>(val1) ^ ValueForPrimitive<bool>(val2), values);
 
         private static object LogicalNot(object[] values)
             => ApplyUnaryOperator(val => !ValueForPrimitive<bool>(val), values);

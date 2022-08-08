@@ -13,6 +13,7 @@
         LessThanOrEqualTo,
         LogicalAnd,
         LogicalOr,
+        LogicalXor,
         LogicalNot
     }
 }
