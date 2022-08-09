@@ -1,4 +1,6 @@
-﻿namespace RainLisp.Evaluator
+﻿using static RainLisp.Grammar.Primitives;
+
+namespace RainLisp.Evaluator
 {
     public class PrimitiveProcedure : Procedure
     {
@@ -16,19 +18,19 @@
         {
             PrimitiveProcedureType? proc = identifierName switch
             {
-                "+" => PrimitiveProcedureType.Add,
-                "-" => PrimitiveProcedureType.Subtract,
-                "*" => PrimitiveProcedureType.Multiply,
-                "/" => PrimitiveProcedureType.Divide,
-                "%" => PrimitiveProcedureType.Remainder,
-                ">" => PrimitiveProcedureType.GreaterThan,
-                ">=" => PrimitiveProcedureType.GreaterThanOrEqualTo,
-                "<" => PrimitiveProcedureType.LessThan,
-                "<=" => PrimitiveProcedureType.LessThanOrEqualTo,
-                "and" => PrimitiveProcedureType.LogicalAnd,
-                "or" => PrimitiveProcedureType.LogicalOr,
-                "xor" => PrimitiveProcedureType.LogicalXor,
-                "not" => PrimitiveProcedureType.LogicalNot,
+                PLUS => PrimitiveProcedureType.Add,
+                MINUS => PrimitiveProcedureType.Subtract,
+                MULTIPLY => PrimitiveProcedureType.Multiply,
+                DIVIDE => PrimitiveProcedureType.Divide,
+                MODULO => PrimitiveProcedureType.Modulo,
+                GREATER => PrimitiveProcedureType.GreaterThan,
+                GREATER_OR_EQUAL => PrimitiveProcedureType.GreaterThanOrEqualTo,
+                LESS => PrimitiveProcedureType.LessThan,
+                LESS_OR_EQUAL => PrimitiveProcedureType.LessThanOrEqualTo,
+                AND => PrimitiveProcedureType.LogicalAnd,
+                OR => PrimitiveProcedureType.LogicalOr,
+                XOR => PrimitiveProcedureType.LogicalXor,
+                NOT => PrimitiveProcedureType.LogicalNot,
                 _ => null
             };
 

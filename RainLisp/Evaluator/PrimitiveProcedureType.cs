@@ -6,7 +6,7 @@
         Subtract,
         Multiply,
         Divide,
-        Remainder,
+        Modulo,
         GreaterThan,
         GreaterThanOrEqualTo,
         LessThan,

@@ -28,7 +28,7 @@
                 PrimitiveProcedureType.Subtract => Subtract(evaluatedArguments),
                 PrimitiveProcedureType.Multiply => Multiply(evaluatedArguments),
                 PrimitiveProcedureType.Divide => Divide(evaluatedArguments),
-                PrimitiveProcedureType.Remainder => Remainder(evaluatedArguments),
+                PrimitiveProcedureType.Modulo => Modulo(evaluatedArguments),
                 PrimitiveProcedureType.GreaterThan => GreaterThan(evaluatedArguments),
                 PrimitiveProcedureType.GreaterThanOrEqualTo => GreaterThanOrEqualTo(evaluatedArguments),
                 PrimitiveProcedureType.LessThan => LessThan(evaluatedArguments),
@@ -54,7 +54,7 @@
         private static object Divide(object[] values)
             => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<double>(val1) / ValueForPrimitive<double>(val2), values);
 
-        private static object Remainder(object[] values)
+        private static object Modulo(object[] values)
             => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<double>(val1) % ValueForPrimitive<double>(val2), values);
 
         private static object GreaterThan(object[] values)

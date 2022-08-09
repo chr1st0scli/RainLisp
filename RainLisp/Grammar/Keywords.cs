@@ -1,6 +1,6 @@
 ﻿namespace RainLisp.Grammar
 {
-    internal static class Keywords
+    public static class Keywords
     {
         public const string TRUE = "true";
         public const string FALSE = "false";
