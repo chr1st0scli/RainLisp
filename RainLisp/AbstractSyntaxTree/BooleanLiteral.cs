@@ -9,6 +9,6 @@ namespace RainLisp.AbstractSyntaxTree
         public bool Value { get; init; }
 
         public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
-            => visitor.VisitBooleanLiteral(this);
+            => visitor.EvaluateBooleanLiteral(this);
     }
 }

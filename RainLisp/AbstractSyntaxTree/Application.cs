@@ -15,6 +15,6 @@ namespace RainLisp.AbstractSyntaxTree
         public IList<Expression>? Operands { get; init; }
 
         public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
-            => visitor.VisitApplication(this, environment);
+            => visitor.EvaluateApplication(this, environment);
     }
 }

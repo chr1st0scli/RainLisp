@@ -11,7 +11,7 @@ namespace RainLisp.Evaluator
 
         public override object AcceptVisitor(IProcedureApplicationVisitor visitor, object[]? evaluatedArguments, Environment environment, IEvaluatorVisitor evaluatorVisitor)
         {
-            return visitor.VisitPrimitiveProcedure(this, evaluatedArguments!); // A primitive procedure does not expect null for arguments.
+            return visitor.ApplyPrimitiveProcedure(this, evaluatedArguments!); // A primitive procedure does not expect null for arguments.
         }
 
         public static PrimitiveProcedure? CreatePrimitiveProcedure(string identifierName)

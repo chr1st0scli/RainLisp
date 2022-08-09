@@ -18,7 +18,7 @@ namespace RainLispTests
         {
             var tokens = Tokenizer.TokenizeExt(expression);
             var ast = _parser.Parse(tokens);
-            return _evaluator.VisitProgram(ast);
+            return _evaluator.EvaluateProgram(ast);
         }
 
         [Theory]

@@ -9,6 +9,6 @@ namespace RainLisp.AbstractSyntaxTree
         public IList<Expression> Expressions { get; set; } = new List<Expression>();
 
         public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
-            => visitor.VisitProgram(this);
+            => visitor.EvaluateProgram(this);
     }
 }

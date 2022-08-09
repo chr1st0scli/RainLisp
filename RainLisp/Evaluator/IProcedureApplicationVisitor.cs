@@ -2,8 +2,8 @@
 {
     public interface IProcedureApplicationVisitor
     {
-        object VisitUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, Environment environment, IEvaluatorVisitor evaluatorVisitor);
+        object ApplyUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, Environment environment, IEvaluatorVisitor evaluatorVisitor);
 
-        object VisitPrimitiveProcedure(PrimitiveProcedure procedure, object[] evaluatedArguments);
+        object ApplyPrimitiveProcedure(PrimitiveProcedure procedure, object[] evaluatedArguments);
     }
 }

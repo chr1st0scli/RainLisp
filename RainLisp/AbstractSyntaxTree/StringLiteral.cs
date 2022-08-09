@@ -12,6 +12,6 @@ namespace RainLisp.AbstractSyntaxTree
         public string Value { get; init; }
 
         public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
-            => visitor.VisitStringLiteral(this);
+            => visitor.EvaluateStringLiteral(this);
     }
 }

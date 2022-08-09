@@ -4,30 +4,30 @@ namespace RainLisp.Evaluator
 {
     public interface IEvaluatorVisitor
     {
-        object VisitNumberLiteral(NumberLiteral numberLiteral);
+        object EvaluateNumberLiteral(NumberLiteral numberLiteral);
 
-        object VisitStringLiteral(StringLiteral stringLiteral);
+        object EvaluateStringLiteral(StringLiteral stringLiteral);
 
-        object VisitBooleanLiteral(BooleanLiteral boolLiteral);
+        object EvaluateBooleanLiteral(BooleanLiteral boolLiteral);
 
-        object VisitIdentifier(Identifier identifier, Environment environment);
+        object EvaluateIdentifier(Identifier identifier, Environment environment);
 
-        object VisitQuote(Quote quote);
+        object EvaluateQuote(Quote quote);
 
-        object VisitAssignment(Assignment assignment, Environment environment);
+        object EvaluateAssignment(Assignment assignment, Environment environment);
 
-        object VisitDefinition(Definition definition, Environment environment);
+        object EvaluateDefinition(Definition definition, Environment environment);
 
-        object VisitLambda(Lambda lambda, Environment environment);
+        object EvaluateLambda(Lambda lambda, Environment environment);
 
-        object VisitIf(If ifExpression, Environment environment);
+        object EvaluateIf(If ifExpression, Environment environment);
 
-        object VisitBegin(Begin begin, Environment environment);
+        object EvaluateBegin(Begin begin, Environment environment);
 
-        object VisitApplication(Application application, Environment environment);
+        object EvaluateApplication(Application application, Environment environment);
 
-        object VisitBody(Body body, Environment environment);
+        object EvaluateBody(Body body, Environment environment);
 
-        object VisitProgram(Program program);
+        object EvaluateProgram(Program program);
     }
 }

@@ -2,7 +2,7 @@
 {
     public class ProcedureApplicationVisitor : IProcedureApplicationVisitor
     {
-        public object VisitUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, Environment environment, IEvaluatorVisitor evaluatorVisitor)
+        public object ApplyUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, Environment environment, IEvaluatorVisitor evaluatorVisitor)
         {
             if (procedure.Parameters?.Count != evaluatedArguments?.Length)
                 throw new InvalidOperationException("Wrong number of arguments.");
@@ -16,10 +16,10 @@
                     extendedEnvironment.SetIdentifier(procedure.Parameters[i], evaluatedArguments[i]);
             }
 
-            return evaluatorVisitor.VisitBody(procedure.Body, extendedEnvironment);
+            return evaluatorVisitor.EvaluateBody(procedure.Body, extendedEnvironment);
         }
 
-        public object VisitPrimitiveProcedure(PrimitiveProcedure procedure, object[] evaluatedArguments)
+        public object ApplyPrimitiveProcedure(PrimitiveProcedure procedure, object[] evaluatedArguments)
         {
             // Dispatch to different methods based on enum instead of different procedure runtime types to avoid class explosion for primitive operations.
             return procedure.ProcedureType switch

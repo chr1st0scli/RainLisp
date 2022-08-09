@@ -9,6 +9,6 @@ namespace RainLisp.AbstractSyntaxTree
         public double Value { get; init; }
 
         public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
-            => visitor.VisitNumberLiteral(this);
+            => visitor.EvaluateNumberLiteral(this);
     }
 }

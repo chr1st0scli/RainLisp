@@ -19,7 +19,7 @@ namespace RainLisp.Evaluator
 
         public override object AcceptVisitor(IProcedureApplicationVisitor visitor, object[]? evaluatedArguments, Environment environment, IEvaluatorVisitor evaluatorVisitor)
         {
-            return visitor.VisitUserProcedure(this, evaluatedArguments, environment, evaluatorVisitor);
+            return visitor.ApplyUserProcedure(this, evaluatedArguments, environment, evaluatorVisitor);
         }
     }
 }

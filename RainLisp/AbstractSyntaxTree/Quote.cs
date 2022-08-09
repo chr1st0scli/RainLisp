@@ -12,6 +12,6 @@ namespace RainLisp.AbstractSyntaxTree
         public string Text { get; init; } = string.Empty;
 
         public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
-            => visitor.VisitQuote(this);
+            => visitor.EvaluateQuote(this);
     }
 }
