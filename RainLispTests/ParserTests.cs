@@ -45,6 +45,10 @@ namespace RainLispTests
         [InlineData(22, "(foo 1 2 3)")]
         [InlineData(23, "((lambda () 1))")]
         [InlineData(24, "((lambda (x) x) 1)")]
+        [InlineData(25, "(cond (true 5))")]
+        [InlineData(26, "(cond (true 5) (false 10))")]
+        [InlineData(27, "(cond (true 5) (false 10) (else -1))")]
+        //[InlineData(28, "(cond ((<= a 5) 5) ((<= a 10) 10) (else -1))")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             // Arrange

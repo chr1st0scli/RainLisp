@@ -12,6 +12,8 @@
         Assignment,
         Definition,
         If,
+        Cond,
+        Else,
         Begin,
         Lambda,
         EOF

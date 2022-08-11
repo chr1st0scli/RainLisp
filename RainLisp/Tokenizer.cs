@@ -109,6 +109,8 @@ namespace RainLisp
                 SET => TokenType.Assignment,
                 DEFINE => TokenType.Definition,
                 IF => TokenType.If,
+                COND => TokenType.Cond,
+                ELSE => TokenType.Else,
                 BEGIN => TokenType.Begin,
                 LAMBDA => TokenType.Lambda,
                 _ => GetOtherType()

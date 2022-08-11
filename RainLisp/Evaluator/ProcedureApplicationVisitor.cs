@@ -69,9 +69,13 @@
         private static object LessThanOrEqualTo(object[] values)
             => ApplyBinaryOperator((val1, val2) => ValueForPrimitive<double>(val1) <= ValueForPrimitive<double>(val2), values);
 
+        // Also implement = for numbers, booleans and strings.
+
+        // This should not evaluate further values when first false is encountered
         private static object LogicalAnd(object[] values)
             => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<bool>(val1) && ValueForPrimitive<bool>(val2), values);
 
+        // This should not evaluate further values when first true is encountered
         private static object LogicalOr(object[] values)
             => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<bool>(val1) || ValueForPrimitive<bool>(val2), values);
 

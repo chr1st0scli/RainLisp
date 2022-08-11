@@ -1,4 +1,5 @@
 ﻿using RainLisp.AbstractSyntaxTree;
+using RainLisp.DerivedExpressions;
 using System.Globalization;
 
 namespace RainLisp
@@ -118,7 +119,7 @@ namespace RainLisp
 
             // If I wanted more than one expression, I would have a problem between detecting an additional expression or an erroneous one.
             // I.e. calling Expression again, I would have to catch the exception. But what would it mean? There is an additional erroneous expression,
-            // or there is no addition expression? Maybe this indicates a problem with my grammar, but why don't I use a singe begin expression to combine many?
+            // or there is no additional expression? Maybe this indicates a problem with my grammar, but why don't I use a singe begin expression to combine many?
             return new Body(definitions, Expression());
         }
 
@@ -178,6 +179,25 @@ namespace RainLisp
 
                     expression = new If(predicate, consequent, alternative);
                 }
+                else if (Match(TokenType.Cond))
+                {
+                    var clauses = new List<ConditionClause>();
+
+                    // We deal with conditional clauses until an else or a closing parenthesis is reached.
+                    do
+                    {
+                        clauses.Add(CondClause());
+                    } while (!CheckFurther(TokenType.Else) && !Check(TokenType.RParen));
+
+                    ConditionElseClause? elseClause = null;
+                    if (CheckFurther(TokenType.Else))
+                        elseClause = CondElseClause();
+
+                    var condition = new Condition(clauses, elseClause);
+
+                    // cond is a derived expression, so it gets converted to an equivalent if.
+                    expression = Transformations.ConditionToIf(condition);
+                }
                 else if (Match(TokenType.Begin))
                 {
                     var expressions = new List<Expression>();
@@ -227,6 +247,41 @@ namespace RainLisp
 
                 return expression;
             }
+        }
+
+        private ConditionClause CondClause()
+        {
+            Require(TokenType.LParen);
+
+            var predicate = Expression();
+            var expressions = new List<Expression>();
+
+            do
+            {
+                expressions.Add(Expression());
+            } while(!Check(TokenType.RParen));
+
+            Require(TokenType.RParen);
+
+            return new ConditionClause(predicate, expressions);
+        }
+
+        private ConditionElseClause CondElseClause()
+        {
+            Require(TokenType.LParen);
+
+            Require(TokenType.Else);
+
+            var expressions = new List<Expression>();
+
+            do
+            {
+                expressions.Add(Expression());
+            } while(!Check(TokenType.RParen));
+
+            Require(TokenType.RParen);
+
+            return new ConditionElseClause(expressions);
         }
     }
 }

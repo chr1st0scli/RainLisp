@@ -1,0 +1,29 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Predicate": {
+        "Value": true,
+        "TypeName": "BooleanLiteral"
+      },
+      "Consequent": {
+        "Value": 5.0,
+        "TypeName": "NumberLiteral"
+      },
+      "Alternative": {
+        "Predicate": {
+          "Value": false,
+          "TypeName": "BooleanLiteral"
+        },
+        "Consequent": {
+          "Value": 10.0,
+          "TypeName": "NumberLiteral"
+        },
+        "Alternative": null,
+        "TypeName": "If"
+      },
+      "TypeName": "If"
+    }
+  ],
+  "TypeName": "Program"
+}
