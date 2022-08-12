@@ -1,0 +1,58 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Predicate": {
+        "Operator": {
+          "Name": "<=",
+          "TypeName": "Identifier"
+        },
+        "Operands": [
+          {
+            "Name": "a",
+            "TypeName": "Identifier"
+          },
+          {
+            "Value": 5.0,
+            "TypeName": "NumberLiteral"
+          }
+        ],
+        "TypeName": "Application"
+      },
+      "Consequent": {
+        "Value": 5.0,
+        "TypeName": "NumberLiteral"
+      },
+      "Alternative": {
+        "Predicate": {
+          "Operator": {
+            "Name": "<=",
+            "TypeName": "Identifier"
+          },
+          "Operands": [
+            {
+              "Name": "a",
+              "TypeName": "Identifier"
+            },
+            {
+              "Value": 10.0,
+              "TypeName": "NumberLiteral"
+            }
+          ],
+          "TypeName": "Application"
+        },
+        "Consequent": {
+          "Value": 10.0,
+          "TypeName": "NumberLiteral"
+        },
+        "Alternative": {
+          "Value": -1.0,
+          "TypeName": "NumberLiteral"
+        },
+        "TypeName": "If"
+      },
+      "TypeName": "If"
+    }
+  ],
+  "TypeName": "Program"
+}

@@ -50,6 +50,15 @@ namespace RainLispTests
         [InlineData("(define (foo x y) (+ x y)) (foo 3 4)", 7d)]
         [InlineData("(define a 1) (set! a 2) a", 2d)]
         [InlineData("(define a 1) (set! a (+ a 3)) a", 4d)]
+        [InlineData("(cond (true 1))", 1d)]
+        [InlineData("(cond (false 1) (true 2))", 2d)]
+        [InlineData("(cond (false 1) (false 2) (else 3))", 3d)]
+        [InlineData("(cond (true 1 2))", 2d)]
+        [InlineData("(cond (false 1 2) (true 3 4))", 4d)]
+        [InlineData("(cond (false 1 2) (false 3 4) (else 5 6))", 6d)]
+        [InlineData("(define a 1) (cond ((<= a 5) 5) ((<= a 10) 10) (else -1))", 5d)]
+        [InlineData("(define a 7) (cond ((<= a 5) 5) ((<= a 10) 10) (else -1))", 10d)]
+        [InlineData("(define a 28) (cond ((<= a 5) 5) ((<= a 10) 10) (else -1))", -1d)]
         public void Evaluate_Expression_Correctly(string expression, double expectedResult)
         {
             // Arrange

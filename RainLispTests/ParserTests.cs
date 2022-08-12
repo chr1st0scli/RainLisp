@@ -5,20 +5,6 @@ namespace RainLispTests
 {
     public class ParserTests
     {
-        [Fact]
-        public void Foo()
-        {
-            // Arrange
-            string expression = "(+ 1 2)";
-            var parser = new Parser();
-            var tokens = Tokenizer.TokenizeExt(expression);
-
-            // Act
-            parser.Parse(tokens);
-
-            // Assert
-        }
-
         [Theory]
         [InlineData(0, "1")]
         [InlineData(1, "1.5")]
@@ -48,7 +34,8 @@ namespace RainLispTests
         [InlineData(25, "(cond (true 5))")]
         [InlineData(26, "(cond (true 5) (false 10))")]
         [InlineData(27, "(cond (true 5) (false 10) (else -1))")]
-        //[InlineData(28, "(cond ((<= a 5) 5) ((<= a 10) 10) (else -1))")]
+        [InlineData(28, "(cond ((<= a 5) 5) ((<= a 10) 10) (else -1))")]
+        [InlineData(29, "(cond (true 1 2) (false 3 4) (else 5 6))")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             // Arrange
@@ -90,6 +77,11 @@ namespace RainLispTests
         [InlineData("(lambda ())")] // error says expecting ( but more accurate would be expecting expression in the body
         [InlineData("(lambda () 1")]
         [InlineData("(foo")]
+        [InlineData("(cond 1)")]
+        [InlineData("(cond (true 1)")]
+        [InlineData("(cond (true 1) (false 2)")]
+        [InlineData("(cond (true 1) (false 2) (else)")] // error says expecting ( but more accurate would be expecting expression in else
+        [InlineData("(cond (true 1) (false 2) (else 3)")]
         public void Parse_InvalidExpression_Throws(string expression)
         {
             // Arrange
