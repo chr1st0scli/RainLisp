@@ -16,6 +16,7 @@
         Else,
         Begin,
         Lambda,
+        Let,
         EOF
     }
 }

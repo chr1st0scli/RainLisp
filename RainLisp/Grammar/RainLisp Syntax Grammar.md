@@ -16,10 +16,12 @@ expression = NUM | STRING | BOOL | ID
 		| "(" "cond" condition_clause {condition_clause} [condition_else_clause] ")"
 		| "(" "begin" expression {expression} ")"
 		| "(" "lambda" "(" {ID} ")" body ")"
+		| "(" "let" "(" let_clause {let_clause} ")" body ")"
 		| "(" expression {expression} ")"
 
 condition_clause = "(" expression expression {expression} ")"
 
 condition_else_clause = "(" "else" expression {expression} ")"
-```
 
+let_clause = "(" ID expression ")"
+```

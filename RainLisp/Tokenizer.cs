@@ -113,6 +113,7 @@ namespace RainLisp
                 ELSE => TokenType.Else,
                 BEGIN => TokenType.Begin,
                 LAMBDA => TokenType.Lambda,
+                LET => TokenType.Let,
                 _ => GetOtherType()
             };
         }

@@ -29,6 +29,18 @@
     <None Update="AbstractSyntaxTrees\11.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="AbstractSyntaxTrees\33.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\32.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\31.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\30.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AbstractSyntaxTrees\29.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

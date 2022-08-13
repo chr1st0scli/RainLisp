@@ -59,6 +59,11 @@ namespace RainLispTests
         [InlineData("(define a 1) (cond ((<= a 5) 5) ((<= a 10) 10) (else -1))", 5d)]
         [InlineData("(define a 7) (cond ((<= a 5) 5) ((<= a 10) 10) (else -1))", 10d)]
         [InlineData("(define a 28) (cond ((<= a 5) 5) ((<= a 10) 10) (else -1))", -1d)]
+        [InlineData("(let ((a 1)) 0)", 0d)]
+        [InlineData("(let ((a 1)) a)", 1d)]
+        [InlineData("(let ((a 1) (b 2)) (+ a b))", 3d)]
+        [InlineData("(let ((a 1)) (define b 2) (define c 3) (+ a b c))", 6d)]
+        [InlineData("(let ((a 1) (b 2)) (define c 3) (define d 4) (+ a b c d))", 10d)]
         public void Evaluate_Expression_Correctly(string expression, double expectedResult)
         {
             // Arrange

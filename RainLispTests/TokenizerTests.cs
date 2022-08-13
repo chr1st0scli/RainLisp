@@ -76,9 +76,8 @@ namespace RainLispTests
                 (TokenType.EOF, "")
             };
 
-            yield return new object[]
+            var defineExpectedTokens = new object[]
             {
-                "(define (foo x y) (+ x y))",
                 (TokenType.LParen, "("),
                 (TokenType.Definition, "define"),
                 (TokenType.LParen, "("),
@@ -97,26 +96,16 @@ namespace RainLispTests
 
             yield return new object[]
             {
-                "(define(foo x y)(+ x y))",
-                (TokenType.LParen, "("),
-                (TokenType.Definition, "define"),
-                (TokenType.LParen, "("),
-                (TokenType.Identifier, "foo"),
-                (TokenType.Identifier, "x"),
-                (TokenType.Identifier, "y"),
-                (TokenType.RParen, ")"),
-                (TokenType.LParen, "("),
-                (TokenType.Identifier, "+"),
-                (TokenType.Identifier, "x"),
-                (TokenType.Identifier, "y"),
-                (TokenType.RParen, ")"),
-                (TokenType.RParen, ")"),
-                (TokenType.EOF, "")
-            };
+                "( define (foo x y) (+ x y) )"
+            }.Concat(defineExpectedTokens).ToArray();
 
             yield return new object[]
             {
-                "(if (> 1 0) 1 0)",
+                "(define(foo x y)(+ x y))"
+            }.Concat(defineExpectedTokens).ToArray();
+
+            var ifExpectedTokens = new object[]
+            {
                 (TokenType.LParen, "("),
                 (TokenType.If, "if"),
                 (TokenType.LParen, "("),
@@ -129,26 +118,19 @@ namespace RainLispTests
                 (TokenType.RParen, ")"),
                 (TokenType.EOF, "")
             };
+
+            yield return new object[]
+            {
+                "( if (> 1 0) 1 0 )"
+            }.Concat(ifExpectedTokens).ToArray();
 
             yield return new object[]
             {
                 "(if(> 1 0) 1 0)",
-                (TokenType.LParen, "("),
-                (TokenType.If, "if"),
-                (TokenType.LParen, "("),
-                (TokenType.Identifier, ">"),
-                (TokenType.Number, "1"),
-                (TokenType.Number, "0"),
-                (TokenType.RParen, ")"),
-                (TokenType.Number, "1"),
-                (TokenType.Number, "0"),
-                (TokenType.RParen, ")"),
-                (TokenType.EOF, "")
-            };
+            }.Concat(ifExpectedTokens).ToArray();
 
-            yield return new object[]
+            var condExpectedTokens = new object[]
             {
-                "( cond ( ( >= 1 0) 0) ( ( <= 2 1) 1) ( else 3) )",
                 (TokenType.LParen, "("),
                 (TokenType.Cond, "cond"),
                 (TokenType.LParen, "("),
@@ -177,32 +159,13 @@ namespace RainLispTests
 
             yield return new object[]
             {
-                "(cond((>= 1 0) 0)((<= 2 1) 1)(else 3))",
-                (TokenType.LParen, "("),
-                (TokenType.Cond, "cond"),
-                (TokenType.LParen, "("),
-                (TokenType.LParen, "("),
-                (TokenType.Identifier, ">="),
-                (TokenType.Number, "1"),
-                (TokenType.Number, "0"),
-                (TokenType.RParen, ")"),
-                (TokenType.Number, "0"),
-                (TokenType.RParen, ")"),
-                (TokenType.LParen, "("),
-                (TokenType.LParen, "("),
-                (TokenType.Identifier, "<="),
-                (TokenType.Number, "2"),
-                (TokenType.Number, "1"),
-                (TokenType.RParen, ")"),
-                (TokenType.Number, "1"),
-                (TokenType.RParen, ")"),
-                (TokenType.LParen, "("),
-                (TokenType.Else, "else"),
-                (TokenType.Number, "3"),
-                (TokenType.RParen, ")"),
-                (TokenType.RParen, ")"),
-                (TokenType.EOF, "")
-            };
+                "( cond ( ( >= 1 0) 0) ( ( <= 2 1) 1) ( else 3) )"
+            }.Concat(condExpectedTokens).ToArray();
+
+            yield return new object[]
+            {
+                "(cond((>= 1 0) 0)((<= 2 1) 1)(else 3))"
+            }.Concat(condExpectedTokens).ToArray();
 
             yield return new object[]
             {
@@ -217,9 +180,8 @@ namespace RainLispTests
                 (TokenType.EOF, "")
             };
 
-            yield return new object[]
+            var lambdaExpectedTokens = new object[]
             {
-                "(lambda (x y) (+ x y))",
                 (TokenType.LParen, "("),
                 (TokenType.Lambda, "lambda"),
                 (TokenType.LParen, "("),
@@ -237,21 +199,51 @@ namespace RainLispTests
 
             yield return new object[]
             {
-                "(lambda(x y)(+ x y))",
+                "( lambda (x y) (+ x y) )"
+            }.Concat(lambdaExpectedTokens).ToArray();
+
+            yield return new object[]
+            {
+                "(lambda(x y)(+ x y))"
+            }.Concat(lambdaExpectedTokens).ToArray();
+
+            var letExpectedTokens = new object[]
+            {
                 (TokenType.LParen, "("),
-                (TokenType.Lambda, "lambda"),
+                (TokenType.Let, "let"),
                 (TokenType.LParen, "("),
-                (TokenType.Identifier, "x"),
-                (TokenType.Identifier, "y"),
+                (TokenType.LParen, "("),
+                (TokenType.Identifier, "a"),
+                (TokenType.Number, "1"),
+                (TokenType.RParen, ")"),
+                (TokenType.LParen, "("),
+                (TokenType.Identifier, "b"),
+                (TokenType.Number, "2"),
+                (TokenType.RParen, ")"),
+                (TokenType.LParen, "("),
+                (TokenType.Identifier, "c"),
+                (TokenType.Number, "3"),
+                (TokenType.RParen, ")"),
                 (TokenType.RParen, ")"),
                 (TokenType.LParen, "("),
                 (TokenType.Identifier, "+"),
-                (TokenType.Identifier, "x"),
-                (TokenType.Identifier, "y"),
+                (TokenType.Identifier, "a"),
+                (TokenType.Identifier, "b"),
+                (TokenType.Identifier, "c"),
                 (TokenType.RParen, ")"),
                 (TokenType.RParen, ")"),
                 (TokenType.EOF, "")
             };
+
+            yield return new object[]
+            {
+                "( let ((a 1) (b 2) (c 3)) (+ a b c) )"
+            }.Concat(letExpectedTokens).ToArray();
+
+            yield return new object[]
+            {
+                "(let((a 1)(b 2)(c 3))(+ a b c))"
+            }.Concat(letExpectedTokens).ToArray();
 
             yield return new object[]
             {
@@ -364,6 +356,7 @@ namespace RainLispTests
                 (TokenType.RParen, ")"),
                 (TokenType.EOF, "")
             };
+
             yield return new object[] { "()", (TokenType.LParen, "("), (TokenType.RParen, ")"), (TokenType.EOF, "") };
 
             yield return new object[]

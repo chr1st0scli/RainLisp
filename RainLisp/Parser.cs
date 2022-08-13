@@ -196,7 +196,7 @@ namespace RainLisp
                     var condition = new Condition(clauses, elseClause);
 
                     // cond is a derived expression, so it gets converted to an equivalent if.
-                    expression = Transformations.ConditionToIf(condition);
+                    expression = condition.ConditionToIf();
                 }
                 else if (Match(TokenType.Begin))
                 {
@@ -225,6 +225,24 @@ namespace RainLisp
                     Require(TokenType.RParen);
 
                     expression = new Lambda(parameters, Body());
+                }
+                else if (Match(TokenType.Let))
+                {
+                    Require(TokenType.LParen);
+
+                    var letClauses = new List<LetClause>();
+
+                    do
+                    {
+                        letClauses.Add(LetClause());
+                    } while (!Check(TokenType.RParen));
+
+                    Require(TokenType.RParen);
+
+                    var let = new Let(letClauses, Body());
+
+                    // let is a derived expression, so it gets converted to an equivalent lambda application.
+                    expression = let.LetToLambdaApplication();
                 }
                 else
                 {
@@ -282,6 +300,20 @@ namespace RainLisp
             Require(TokenType.RParen);
 
             return new ConditionElseClause(expressions);
+        }
+
+        private LetClause LetClause()
+        {
+            Require(TokenType.LParen);
+
+            string identifierName = Token().Value;
+            Require(TokenType.Identifier);
+
+            var expression = Expression();
+
+            Require(TokenType.RParen);
+
+            return new LetClause(identifierName, expression);
         }
     }
 }

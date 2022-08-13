@@ -12,5 +12,6 @@
         public const string ELSE = "else";
         public const string BEGIN = "begin";
         public const string LAMBDA = "lambda";
+        public const string LET = "let";
     }
 }

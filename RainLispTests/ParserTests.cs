@@ -36,6 +36,10 @@ namespace RainLispTests
         [InlineData(27, "(cond (true 5) (false 10) (else -1))")]
         [InlineData(28, "(cond ((<= a 5) 5) ((<= a 10) 10) (else -1))")]
         [InlineData(29, "(cond (true 1 2) (false 3 4) (else 5 6))")]
+        [InlineData(30, "(let ((a 1)) a)")]
+        [InlineData(31, "(let ((a 1) (b 2)) (+ a b))")]
+        [InlineData(32, "(let ((a 1) (b 2)) (define c 4) (+ a b c))")]
+        [InlineData(33, "(let ((a 1) (b 2)) (define c 4) (define d 5) (+ a b c d))")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             // Arrange
@@ -82,6 +86,14 @@ namespace RainLispTests
         [InlineData("(cond (true 1) (false 2)")]
         [InlineData("(cond (true 1) (false 2) (else)")] // error says expecting ( but more accurate would be expecting expression in else
         [InlineData("(cond (true 1) (false 2) (else 3)")]
+        [InlineData("(let)")]
+        [InlineData("(let ()")]
+        [InlineData("(let (()")]
+        [InlineData("(let ((a)")] // error says expecting ( but more accurate would be expecting expression in let clause
+        [InlineData("(let ((a 1")]
+        [InlineData("(let ((a 1)")]
+        [InlineData("(let ((a 1))")] // error says expecting ( but more accurate would be expecting expression in let body
+        [InlineData("(let ((a 1)) 1")]
         public void Parse_InvalidExpression_Throws(string expression)
         {
             // Arrange

@@ -4,10 +4,10 @@ namespace RainLisp.Evaluator
 {
     public class EvaluatorVisitor : IEvaluatorVisitor
     {
-        private readonly IProcedureApplicationVisitor _procedureVisitor;
+        private readonly IProcedureApplicationVisitor _procedureApplicationVisitor;
 
-        public EvaluatorVisitor(IProcedureApplicationVisitor procedureVisitor)
-            => _procedureVisitor = procedureVisitor ?? throw new ArgumentNullException(nameof(procedureVisitor));
+        public EvaluatorVisitor(IProcedureApplicationVisitor procedureApplicationVisitor)
+            => _procedureApplicationVisitor = procedureApplicationVisitor ?? throw new ArgumentNullException(nameof(procedureApplicationVisitor));
 
         public object EvaluateNumberLiteral(NumberLiteral numberLiteral)
             => numberLiteral.Value;
@@ -92,7 +92,7 @@ namespace RainLisp.Evaluator
 
         public object EvaluateApplication(Application application, Environment environment)
         {
-            // Operator is either a lambda that is evaluate to a user procedure
+            // Operator is either a lambda that is evaluated to a user procedure
             // or an identifier that evaluates to a defined procedure (either user or primitive).
             var evaluatedOperator = application.Operator
                 .AcceptVisitor(this, environment);
@@ -103,7 +103,7 @@ namespace RainLisp.Evaluator
                 .ToArray();
 
             if (evaluatedOperator is Procedure procedure)
-                return procedure.AcceptVisitor(_procedureVisitor, evaluatedArguments, environment, this);
+                return procedure.AcceptVisitor(_procedureApplicationVisitor, evaluatedArguments, environment, this);
             else
                 throw new InvalidOperationException("Unknown procedure type.");
         }

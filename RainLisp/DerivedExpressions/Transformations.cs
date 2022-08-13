@@ -5,11 +5,11 @@ namespace RainLisp.DerivedExpressions
     /// <summary>
     /// A derived expression is one that is derived from another one and the two are functionally equivalent.
     /// This is a technique to avoid implementing the evaluation of a new kind of expression when it can be transformed
-    /// to another one whose evaluation is already implemented.
+    /// to another one whose evaluation is already feasible.
     /// </summary>
     public static class Transformations
     {
-        public static If ConditionToIf(Condition condition)
+        public static If ConditionToIf(this Condition condition)
         {
             ArgumentNullException.ThrowIfNull(condition, nameof(condition));
 
@@ -41,6 +41,25 @@ namespace RainLisp.DerivedExpressions
             }
 
             return MakeIf();
+        }
+
+        public static Application LetToLambdaApplication(this Let let)
+        {
+            // Transform a let expression to an application of a lambda.
+            ArgumentNullException.ThrowIfNull(let, nameof(let));
+
+            var parameters = new List<string>();
+            var operands = new List<Expression>();
+
+            foreach (var letClause in let.Clauses)
+            {
+                parameters.Add(letClause.IdentifierName);
+                operands.Add(letClause.Expression);
+            }
+
+            var lambda = new Lambda(parameters, let.Body);
+
+            return new Application(lambda, operands);
         }
     }
 }
