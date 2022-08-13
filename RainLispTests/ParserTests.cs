@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
-using RainLisp;
+using RainLisp.Parsing;
+using RainLisp.Tokenization;
 
 namespace RainLispTests
 {

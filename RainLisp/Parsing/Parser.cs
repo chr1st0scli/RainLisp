@@ -1,8 +1,9 @@
 ﻿using RainLisp.AbstractSyntaxTree;
 using RainLisp.DerivedExpressions;
+using RainLisp.Tokenization;
 using System.Globalization;
 
-namespace RainLisp
+namespace RainLisp.Parsing
 {
     public class Parser
     {
@@ -277,7 +278,7 @@ namespace RainLisp
             do
             {
                 expressions.Add(Expression());
-            } while(!Check(TokenType.RParen));
+            } while (!Check(TokenType.RParen));
 
             Require(TokenType.RParen);
 
@@ -295,7 +296,7 @@ namespace RainLisp
             do
             {
                 expressions.Add(Expression());
-            } while(!Check(TokenType.RParen));
+            } while (!Check(TokenType.RParen));
 
             Require(TokenType.RParen);
 

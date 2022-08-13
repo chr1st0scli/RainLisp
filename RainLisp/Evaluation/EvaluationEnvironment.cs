@@ -1,27 +1,27 @@
-﻿namespace RainLisp
+﻿namespace RainLisp.Evaluation
 {
-    public class Environment
+    public class EvaluationEnvironment
     {
         private readonly IDictionary<string, object> definitions;
 
-        private Environment? previousEnvironment;
-        private Environment? nextEnvironment;
+        private EvaluationEnvironment? previousEnvironment;
+        private EvaluationEnvironment? nextEnvironment;
 
-        public static Environment GlobalEnvironment { get; private set; } = new Environment();
+        public static EvaluationEnvironment GlobalEnvironment { get; private set; } = new EvaluationEnvironment();
 
-        public static void ResetGlobalEnvironment() => GlobalEnvironment = new Environment();
+        public static void ResetGlobalEnvironment() => GlobalEnvironment = new EvaluationEnvironment();
 
-        public Environment()
+        public EvaluationEnvironment()
         {
             definitions = new Dictionary<string, object>();
         }
 
-        public Environment ExtendEnvironment(IList<string>? parameters, object[]? evaluatedArguments)
+        public EvaluationEnvironment ExtendEnvironment(IList<string>? parameters, object[]? evaluatedArguments)
         {
             if (parameters?.Count != evaluatedArguments?.Length)
                 throw new InvalidOperationException("Wrong number of arguments.");
 
-            nextEnvironment = new Environment { previousEnvironment = this };
+            nextEnvironment = new EvaluationEnvironment { previousEnvironment = this };
 
             if (parameters?.Count > 0 && evaluatedArguments?.Length > 0)
             {
@@ -47,15 +47,15 @@
             ArgumentNullException.ThrowIfNull(valueProvider, nameof(valueProvider));
 
             // Check that the identifier we want to assign to exists.
-            LookupIdentifierValue(identifierName, out Environment environment);
+            LookupIdentifierValue(identifierName, out EvaluationEnvironment environment);
 
             environment.DefineIdentifier(identifierName, valueProvider());
         }
 
         public object LookupIdentifierValue(string identifierName)
-            => LookupIdentifierValue(identifierName, out Environment _);
+            => LookupIdentifierValue(identifierName, out EvaluationEnvironment _);
 
-        private object LookupIdentifierValue(string identifierName, out Environment environment)
+        private object LookupIdentifierValue(string identifierName, out EvaluationEnvironment environment)
         {
             if (string.IsNullOrWhiteSpace(identifierName))
                 throw new ArgumentException("Identifier name is required.", nameof(identifierName));

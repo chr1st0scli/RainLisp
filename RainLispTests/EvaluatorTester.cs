@@ -1,5 +1,6 @@
-﻿using RainLisp;
-using RainLisp.Evaluator;
+﻿using RainLisp.Evaluation;
+using RainLisp.Parsing;
+using RainLisp.Tokenization;
 
 namespace RainLispTests
 {
@@ -16,7 +17,7 @@ namespace RainLispTests
 
         protected object Evaluate(string expression)
         {
-            RainLisp.Environment.ResetGlobalEnvironment();
+            EvaluationEnvironment.ResetGlobalEnvironment();
             var tokens = Tokenizer.TokenizeExt(expression);
             var ast = _parser.Parse(tokens);
             return _evaluator.EvaluateProgram(ast);

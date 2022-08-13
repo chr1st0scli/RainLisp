@@ -1,6 +1,6 @@
 ﻿using RainLisp.AbstractSyntaxTree;
 
-namespace RainLisp.Evaluator
+namespace RainLisp.Evaluation
 {
     public class EvaluatorVisitor : IEvaluatorVisitor
     {
@@ -18,7 +18,7 @@ namespace RainLisp.Evaluator
         public object EvaluateBooleanLiteral(BooleanLiteral boolLiteral)
             => boolLiteral.Value;
 
-        public object EvaluateIdentifier(Identifier identifier, Environment environment)
+        public object EvaluateIdentifier(Identifier identifier, EvaluationEnvironment environment)
         {
             // This should be handled in the environment!
             // User cannot redefine primitive procedures.
@@ -33,7 +33,7 @@ namespace RainLisp.Evaluator
         public object EvaluateQuote(Quote quote)
             => throw new NotImplementedException();
 
-        public object EvaluateAssignment(Assignment assignment, Environment environment)
+        public object EvaluateAssignment(Assignment assignment, EvaluationEnvironment environment)
         {
             // Defer the evaluation of the expression to get the value to assign to the identifier, until it is certain that the definition exists.
             var valueProvider = () => assignment.Value.AcceptVisitor(this, environment);
@@ -43,7 +43,7 @@ namespace RainLisp.Evaluator
             return "undefined";
         }
 
-        public object EvaluateDefinition(Definition definition, Environment environment)
+        public object EvaluateDefinition(Definition definition, EvaluationEnvironment environment)
         {
             // Evaluate the expression to get the initial value to assign to the identifier.
             var value = definition.Value.AcceptVisitor(this, environment);
@@ -53,10 +53,10 @@ namespace RainLisp.Evaluator
             return "undefined";
         }
 
-        public object EvaluateLambda(Lambda lambda, Environment environment)
+        public object EvaluateLambda(Lambda lambda, EvaluationEnvironment environment)
             => new UserProcedure(lambda.Parameters, lambda.Body, environment);
 
-        public object EvaluateIf(If ifExpression, Environment environment)
+        public object EvaluateIf(If ifExpression, EvaluationEnvironment environment)
         {
             // Evaluate the predicate of the if expression and if the result is a boolean, carry on.
             if (ifExpression.Predicate.AcceptVisitor(this, environment) is bool condition)
@@ -77,7 +77,7 @@ namespace RainLisp.Evaluator
                 throw new InvalidOperationException();
         }
 
-        public object EvaluateBegin(Begin begin, Environment environment)
+        public object EvaluateBegin(Begin begin, EvaluationEnvironment environment)
         {
             // Evaluate every expression in order and return the result of the last one.
             object result = "undefined";
@@ -87,7 +87,7 @@ namespace RainLisp.Evaluator
             return result;
         }
 
-        public object EvaluateApplication(Application application, Environment environment)
+        public object EvaluateApplication(Application application, EvaluationEnvironment environment)
         {
             // Operator is either a lambda that is evaluated to a user procedure
             // or an identifier that evaluates to a defined procedure (either user or primitive).
@@ -105,7 +105,7 @@ namespace RainLisp.Evaluator
                 throw new InvalidOperationException("Unknown procedure type.");
         }
 
-        public object EvaluateBody(Body body, Environment environment)
+        public object EvaluateBody(Body body, EvaluationEnvironment environment)
         {
             // If the body contains any definitions, evaluate them to establish them in the environment.
             if (body.Definitions?.Count > 0)
@@ -122,13 +122,13 @@ namespace RainLisp.Evaluator
         {
             // Establish all definitions in the environment.
             foreach (var definition in program.Definitions)
-                EvaluateDefinition(definition, Environment.GlobalEnvironment);
+                EvaluateDefinition(definition, EvaluationEnvironment.GlobalEnvironment);
             //definition.AcceptVisitor(this, Environment.RootEnvironment);
 
             object result = "undefined";
             // Evaluate all program expressions and the return the last result.
             foreach (var expression in program.Expressions)
-                result = expression.AcceptVisitor(this, Environment.GlobalEnvironment);
+                result = expression.AcceptVisitor(this, EvaluationEnvironment.GlobalEnvironment);
 
             return result;
         }

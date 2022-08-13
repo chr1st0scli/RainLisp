@@ -1,8 +1,8 @@
-﻿namespace RainLisp.Evaluator
+﻿namespace RainLisp.Evaluation
 {
     public class ProcedureApplicationVisitor : IProcedureApplicationVisitor
     {
-        public object ApplyUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, Environment environment, IEvaluatorVisitor evaluatorVisitor)
+        public object ApplyUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, EvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
         {
             // We extend the procedure environment instead of the given one?
             var extendedEnvironment = procedure.Environment.ExtendEnvironment(procedure.Parameters, evaluatedArguments);
@@ -123,7 +123,7 @@
             {
                 throw new InvalidOperationException($"{value} must be of type {typeof(T).Name}.", ex);
             }
-        } 
+        }
         #endregion
     }
 }

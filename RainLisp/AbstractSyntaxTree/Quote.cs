@@ -1,4 +1,4 @@
-﻿using RainLisp.Evaluator;
+﻿using RainLisp.Evaluation;
 
 namespace RainLisp.AbstractSyntaxTree
 {
@@ -11,7 +11,7 @@ namespace RainLisp.AbstractSyntaxTree
 
         public string Text { get; init; } = string.Empty;
 
-        public override object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment)
+        public override object AcceptVisitor(IEvaluatorVisitor visitor, EvaluationEnvironment environment)
             => visitor.EvaluateQuote(this);
     }
 }

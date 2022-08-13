@@ -1,4 +1,4 @@
-﻿using RainLisp.Evaluator;
+﻿using RainLisp.Evaluation;
 
 namespace RainLisp.AbstractSyntaxTree
 {
@@ -6,6 +6,6 @@ namespace RainLisp.AbstractSyntaxTree
     {
         public string TypeName => GetType().Name;
 
-        public abstract object AcceptVisitor(IEvaluatorVisitor visitor, Environment environment);
+        public abstract object AcceptVisitor(IEvaluatorVisitor visitor, EvaluationEnvironment environment);
     }
 }

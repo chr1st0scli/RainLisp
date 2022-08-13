@@ -1,4 +1,4 @@
-﻿namespace RainLisp.Evaluator
+﻿namespace RainLisp.Evaluation
 {
     public enum PrimitiveProcedureType
     {

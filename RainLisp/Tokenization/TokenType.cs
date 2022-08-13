@@ -1,4 +1,4 @@
-﻿namespace RainLisp
+﻿namespace RainLisp.Tokenization
 {
     public enum TokenType
     {

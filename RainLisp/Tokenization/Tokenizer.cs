@@ -1,7 +1,7 @@
 ﻿using static RainLisp.Grammar.SpecialSymbols;
 using static RainLisp.Grammar.Keywords;
 
-namespace RainLisp
+namespace RainLisp.Tokenization
 {
     public static class Tokenizer
     {
@@ -38,7 +38,7 @@ namespace RainLisp
                 else if (stringToken)
                 {
                     AddCharToToken(c);
-                    
+
                     if (!escapeChar)
                     {
                         if (c == ESCAPE)
@@ -88,7 +88,7 @@ namespace RainLisp
             {
                 if (token == LPAREN.ToString())
                     return TokenType.LParen;
-                
+
                 else if (token == RPAREN.ToString())
                     return TokenType.RParen;
 
@@ -102,7 +102,7 @@ namespace RainLisp
                     return TokenType.Identifier;
             }
 
-            return token switch 
+            return token switch
             {
                 TRUE or FALSE => TokenType.Boolean,
                 QUOTE => TokenType.Quote,

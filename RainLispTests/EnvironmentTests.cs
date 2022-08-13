@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using RainLisp.Evaluation;
 
 namespace RainLispTests
 {
@@ -32,7 +33,7 @@ namespace RainLispTests
 
             // Act
             Evaluate(expression);
-            string globalEnv = JsonConvert.SerializeObject(RainLisp.Environment.GlobalEnvironment, settings);
+            string globalEnv = JsonConvert.SerializeObject(EvaluationEnvironment.GlobalEnvironment, settings);
             string expectedGlobalEnv = File.ReadAllText($"Environments\\{environmentIndex:00}.json");
 
             // Assert
