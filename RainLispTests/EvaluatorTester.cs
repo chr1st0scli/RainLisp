@@ -18,7 +18,7 @@ namespace RainLispTests
         protected object Evaluate(string expression)
         {
             EvaluationEnvironment.ResetGlobalEnvironment();
-            var tokens = Tokenizer.TokenizeExt(expression);
+            var tokens = Tokenizer.Tokenize(expression);
             var ast = _parser.Parse(tokens);
             return _evaluator.EvaluateProgram(ast);
         }

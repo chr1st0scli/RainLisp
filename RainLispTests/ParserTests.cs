@@ -45,7 +45,7 @@ namespace RainLispTests
         {
             // Arrange
             var parser = new Parser();
-            var tokens = Tokenizer.TokenizeExt(expression);
+            var tokens = Tokenizer.Tokenize(expression);
 
             // Act
             var program = parser.Parse(tokens);
@@ -99,7 +99,7 @@ namespace RainLispTests
         {
             // Arrange
             var parser = new Parser();
-            var tokens = Tokenizer.TokenizeExt(expression);
+            var tokens = Tokenizer.Tokenize(expression);
 
             // Act
             // Assert

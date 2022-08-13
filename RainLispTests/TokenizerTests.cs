@@ -426,7 +426,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var tokens = Tokenizer.TokenizeExt(expression);
+            var tokens = Tokenizer.Tokenize(expression);
 
             // Assert
             Assert.Equal(expectedTokens.Length, tokens.Count);
