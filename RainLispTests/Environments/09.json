@@ -1,0 +1,15 @@
+{
+  "definitions": {
+    "a": 2.0
+  },
+  "nextEnvironment": {
+    "definitions": {
+      "b": 3.0
+    },
+    "nextEnvironment": {
+      "definitions": {
+        "c": 4.0
+      }
+    }
+  }
+}

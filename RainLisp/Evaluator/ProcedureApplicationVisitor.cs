@@ -4,17 +4,8 @@
     {
         public object ApplyUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, Environment environment, IEvaluatorVisitor evaluatorVisitor)
         {
-            if (procedure.Parameters?.Count != evaluatedArguments?.Length)
-                throw new InvalidOperationException("Wrong number of arguments.");
-
             // We extend the procedure environment instead of the given one?
-            var extendedEnvironment = procedure.Environment.ExtendEnvironment();
-
-            if (procedure.Parameters?.Count > 0 && evaluatedArguments?.Length > 0)
-            {
-                for (int i = 0; i < procedure.Parameters.Count; i++)
-                    extendedEnvironment.SetIdentifier(procedure.Parameters[i], evaluatedArguments[i]);
-            }
+            var extendedEnvironment = procedure.Environment.ExtendEnvironment(procedure.Parameters, evaluatedArguments);
 
             return evaluatorVisitor.EvaluateBody(procedure.Body, extendedEnvironment);
         }

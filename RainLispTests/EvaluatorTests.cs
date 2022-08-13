@@ -1,26 +1,7 @@
-﻿using RainLisp;
-using RainLisp.Evaluator;
-
-namespace RainLispTests
+﻿namespace RainLispTests
 {
-    public class EvaluatorTests
+    public class EvaluatorTests : EvaluatorTester
     {
-        private readonly IEvaluatorVisitor _evaluator;
-        private readonly Parser _parser;
-
-        public EvaluatorTests()
-        {
-            _evaluator = new EvaluatorVisitor(new ProcedureApplicationVisitor());
-            _parser = new Parser();
-        }
-
-        private object Evaluate(string expression)
-        {
-            var tokens = Tokenizer.TokenizeExt(expression);
-            var ast = _parser.Parse(tokens);
-            return _evaluator.EvaluateProgram(ast);
-        }
-
         [Theory]
         [InlineData("1", 1d)]
         [InlineData("10.54", 10.54)]
@@ -64,6 +45,9 @@ namespace RainLispTests
         [InlineData("(let ((a 1) (b 2)) (+ a b))", 3d)]
         [InlineData("(let ((a 1)) (define b 2) (define c 3) (+ a b c))", 6d)]
         [InlineData("(let ((a 1) (b 2)) (define c 3) (define d 4) (+ a b c d))", 10d)]
+        [InlineData("(define a 2) ((lambda () (begin (set! a 4) a)))", 4d)]
+        [InlineData("(define a 2) ((lambda () (set! a 4))) a", 4d)]
+        [InlineData("(define a 2) ((lambda () (define b 7) (begin (set! a (+ a b)) (set! b 11)))) a", 9d)]
         public void Evaluate_Expression_Correctly(string expression, double expectedResult)
         {
             // Arrange

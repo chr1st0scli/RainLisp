@@ -27,7 +27,7 @@ namespace RainLisp.Evaluator
             if (primitiveProcedure != null)
                 return primitiveProcedure;
 
-            return environment.LookupIdentifier(identifier.Name);
+            return environment.LookupIdentifierValue(identifier.Name);
         }
 
         public object EvaluateQuote(Quote quote)
@@ -35,13 +35,10 @@ namespace RainLisp.Evaluator
 
         public object EvaluateAssignment(Assignment assignment, Environment environment)
         {
-            // Check that the identifier we want to assign to exists.
-            environment.LookupIdentifier(assignment.IdentifierName);
+            // Defer the evaluation of the expression to get the value to assign to the identifier, until it is certain that the definition exists.
+            var valueProvider = () => assignment.Value.AcceptVisitor(this, environment);
 
-            // Evaluate the expression to get the value to assign to the identifier.
-            var value = assignment.Value.AcceptVisitor(this, environment);
-
-            environment.SetIdentifier(assignment.IdentifierName, value);
+            environment.SetIdentifierValue(assignment.IdentifierName, valueProvider);
 
             return "undefined";
         }
@@ -51,7 +48,7 @@ namespace RainLisp.Evaluator
             // Evaluate the expression to get the initial value to assign to the identifier.
             var value = definition.Value.AcceptVisitor(this, environment);
 
-            environment.SetIdentifier(definition.IdentifierName, value);
+            environment.DefineIdentifier(definition.IdentifierName, value);
 
             return "undefined";
         }
