@@ -7,10 +7,6 @@
         private EvaluationEnvironment? previousEnvironment;
         private EvaluationEnvironment? nextEnvironment;
 
-        public static EvaluationEnvironment GlobalEnvironment { get; private set; } = new EvaluationEnvironment();
-
-        public static void ResetGlobalEnvironment() => GlobalEnvironment = new EvaluationEnvironment();
-
         public EvaluationEnvironment()
         {
             definitions = new Dictionary<string, object>();

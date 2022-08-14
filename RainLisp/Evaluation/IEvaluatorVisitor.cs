@@ -28,6 +28,6 @@ namespace RainLisp.Evaluation
 
         object EvaluateBody(Body body, EvaluationEnvironment environment);
 
-        object EvaluateProgram(Program program);
+        object EvaluateProgram(Program program, EvaluationEnvironment environment);
     }
 }

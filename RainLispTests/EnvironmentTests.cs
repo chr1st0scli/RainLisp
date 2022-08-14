@@ -36,23 +36,23 @@ namespace RainLispTests
             };
 
             // Act
-            interpreter.Evaluate(expression);
+            interpreter.Evaluate(expression, out EvaluationEnvironment environment);
             // Check the effect of the evaluation on the global environment.
-            var globalEnvJObject = JObject.FromObject(EvaluationEnvironment.GlobalEnvironment, jsonSerializer);
+            var environmentJObject = JObject.FromObject(environment, jsonSerializer);
 
             // Remove the primitives from the definitions output, because we are not interested to check them.
             var fields = typeof(Primitives).GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var field in fields)
             {
                 string? primitiveProcedureName = field?.GetRawConstantValue()?.ToString();
-                globalEnvJObject["definitions"][primitiveProcedureName].Parent.Remove();
+                environmentJObject["definitions"][primitiveProcedureName].Parent.Remove();
             }
 
-            string actualGlobalEnv = globalEnvJObject.ToString();
-            string expectedGlobalEnv = File.ReadAllText($"Environments\\{environmentIndex:00}.json");
+            string actualEnvironment = environmentJObject.ToString();
+            string expectedEnvironment = File.ReadAllText($"Environments\\{environmentIndex:00}.json");
 
             // Assert
-            Assert.Equal(expectedGlobalEnv, actualGlobalEnv);
+            Assert.Equal(expectedEnvironment, actualEnvironment);
         }
     }
 }

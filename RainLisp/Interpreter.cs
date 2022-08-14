@@ -19,34 +19,37 @@ namespace RainLisp
         }
 
         public object Evaluate(string expression)
-        {
-            ResetGlobalEnvironment();
+            => Evaluate(expression, out EvaluationEnvironment _);
 
+        public object Evaluate(string expression, out EvaluationEnvironment environment)
+        {
             var tokens = tokenizer.Tokenize(expression);
             var programAST = parser.Parse(tokens);
 
-            return evaluator.EvaluateProgram(programAST);
+            environment = CreateGlobalEnvironment();
+            return evaluator.EvaluateProgram(programAST, environment);
         }
 
-        private void ResetGlobalEnvironment()
+        private static EvaluationEnvironment CreateGlobalEnvironment()
         {
-            EvaluationEnvironment.ResetGlobalEnvironment();
+            var environment = new EvaluationEnvironment();
 
-            var globalEnvironment = EvaluationEnvironment.GlobalEnvironment;
             // Define primitive procedures.
-            globalEnvironment.DefineIdentifier(PLUS, new PrimitiveProcedure(PrimitiveProcedureType.Add));
-            globalEnvironment.DefineIdentifier(MINUS, new PrimitiveProcedure(PrimitiveProcedureType.Subtract));
-            globalEnvironment.DefineIdentifier(MULTIPLY, new PrimitiveProcedure(PrimitiveProcedureType.Multiply));
-            globalEnvironment.DefineIdentifier(DIVIDE, new PrimitiveProcedure(PrimitiveProcedureType.Divide));
-            globalEnvironment.DefineIdentifier(MODULO, new PrimitiveProcedure(PrimitiveProcedureType.Modulo));
-            globalEnvironment.DefineIdentifier(GREATER, new PrimitiveProcedure(PrimitiveProcedureType.GreaterThan));
-            globalEnvironment.DefineIdentifier(GREATER_OR_EQUAL, new PrimitiveProcedure(PrimitiveProcedureType.GreaterThanOrEqualTo));
-            globalEnvironment.DefineIdentifier(LESS, new PrimitiveProcedure(PrimitiveProcedureType.LessThan));
-            globalEnvironment.DefineIdentifier(LESS_OR_EQUAL, new PrimitiveProcedure(PrimitiveProcedureType.LessThanOrEqualTo));
-            globalEnvironment.DefineIdentifier(AND, new PrimitiveProcedure(PrimitiveProcedureType.LogicalAnd));
-            globalEnvironment.DefineIdentifier(OR, new PrimitiveProcedure(PrimitiveProcedureType.LogicalOr));
-            globalEnvironment.DefineIdentifier(XOR, new PrimitiveProcedure(PrimitiveProcedureType.LogicalXor));
-            globalEnvironment.DefineIdentifier(NOT, new PrimitiveProcedure(PrimitiveProcedureType.LogicalNot));
+            environment.DefineIdentifier(PLUS, new PrimitiveProcedure(PrimitiveProcedureType.Add));
+            environment.DefineIdentifier(MINUS, new PrimitiveProcedure(PrimitiveProcedureType.Subtract));
+            environment.DefineIdentifier(MULTIPLY, new PrimitiveProcedure(PrimitiveProcedureType.Multiply));
+            environment.DefineIdentifier(DIVIDE, new PrimitiveProcedure(PrimitiveProcedureType.Divide));
+            environment.DefineIdentifier(MODULO, new PrimitiveProcedure(PrimitiveProcedureType.Modulo));
+            environment.DefineIdentifier(GREATER, new PrimitiveProcedure(PrimitiveProcedureType.GreaterThan));
+            environment.DefineIdentifier(GREATER_OR_EQUAL, new PrimitiveProcedure(PrimitiveProcedureType.GreaterThanOrEqualTo));
+            environment.DefineIdentifier(LESS, new PrimitiveProcedure(PrimitiveProcedureType.LessThan));
+            environment.DefineIdentifier(LESS_OR_EQUAL, new PrimitiveProcedure(PrimitiveProcedureType.LessThanOrEqualTo));
+            environment.DefineIdentifier(AND, new PrimitiveProcedure(PrimitiveProcedureType.LogicalAnd));
+            environment.DefineIdentifier(OR, new PrimitiveProcedure(PrimitiveProcedureType.LogicalOr));
+            environment.DefineIdentifier(XOR, new PrimitiveProcedure(PrimitiveProcedureType.LogicalXor));
+            environment.DefineIdentifier(NOT, new PrimitiveProcedure(PrimitiveProcedureType.LogicalNot));
+
+            return environment;
         }
     }
 }

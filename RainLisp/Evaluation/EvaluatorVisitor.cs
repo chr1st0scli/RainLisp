@@ -109,17 +109,16 @@ namespace RainLisp.Evaluation
             return body.Expression.AcceptVisitor(this, environment);
         }
 
-        public object EvaluateProgram(Program program)
+        public object EvaluateProgram(Program program, EvaluationEnvironment environment)
         {
             // Establish all definitions in the environment.
             foreach (var definition in program.Definitions)
-                EvaluateDefinition(definition, EvaluationEnvironment.GlobalEnvironment);
-            //definition.AcceptVisitor(this, Environment.RootEnvironment);
+                EvaluateDefinition(definition, environment);
 
             object result = "undefined";
             // Evaluate all program expressions and the return the last result.
             foreach (var expression in program.Expressions)
-                result = expression.AcceptVisitor(this, EvaluationEnvironment.GlobalEnvironment);
+                result = expression.AcceptVisitor(this, environment);
 
             return result;
         }
