@@ -5,7 +5,7 @@ namespace RainLisp.Tokenization
 {
     public class Tokenizer : ITokenizer
     {
-        public List<Token> Tokenize(string expression)
+        public IList<Token> Tokenize(string expression)
         {
             ArgumentNullException.ThrowIfNull(expression, nameof(expression));
 

@@ -5,6 +5,6 @@ namespace RainLisp.Parsing
 {
     public interface IParser
     {
-        Program Parse(List<Token> tokens);
+        Program Parse(IList<Token> tokens);
     }
 }

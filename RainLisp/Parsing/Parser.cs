@@ -7,7 +7,7 @@ namespace RainLisp.Parsing
 {
     public class Parser : IParser
     {
-        private List<Token> _tokens;
+        private IList<Token> _tokens;
         private int currPosition;
 
         public Parser()
@@ -15,7 +15,7 @@ namespace RainLisp.Parsing
             _tokens = new List<Token>();
         }
 
-        public Program Parse(List<Token> tokens)
+        public Program Parse(IList<Token> tokens)
         {
             _tokens = tokens;
             currPosition = 0;
