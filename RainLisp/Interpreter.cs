@@ -30,6 +30,33 @@ namespace RainLisp
             return evaluator.EvaluateProgram(programAST, environment);
         }
 
+        public void ReadEvalPrintLoop(Func<string> read, Action<string> print)
+        {
+            ArgumentNullException.ThrowIfNull(read, nameof(read));
+            ArgumentNullException.ThrowIfNull(print, nameof(print));
+
+            var environment = CreateGlobalEnvironment();
+
+            while (true)
+            {
+                try
+                {
+                    string expression = read();
+
+                    var tokens = tokenizer.Tokenize(expression);
+                    var programAST = parser.Parse(tokens);
+
+                    var result = evaluator.EvaluateProgram(programAST, environment);
+
+                    print(result.ToString()!);
+                }
+                catch (Exception ex)
+                {
+                    print(ex.ToString());
+                }
+            }
+        }
+
         private static EvaluationEnvironment CreateGlobalEnvironment()
         {
             var environment = new EvaluationEnvironment();
