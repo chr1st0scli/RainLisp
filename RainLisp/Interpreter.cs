@@ -71,6 +71,7 @@ namespace RainLisp
             environment.DefineIdentifier(GREATER_OR_EQUAL, new PrimitiveProcedure(PrimitiveProcedureType.GreaterThanOrEqualTo));
             environment.DefineIdentifier(LESS, new PrimitiveProcedure(PrimitiveProcedureType.LessThan));
             environment.DefineIdentifier(LESS_OR_EQUAL, new PrimitiveProcedure(PrimitiveProcedureType.LessThanOrEqualTo));
+            environment.DefineIdentifier(EQUAL, new PrimitiveProcedure(PrimitiveProcedureType.EqualTo));
             environment.DefineIdentifier(AND, new PrimitiveProcedure(PrimitiveProcedureType.LogicalAnd));
             environment.DefineIdentifier(OR, new PrimitiveProcedure(PrimitiveProcedureType.LogicalOr));
             environment.DefineIdentifier(XOR, new PrimitiveProcedure(PrimitiveProcedureType.LogicalXor));

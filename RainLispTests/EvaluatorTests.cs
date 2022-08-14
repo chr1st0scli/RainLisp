@@ -104,6 +104,13 @@ namespace RainLispTests
         [InlineData("(<= 2 2)", true)]
         [InlineData("(< 3 2)", false)]
         [InlineData("(<= 3 2)", false)]
+        [InlineData("(= 21 21)", true)]
+        [InlineData("(= 32 23)", false)]
+        [InlineData("(= true true)", true)]
+        [InlineData("(= false false)", true)]
+        [InlineData("(= true false)", false)]
+        [InlineData("(= \"abc\" \"abcd\")", false)]
+        [InlineData("(= \"abcd\" \"abcd\")", true)]
         [InlineData("(not true)", false)]
         [InlineData("(not false)", true)]
         [InlineData("(not (not true))", true)]
@@ -131,6 +138,9 @@ namespace RainLispTests
         [InlineData("(or (and true false) (and false true))", false)]
         [InlineData("(and (or true false) (or false true))", true)]
         [InlineData("(not (and (or true false) (or false true)))", false)]
+        [InlineData("(and (= 2 3) (= 4 4))", false)]
+        [InlineData("(and (= 24 24) (= 4 5))", false)]
+        [InlineData("(and (= 24 24) (= 7 7))", true)]
         [InlineData("(and (or (> 3 1) (>= 1 4)) (< 5 2))", false)]
         [InlineData("(or (or (>= 6 2) (<= 9 4)) (< 7 4))", true)]
         [InlineData("(or (and (> 9 3) (> 9 11)) (< 9 5))", false)]
@@ -148,6 +158,34 @@ namespace RainLispTests
 
             // Assert
             Assert.Equal(expectedResult, (bool)result);
+        }
+
+        [Theory]
+        [InlineData(@"
+(define (factorial n)
+    (if (= n 1)
+        1
+        (* n (factorial (- n 1)))))
+
+(factorial 5)", 120d)]
+
+        [InlineData(@"
+(define (factorial n)
+    (define (iter i acc)
+        (if (> i n)
+            acc
+            (iter (+ i 1) (* i acc))))
+    (iter 1 1))
+
+(factorial 6)", 720d)]
+        public void Evaluate_RecursiveExpression_Correctly(string expression, double expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, (double)result);
         }
     }
 }

@@ -24,6 +24,7 @@
                 PrimitiveProcedureType.GreaterThanOrEqualTo => GreaterThanOrEqualTo(evaluatedArguments),
                 PrimitiveProcedureType.LessThan => LessThan(evaluatedArguments),
                 PrimitiveProcedureType.LessThanOrEqualTo => LessThanOrEqualTo(evaluatedArguments),
+                PrimitiveProcedureType.EqualTo => EqualTo(evaluatedArguments),
                 PrimitiveProcedureType.LogicalAnd => LogicalAnd(evaluatedArguments),
                 PrimitiveProcedureType.LogicalOr => LogicalOr(evaluatedArguments),
                 PrimitiveProcedureType.LogicalXor => LogicalXor(evaluatedArguments),
@@ -60,7 +61,8 @@
         private static object LessThanOrEqualTo(object[] values)
             => ApplyBinaryOperator((val1, val2) => ValueForPrimitive<double>(val1) <= ValueForPrimitive<double>(val2), values);
 
-        // Also implement = for numbers, booleans and strings.
+        private static object EqualTo(object[] values)
+            => ApplyBinaryOperator((val1, val2) => val1.Equals(val2), values);
 
         // This should not evaluate further values when first false is encountered
         private static object LogicalAnd(object[] values)
