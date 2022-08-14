@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RainLisp;
 using RainLisp.Evaluation;
+using RainLisp.Grammar;
+using System.Reflection;
 
 namespace RainLispTests
 {
@@ -24,7 +27,7 @@ namespace RainLispTests
         {
             // Arrange
             // Serialize the global environment's private fields in JSON to compare its internal structure.
-            var settings = new JsonSerializerSettings
+            var jsonSerializer = new JsonSerializer
             {
                 ContractResolver = new PrivateFieldsContractResolver(),
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
@@ -34,11 +37,22 @@ namespace RainLispTests
 
             // Act
             interpreter.Evaluate(expression);
-            string globalEnv = JsonConvert.SerializeObject(EvaluationEnvironment.GlobalEnvironment, settings);
+            // Check the effect of the evaluation on the global environment.
+            var globalEnvJObject = JObject.FromObject(EvaluationEnvironment.GlobalEnvironment, jsonSerializer);
+
+            // Remove the primitives from the definitions output, because we are not interested to check them.
+            var fields = typeof(Primitives).GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (var field in fields)
+            {
+                string? primitiveProcedureName = field?.GetRawConstantValue()?.ToString();
+                globalEnvJObject["definitions"][primitiveProcedureName].Parent.Remove();
+            }
+
+            string actualGlobalEnv = globalEnvJObject.ToString();
             string expectedGlobalEnv = File.ReadAllText($"Environments\\{environmentIndex:00}.json");
 
             // Assert
-            Assert.Equal(expectedGlobalEnv, globalEnv);
+            Assert.Equal(expectedGlobalEnv, actualGlobalEnv);
         }
     }
 }

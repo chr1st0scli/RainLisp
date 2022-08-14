@@ -19,16 +19,7 @@ namespace RainLisp.Evaluation
             => boolLiteral.Value;
 
         public object EvaluateIdentifier(Identifier identifier, EvaluationEnvironment environment)
-        {
-            // This should be handled in the environment!
-            // User cannot redefine primitive procedures.
-            var primitiveProcedure = PrimitiveProcedure.CreatePrimitiveProcedure(identifier.Name);
-
-            if (primitiveProcedure != null)
-                return primitiveProcedure;
-
-            return environment.LookupIdentifierValue(identifier.Name);
-        }
+            => environment.LookupIdentifierValue(identifier.Name);
 
         public object EvaluateQuote(Quote quote)
             => throw new NotImplementedException();
@@ -90,7 +81,7 @@ namespace RainLisp.Evaluation
         public object EvaluateApplication(Application application, EvaluationEnvironment environment)
         {
             // Operator is either a lambda that is evaluated to a user procedure
-            // or an identifier that evaluates to a defined procedure (either user or primitive).
+            // or an identifier that evaluates to an already defined procedure (either user or primitive).
             var evaluatedOperator = application.Operator
                 .AcceptVisitor(this, environment);
 
