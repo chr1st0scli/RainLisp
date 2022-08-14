@@ -1,7 +1,11 @@
-﻿namespace RainLispTests
+﻿using RainLisp;
+
+namespace RainLispTests
 {
-    public class EvaluatorTests : EvaluatorTester
+    public class EvaluatorTests
     {
+        private readonly Interpreter interpreter = new();
+
         [Theory]
         [InlineData("1", 1d)]
         [InlineData("10.54", 10.54)]
@@ -14,7 +18,7 @@
         {
             // Arrange
             // Act
-            var result = Evaluate(expression);
+            var result = interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -52,7 +56,7 @@
         {
             // Arrange
             // Act
-            var result = Evaluate(expression);
+            var result = interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
@@ -83,7 +87,7 @@
         {
             // Arrange
             // Act
-            var result = Evaluate(expression);
+            var result = interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, Math.Round((double)result, 2, MidpointRounding.AwayFromZero));
@@ -140,7 +144,7 @@
         {
             // Arrange
             // Act
-            var result = Evaluate(expression);
+            var result = interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (bool)result);

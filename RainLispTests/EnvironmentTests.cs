@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json;
+using RainLisp;
 using RainLisp.Evaluation;
 
 namespace RainLispTests
 {
-    public class EnvironmentTests : EvaluatorTester
+    public class EnvironmentTests
     {
+        private readonly Interpreter interpreter = new();
+
         [Theory]
         [InlineData(0, "(define a 0)")]
         [InlineData(1, "(define a 0) (define b 1)")]
@@ -19,8 +22,6 @@ namespace RainLispTests
         [InlineData(10, "(define a 1) ((lambda () (define a 2) (define b 7) ((lambda () (define b 8) (define c 9) c))))")]
         public void Evaluate_ValidExpression_GivesExpectedEnvironment(int environmentIndex, string expression)
         {
-            // 4 6 7 9 fail
-
             // Arrange
             // Serialize the global environment's private fields in JSON to compare its internal structure.
             var settings = new JsonSerializerSettings
@@ -32,7 +33,7 @@ namespace RainLispTests
             };
 
             // Act
-            Evaluate(expression);
+            interpreter.Evaluate(expression);
             string globalEnv = JsonConvert.SerializeObject(EvaluationEnvironment.GlobalEnvironment, settings);
             string expectedGlobalEnv = File.ReadAllText($"Environments\\{environmentIndex:00}.json");
 

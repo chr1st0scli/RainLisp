@@ -4,6 +4,13 @@ namespace RainLispTests
 {
     public class TokenizerTests
     {
+        private readonly Tokenizer _tokenizer;
+
+        public TokenizerTests()
+        {
+            _tokenizer = new Tokenizer();
+        }
+
         public static IEnumerable<object[]> GetTokens()
         {
             yield return new object[] { "1", (TokenType.Number, "1"), (TokenType.EOF, "") };
@@ -426,7 +433,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var tokens = Tokenizer.Tokenize(expression);
+            var tokens = _tokenizer.Tokenize(expression);
 
             // Assert
             Assert.Equal(expectedTokens.Length, tokens.Count);

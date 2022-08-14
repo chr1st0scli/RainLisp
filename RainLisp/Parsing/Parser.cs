@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace RainLisp.Parsing
 {
-    public class Parser
+    public class Parser : IParser
     {
         private List<Token> _tokens;
         private int currPosition;

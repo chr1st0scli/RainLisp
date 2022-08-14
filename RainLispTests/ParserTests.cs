@@ -6,6 +6,15 @@ namespace RainLispTests
 {
     public class ParserTests
     {
+        private readonly ITokenizer _tokenizer;
+        private readonly Parser _parser;
+
+        public ParserTests()
+        {
+            _tokenizer = new Tokenizer();
+            _parser = new Parser();
+        }
+
         [Theory]
         [InlineData(0, "1")]
         [InlineData(1, "1.5")]
@@ -44,11 +53,10 @@ namespace RainLispTests
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             // Arrange
-            var parser = new Parser();
-            var tokens = Tokenizer.Tokenize(expression);
+            var tokens = _tokenizer.Tokenize(expression);
 
             // Act
-            var program = parser.Parse(tokens);
+            var program = _parser.Parse(tokens);
             string ast = JsonConvert.SerializeObject(program, Formatting.Indented);
             string expectedAst = File.ReadAllText($"AbstractSyntaxTrees\\{astIndex:00}.json");
 
@@ -98,12 +106,11 @@ namespace RainLispTests
         public void Parse_InvalidExpression_Throws(string expression)
         {
             // Arrange
-            var parser = new Parser();
-            var tokens = Tokenizer.Tokenize(expression);
+            var tokens = _tokenizer.Tokenize(expression);
 
             // Act
             // Assert
-            Assert.Throws<InvalidOperationException>(() => parser.Parse(tokens));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse(tokens));
         }
     }
 }

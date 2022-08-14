@@ -3,9 +3,9 @@ using static RainLisp.Grammar.Keywords;
 
 namespace RainLisp.Tokenization
 {
-    public static class Tokenizer
+    public class Tokenizer : ITokenizer
     {
-        public static List<Token> Tokenize(string expression)
+        public List<Token> Tokenize(string expression)
         {
             ArgumentNullException.ThrowIfNull(expression, nameof(expression));
 
