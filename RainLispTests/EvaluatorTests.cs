@@ -187,5 +187,33 @@ namespace RainLispTests
             // Assert
             Assert.Equal(expectedResult, (double)result);
         }
+
+        [Theory]
+        [InlineData("((foo true))", 1d)]
+        [InlineData("((foo false))", 0d)]
+        public void Evaluate_Lambda_InTheRightEnvironment(string lambdaCall, double expectedResult)
+        {
+            // Arrange
+            string expression = $@"
+(define a 0)
+
+(define (foo b)
+
+    (define (bar)
+        (define a 1)
+        (lambda () a))
+
+    (if b
+        (bar)
+        (lambda () a)))
+
+{lambdaCall}";
+
+            // Act
+            var result = interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, (double)result);
+        }
     }
 }
