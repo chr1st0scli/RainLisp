@@ -1,8 +1,10 @@
-﻿namespace RainLisp.Evaluation
+﻿using RainLisp.Environment;
+
+namespace RainLisp.Evaluation
 {
     public class ProcedureApplicationVisitor : IProcedureApplicationVisitor
     {
-        public object ApplyUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, EvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
+        public object ApplyUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
         {
             // We extend the procedure environment instead of the given one?
             var extendedEnvironment = procedure.Environment.ExtendEnvironment(procedure.Parameters, evaluatedArguments);

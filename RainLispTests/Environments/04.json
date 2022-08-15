@@ -1,8 +1,15 @@
 {
-  "definitions": {
-    "a": 4.0
+  "actualEnvironment": {
+    "definitions": {
+      "a": 4.0
+    }
   },
-  "nextEnvironment": {
-    "definitions": {}
-  }
+  "nextEnvironments": [
+    {
+      "actualEnvironment": {
+        "definitions": {}
+      },
+      "nextEnvironments": []
+    }
+  ]
 }

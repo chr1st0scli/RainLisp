@@ -1,10 +1,11 @@
 ﻿using RainLisp.AbstractSyntaxTree;
+using RainLisp.Environment;
 
 namespace RainLisp.Evaluation
 {
     public class UserProcedure : Procedure
     {
-        public UserProcedure(IList<string>? parameters, Body body, EvaluationEnvironment environment)
+        public UserProcedure(IList<string>? parameters, Body body, IEvaluationEnvironment environment)
         {
             Parameters = parameters;
             Body = body ?? throw new ArgumentNullException(nameof(body));
@@ -15,11 +16,9 @@ namespace RainLisp.Evaluation
 
         public Body Body { get; init; }
 
-        public EvaluationEnvironment Environment { get; init; }
+        public IEvaluationEnvironment Environment { get; init; }
 
-        public override object AcceptVisitor(IProcedureApplicationVisitor visitor, object[]? evaluatedArguments, EvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
-        {
-            return visitor.ApplyUserProcedure(this, evaluatedArguments, environment, evaluatorVisitor);
-        }
+        public override object AcceptVisitor(IProcedureApplicationVisitor visitor, object[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
+            => visitor.ApplyUserProcedure(this, evaluatedArguments, environment, evaluatorVisitor);
     }
 }

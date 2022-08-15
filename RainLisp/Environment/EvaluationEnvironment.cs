@@ -1,31 +1,30 @@
-﻿namespace RainLisp.Evaluation
+﻿namespace RainLisp.Environment
 {
-    public class EvaluationEnvironment
+    public class EvaluationEnvironment : IEvaluationEnvironment
     {
         private readonly IDictionary<string, object> definitions;
 
         private EvaluationEnvironment? previousEnvironment;
-        private EvaluationEnvironment? nextEnvironment;
 
         public EvaluationEnvironment()
         {
             definitions = new Dictionary<string, object>();
         }
 
-        public EvaluationEnvironment ExtendEnvironment(IList<string>? parameters, object[]? evaluatedArguments)
+        public IEvaluationEnvironment ExtendEnvironment(IList<string>? parameters, object[]? evaluatedArguments)
         {
             if (parameters?.Count != evaluatedArguments?.Length)
                 throw new InvalidOperationException("Wrong number of arguments.");
 
-            nextEnvironment = new EvaluationEnvironment { previousEnvironment = this };
+            var extendedEnvironment = new EvaluationEnvironment { previousEnvironment = this };
 
             if (parameters?.Count > 0 && evaluatedArguments?.Length > 0)
             {
                 for (int i = 0; i < parameters.Count; i++)
-                    nextEnvironment.DefineIdentifier(parameters[i], evaluatedArguments[i]);
+                    extendedEnvironment.DefineIdentifier(parameters[i], evaluatedArguments[i]);
             }
 
-            return nextEnvironment;
+            return extendedEnvironment;
         }
 
         public void DefineIdentifier(string identifierName, object value)

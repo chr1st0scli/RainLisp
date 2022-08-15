@@ -1,4 +1,5 @@
-﻿using RainLisp.Evaluation;
+﻿using RainLisp.Environment;
+using RainLisp.Evaluation;
 using RainLisp.Parsing;
 using RainLisp.Tokenization;
 using static RainLisp.Grammar.Primitives;
@@ -10,18 +11,20 @@ namespace RainLisp
         private readonly ITokenizer tokenizer;
         private readonly IParser parser;
         private readonly IEvaluatorVisitor evaluator;
+        private readonly IEnvironmentFactory? environmentFactory;
 
-        public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null)
+        public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null, IEnvironmentFactory? environmentFactory = null)
         {
             this.tokenizer = tokenizer ?? new Tokenizer();
             this.parser = parser ?? new Parser();
             this.evaluator = evaluator ?? new EvaluatorVisitor(new ProcedureApplicationVisitor());
+            this.environmentFactory = environmentFactory;
         }
 
         public object Evaluate(string expression)
-            => Evaluate(expression, out EvaluationEnvironment _);
+            => Evaluate(expression, out IEvaluationEnvironment _);
 
-        public object Evaluate(string expression, out EvaluationEnvironment environment)
+        public object Evaluate(string expression, out IEvaluationEnvironment environment)
         {
             var tokens = tokenizer.Tokenize(expression);
             var programAST = parser.Parse(tokens);
@@ -57,9 +60,9 @@ namespace RainLisp
             }
         }
 
-        private static EvaluationEnvironment CreateGlobalEnvironment()
+        private IEvaluationEnvironment CreateGlobalEnvironment()
         {
-            var environment = new EvaluationEnvironment();
+            var environment = environmentFactory?.CreateEnvironment() ?? new EvaluationEnvironment();
 
             // Define primitive procedures.
             environment.DefineIdentifier(PLUS, new PrimitiveProcedure(PrimitiveProcedureType.Add));

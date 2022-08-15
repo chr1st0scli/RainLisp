@@ -1,7 +1,9 @@
-﻿namespace RainLisp.Evaluation
+﻿using RainLisp.Environment;
+
+namespace RainLisp.Evaluation
 {
     public abstract class Procedure : EvaluationResult
     {
-        public abstract object AcceptVisitor(IProcedureApplicationVisitor visitor, object[]? evaluatedArguments, EvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor);
+        public abstract object AcceptVisitor(IProcedureApplicationVisitor visitor, object[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor);
     }
 }

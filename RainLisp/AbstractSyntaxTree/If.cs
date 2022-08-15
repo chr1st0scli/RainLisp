@@ -1,4 +1,5 @@
-﻿using RainLisp.Evaluation;
+﻿using RainLisp.Environment;
+using RainLisp.Evaluation;
 
 namespace RainLisp.AbstractSyntaxTree
 {
@@ -17,7 +18,7 @@ namespace RainLisp.AbstractSyntaxTree
 
         public Expression? Alternative { get; init; }
 
-        public override object AcceptVisitor(IEvaluatorVisitor visitor, EvaluationEnvironment environment)
+        public override object AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
             => visitor.EvaluateIf(this, environment);
     }
 }

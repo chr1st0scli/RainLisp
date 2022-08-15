@@ -1,4 +1,5 @@
 ﻿using RainLisp.AbstractSyntaxTree;
+using RainLisp.Environment;
 
 namespace RainLisp.Evaluation
 {
@@ -18,13 +19,13 @@ namespace RainLisp.Evaluation
         public object EvaluateBooleanLiteral(BooleanLiteral boolLiteral)
             => boolLiteral.Value;
 
-        public object EvaluateIdentifier(Identifier identifier, EvaluationEnvironment environment)
+        public object EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment)
             => environment.LookupIdentifierValue(identifier.Name);
 
         public object EvaluateQuote(Quote quote)
             => throw new NotImplementedException();
 
-        public object EvaluateAssignment(Assignment assignment, EvaluationEnvironment environment)
+        public object EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment)
         {
             // Defer the evaluation of the expression to get the value to assign to the identifier, until it is certain that the definition exists.
             var valueProvider = () => assignment.Value.AcceptVisitor(this, environment);
@@ -34,7 +35,7 @@ namespace RainLisp.Evaluation
             return "undefined";
         }
 
-        public object EvaluateDefinition(Definition definition, EvaluationEnvironment environment)
+        public object EvaluateDefinition(Definition definition, IEvaluationEnvironment environment)
         {
             // Evaluate the expression to get the initial value to assign to the identifier.
             var value = definition.Value.AcceptVisitor(this, environment);
@@ -44,10 +45,10 @@ namespace RainLisp.Evaluation
             return "undefined";
         }
 
-        public object EvaluateLambda(Lambda lambda, EvaluationEnvironment environment)
+        public object EvaluateLambda(Lambda lambda, IEvaluationEnvironment environment)
             => new UserProcedure(lambda.Parameters, lambda.Body, environment);
 
-        public object EvaluateIf(If ifExpression, EvaluationEnvironment environment)
+        public object EvaluateIf(If ifExpression, IEvaluationEnvironment environment)
         {
             // Evaluate the predicate of the if expression and if the result is a boolean, carry on.
             if (ifExpression.Predicate.AcceptVisitor(this, environment) is bool condition)
@@ -68,7 +69,7 @@ namespace RainLisp.Evaluation
                 throw new InvalidOperationException();
         }
 
-        public object EvaluateBegin(Begin begin, EvaluationEnvironment environment)
+        public object EvaluateBegin(Begin begin, IEvaluationEnvironment environment)
         {
             // Evaluate every expression in order and return the result of the last one.
             object result = "undefined";
@@ -78,7 +79,7 @@ namespace RainLisp.Evaluation
             return result;
         }
 
-        public object EvaluateApplication(Application application, EvaluationEnvironment environment)
+        public object EvaluateApplication(Application application, IEvaluationEnvironment environment)
         {
             // Operator is either a lambda that is evaluated to a user procedure
             // or an identifier that evaluates to an already defined procedure (either user or primitive).
@@ -96,7 +97,7 @@ namespace RainLisp.Evaluation
                 throw new InvalidOperationException("Unknown procedure type.");
         }
 
-        public object EvaluateBody(Body body, EvaluationEnvironment environment)
+        public object EvaluateBody(Body body, IEvaluationEnvironment environment)
         {
             // If the body contains any definitions, evaluate them to establish them in the environment.
             if (body.Definitions?.Count > 0)
@@ -109,7 +110,7 @@ namespace RainLisp.Evaluation
             return body.Expression.AcceptVisitor(this, environment);
         }
 
-        public object EvaluateProgram(Program program, EvaluationEnvironment environment)
+        public object EvaluateProgram(Program program, IEvaluationEnvironment environment)
         {
             // Establish all definitions in the environment.
             foreach (var definition in program.Definitions)

@@ -1,6 +1,9 @@
 {
-  "definitions": {
-    "a": 6.0,
-    "ab": 4.0
-  }
+  "actualEnvironment": {
+    "definitions": {
+      "a": 6.0,
+      "ab": 4.0
+    }
+  },
+  "nextEnvironments": []
 }

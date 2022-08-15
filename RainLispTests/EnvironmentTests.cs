@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RainLisp;
-using RainLisp.Evaluation;
+using RainLisp.Environment;
 using RainLisp.Grammar;
 using System.Reflection;
 
@@ -9,7 +9,7 @@ namespace RainLispTests
 {
     public class EnvironmentTests
     {
-        private readonly Interpreter interpreter = new();
+        private readonly Interpreter interpreter = new(environmentFactory: new TestableEnvironmentFactory());
 
         [Theory]
         [InlineData(0, "(define a 0)")]
@@ -36,16 +36,20 @@ namespace RainLispTests
             };
 
             // Act
-            interpreter.Evaluate(expression, out EvaluationEnvironment environment);
+            interpreter.Evaluate(expression, out IEvaluationEnvironment environment);
             // Check the effect of the evaluation on the global environment.
             var environmentJObject = JObject.FromObject(environment, jsonSerializer);
+
+            // Remove the circular references of all previous environments.
+            foreach (var token in environmentJObject.SelectTokens("$..previousEnvironment").ToList())
+                token.Parent.Remove();
 
             // Remove the primitives from the definitions output, because we are not interested to check them.
             var fields = typeof(Primitives).GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var field in fields)
             {
                 string? primitiveProcedureName = field?.GetRawConstantValue()?.ToString();
-                environmentJObject["definitions"][primitiveProcedureName].Parent.Remove();
+                environmentJObject["actualEnvironment"]["definitions"][primitiveProcedureName].Parent.Remove();
             }
 
             string actualEnvironment = environmentJObject.ToString();

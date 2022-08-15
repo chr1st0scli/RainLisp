@@ -1,10 +1,17 @@
 {
-  "definitions": {
-    "a": 9.0
-  },
-  "nextEnvironment": {
+  "actualEnvironment": {
     "definitions": {
-      "b": 7.0
+      "a": 9.0
     }
-  }
+  },
+  "nextEnvironments": [
+    {
+      "actualEnvironment": {
+        "definitions": {
+          "b": 7.0
+        }
+      },
+      "nextEnvironments": []
+    }
+  ]
 }

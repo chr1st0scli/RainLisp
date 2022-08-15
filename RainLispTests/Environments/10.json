@@ -1,17 +1,28 @@
 {
-  "definitions": {
-    "a": 1.0
-  },
-  "nextEnvironment": {
+  "actualEnvironment": {
     "definitions": {
-      "a": 2.0,
-      "b": 7.0
-    },
-    "nextEnvironment": {
-      "definitions": {
-        "b": 8.0,
-        "c": 9.0
-      }
+      "a": 1.0
     }
-  }
+  },
+  "nextEnvironments": [
+    {
+      "actualEnvironment": {
+        "definitions": {
+          "a": 2.0,
+          "b": 7.0
+        }
+      },
+      "nextEnvironments": [
+        {
+          "actualEnvironment": {
+            "definitions": {
+              "b": 8.0,
+              "c": 9.0
+            }
+          },
+          "nextEnvironments": []
+        }
+      ]
+    }
+  ]
 }

@@ -1,4 +1,5 @@
-﻿using RainLisp.Evaluation;
+﻿using RainLisp.Environment;
+using RainLisp.Evaluation;
 
 namespace RainLisp.AbstractSyntaxTree
 {
@@ -8,7 +9,7 @@ namespace RainLisp.AbstractSyntaxTree
 
         public IList<Expression> Expressions { get; set; } = new List<Expression>();
 
-        public override object AcceptVisitor(IEvaluatorVisitor visitor, EvaluationEnvironment environment)
+        public override object AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
             => visitor.EvaluateProgram(this, environment);
     }
 }
