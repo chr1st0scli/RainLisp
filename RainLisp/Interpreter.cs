@@ -1,4 +1,5 @@
-﻿using RainLisp.Environment;
+﻿using RainLisp.AbstractSyntaxTree;
+using RainLisp.Environment;
 using RainLisp.Evaluation;
 using RainLisp.Parsing;
 using RainLisp.Tokenization;
@@ -22,15 +23,30 @@ namespace RainLisp
         }
 
         public object Evaluate(string expression)
-            => Evaluate(expression, out IEvaluationEnvironment _);
+        {
+            IEvaluationEnvironment? environment = null;
+            return Evaluate(expression, ref environment);
+        }
 
-        public object Evaluate(string expression, out IEvaluationEnvironment environment)
+        public object Evaluate(Program program)
+        {
+            IEvaluationEnvironment? environment = null;
+            return Evaluate(program, ref environment);
+        }
+
+        public object Evaluate(string expression, ref IEvaluationEnvironment? environment)
         {
             var tokens = tokenizer.Tokenize(expression);
             var programAST = parser.Parse(tokens);
 
-            environment = CreateGlobalEnvironment();
-            return evaluator.EvaluateProgram(programAST, environment);
+            return Evaluate(programAST, ref environment);
+        }
+
+        public object Evaluate(Program program, ref IEvaluationEnvironment? environment)
+        {
+            environment ??= CreateGlobalEnvironment();
+
+            return evaluator.EvaluateProgram(program, environment);
         }
 
         public void ReadEvalPrintLoop(Func<string> read, Action<string> print)

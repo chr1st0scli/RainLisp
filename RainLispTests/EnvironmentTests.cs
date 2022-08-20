@@ -34,9 +34,10 @@ namespace RainLispTests
                 Formatting = Formatting.Indented,
                 NullValueHandling = NullValueHandling.Ignore,
             };
+            IEvaluationEnvironment? environment = null;
 
             // Act
-            interpreter.Evaluate(expression, out IEvaluationEnvironment environment);
+            interpreter.Evaluate(expression, ref environment);
             // Check the effect of the evaluation on the global environment.
             var environmentJObject = JObject.FromObject(environment, jsonSerializer);
 
