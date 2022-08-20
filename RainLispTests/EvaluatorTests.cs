@@ -215,5 +215,61 @@ namespace RainLispTests
             // Assert
             Assert.Equal(expectedResult, (double)result);
         }
+
+        [Theory]
+        [InlineData("(foo 4)", 0d)]
+        [InlineData("(foo 5)", 1d)]
+        [InlineData("(foo 6)", 0d)]
+        [InlineData("(foo 7)", 1d)]
+        public void Evaluate_ProcedureInternalDefinitions_Correctly(string innerCall, double expectedResult)
+        {
+            // Arrange
+            string expression = $@"
+(define (f)
+  (define (foo n)
+    (if (= n 0)
+        0
+        (bar (- n 1))))
+  
+  (define (bar n)
+    (if (= n 0)
+        1
+        (foo (- n 1))))
+  {innerCall})
+
+(f)";
+
+            // Act
+            var result = interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, (double)result);
+        }
+
+        [Fact]
+        public void Evaluate_SimpleInternalDefinitions_Correctly()
+        {
+            // Note that the above internal definitions (procedures) work differently than these simple internal definitions.
+            // It's because a procedure definition's value is a lambda and when it's evaluated it returns a procedure, it doesn't get called.
+            // So, by the time a call happens, all definitions are established. In contrast, in the example below, the value
+            // a is evaluated but it is 1 from the 1st line and not 5 from the line below. So, we see a discrepancy between the two.
+            // A common strategy, in both cases, is to produce an error when you have internal definitions that refer to each other (see SICP 4.1.6).
+
+            // Arrange
+            string expression = @"
+(let ((a 1))
+  (define (f x)
+    (define b (+ a x))
+    (define a 5)
+    (+ a b))
+  
+  (f 10))";
+
+            // Act
+            var result = interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(16d, (double)result);
+        }
     }
 }
