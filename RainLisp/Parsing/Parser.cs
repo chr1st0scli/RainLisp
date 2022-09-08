@@ -7,30 +7,28 @@ namespace RainLisp.Parsing
 {
     public class Parser : IParser
     {
-        private IList<Token> _tokens;
-        private int currPosition;
-
-        public Parser()
-        {
-            _tokens = new List<Token>();
-        }
+        private IList<Token> _tokens = null!;
+        private int _currPosition;
 
         public Program Parse(IList<Token> tokens)
         {
+            ArgumentNullException.ThrowIfNull(tokens, nameof(tokens));
+
             _tokens = tokens;
-            currPosition = 0;
+            _currPosition = 0;
 
             return Program();
         }
 
-        private Token Token() => _tokens[currPosition];
+        #region Methods for consuming and checking tokens.
+        private Token CurrentToken() => _tokens[_currPosition];
 
         private bool Check(TokenType tokenType)
-            => currPosition < _tokens.Count && _tokens[currPosition].Type == tokenType;
+            => _currPosition < _tokens.Count && _tokens[_currPosition].Type == tokenType;
 
-        private bool CheckFurther(TokenType tokenType)
+        private bool CheckNext(TokenType tokenType)
         {
-            int pos = currPosition + 1;
+            int pos = _currPosition + 1;
             if (pos >= _tokens.Count)
                 return false;
 
@@ -42,7 +40,7 @@ namespace RainLisp.Parsing
             if (!Check(tokenType))
                 return false;
 
-            currPosition++;
+            _currPosition++;
             return true;
         }
 
@@ -50,21 +48,23 @@ namespace RainLisp.Parsing
         {
             if (!Match(tokenType))
                 throw new InvalidOperationException($"Missing required symbol {tokenType}.");
-        }
+        } 
+        #endregion
 
+        #region Nonterminals in the syntax grammar
         private Program Program()
         {
-            var programExpression = new Program();
+            var program = new Program();
 
             while (!Check(TokenType.EOF))
             {
-                if (CheckFurther(TokenType.Definition))
-                    programExpression.Definitions.Add(Definition());
+                if (CheckNext(TokenType.Definition))
+                    program.Definitions.Add(Definition());
                 else
-                    programExpression.Expressions.Add(Expression());
+                    program.Expressions.Add(Expression());
             }
 
-            return programExpression;
+            return program;
         }
 
         private Definition Definition()
@@ -72,16 +72,17 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
             Require(TokenType.Definition);
 
-            var token = Token();
-            Definition definitionExpression;
+            var identifierToken = CurrentToken();
+            Definition definition;
 
             if (Match(TokenType.Identifier))
             {
-                definitionExpression = new Definition(token.Value, Expression());
+                definition = new Definition(identifierToken.Value, Expression());
             }
+            // Defining a function like (define (foo a) a) is just syntactic sugar for (define foo (lambda (a) a))
             else if (Match(TokenType.LParen))
             {
-                token = Token();
+                identifierToken = CurrentToken();
 
                 // Function name
                 Require(TokenType.Identifier);
@@ -89,33 +90,44 @@ namespace RainLisp.Parsing
                 List<string>? parameters = null;
 
                 // Formal arguments
-                while (!Check(TokenType.RParen))
+                if (!Check(TokenType.RParen))
                 {
-                    parameters ??= new List<string>();
-                    parameters.Add(Token().Value);
+                    parameters = new() { CurrentToken().Value };
                     Require(TokenType.Identifier);
+
+                    while (!Check(TokenType.RParen))
+                    {
+                        parameters.Add(CurrentToken().Value);
+                        Require(TokenType.Identifier);
+                    }
                 }
+
                 Require(TokenType.RParen);
 
                 var lambda = new Lambda(parameters, Body());
-                definitionExpression = new Definition(token.Value, lambda);
+
+                definition = new Definition(identifierToken.Value, lambda);
             }
             else
-                throw new InvalidOperationException($"Expected either an {TokenType.Identifier} or {TokenType.LParen}.");
+                throw new InvalidOperationException($"Invalid definition, expected either an {TokenType.Identifier} or {TokenType.LParen}.");
 
             Require(TokenType.RParen);
 
-            return definitionExpression;
+            return definition;
         }
 
         private Body Body()
         {
             List<Definition>? definitions = null;
 
-            while (CheckFurther(TokenType.Definition))
+            if (CheckNext(TokenType.Definition))
             {
-                definitions ??= new List<Definition>();
-                definitions.Add(Definition());
+                definitions = new() { Definition() };
+
+                while (CheckNext(TokenType.Definition))
+                {
+                    definitions.Add(Definition());
+                }
             }
 
             // If I wanted more than one expression, I would have a problem between detecting an additional expression or an erroneous one.
@@ -126,141 +138,53 @@ namespace RainLisp.Parsing
 
         private Expression Expression()
         {
-            var token = Token();
+            var token = CurrentToken();
 
             if (Match(TokenType.Number))
-            {
                 return new NumberLiteral(double.Parse(token.Value, CultureInfo.InvariantCulture));
-            }
+
             else if (Match(TokenType.String))
-            {
                 return new StringLiteral(token.Value);
-            }
+
             else if (Match(TokenType.Boolean))
-            {
                 return new BooleanLiteral(bool.Parse(token.Value));
-            }
+
             else if (Match(TokenType.Identifier))
-            {
                 return new Identifier(token.Value);
-            }
+
             else
             {
-                Require(TokenType.LParen);
+                if (!Match(TokenType.LParen))
+                    throw new InvalidOperationException("Invalid expression.");
+
                 Expression expression;
 
                 if (Match(TokenType.Quote))
-                {
-                    var quoteExpression = new Quote(Token().Value);
+                    expression = Quote();
 
-                    // Can there be more than one?
-                    // Support the 'a syntax or not
-                    Require(TokenType.Identifier);
-                    expression = quoteExpression;
-                }
                 else if (Match(TokenType.Assignment))
-                {
-                    string identifierName = Token().Value;
+                    expression = Assignment();
 
-                    Require(TokenType.Identifier);
-
-                    expression = new Assignment(identifierName, Expression());
-                }
                 else if (Match(TokenType.If))
-                {
-                    var predicate = Expression();
-                    var consequent = Expression();
-                    Expression? alternative = null;
+                    expression = If();
 
-                    // Optional alternative
-                    if (!Check(TokenType.RParen))
-                    {
-                        alternative = Expression();
-                    }
-
-                    expression = new If(predicate, consequent, alternative);
-                }
+                // cond is a derived expression, so it gets converted to an equivalent if.
                 else if (Match(TokenType.Cond))
-                {
-                    var clauses = new List<ConditionClause>();
+                    expression = Condition().ToIf();
 
-                    // We deal with conditional clauses until an else or a closing parenthesis is reached.
-                    do
-                    {
-                        clauses.Add(CondClause());
-                    } while (!CheckFurther(TokenType.Else) && !Check(TokenType.RParen));
-
-                    ConditionElseClause? elseClause = null;
-                    if (CheckFurther(TokenType.Else))
-                        elseClause = CondElseClause();
-
-                    var condition = new Condition(clauses, elseClause);
-
-                    // cond is a derived expression, so it gets converted to an equivalent if.
-                    expression = condition.ConditionToIf();
-                }
                 else if (Match(TokenType.Begin))
-                {
-                    var expressions = new List<Expression>();
-                    do
-                    {
-                        expressions.Add(Expression());
-                    } while (!Check(TokenType.RParen));
+                    expression = Begin();
 
-                    expression = new Begin(expressions);
-                }
                 else if (Match(TokenType.Lambda))
-                {
-                    Require(TokenType.LParen);
+                    expression = Lambda();
 
-                    List<string>? parameters = null;
-
-                    // Optional lambda parameters
-                    while (!Check(TokenType.RParen))
-                    {
-                        parameters ??= new List<string>();
-                        parameters.Add(Token().Value);
-                        Require(TokenType.Identifier);
-                    }
-
-                    Require(TokenType.RParen);
-
-                    expression = new Lambda(parameters, Body());
-                }
+                // let is a derived expression, so it gets converted to an equivalent lambda application.
                 else if (Match(TokenType.Let))
-                {
-                    Require(TokenType.LParen);
+                    expression = Let().ToLambdaApplication();
 
-                    var letClauses = new List<LetClause>();
-
-                    do
-                    {
-                        letClauses.Add(LetClause());
-                    } while (!Check(TokenType.RParen));
-
-                    Require(TokenType.RParen);
-
-                    var let = new Let(letClauses, Body());
-
-                    // let is a derived expression, so it gets converted to an equivalent lambda application.
-                    expression = let.LetToLambdaApplication();
-                }
+                // If it is none of the above, then it can only be a function application.
                 else
-                {
-                    // Application
-                    // Function to be applied
-                    var @operator = Expression();
-
-                    // Parameter values
-                    List<Expression>? operands = null;
-                    while (!Check(TokenType.RParen))
-                    {
-                        operands ??= new List<Expression>();
-                        operands.Add(Expression());
-                    }
-
-                    expression = new Application(@operator, operands);
-                }
+                    expression = Application();
 
                 Require(TokenType.RParen);
 
@@ -268,7 +192,7 @@ namespace RainLisp.Parsing
             }
         }
 
-        private ConditionClause CondClause()
+        private ConditionClause ConditionClause()
         {
             Require(TokenType.LParen);
 
@@ -280,12 +204,12 @@ namespace RainLisp.Parsing
                 expressions.Add(Expression());
             } while (!Check(TokenType.RParen));
 
-            Require(TokenType.RParen);
+            Require(TokenType.RParen); // Require here double checks the RParen above, use Match above! This pattern will be found elsewhere too...
 
             return new ConditionClause(predicate, expressions);
         }
 
-        private ConditionElseClause CondElseClause()
+        private ConditionElseClause ConditionElseClause()
         {
             Require(TokenType.LParen);
 
@@ -307,7 +231,7 @@ namespace RainLisp.Parsing
         {
             Require(TokenType.LParen);
 
-            string identifierName = Token().Value;
+            string identifierName = CurrentToken().Value;
             Require(TokenType.Identifier);
 
             var expression = Expression();
@@ -316,5 +240,132 @@ namespace RainLisp.Parsing
 
             return new LetClause(identifierName, expression);
         }
+        #endregion
+
+        #region Helper methods that do not correspond to nonterminals in the grammar.
+        private Quote Quote()
+        {
+            var quoteExpression = new Quote(CurrentToken().Value);
+
+            // Can there be more than one?
+            // Support the 'a syntax or not
+            Require(TokenType.Identifier);
+
+            return quoteExpression;
+        }
+
+        private Assignment Assignment()
+        {
+            string identifierName = CurrentToken().Value;
+
+            Require(TokenType.Identifier);
+
+            return new Assignment(identifierName, Expression());
+        }
+
+        private If If()
+        {
+            var predicate = Expression();
+            var consequent = Expression();
+            Expression? alternative = null;
+
+            // Optional alternative
+            if (!Check(TokenType.RParen))
+            {
+                alternative = Expression();
+            }
+
+            return new If(predicate, consequent, alternative);
+        }
+
+        private Condition Condition()
+        {
+            var clauses = new List<ConditionClause>();
+
+            // We deal with conditional clauses until an else or a closing parenthesis is reached.
+            do
+            {
+                clauses.Add(ConditionClause());
+            } while (!CheckNext(TokenType.Else) && !Check(TokenType.RParen));
+
+            ConditionElseClause? elseClause = null;
+            if (CheckNext(TokenType.Else))
+                elseClause = ConditionElseClause();
+
+            return new Condition(clauses, elseClause);
+        }
+
+        private Begin Begin()
+        {
+            var expressions = new List<Expression>();
+            do
+            {
+                expressions.Add(Expression());
+            } while (!Check(TokenType.RParen));
+
+            return new Begin(expressions);
+        }
+
+        private Lambda Lambda()
+        {
+            Require(TokenType.LParen);
+
+            List<string>? parameters = null;
+
+            // Optional lambda parameters
+            if (!Check(TokenType.RParen))
+            {
+                parameters = new() { CurrentToken().Value };
+                Require(TokenType.Identifier);
+
+                while (!Check(TokenType.RParen))
+                {
+                    parameters.Add(CurrentToken().Value);
+                    Require(TokenType.Identifier);
+                }
+            }
+
+            Require(TokenType.RParen);
+
+            return new Lambda(parameters, Body());
+        }
+
+        private Let Let()
+        {
+            Require(TokenType.LParen);
+
+            var letClauses = new List<LetClause>();
+
+            do
+            {
+                letClauses.Add(LetClause());
+            } while (!Check(TokenType.RParen));
+
+            Require(TokenType.RParen);
+
+            return new Let(letClauses, Body());
+        }
+
+        private Application Application()
+        {
+            // Function to be applied is an identifier for a function, a lambda, or a call that returns a function itself.
+            var function = Expression();
+
+            // Parameter values
+            List<Expression>? operands = null;
+
+            if (!Check(TokenType.RParen))
+            {
+                operands = new() { Expression() };
+
+                while (!Check(TokenType.RParen))
+                {
+                    operands.Add(Expression());
+                }
+            }
+
+            return new Application(function, operands);
+        } 
+        #endregion
     }
 }

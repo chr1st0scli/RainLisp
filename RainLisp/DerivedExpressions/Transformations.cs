@@ -9,7 +9,7 @@ namespace RainLisp.DerivedExpressions
     /// </summary>
     public static class Transformations
     {
-        public static If ConditionToIf(this Condition condition)
+        public static If ToIf(this Condition condition)
         {
             ArgumentNullException.ThrowIfNull(condition, nameof(condition));
 
@@ -43,7 +43,7 @@ namespace RainLisp.DerivedExpressions
             return MakeIf();
         }
 
-        public static Application LetToLambdaApplication(this Let let)
+        public static Application ToLambdaApplication(this Let let)
         {
             // Transform a let expression to an application of a lambda.
             ArgumentNullException.ThrowIfNull(let, nameof(let));

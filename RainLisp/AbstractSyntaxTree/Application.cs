@@ -5,9 +5,9 @@ namespace RainLisp.AbstractSyntaxTree
 {
     public class Application : Expression
     {
-        public Application(Expression @operator, IList<Expression>? operands)
+        public Application(Expression operatorToApply, IList<Expression>? operands)
         {
-            Operator = @operator ?? throw new ArgumentNullException(nameof(@operator));
+            Operator = operatorToApply ?? throw new ArgumentNullException(nameof(operatorToApply));
             Operands = operands;
         }
 

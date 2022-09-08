@@ -81,7 +81,7 @@ namespace RainLisp.Evaluation
 
         public object EvaluateApplication(Application application, IEvaluationEnvironment environment)
         {
-            // Operator is either a lambda that is evaluated to a user procedure
+            // Operator is either a lambda that is evaluated to a user procedure, or another application that returns a user procedure, 
             // or an identifier that evaluates to an already defined procedure (either user or primitive).
             var evaluatedOperator = application.Operator
                 .AcceptVisitor(this, environment);
