@@ -20,37 +20,6 @@ namespace RainLisp.Parsing
             return Program();
         }
 
-        #region Methods for consuming and checking tokens.
-        private Token CurrentToken() => _tokens[_currPosition];
-
-        private bool Check(TokenType tokenType)
-            => _currPosition < _tokens.Count && _tokens[_currPosition].Type == tokenType;
-
-        private bool CheckNext(TokenType tokenType)
-        {
-            int pos = _currPosition + 1;
-            if (pos >= _tokens.Count)
-                return false;
-
-            return _tokens[pos].Type == tokenType;
-        }
-
-        private bool Match(TokenType tokenType)
-        {
-            if (!Check(tokenType))
-                return false;
-
-            _currPosition++;
-            return true;
-        }
-
-        private void Require(TokenType tokenType)
-        {
-            if (!Match(tokenType))
-                throw new InvalidOperationException($"Missing required symbol {tokenType}.");
-        } 
-        #endregion
-
         #region Nonterminals in the syntax grammar
         private Program Program()
         {
@@ -72,41 +41,37 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
             Require(TokenType.Definition);
 
-            var identifierToken = CurrentToken();
+            string identifierName = CurrentToken().Value;
             Definition definition;
 
             if (Match(TokenType.Identifier))
-            {
-                definition = new Definition(identifierToken.Value, Expression());
-            }
-            // Defining a function like (define (foo a) a) is just syntactic sugar for (define foo (lambda (a) a))
+                definition = new Definition(identifierName, Expression());
+
             else if (Match(TokenType.LParen))
             {
-                identifierToken = CurrentToken();
-
                 // Function name
+                identifierName = CurrentToken().Value;
                 Require(TokenType.Identifier);
 
                 List<string>? parameters = null;
 
-                // Formal arguments
-                if (!Check(TokenType.RParen))
+                // Function parameters
+                if (!Match(TokenType.RParen))
                 {
                     parameters = new() { CurrentToken().Value };
                     Require(TokenType.Identifier);
 
-                    while (!Check(TokenType.RParen))
+                    while (!Match(TokenType.RParen))
                     {
                         parameters.Add(CurrentToken().Value);
                         Require(TokenType.Identifier);
                     }
                 }
 
-                Require(TokenType.RParen);
-
+                // Defining a function like (define (foo a) a) is just syntactic sugar for (define foo (lambda (a) a))
                 var lambda = new Lambda(parameters, Body());
 
-                definition = new Definition(identifierToken.Value, lambda);
+                definition = new Definition(identifierName, lambda);
             }
             else
                 throw new InvalidOperationException($"Invalid definition, expected either an {TokenType.Identifier} or {TokenType.LParen}.");
@@ -125,32 +90,30 @@ namespace RainLisp.Parsing
                 definitions = new() { Definition() };
 
                 while (CheckNext(TokenType.Definition))
-                {
                     definitions.Add(Definition());
-                }
             }
 
             // If I wanted more than one expression, I would have a problem between detecting an additional expression or an erroneous one.
             // I.e. calling Expression again, I would have to catch the exception. But what would it mean? There is an additional erroneous expression,
-            // or there is no additional expression? Maybe this indicates a problem with my grammar, but why don't I use a singe begin expression to combine many?
+            // or there is no additional expression? Maybe this indicates a problem with my grammar, but why doesn't the user use a singe begin expression to combine many?
             return new Body(definitions, Expression());
         }
 
         private Expression Expression()
         {
-            var token = CurrentToken();
+            string tokenValue = CurrentToken().Value;
 
             if (Match(TokenType.Number))
-                return new NumberLiteral(double.Parse(token.Value, CultureInfo.InvariantCulture));
+                return new NumberLiteral(double.Parse(tokenValue, CultureInfo.InvariantCulture));
 
             else if (Match(TokenType.String))
-                return new StringLiteral(token.Value);
+                return new StringLiteral(tokenValue);
 
             else if (Match(TokenType.Boolean))
-                return new BooleanLiteral(bool.Parse(token.Value));
+                return new BooleanLiteral(bool.Parse(tokenValue));
 
             else if (Match(TokenType.Identifier))
-                return new Identifier(token.Value);
+                return new Identifier(tokenValue);
 
             else
             {
@@ -160,31 +123,31 @@ namespace RainLisp.Parsing
                 Expression expression;
 
                 if (Match(TokenType.Quote))
-                    expression = Quote();
+                    expression = QuoteExpr();
 
                 else if (Match(TokenType.Assignment))
-                    expression = Assignment();
+                    expression = AssignmentExpr();
 
                 else if (Match(TokenType.If))
-                    expression = If();
+                    expression = IfExpr();
 
                 // cond is a derived expression, so it gets converted to an equivalent if.
                 else if (Match(TokenType.Cond))
-                    expression = Condition().ToIf();
+                    expression = ConditionExpr().ToIf();
 
                 else if (Match(TokenType.Begin))
-                    expression = Begin();
+                    expression = BeginExpr();
 
                 else if (Match(TokenType.Lambda))
-                    expression = Lambda();
+                    expression = LambdaExpr();
 
                 // let is a derived expression, so it gets converted to an equivalent lambda application.
                 else if (Match(TokenType.Let))
-                    expression = Let().ToLambdaApplication();
+                    expression = LetExpr().ToLambdaApplication();
 
                 // If it is none of the above, then it can only be a function application.
                 else
-                    expression = Application();
+                    expression = ApplicationExpr();
 
                 Require(TokenType.RParen);
 
@@ -202,9 +165,7 @@ namespace RainLisp.Parsing
             do
             {
                 expressions.Add(Expression());
-            } while (!Check(TokenType.RParen));
-
-            Require(TokenType.RParen); // Require here double checks the RParen above, use Match above! This pattern will be found elsewhere too...
+            } while (!Match(TokenType.RParen));
 
             return new ConditionClause(predicate, expressions);
         }
@@ -212,7 +173,6 @@ namespace RainLisp.Parsing
         private ConditionElseClause ConditionElseClause()
         {
             Require(TokenType.LParen);
-
             Require(TokenType.Else);
 
             var expressions = new List<Expression>();
@@ -220,9 +180,7 @@ namespace RainLisp.Parsing
             do
             {
                 expressions.Add(Expression());
-            } while (!Check(TokenType.RParen));
-
-            Require(TokenType.RParen);
+            } while (!Match(TokenType.RParen));
 
             return new ConditionElseClause(expressions);
         }
@@ -242,8 +200,8 @@ namespace RainLisp.Parsing
         }
         #endregion
 
-        #region Helper methods that do not correspond to nonterminals in the grammar.
-        private Quote Quote()
+        #region Helper methods that are part of expression. They do not correspond to nonterminals in the grammar themselves.
+        private Quote QuoteExpr()
         {
             var quoteExpression = new Quote(CurrentToken().Value);
 
@@ -254,48 +212,42 @@ namespace RainLisp.Parsing
             return quoteExpression;
         }
 
-        private Assignment Assignment()
+        private Assignment AssignmentExpr()
         {
             string identifierName = CurrentToken().Value;
-
             Require(TokenType.Identifier);
 
             return new Assignment(identifierName, Expression());
         }
 
-        private If If()
+        private If IfExpr()
         {
             var predicate = Expression();
             var consequent = Expression();
-            Expression? alternative = null;
 
-            // Optional alternative
-            if (!Check(TokenType.RParen))
-            {
-                alternative = Expression();
-            }
+            // Optional alternative.
+            Expression? alternative = !Check(TokenType.RParen) ? Expression() : null;
 
             return new If(predicate, consequent, alternative);
         }
 
-        private Condition Condition()
+        private Condition ConditionExpr()
         {
             var clauses = new List<ConditionClause>();
 
-            // We deal with conditional clauses until an else or a closing parenthesis is reached.
+            // We deal with conditional clauses until a conditional else or a closing parenthesis is reached.
             do
             {
                 clauses.Add(ConditionClause());
             } while (!CheckNext(TokenType.Else) && !Check(TokenType.RParen));
 
-            ConditionElseClause? elseClause = null;
-            if (CheckNext(TokenType.Else))
-                elseClause = ConditionElseClause();
+            // Optional else.
+            ConditionElseClause? elseClause = CheckNext(TokenType.Else) ? ConditionElseClause() : null;
 
             return new Condition(clauses, elseClause);
         }
 
-        private Begin Begin()
+        private Begin BeginExpr()
         {
             var expressions = new List<Expression>();
             do
@@ -306,31 +258,29 @@ namespace RainLisp.Parsing
             return new Begin(expressions);
         }
 
-        private Lambda Lambda()
+        private Lambda LambdaExpr()
         {
             Require(TokenType.LParen);
 
             List<string>? parameters = null;
 
             // Optional lambda parameters
-            if (!Check(TokenType.RParen))
+            if (!Match(TokenType.RParen))
             {
                 parameters = new() { CurrentToken().Value };
                 Require(TokenType.Identifier);
 
-                while (!Check(TokenType.RParen))
+                while (!Match(TokenType.RParen))
                 {
                     parameters.Add(CurrentToken().Value);
                     Require(TokenType.Identifier);
                 }
             }
 
-            Require(TokenType.RParen);
-
             return new Lambda(parameters, Body());
         }
 
-        private Let Let()
+        private Let LetExpr()
         {
             Require(TokenType.LParen);
 
@@ -339,17 +289,15 @@ namespace RainLisp.Parsing
             do
             {
                 letClauses.Add(LetClause());
-            } while (!Check(TokenType.RParen));
-
-            Require(TokenType.RParen);
+            } while (!Match(TokenType.RParen));
 
             return new Let(letClauses, Body());
         }
 
-        private Application Application()
+        private Application ApplicationExpr()
         {
-            // Function to be applied is an identifier for a function, a lambda, or a call that returns a function itself.
-            var function = Expression();
+            // Operator is an identifier for a function, a lambda, or a call that returns a function itself.
+            var operatorToApply = Expression();
 
             // Parameter values
             List<Expression>? operands = null;
@@ -359,13 +307,40 @@ namespace RainLisp.Parsing
                 operands = new() { Expression() };
 
                 while (!Check(TokenType.RParen))
-                {
                     operands.Add(Expression());
-                }
             }
 
-            return new Application(function, operands);
-        } 
+            return new Application(operatorToApply, operands);
+        }
+        #endregion
+
+        #region Methods for consuming and checking tokens.
+        private Token CurrentToken() => _tokens[_currPosition];
+
+        private bool Check(TokenType tokenType)
+            => _currPosition < _tokens.Count && _tokens[_currPosition].Type == tokenType;
+
+        private bool CheckNext(TokenType tokenType)
+        {
+            int pos = _currPosition + 1;
+
+            return pos < _tokens.Count && _tokens[pos].Type == tokenType;
+        }
+
+        private bool Match(TokenType tokenType)
+        {
+            if (!Check(tokenType))
+                return false;
+
+            _currPosition++;
+            return true;
+        }
+
+        private void Require(TokenType tokenType)
+        {
+            if (!Match(tokenType))
+                throw new InvalidOperationException($"Missing required symbol {tokenType}.");
+        }
         #endregion
     }
 }
