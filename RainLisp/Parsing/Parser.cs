@@ -120,38 +120,32 @@ namespace RainLisp.Parsing
                 if (!Match(TokenType.LParen))
                     throw new InvalidOperationException("Invalid expression.");
 
-                Expression expression;
-
                 if (Match(TokenType.Quote))
-                    expression = QuoteExpr();
+                    return QuoteExpr();
 
                 else if (Match(TokenType.Assignment))
-                    expression = AssignmentExpr();
+                    return AssignmentExpr();
 
                 else if (Match(TokenType.If))
-                    expression = IfExpr();
+                    return IfExpr();
 
                 // cond is a derived expression, so it gets converted to an equivalent if.
                 else if (Match(TokenType.Cond))
-                    expression = ConditionExpr().ToIf();
+                    return ConditionExpr().ToIf();
 
                 else if (Match(TokenType.Begin))
-                    expression = BeginExpr();
+                    return BeginExpr();
 
                 else if (Match(TokenType.Lambda))
-                    expression = LambdaExpr();
+                    return LambdaExpr();
 
                 // let is a derived expression, so it gets converted to an equivalent lambda application.
                 else if (Match(TokenType.Let))
-                    expression = LetExpr().ToLambdaApplication();
+                    return LetExpr().ToLambdaApplication();
 
                 // If it is none of the above, then it can only be a function application.
                 else
-                    expression = ApplicationExpr();
-
-                Require(TokenType.RParen);
-
-                return expression;
+                    return ApplicationExpr();
             }
         }
 
@@ -160,12 +154,7 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
 
             var predicate = Expression();
-            var expressions = new List<Expression>();
-
-            do
-            {
-                expressions.Add(Expression());
-            } while (!Match(TokenType.RParen));
+            var expressions = ExpressionsUntilRightParenthesis();
 
             return new ConditionClause(predicate, expressions);
         }
@@ -175,12 +164,7 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
             Require(TokenType.Else);
 
-            var expressions = new List<Expression>();
-
-            do
-            {
-                expressions.Add(Expression());
-            } while (!Match(TokenType.RParen));
+            var expressions = ExpressionsUntilRightParenthesis();
 
             return new ConditionElseClause(expressions);
         }
@@ -208,6 +192,7 @@ namespace RainLisp.Parsing
             // Can there be more than one?
             // Support the 'a syntax or not
             Require(TokenType.Identifier);
+            Require(TokenType.RParen);
 
             return quoteExpression;
         }
@@ -215,9 +200,12 @@ namespace RainLisp.Parsing
         private Assignment AssignmentExpr()
         {
             string identifierName = CurrentToken().Value;
-            Require(TokenType.Identifier);
 
-            return new Assignment(identifierName, Expression());
+            Require(TokenType.Identifier);
+            var value = Expression();
+            Require(TokenType.RParen);
+
+            return new Assignment(identifierName, value);
         }
 
         private If IfExpr()
@@ -226,7 +214,13 @@ namespace RainLisp.Parsing
             var consequent = Expression();
 
             // Optional alternative.
-            Expression? alternative = !Check(TokenType.RParen) ? Expression() : null;
+            Expression? alternative = null;
+
+            if (!Match(TokenType.RParen))
+            {
+                alternative = Expression();
+                Require(TokenType.RParen);
+            }
 
             return new If(predicate, consequent, alternative);
         }
@@ -235,25 +229,29 @@ namespace RainLisp.Parsing
         {
             var clauses = new List<ConditionClause>();
 
+            // Optional else.
+            ConditionElseClause? elseClause = null;
+
             // We deal with conditional clauses until a conditional else or a closing parenthesis is reached.
             do
             {
                 clauses.Add(ConditionClause());
-            } while (!CheckNext(TokenType.Else) && !Check(TokenType.RParen));
 
-            // Optional else.
-            ConditionElseClause? elseClause = CheckNext(TokenType.Else) ? ConditionElseClause() : null;
+                if (CheckNext(TokenType.Else))
+                {
+                    elseClause = ConditionElseClause();
+                    Require(TokenType.RParen);
+                    break;
+                }
+
+            } while (!Match(TokenType.RParen));
 
             return new Condition(clauses, elseClause);
         }
 
         private Begin BeginExpr()
         {
-            var expressions = new List<Expression>();
-            do
-            {
-                expressions.Add(Expression());
-            } while (!Check(TokenType.RParen));
+            var expressions = ExpressionsUntilRightParenthesis();
 
             return new Begin(expressions);
         }
@@ -277,7 +275,10 @@ namespace RainLisp.Parsing
                 }
             }
 
-            return new Lambda(parameters, Body());
+            var body = Body();
+            Require(TokenType.RParen);
+
+            return new Lambda(parameters, body);
         }
 
         private Let LetExpr()
@@ -291,7 +292,10 @@ namespace RainLisp.Parsing
                 letClauses.Add(LetClause());
             } while (!Match(TokenType.RParen));
 
-            return new Let(letClauses, Body());
+            var body = Body();
+            Require(TokenType.RParen);
+
+            return new Let(letClauses, body);
         }
 
         private Application ApplicationExpr()
@@ -302,17 +306,29 @@ namespace RainLisp.Parsing
             // Parameter values
             List<Expression>? operands = null;
 
-            if (!Check(TokenType.RParen))
+            if (!Match(TokenType.RParen))
             {
                 operands = new() { Expression() };
 
-                while (!Check(TokenType.RParen))
+                while (!Match(TokenType.RParen))
                     operands.Add(Expression());
             }
 
             return new Application(operatorToApply, operands);
         }
         #endregion
+
+        private List<Expression> ExpressionsUntilRightParenthesis()
+        {
+            var expressions = new List<Expression>();
+
+            do
+            {
+                expressions.Add(Expression());
+            } while (!Match(TokenType.RParen));
+
+            return expressions;
+        }
 
         #region Methods for consuming and checking tokens.
         private Token CurrentToken() => _tokens[_currPosition];
