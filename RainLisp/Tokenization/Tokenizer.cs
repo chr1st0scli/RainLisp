@@ -11,19 +11,13 @@ namespace RainLisp.Tokenization
 
             expression = expression.Trim();
             var tokens = new List<Token>();
-            string token = string.Empty;
+            string tokenValue = string.Empty;
 
             uint lineNumber = 0, position = 0;
+            bool tokenInstring = false;
+            StringTokenizer? stringTokenizer = null;
 
-            void AddCharToToken(char c) => token += c;
-
-            void RegisterUnknownToken()
-            {
-                if (string.IsNullOrWhiteSpace(token))
-                    return;
-
-                RegisterToken(GetTokenType(token));
-            }
+            void AddCharToToken(char c) => tokenValue += c;
 
             void RegisterToken(TokenType tokenType)
             {
@@ -31,17 +25,32 @@ namespace RainLisp.Tokenization
                 //if (string.IsNullOrWhiteSpace(token))
                 //    return;
 
-                tokens.Add(CreateToken(token, tokenType, lineNumber, position));
-                token = string.Empty;
+                var token = new Token { Value = tokenValue, Type = tokenType, LineNumber = lineNumber, Position = position };
+                tokens.Add(token);
+                tokenValue = string.Empty;
             }
 
             void RegisterSingleCharToken(char c, TokenType tokenType)
             {
-                token = c.ToString();
+                tokenValue = c.ToString();
                 RegisterToken(tokenType);
             }
 
-            bool tokenInstring = false, escaping = false;
+            void RegisterStringLiteralToken()
+            {
+                tokenInstring = false;
+                tokenValue = stringTokenizer!.GetString();
+                RegisterToken(TokenType.String);
+                stringTokenizer = null;
+            }
+
+            void RegisterUnknownToken()
+            {
+                if (string.IsNullOrWhiteSpace(tokenValue))
+                    return;
+
+                RegisterToken(GetTokenType(tokenValue));
+            }
 
             foreach (char c in expression)
             {
@@ -49,46 +58,13 @@ namespace RainLisp.Tokenization
 
                 if (tokenInstring)
                 {
-                    if (escaping)
-                    {
-                        if (c == DOUBLE_QUOTE || c == ESCAPE)
-                            AddCharToToken(c);
-                        else if (c == 'n')
-                            AddCharToToken(NEW_LINE);
-                        else if (c == 'r')
-                            AddCharToToken(CARRIAGE_RETURN);
-                        else if (c == 't')
-                            AddCharToToken(TAB);
-                        else
-                        {
-                            AddCharToToken(ESCAPE);
-                            AddCharToToken(c);
-                        }
-
-                        // Stop escaping, escaping applies to one character only.
-                        escaping = false;
-                    }
-                    else
-                    {
-                        if (c == ESCAPE)
-                        {
-                            escaping = true;
-                        }
-                        // A not escaped double quote ends the string.
-                        else if (c == DOUBLE_QUOTE)
-                        {
-                            tokenInstring = false;
-                            RegisterToken(TokenType.String);
-                        }
-                        else
-                            AddCharToToken(c);
-                    }
+                    stringTokenizer!.AddToString(c);
                 }
                 // Start of a string.
                 else if (c == DOUBLE_QUOTE)
                 {
                     tokenInstring = true;
-                    //AddCharToToken(c);
+                    stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
                 }
                 else if (c == LPAREN)
                 {
@@ -108,9 +84,13 @@ namespace RainLisp.Tokenization
                     position = 0;
                 }
                 else if (c == SPACE || c == TAB)
+                {
                     RegisterUnknownToken();
+                }
                 else
+                {
                     AddCharToToken(c);
+                }
             }
             RegisterUnknownToken();
 
@@ -118,15 +98,6 @@ namespace RainLisp.Tokenization
 
             return tokens;
         }
-
-        private static Token CreateToken(string token, TokenType tokenType, uint lineNumber, uint position)
-            => new()
-            {
-                Value = token,
-                Type = tokenType,
-                LineNumber = lineNumber,
-                Position = position
-            };
 
         private static TokenType GetTokenType(string token)
         {
