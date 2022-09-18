@@ -17,11 +17,11 @@ namespace RainLispTests
             yield return new object[] { "+1", (TokenType.Number, "+1"), (TokenType.EOF, "") };
             yield return new object[] { "-1", (TokenType.Number, "-1"), (TokenType.EOF, "") };
             yield return new object[] { "12.3456", (TokenType.Number, "12.3456"), (TokenType.EOF, "") };
-            yield return new object[] { "\"helloworld\"", (TokenType.String, "\"helloworld\""), (TokenType.EOF, "") };
-            yield return new object[] { "\"hello world\"", (TokenType.String, "\"hello world\""), (TokenType.EOF, "") };
-            yield return new object[] { "\"hello  world\"", (TokenType.String, "\"hello  world\""), (TokenType.EOF, "") };
-            yield return new object[] { @"""hello \""wonderful\"" world""", (TokenType.String, @"""hello \""wonderful\"" world"""), (TokenType.EOF, "") };
-            yield return new object[] { @"""hello \\ wonderful \\ world""", (TokenType.String, @"""hello \\ wonderful \\ world"""), (TokenType.EOF, "") };
+            yield return new object[] { "\"helloworld\"", (TokenType.String, "helloworld"), (TokenType.EOF, "") };
+            yield return new object[] { "\"hello world\"", (TokenType.String, "hello world"), (TokenType.EOF, "") };
+            yield return new object[] { "\"hello  world\"", (TokenType.String, "hello  world"), (TokenType.EOF, "") };
+            yield return new object[] { @"""hello \""wonderful\"" world""", (TokenType.String, "hello \"wonderful\" world"), (TokenType.EOF, "") };
+            yield return new object[] { @"""hello \\ wonderful \\ world""", (TokenType.String, "hello \\ wonderful \\ world"), (TokenType.EOF, "") };
             //yield return new object[] { //[InlineData(@"""hello \\"" wonderful \\ world""", 1)] //no
             yield return new object[] { "true", (TokenType.Boolean, "true"), (TokenType.EOF, "") };
             yield return new object[] { "false", (TokenType.Boolean, "false"), (TokenType.EOF, "") };
