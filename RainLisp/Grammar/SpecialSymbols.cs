@@ -9,6 +9,5 @@
         public const char NEW_LINE = '\n';
         public const char TAB = '\t';
         public const char DOUBLE_QUOTE = '"';
-        public const char ESCAPE = '\\';
     }
 }

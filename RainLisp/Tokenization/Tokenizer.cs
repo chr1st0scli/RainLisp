@@ -1,5 +1,6 @@
 ﻿using static RainLisp.Grammar.SpecialSymbols;
 using static RainLisp.Grammar.Keywords;
+using System.Text;
 
 namespace RainLisp.Tokenization
 {
@@ -11,89 +12,84 @@ namespace RainLisp.Tokenization
 
             expression = expression.Trim();
             var tokens = new List<Token>();
-            string token = string.Empty;
+            var tokenStringBuilder = new StringBuilder();
 
-            void AddCharToToken(char c) => token += c;
+            uint lineNumber = 0, position = 0;
+            bool tokenInstring = false;
+            StringTokenizer? stringTokenizer = null;
 
-            void RegisterToken()
+            void RegisterToken(string value, TokenType tokenType)
             {
-                if (string.IsNullOrWhiteSpace(token))
-                    return;
-
-                tokens.Add(CreateToken(token));
-                token = string.Empty;
+                var token = new Token { Value = value, Type = tokenType, LineNumber = lineNumber, Position = position };
+                tokens.Add(token);
             }
 
-            bool stringToken = false, escapeChar = false;
+            void RegisterStringLiteralToken()
+            {
+                tokenInstring = false;
+                RegisterToken(stringTokenizer!.GetString(), TokenType.String);
+                stringTokenizer = null;
+            }
+
+            void RegisterUnknownToken()
+            {
+                string tokenValue = tokenStringBuilder.ToString();
+                tokenStringBuilder.Clear();
+
+                if (string.IsNullOrWhiteSpace(tokenValue))
+                    return;
+
+                RegisterToken(tokenValue, GetTokenType(tokenValue));
+            }
 
             foreach (char c in expression)
             {
-                if (!stringToken && c == DOUBLE_QUOTE)
-                {
-                    stringToken = true;
-                    AddCharToToken(c);
-                }
-                else if (stringToken)
-                {
-                    AddCharToToken(c);
+                position++; // TODO should be 0-based.
 
-                    if (!escapeChar)
-                    {
-                        if (c == ESCAPE)
-                            escapeChar = true;
-                        else if (c == DOUBLE_QUOTE)
-                        {
-                            stringToken = false;
-                            RegisterToken();
-                        }
-                    }
-                    else
-                        escapeChar = false;
-                }
-                else if (c == LPAREN || c == RPAREN)
+                if (tokenInstring)
+                    stringTokenizer!.AddToString(c);
+                
+                // Start of a string.
+                else if (c == DOUBLE_QUOTE)
                 {
-                    RegisterToken();
-                    token = c.ToString();
-                    RegisterToken();
+                    tokenInstring = true;
+                    stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
                 }
-                else if (c == SPACE || c == CARRIAGE_RETURN || c == NEW_LINE || c == TAB)
-                    RegisterToken();
+                else if (c == LPAREN)
+                {
+                    RegisterUnknownToken();
+                    RegisterToken(c.ToString(), TokenType.LParen);
+                }
+                else if (c == RPAREN)
+                {
+                    RegisterUnknownToken();
+                    RegisterToken(c.ToString(), TokenType.RParen);
+                }
+                else if (c == CARRIAGE_RETURN || c == NEW_LINE)
+                {
+                    RegisterUnknownToken();
+
+                    lineNumber++;
+                    position = 0;
+                }
+                else if (c == SPACE || c == TAB)
+                    RegisterUnknownToken();
+                
                 else
-                    AddCharToToken(c);
+                    tokenStringBuilder.Append(c);
             }
-            RegisterToken();
+            RegisterUnknownToken();
 
             tokens.Add(new Token { Type = TokenType.EOF });
 
             return tokens;
         }
 
-        private static Token CreateToken(string token)
-            => new()
-            {
-                Value = token,
-                Type = GetTokenType(token)
-            };
-
         private static TokenType GetTokenType(string token)
         {
-            ArgumentNullException.ThrowIfNull(token, nameof(token));
-
-            if (string.IsNullOrWhiteSpace(token))
-                throw new ArgumentException("Invalid token.", nameof(token));
-
             TokenType GetOtherType()
             {
-                if (token == LPAREN.ToString())
-                    return TokenType.LParen;
-
-                else if (token == RPAREN.ToString())
-                    return TokenType.RParen;
-
-                else if (token.StartsWith("\"") && token.EndsWith("\""))
-                    return TokenType.String;
-
-                else if (double.TryParse(token, out double _))
+                if (double.TryParse(token, out double _))
                     return TokenType.Number;
 
                 else

@@ -13,7 +13,7 @@ namespace RainLispTests
         [InlineData("+0.5", 0.5)]
         [InlineData("true", true)]
         [InlineData("false", false)]
-        [InlineData("\"hello world\"", "\"hello world\"")]
+        [InlineData("\"hello world\"", "hello world")]
         public void Evaluate_Literal_Correctly(string expression, object expectedResult)
         {
             // Arrange
