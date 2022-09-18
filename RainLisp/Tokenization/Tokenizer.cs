@@ -1,5 +1,6 @@
 ﻿using static RainLisp.Grammar.SpecialSymbols;
 using static RainLisp.Grammar.Keywords;
+using System.Text;
 
 namespace RainLisp.Tokenization
 {
@@ -11,45 +12,34 @@ namespace RainLisp.Tokenization
 
             expression = expression.Trim();
             var tokens = new List<Token>();
-            string tokenValue = string.Empty;
+            var tokenStringBuilder = new StringBuilder();
 
             uint lineNumber = 0, position = 0;
             bool tokenInstring = false;
             StringTokenizer? stringTokenizer = null;
 
-            void AddCharToToken(char c) => tokenValue += c;
-
-            void RegisterToken(TokenType tokenType)
+            void RegisterToken(string value, TokenType tokenType)
             {
-                // DELETE
-                //if (string.IsNullOrWhiteSpace(token))
-                //    return;
-
-                var token = new Token { Value = tokenValue, Type = tokenType, LineNumber = lineNumber, Position = position };
+                var token = new Token { Value = value, Type = tokenType, LineNumber = lineNumber, Position = position };
                 tokens.Add(token);
-                tokenValue = string.Empty;
-            }
-
-            void RegisterSingleCharToken(char c, TokenType tokenType)
-            {
-                tokenValue = c.ToString();
-                RegisterToken(tokenType);
             }
 
             void RegisterStringLiteralToken()
             {
                 tokenInstring = false;
-                tokenValue = stringTokenizer!.GetString();
-                RegisterToken(TokenType.String);
+                RegisterToken(stringTokenizer!.GetString(), TokenType.String);
                 stringTokenizer = null;
             }
 
             void RegisterUnknownToken()
             {
+                string tokenValue = tokenStringBuilder.ToString();
+                tokenStringBuilder.Clear();
+
                 if (string.IsNullOrWhiteSpace(tokenValue))
                     return;
 
-                RegisterToken(GetTokenType(tokenValue));
+                RegisterToken(tokenValue, GetTokenType(tokenValue));
             }
 
             foreach (char c in expression)
@@ -57,9 +47,8 @@ namespace RainLisp.Tokenization
                 position++; // TODO should be 0-based.
 
                 if (tokenInstring)
-                {
                     stringTokenizer!.AddToString(c);
-                }
+                
                 // Start of a string.
                 else if (c == DOUBLE_QUOTE)
                 {
@@ -69,12 +58,12 @@ namespace RainLisp.Tokenization
                 else if (c == LPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterSingleCharToken(c, TokenType.LParen);
+                    RegisterToken(c.ToString(), TokenType.LParen);
                 }
                 else if (c == RPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterSingleCharToken(c, TokenType.RParen);
+                    RegisterToken(c.ToString(), TokenType.RParen);
                 }
                 else if (c == CARRIAGE_RETURN || c == NEW_LINE)
                 {
@@ -84,13 +73,10 @@ namespace RainLisp.Tokenization
                     position = 0;
                 }
                 else if (c == SPACE || c == TAB)
-                {
                     RegisterUnknownToken();
-                }
+                
                 else
-                {
-                    AddCharToToken(c);
-                }
+                    tokenStringBuilder.Append(c);
             }
             RegisterUnknownToken();
 
@@ -101,11 +87,6 @@ namespace RainLisp.Tokenization
 
         private static TokenType GetTokenType(string token)
         {
-            ArgumentNullException.ThrowIfNull(token, nameof(token));
-
-            if (string.IsNullOrWhiteSpace(token))
-                throw new ArgumentException("Invalid token.", nameof(token));
-
             TokenType GetOtherType()
             {
                 if (double.TryParse(token, out double _))
