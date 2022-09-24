@@ -27,7 +27,7 @@ namespace RainLisp.Tokenization
             void RegisterStringLiteralToken()
             {
                 charInstring = false;
-                RegisterToken(stringTokenizer!.GetString(), TokenType.String, position);
+                RegisterToken(stringTokenizer!.GetString(), TokenType.String, position - (uint)stringTokenizer.CharactersProcessed);
                 stringTokenizer = null;
             }
 

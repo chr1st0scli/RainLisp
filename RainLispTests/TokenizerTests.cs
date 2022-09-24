@@ -1,4 +1,3 @@
-using RainLisp;
 using RainLisp.Tokenization;
 
 namespace RainLispTests
@@ -19,11 +18,11 @@ namespace RainLispTests
             yield return new object[] { "-1", new ExpectedToken(TokenType.Number, "-1", 1), new ExpectedToken(TokenType.EOF, "", 3) };
             yield return new object[] { "12.3456", new ExpectedToken(TokenType.Number, "12.3456", 1), new ExpectedToken(TokenType.EOF, "", 8) };
 
-            //yield return new object[] { "\"helloworld\"", new ExpectedToken(TokenType.String, "helloworld", 2), new ExpectedToken(TokenType.EOF, "", 13) };
-            //yield return new object[] { "\"hello world\"", new ExpectedToken(TokenType.String, "hello world", 2), new ExpectedToken(TokenType.EOF, "", 14) };
-            //yield return new object[] { "\"hello  world\"", new ExpectedToken(TokenType.String, "hello  world", 2), new ExpectedToken(TokenType.EOF, "", 15) };
-            //yield return new object[] { @"""hello \""wonderful\"" world""", new ExpectedToken(TokenType.String, "hello \"wonderful\" world", 2), new ExpectedToken(TokenType.EOF, "", 28) };
-            //yield return new object[] { @"""hello \\ wonderful \\ world""", new ExpectedToken(TokenType.String, "hello \\ wonderful \\ world"), new ExpectedToken(TokenType.EOF, "") };
+            yield return new object[] { "\"helloworld\"", new ExpectedToken(TokenType.String, "helloworld", 1), new ExpectedToken(TokenType.EOF, "", 13) };
+            yield return new object[] { "\"hello world\"", new ExpectedToken(TokenType.String, "hello world", 1), new ExpectedToken(TokenType.EOF, "", 14) };
+            yield return new object[] { "\"hello  world\"", new ExpectedToken(TokenType.String, "hello  world", 1), new ExpectedToken(TokenType.EOF, "", 15) };
+            yield return new object[] { @"""hello \""wonderful\"" world""", new ExpectedToken(TokenType.String, "hello \"wonderful\" world", 1), new ExpectedToken(TokenType.EOF, "", 28) };
+            yield return new object[] { @"""hello \\ wonderful \\ world""", new ExpectedToken(TokenType.String, "hello \\ wonderful \\ world", 1), new ExpectedToken(TokenType.EOF, "", 30) };
 
             //yield return new object[] { //[InlineData(@"""hello \\"" wonderful \\ world""", 1)] //no
 
