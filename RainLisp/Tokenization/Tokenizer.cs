@@ -14,20 +14,20 @@ namespace RainLisp.Tokenization
             var tokens = new List<Token>();
             var tokenStringBuilder = new StringBuilder();
 
-            uint lineNumber = 0, position = 0;
-            bool tokenInstring = false;
+            uint line = 1, position = 1;
+            bool charInstring = false, charInComment = false;
             StringTokenizer? stringTokenizer = null;
 
-            void RegisterToken(string value, TokenType tokenType)
+            void RegisterToken(string value, TokenType tokenType, uint tokenPosition)
             {
-                var token = new Token { Value = value, Type = tokenType, LineNumber = lineNumber, Position = position };
+                var token = new Token { Value = value, Type = tokenType, Line = line, Position = tokenPosition };
                 tokens.Add(token);
             }
 
             void RegisterStringLiteralToken()
             {
-                tokenInstring = false;
-                RegisterToken(stringTokenizer!.GetString(), TokenType.String);
+                charInstring = false;
+                RegisterToken(stringTokenizer!.GetString(), TokenType.String, position - (uint)stringTokenizer.CharactersProcessed);
                 stringTokenizer = null;
             }
 
@@ -39,48 +39,68 @@ namespace RainLisp.Tokenization
                 if (string.IsNullOrWhiteSpace(tokenValue))
                     return;
 
-                RegisterToken(tokenValue, GetTokenType(tokenValue));
+                RegisterToken(tokenValue, GetTokenType(tokenValue), position - (uint)tokenValue.Length);
+            }
+
+            void ChangeLine()
+            {
+                line++;
+                position = 0;
             }
 
             foreach (char c in expression)
             {
-                position++; // TODO should be 0-based.
-
-                if (tokenInstring)
+                if (charInstring)
                     stringTokenizer!.AddToString(c);
-                
+
+                else if (charInComment)
+                {
+                    // Disregard a character in a comment, but end the comment when reached a new line.
+                    if (c == CARRIAGE_RETURN || c == NEW_LINE)
+                    {
+                        charInComment = false;
+                        ChangeLine();
+                    }
+                }
+                // Start of a comment.
+                else if (c == COMMENT)
+                {
+                    RegisterUnknownToken();
+                    charInComment = true;
+                }
                 // Start of a string.
                 else if (c == DOUBLE_QUOTE)
                 {
-                    tokenInstring = true;
+                    //RegisterUnknownToken(); ???
+                    charInstring = true;
                     stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
                 }
                 else if (c == LPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterToken(c.ToString(), TokenType.LParen);
+                    RegisterToken(c.ToString(), TokenType.LParen, position);
                 }
                 else if (c == RPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterToken(c.ToString(), TokenType.RParen);
+                    RegisterToken(c.ToString(), TokenType.RParen, position);
                 }
                 else if (c == CARRIAGE_RETURN || c == NEW_LINE)
                 {
                     RegisterUnknownToken();
-
-                    lineNumber++;
-                    position = 0;
+                    ChangeLine();
                 }
                 else if (c == SPACE || c == TAB)
                     RegisterUnknownToken();
                 
                 else
                     tokenStringBuilder.Append(c);
-            }
-            RegisterUnknownToken();
 
-            tokens.Add(new Token { Type = TokenType.EOF });
+                position++;
+            }
+
+            RegisterUnknownToken();
+            RegisterToken(string.Empty, TokenType.EOF, position);
 
             return tokens;
         }

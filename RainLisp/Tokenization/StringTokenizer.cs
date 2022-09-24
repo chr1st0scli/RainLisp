@@ -15,10 +15,13 @@ namespace RainLisp.Tokenization
             _stringCompletedAction = stringCompletedAction ?? throw new ArgumentNullException(nameof(stringCompletedAction));
             _stringBuilder = new StringBuilder();
             _escaping = false;
+            CharactersProcessed = 0;
         }
 
         public void AddToString(char c)
         {
+            CharactersProcessed++;
+
             if (_escaping)
             {
                 if (c == ESCAPABLE_DOUBLE_QUOTE || c == ESCAPE)
@@ -55,5 +58,7 @@ namespace RainLisp.Tokenization
         }
 
         public string GetString() => _stringBuilder.ToString();
+
+        public int CharactersProcessed { get; private set; }
     }
 }
