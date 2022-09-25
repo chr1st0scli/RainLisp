@@ -59,6 +59,6 @@ namespace RainLisp.Tokenization
 
         public string GetString() => _stringBuilder.ToString();
 
-        public int CharactersProcessed { get; private set; }
+        public uint CharactersProcessed { get; private set; }
     }
 }
