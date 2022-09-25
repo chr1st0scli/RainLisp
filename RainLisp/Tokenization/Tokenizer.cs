@@ -14,49 +14,67 @@ namespace RainLisp.Tokenization
             var tokens = new List<Token>();
             var tokenStringBuilder = new StringBuilder();
 
-            uint line = 1, position = 1;
+            uint line = 1, charPosition = 1;
             bool charInstring = false, charInComment = false;
             StringTokenizer? stringTokenizer = null;
 
-            void RegisterToken(string value, TokenType tokenType, uint tokenPosition)
+            void RegisterToken(string value, TokenType tokenType, uint position)
             {
-                var token = new Token { Value = value, Type = tokenType, Line = line, Position = tokenPosition };
+                var token = new Token { Value = value, Type = tokenType, Line = line, Position = position };
                 tokens.Add(token);
             }
 
             void RegisterStringLiteralToken()
             {
                 charInstring = false;
-                RegisterToken(stringTokenizer!.GetString(), TokenType.String, position - (uint)stringTokenizer.CharactersProcessed);
+                RegisterToken(stringTokenizer!.GetString(), TokenType.String, charPosition - (uint)stringTokenizer.CharactersProcessed);
                 stringTokenizer = null;
             }
 
             void RegisterUnknownToken()
             {
+                if (tokenStringBuilder.Length == 0)
+                    return;
+
                 string tokenValue = tokenStringBuilder.ToString();
                 tokenStringBuilder.Clear();
 
                 if (string.IsNullOrWhiteSpace(tokenValue))
                     return;
 
-                RegisterToken(tokenValue, GetTokenType(tokenValue), position - (uint)tokenValue.Length);
+                RegisterToken(tokenValue, GetTokenType(tokenValue), charPosition - (uint)tokenValue.Length);
             }
 
             void ChangeLine()
             {
                 line++;
-                position = 0;
+                charPosition = 0;
             }
 
-            foreach (char c in expression)
+            void PlatformBounceNextNewLine(ref int i)
             {
+                // Skip the next \n character, so that \r\n is treated as a single new line if the platform dictates it.
+                if (i < expression.Length - 1 && expression[i + 1] == NEW_LINE && System.Environment.NewLine == $"{CARRIAGE_RETURN}{NEW_LINE}")
+                    i++;
+            }
+
+            for (int i = 0; i < expression.Length; i++)
+            {
+                char c = expression[i];
+
                 if (charInstring)
                     stringTokenizer!.AddToString(c);
 
                 else if (charInComment)
                 {
                     // Disregard a character in a comment, but end the comment when reached a new line.
-                    if (c == CARRIAGE_RETURN || c == NEW_LINE)
+                    if (c == CARRIAGE_RETURN)
+                    {
+                        charInComment = false;
+                        ChangeLine();
+                        PlatformBounceNextNewLine(ref i);
+                    }
+                    else if (c == NEW_LINE)
                     {
                         charInComment = false;
                         ChangeLine();
@@ -78,14 +96,20 @@ namespace RainLisp.Tokenization
                 else if (c == LPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterToken(c.ToString(), TokenType.LParen, position);
+                    RegisterToken(c.ToString(), TokenType.LParen, charPosition);
                 }
                 else if (c == RPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterToken(c.ToString(), TokenType.RParen, position);
+                    RegisterToken(c.ToString(), TokenType.RParen, charPosition);
                 }
-                else if (c == CARRIAGE_RETURN || c == NEW_LINE)
+                else if (c == CARRIAGE_RETURN)
+                {
+                    RegisterUnknownToken();
+                    ChangeLine();
+                    PlatformBounceNextNewLine(ref i);
+                }
+                else if (c == NEW_LINE)
                 {
                     RegisterUnknownToken();
                     ChangeLine();
@@ -96,11 +120,11 @@ namespace RainLisp.Tokenization
                 else
                     tokenStringBuilder.Append(c);
 
-                position++;
+                charPosition++;
             }
 
             RegisterUnknownToken();
-            RegisterToken(string.Empty, TokenType.EOF, position);
+            RegisterToken(string.Empty, TokenType.EOF, charPosition);
 
             return tokens;
         }

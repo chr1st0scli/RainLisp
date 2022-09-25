@@ -13,6 +13,8 @@ namespace RainLispTests
 
         public static IEnumerable<object[]> GetTokens()
         {
+            uint PickLine(uint winOS, uint otherOS) => Environment.NewLine == "\r\n" ? winOS : otherOS;
+
             yield return new object[] { "1", new ExpectedToken(TokenType.Number, "1", 1), new ExpectedToken(TokenType.EOF, "", 2) };
             yield return new object[] { "+1", new ExpectedToken(TokenType.Number, "+1", 1), new ExpectedToken(TokenType.EOF, "", 3) };
             yield return new object[] { "-1", new ExpectedToken(TokenType.Number, "-1", 1), new ExpectedToken(TokenType.EOF, "", 3) };
@@ -109,6 +111,7 @@ namespace RainLispTests
                 "( define (foo x y) (+ x y) )"
             }.Concat(defineExpectedTokens).ToArray();
 
+            // Set different positions for the same expression.
             var defineExpectedTokens2 = defineExpectedTokens
                 .Zip(new[] { 1, 2, 8, 9, 13, 15, 16, 17, 18, 20, 22, 23, 24, 25 })
                 .Select(tokenPositionPair => new ExpectedToken(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
@@ -139,6 +142,7 @@ namespace RainLispTests
                 "( if (> 1 0) 1 0 )"
             }.Concat(ifExpectedTokens).ToArray();
 
+            // Set different positions for the same expression.
             var ifExpectedTokens2 = ifExpectedTokens
                 .Zip(new[] { 1, 2, 4, 5, 7, 9, 10, 12, 14, 15, 16 })
                 .Select(tokenPositionPair => new ExpectedToken(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
@@ -182,6 +186,7 @@ namespace RainLispTests
                 "( cond ( ( >= 1 0) 0) ( ( <= 2 1) 1) ( else 3) )"
             }.Concat(condExpectedTokens).ToArray();
 
+            // Set different positions for the same expression.
             var condExpectedTokens2 = condExpectedTokens
                 .Zip(new[] { 1, 2, 6, 7, 8, 11, 13, 14, 16, 17, 18, 19, 20, 23, 25, 26, 28, 29, 30, 31, 36, 37, 38, 39 })
                 .Select(tokenPositionPair => new ExpectedToken(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
@@ -227,6 +232,7 @@ namespace RainLispTests
                 "( lambda (x y) (+ x y) )"
             }.Concat(lambdaExpectedTokens).ToArray();
 
+            // Set different positions for the same expression.
             var lambdaExpectedTokens2 = lambdaExpectedTokens
                 .Zip(new[] { 1, 2, 8, 9, 11, 12, 13, 14, 16, 18, 19, 20, 21 })
                 .Select(tokenPositionPair => new ExpectedToken(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
@@ -270,6 +276,7 @@ namespace RainLispTests
                 "( let ((a 1) (b 2) (c 3)) (+ a b c) )"
             }.Concat(letExpectedTokens).ToArray();
 
+            // Set different positions for the same expression.
             var letExpectedTokens2 = letExpectedTokens
                 .Zip(new[] { 1, 2, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 25, 27, 29, 30, 31, 32 })
                 .Select(tokenPositionPair => new ExpectedToken(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
@@ -394,19 +401,39 @@ namespace RainLispTests
 
             yield return new object[] { "()", new ExpectedToken(TokenType.LParen, "(", 1), new ExpectedToken(TokenType.RParen, ")", 2), new ExpectedToken(TokenType.EOF, "", 3) };
 
+            var tokensOnDifferentLines = new ExpectedToken[]
+            {
+                new(TokenType.LParen, "(", 1),
+                new(TokenType.Identifier, "+", 2),
+                new(TokenType.Number, "1", 4),
+                new(TokenType.Number, "2", 1, 2),
+                new(TokenType.Number, "3", 1, 3),
+                new(TokenType.Number, "4", 1, PickLine(4, 5)),
+                new(TokenType.Number, "5", 3, PickLine(4, 5)),
+                new(TokenType.RParen, ")", 4, PickLine(4, 5)),
+                new(TokenType.EOF, "", 5, PickLine(4, 5))
+            };
+
             yield return new object[]
             {
                 "(+ 1\n2\r3\r\n4\t5)",
-                new ExpectedToken(TokenType.LParen, "(", 1),
-                new ExpectedToken(TokenType.Identifier, "+", 2),
-                new ExpectedToken(TokenType.Number, "1", 4),
-                new ExpectedToken(TokenType.Number, "2", 1, 2),
-                new ExpectedToken(TokenType.Number, "3", 1, 3),
-                new ExpectedToken(TokenType.Number, "4", 1, 5), // line 5 maybe should become 4 because of consecutive \r\n
-                new ExpectedToken(TokenType.Number, "5", 3, 5),
-                new ExpectedToken(TokenType.RParen, ")", 4, 5),
-                new ExpectedToken(TokenType.EOF, "", 5, 5)
-            };
+            }.Concat(tokensOnDifferentLines).ToArray();
+
+            // Set different lines for the same expression.
+            var tokensOnDifferentLines2 = tokensOnDifferentLines
+                .Zip(new[] { 1, 1, 1, 2, 3, 5, 5, 5, 5 })
+                .Select(tokenPositionPair => new ExpectedToken(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, tokenPositionPair.First.Position, (uint)tokenPositionPair.Second))
+                .ToArray();
+
+            yield return new object[]
+            {
+                "(+ 1\n2\r3\r\r4\t5)",
+            }.Concat(tokensOnDifferentLines2).ToArray();
+
+            yield return new object[]
+            {
+                "(+ 1\n2\r3\n\n4\t5)",
+            }.Concat(tokensOnDifferentLines2).ToArray();
 
             yield return new object[]
             {
@@ -448,10 +475,10 @@ namespace RainLispTests
 2)",
                 new ExpectedToken(TokenType.LParen, "(", 1),
                 new ExpectedToken(TokenType.Identifier, "+", 2),
-                new ExpectedToken(TokenType.Number, "1", 1, 3), // maybe should be 2 and next all 4 because of consecutive \r\n
-                new ExpectedToken(TokenType.Number, "2", 1, 5),
-                new ExpectedToken(TokenType.RParen, ")", 2, 5),
-                new ExpectedToken(TokenType.EOF, "", 3, 5)
+                new ExpectedToken(TokenType.Number, "1", 1, PickLine(2, 3)),
+                new ExpectedToken(TokenType.Number, "2", 1, PickLine(3, 5)),
+                new ExpectedToken(TokenType.RParen, ")", 2, PickLine(3, 5)),
+                new ExpectedToken(TokenType.EOF, "", 3, PickLine(3, 5))
             };
 
             yield return new object[]
@@ -474,30 +501,30 @@ namespace RainLispTests
         num2))
 
 (max 55 21); Expecting 55.",
-                new ExpectedToken(TokenType.LParen, "(", 1, 3),
-                new ExpectedToken(TokenType.Definition, "define", 2, 3),
-                new ExpectedToken(TokenType.LParen, "(", 9, 3),
-                new ExpectedToken(TokenType.Identifier, "max", 10, 3),
-                new ExpectedToken(TokenType.Identifier, "num1", 14, 3),
-                new ExpectedToken(TokenType.Identifier, "num2", 19, 3),
-                new ExpectedToken(TokenType.RParen, ")", 23, 3),
-                new ExpectedToken(TokenType.LParen, "(", 5, 7),
-                new ExpectedToken(TokenType.If, "if", 6, 7),
-                new ExpectedToken(TokenType.LParen, "(", 9, 7),
-                new ExpectedToken(TokenType.Identifier, ">", 10, 7),
-                new ExpectedToken(TokenType.Identifier, "num1", 12, 7),
-                new ExpectedToken(TokenType.Identifier, "num2", 17, 7),
-                new ExpectedToken(TokenType.RParen, ")", 21, 7),
-                new ExpectedToken(TokenType.Identifier, "num1", 23, 7),
-                new ExpectedToken(TokenType.Identifier, "num2", 9, 9),
-                new ExpectedToken(TokenType.RParen, ")", 13, 9),
-                new ExpectedToken(TokenType.RParen, ")", 14, 9),
-                new ExpectedToken(TokenType.LParen, "(", 1, 13),
-                new ExpectedToken(TokenType.Identifier, "max", 2, 13),
-                new ExpectedToken(TokenType.Number, "55", 6, 13),
-                new ExpectedToken(TokenType.Number, "21", 9, 13),
-                new ExpectedToken(TokenType.RParen, ")", 11, 13),
-                new ExpectedToken(TokenType.EOF, "", 27, 13),
+                new ExpectedToken(TokenType.LParen, "(", 1, PickLine(2, 3)),
+                new ExpectedToken(TokenType.Definition, "define", 2, PickLine(2, 3)),
+                new ExpectedToken(TokenType.LParen, "(", 9, PickLine(2, 3)),
+                new ExpectedToken(TokenType.Identifier, "max", 10, PickLine(2, 3)),
+                new ExpectedToken(TokenType.Identifier, "num1", 14, PickLine(2, 3)),
+                new ExpectedToken(TokenType.Identifier, "num2", 19, PickLine(2, 3)),
+                new ExpectedToken(TokenType.RParen, ")", 23, PickLine(2, 3)),
+                new ExpectedToken(TokenType.LParen, "(", 5, PickLine(4, 7)),
+                new ExpectedToken(TokenType.If, "if", 6, PickLine(4, 7)),
+                new ExpectedToken(TokenType.LParen, "(", 9, PickLine(4, 7)),
+                new ExpectedToken(TokenType.Identifier, ">", 10, PickLine(4, 7)),
+                new ExpectedToken(TokenType.Identifier, "num1", 12, PickLine(4, 7)),
+                new ExpectedToken(TokenType.Identifier, "num2", 17, PickLine(4, 7)),
+                new ExpectedToken(TokenType.RParen, ")", 21, PickLine(4, 7)),
+                new ExpectedToken(TokenType.Identifier, "num1", 23, PickLine(4, 7)),
+                new ExpectedToken(TokenType.Identifier, "num2", 9, PickLine(5, 9)),
+                new ExpectedToken(TokenType.RParen, ")", 13, PickLine(5, 9)),
+                new ExpectedToken(TokenType.RParen, ")", 14, PickLine(5, 9)),
+                new ExpectedToken(TokenType.LParen, "(", 1, PickLine(7, 13)),
+                new ExpectedToken(TokenType.Identifier, "max", 2, PickLine(7, 13)),
+                new ExpectedToken(TokenType.Number, "55", 6, PickLine(7, 13)),
+                new ExpectedToken(TokenType.Number, "21", 9, PickLine(7, 13)),
+                new ExpectedToken(TokenType.RParen, ")", 11, PickLine(7, 13)),
+                new ExpectedToken(TokenType.EOF, "", 27, PickLine(7, 13)),
             };
         }
 
