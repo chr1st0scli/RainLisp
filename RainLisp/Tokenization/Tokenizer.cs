@@ -27,7 +27,8 @@ namespace RainLisp.Tokenization
             void RegisterStringLiteralToken()
             {
                 charInstring = false;
-                RegisterToken(stringTokenizer!.GetString(), TokenType.String, charPosition - (uint)stringTokenizer.CharactersProcessed);
+                // The string token's position relates to the actual number of characters typed in the string and not the resulting string value's length.
+                RegisterToken(stringTokenizer!.GetString(), TokenType.String, charPosition - stringTokenizer.CharactersProcessed);
                 stringTokenizer = null;
             }
 
@@ -65,9 +66,9 @@ namespace RainLisp.Tokenization
                 if (charInstring)
                     stringTokenizer!.AddToString(c);
 
+                // Disregard a character in a comment except a new line that ends it.
                 else if (charInComment)
                 {
-                    // Disregard a character in a comment, but end the comment when reached a new line.
                     if (c == CARRIAGE_RETURN)
                     {
                         charInComment = false;
@@ -89,7 +90,7 @@ namespace RainLisp.Tokenization
                 // Start of a string.
                 else if (c == DOUBLE_QUOTE)
                 {
-                    //RegisterUnknownToken(); ???
+                    RegisterUnknownToken();
                     charInstring = true;
                     stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
                 }
@@ -122,6 +123,9 @@ namespace RainLisp.Tokenization
 
                 charPosition++;
             }
+
+            if (charInstring)
+                throw new InvalidOperationException("Unclosed string literal.");
 
             RegisterUnknownToken();
             RegisterToken(string.Empty, TokenType.EOF, charPosition);
