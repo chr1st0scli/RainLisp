@@ -427,6 +427,11 @@ namespace RainLispTests
 
             yield return new object[]
             {
+                "(+ 1\n2\r3\n\r4\t5)",
+            }.Concat(tokensOnDifferentLines2).ToArray();
+
+            yield return new object[]
+            {
                 "(+ 1\n2\r3\r\r4\t5)",
             }.Concat(tokensOnDifferentLines2).ToArray();
 
