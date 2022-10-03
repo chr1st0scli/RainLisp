@@ -1,6 +1,6 @@
 ﻿namespace RainLisp.Grammar
 {
-    public static class SpecialSymbols
+    public static class Delimiters
     {
         public const char LPAREN = '(';
         public const char RPAREN = ')';

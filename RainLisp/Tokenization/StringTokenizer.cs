@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using static RainLisp.Grammar.SpecialSymbols;
+using static RainLisp.Grammar.Delimiters;
 using static RainLisp.Grammar.StringEscapableChars;
 
 namespace RainLisp.Tokenization

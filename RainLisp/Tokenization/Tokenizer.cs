@@ -1,4 +1,4 @@
-﻿using static RainLisp.Grammar.SpecialSymbols;
+﻿using static RainLisp.Grammar.Delimiters;
 using static RainLisp.Grammar.Keywords;
 using System.Text;
 
@@ -12,7 +12,7 @@ namespace RainLisp.Tokenization
 
             expression = expression.Trim();
             var tokens = new List<Token>();
-            var tokenStringBuilder = new StringBuilder();
+            var lexemeStringBuilder = new StringBuilder();
 
             uint line = 1, charPosition = 1;
             bool charInstring = false, charInComment = false;
@@ -34,16 +34,16 @@ namespace RainLisp.Tokenization
 
             void RegisterUnknownToken()
             {
-                if (tokenStringBuilder.Length == 0)
+                if (lexemeStringBuilder.Length == 0)
                     return;
 
-                string tokenValue = tokenStringBuilder.ToString();
-                tokenStringBuilder.Clear();
+                string value = lexemeStringBuilder.ToString();
+                lexemeStringBuilder.Clear();
 
-                if (string.IsNullOrWhiteSpace(tokenValue))
+                if (string.IsNullOrWhiteSpace(value))
                     return;
 
-                RegisterToken(tokenValue, GetTokenType(tokenValue), charPosition - (uint)tokenValue.Length);
+                RegisterToken(value, GetTokenType(value), charPosition - (uint)value.Length);
             }
 
             void ChangeLine()
@@ -119,7 +119,7 @@ namespace RainLisp.Tokenization
                     RegisterUnknownToken();
                 
                 else
-                    tokenStringBuilder.Append(c);
+                    lexemeStringBuilder.Append(c);
 
                 charPosition++;
             }
@@ -133,18 +133,18 @@ namespace RainLisp.Tokenization
             return tokens;
         }
 
-        private static TokenType GetTokenType(string token)
+        private static TokenType GetTokenType(string value)
         {
             TokenType GetOtherType()
             {
-                if (double.TryParse(token, out double _))
+                if (double.TryParse(value, out double _))
                     return TokenType.Number;
 
                 else
                     return TokenType.Identifier;
             }
 
-            return token switch
+            return value switch
             {
                 TRUE or FALSE => TokenType.Boolean,
                 QUOTE => TokenType.Quote,
