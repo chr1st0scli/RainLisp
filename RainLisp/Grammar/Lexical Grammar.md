@@ -31,3 +31,9 @@ An identifier can comprise of one or more of any characters except `;` `"` `(` `
 ```
 [^;"()\s]+
 ```
+
+## Delimiters
+Numbers, boolean literals, identifiers and special keywords are delimited with `;` `"` `(` `)` or any white space character.
+```
+[;"()\s]
+```
