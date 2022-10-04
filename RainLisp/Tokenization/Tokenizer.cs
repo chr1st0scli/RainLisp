@@ -6,16 +6,19 @@ namespace RainLisp.Tokenization
 {
     public class Tokenizer : ITokenizer
     {
-        public IList<Token> Tokenize(string expression)
+        public IList<Token> Tokenize(string? expression)
         {
-            ArgumentNullException.ThrowIfNull(expression, nameof(expression));
-
-            expression = expression.Trim();
             var tokens = new List<Token>();
-            var lexemeStringBuilder = new StringBuilder();
-
             uint line = 1, charPosition = 1;
+
+            if (string.IsNullOrEmpty(expression))
+            {
+                RegisterEOF();
+                return tokens;
+            }
+
             bool charInstring = false, charInComment = false;
+            var lexemeStringBuilder = new StringBuilder();
             StringTokenizer? stringTokenizer = null;
 
             void RegisterToken(string value, TokenType tokenType, uint position)
@@ -23,6 +26,8 @@ namespace RainLisp.Tokenization
                 var token = new Token { Value = value, Type = tokenType, Line = line, Position = position };
                 tokens.Add(token);
             }
+
+            void RegisterEOF() => RegisterToken(string.Empty, TokenType.EOF, charPosition);
 
             void RegisterStringLiteralToken()
             {
@@ -128,7 +133,7 @@ namespace RainLisp.Tokenization
                 throw new InvalidOperationException("Unclosed string literal.");
 
             RegisterUnknownToken();
-            RegisterToken(string.Empty, TokenType.EOF, charPosition);
+            RegisterEOF();
 
             return tokens;
         }

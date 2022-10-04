@@ -2,6 +2,6 @@
 {
     public interface ITokenizer
     {
-        IList<Token> Tokenize(string expression);
+        IList<Token> Tokenize(string? expression);
     }
 }

@@ -16,9 +16,9 @@ Valid examples are: `12` `012` `12.34` `.34`
 
 ## Strings
 ### Unescaped String Literals
-An unescaped string literal starts and ends with a `"` and encloses none or more of any characters except a carriage return, a line feed, a tab or a backslash character.
+An unescaped string literal starts and ends with a `"` and encloses none or more of any characters except a carriage return, a line feed or a backslash character. Therefore, multiline string literals are not allowed.
 ```
-"[^"\r\n\t\\]*"
+"[^"\r\n\\]*"
 ```
 ### Valid Escape Sequences
 The valid escape sequences in a string literal are `\"` `\r` `\n` `\t` and `\\`.

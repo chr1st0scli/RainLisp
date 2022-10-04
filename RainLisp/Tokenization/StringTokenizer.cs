@@ -37,8 +37,7 @@ namespace RainLisp.Tokenization
                     _stringBuilder.Append(TAB);
 
                 else
-                    // TODO Unknown escape sequence exception.
-                    _stringBuilder.Append(ESCAPE).Append(c);
+                    throw new InvalidOperationException($"Unknown escape sequence {c}.");
 
                 // Stop escaping, escaping applies to one character only.
                 _escaping = false;
@@ -51,6 +50,10 @@ namespace RainLisp.Tokenization
                 // A not escaped double quote ends the string.
                 else if (c == DOUBLE_QUOTE)
                     _stringCompletedAction();
+
+                // Multiline string literals are not supported.
+                else if (c == CARRIAGE_RETURN || c == NEW_LINE)
+                    throw new InvalidOperationException($"Unexpected character inside string literal {c}.");
 
                 else
                     _stringBuilder.Append(c);
