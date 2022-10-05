@@ -589,6 +589,7 @@ namespace RainLispTests
 
         [Theory]
         [InlineData("\"\\\"")]
+        [InlineData("\"hello world.\\\"")]
         [InlineData("\"hi")]
         [InlineData("\"hi 12")]
         [InlineData("13\"hi")]
@@ -600,10 +601,11 @@ namespace RainLispTests
 
             // Act
             // Assert
-            Assert.Throws<InvalidOperationException>(action);
+            Assert.Throws<NonTerminatedStringException>(action);
         }
 
         [Theory]
+        [InlineData("\"hello\nworld.\\\"")]
         [InlineData("\"hello\nworld.\"")]
         [InlineData("\"hello\rworld.\"")]
         [InlineData("\"hello\r\nworld.\"")]
@@ -616,7 +618,7 @@ world.""")]
 
             // Act
             // Assert
-            Assert.Throws<InvalidOperationException>(action);
+            Assert.Throws<InvalidStringCharacterException>(action);
         }
 
         [Theory]
@@ -632,7 +634,7 @@ world.""")]
 
             // Act
             // Assert
-            Assert.Throws<InvalidOperationException>(action);
+            Assert.Throws<InvalidEscapeSequenceException>(action);
         }
     }
 }

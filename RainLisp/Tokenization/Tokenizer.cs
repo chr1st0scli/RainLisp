@@ -130,7 +130,7 @@ namespace RainLisp.Tokenization
             }
 
             if (charInstring)
-                throw new InvalidOperationException("Unclosed string literal.");
+                throw new NonTerminatedStringException();
 
             RegisterUnknownToken();
             RegisterEOF();

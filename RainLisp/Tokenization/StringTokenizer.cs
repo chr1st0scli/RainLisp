@@ -37,7 +37,7 @@ namespace RainLisp.Tokenization
                     _stringBuilder.Append(TAB);
 
                 else
-                    throw new InvalidOperationException($"Unknown escape sequence {c}.");
+                    throw new InvalidEscapeSequenceException(c);
 
                 // Stop escaping, escaping applies to one character only.
                 _escaping = false;
@@ -53,7 +53,7 @@ namespace RainLisp.Tokenization
 
                 // Multiline string literals are not supported.
                 else if (c == CARRIAGE_RETURN || c == NEW_LINE)
-                    throw new InvalidOperationException($"Unexpected character inside string literal {c}.");
+                    throw new InvalidStringCharacterException(c);
 
                 else
                     _stringBuilder.Append(c);
