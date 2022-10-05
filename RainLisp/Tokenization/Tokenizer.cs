@@ -27,13 +27,13 @@ namespace RainLisp.Tokenization
                 tokens.Add(token);
             }
 
-            void RegisterEOF() => RegisterToken(string.Empty, TokenType.EOF, charPosition);
+            void RegisterEOF() 
+                => RegisterToken(string.Empty, TokenType.EOF, charPosition);
 
             void RegisterStringLiteralToken()
             {
                 charInstring = false;
-                // The string token's position relates to the actual number of characters typed in the string and not the resulting string value's length.
-                RegisterToken(stringTokenizer!.GetString(), TokenType.String, charPosition - stringTokenizer.CharactersProcessed);
+                RegisterToken(stringTokenizer!.GetString(), TokenType.String, GetLastStringStartPosition());
                 stringTokenizer = null;
             }
 
@@ -63,6 +63,10 @@ namespace RainLisp.Tokenization
                 if (i < expression.Length - 1 && expression[i + 1] == NEW_LINE && System.Environment.NewLine == $"{CARRIAGE_RETURN}{NEW_LINE}")
                     i++;
             }
+
+            // The string token's position relates to the actual number of characters typed in the string and not the resulting string value's length.
+            uint GetLastStringStartPosition()
+                => charPosition - stringTokenizer!.CharactersProcessed - 1;
 
             for (int i = 0; i < expression.Length; i++)
             {
@@ -130,7 +134,7 @@ namespace RainLisp.Tokenization
             }
 
             if (charInstring)
-                throw new InvalidOperationException("Unclosed string literal.");
+                throw new NonTerminatedStringException(line, GetLastStringStartPosition());
 
             RegisterUnknownToken();
             RegisterEOF();
