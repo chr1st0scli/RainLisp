@@ -49,7 +49,10 @@ namespace RainLisp.Tokenization
 
                 // A not escaped double quote ends the string.
                 else if (c == DOUBLE_QUOTE)
+                {
+                    CharactersProcessed--;
                     _stringCompletedAction();
+                }
 
                 // Multiline string literals are not supported.
                 else if (c == CARRIAGE_RETURN || c == NEW_LINE)

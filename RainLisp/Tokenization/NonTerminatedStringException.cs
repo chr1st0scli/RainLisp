@@ -2,16 +2,26 @@
 {
     public class NonTerminatedStringException : Exception
     {
-        public NonTerminatedStringException()
+        public NonTerminatedStringException(uint line, uint position)
         {
+            Line = line;
+            Position = position;
         }
 
-        public NonTerminatedStringException(string? message) : base(message)
+        public NonTerminatedStringException(uint line, uint position, string? message) : base(message)
         {
+            Line = line;
+            Position = position;
         }
 
-        public NonTerminatedStringException(string? message, Exception? innerException) : base(message, innerException)
+        public NonTerminatedStringException(uint line, uint position, string? message, Exception? innerException) : base(message, innerException)
         {
+            Line = line;
+            Position = position;
         }
+
+        public uint Line { get; init; }
+
+        public uint Position { get; init; }
     }
 }

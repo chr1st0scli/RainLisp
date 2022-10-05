@@ -588,20 +588,40 @@ namespace RainLispTests
         }
 
         [Theory]
-        [InlineData("\"\\\"")]
-        [InlineData("\"hello world.\\\"")]
-        [InlineData("\"hi")]
-        [InlineData("\"hi 12")]
-        [InlineData("13\"hi")]
-        [InlineData(@"""hello \\"" wonderful \\ world""")]
-        public void Tokenize_UnclosedString_Throws(string expression)
+        [InlineData("\"\\\"", 1, 1)]
+        [InlineData("\"hello world.\\\"", 1, 1)]
+        [InlineData("\"hi", 1, 1)]
+        [InlineData("\"hi 12", 1, 1)]
+        [InlineData("13\"hi", 1, 3)]
+        [InlineData(@"""hello \\"" wonderful \\ world""", 1, 30)]
+        [InlineData(@"a b c ""hi", 1, 7)]
+        [InlineData(@"""hi a b c", 1, 1)]
+        [InlineData(@" ""hi a b c", 1, 2)]
+        [InlineData("a b c\n\"hi", 2, 1)]
+        [InlineData("a b c\n\"hi\" d \"world", 2, 8)]
+        [InlineData("\"hi\" \"world", 1, 6)]
+        [InlineData("\"hi\"\na\n\"world", 3, 1)]
+        [InlineData("\"hi\"\na\nd \"world", 3, 3)]
+        public void Tokenize_NonTerminatedString_Throws(string expression, uint expectedLine, uint expectedPosition)
         {
             // Arrange
-            void action() => _tokenizer.Tokenize(expression);
+            NonTerminatedStringException? exception = null;
 
             // Act
+            try
+            {
+                _tokenizer.Tokenize(expression);
+            }
+            catch (NonTerminatedStringException ex)
+            {
+                exception = ex;
+            }
+
             // Assert
-            Assert.Throws<NonTerminatedStringException>(action);
+            Assert.NotNull(exception);
+            Assert.IsType<NonTerminatedStringException>(exception);
+            Assert.Equal(expectedLine, exception!.Line);
+            Assert.Equal(expectedPosition, exception!.Position);
         }
 
         [Theory]
