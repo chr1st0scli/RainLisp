@@ -50,22 +50,17 @@ namespace RainLisp.Parsing
             else if (Match(TokenType.LParen))
             {
                 // Function name
-                identifierName = CurrentToken().Value;
-                Require(TokenType.Identifier);
+                identifierName = RequireValueForIdentifier();
 
                 List<string>? parameters = null;
 
                 // Function parameters
                 if (!Match(TokenType.RParen))
                 {
-                    parameters = new() { CurrentToken().Value };
-                    Require(TokenType.Identifier);
+                    parameters = new() { RequireValueForIdentifier() };
 
                     while (!Match(TokenType.RParen))
-                    {
-                        parameters.Add(CurrentToken().Value);
-                        Require(TokenType.Identifier);
-                    }
+                        parameters.Add(RequireValueForIdentifier());
                 }
 
                 // Defining a function like (define (foo a) a) is just syntactic sugar for (define foo (lambda (a) a))
@@ -172,9 +167,7 @@ namespace RainLisp.Parsing
         {
             Require(TokenType.LParen);
 
-            string identifierName = CurrentToken().Value;
-            Require(TokenType.Identifier);
-
+            string identifierName = RequireValueForIdentifier();
             var expression = Expression();
 
             Require(TokenType.RParen);
@@ -198,9 +191,7 @@ namespace RainLisp.Parsing
 
         private Assignment AssignmentExpr()
         {
-            string identifierName = CurrentToken().Value;
-
-            Require(TokenType.Identifier);
+            string identifierName = RequireValueForIdentifier();
             var value = Expression();
             Require(TokenType.RParen);
 
@@ -264,14 +255,10 @@ namespace RainLisp.Parsing
             // Optional lambda parameters
             if (!Match(TokenType.RParen))
             {
-                parameters = new() { CurrentToken().Value };
-                Require(TokenType.Identifier);
+                parameters = new() { RequireValueForIdentifier() };
 
                 while (!Match(TokenType.RParen))
-                {
-                    parameters.Add(CurrentToken().Value);
-                    Require(TokenType.Identifier);
-                }
+                    parameters.Add(RequireValueForIdentifier());
             }
 
             var body = Body();
@@ -356,6 +343,14 @@ namespace RainLisp.Parsing
         {
             if (!Match(tokenType))
                 throw new InvalidOperationException($"Missing required symbol {tokenType}.");
+        }
+
+        private string RequireValueForIdentifier()
+        {
+            var currentToken = CurrentToken();
+            Require(TokenType.Identifier);
+
+            return currentToken.Value;
         }
         #endregion
     }
