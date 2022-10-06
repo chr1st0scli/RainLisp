@@ -4,7 +4,7 @@
     {
         public Condition(IList<ConditionClause> clauses, ConditionElseClause? elseClause)
         {
-            Clauses = clauses ?? throw new ArgumentNullException(nameof(clauses));
+            Clauses = clauses;
             ElseClause = elseClause;
         }
 

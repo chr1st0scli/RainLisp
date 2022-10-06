@@ -8,7 +8,7 @@ namespace RainLisp.AbstractSyntaxTree
         public Body(IList<Definition>? definitions, IList<Expression> expressions)
         {
             Definitions = definitions;
-            Expressions = expressions ?? throw new ArgumentNullException(nameof(expressions));
+            Expressions = expressions;
         }
 
         public IList<Definition>? Definitions { get; init; }

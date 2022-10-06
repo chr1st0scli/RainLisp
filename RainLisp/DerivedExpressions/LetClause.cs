@@ -6,8 +6,8 @@ namespace RainLisp.DerivedExpressions
     {
         public LetClause(string identifierName, Expression expression)
         {
-            IdentifierName = identifierName ?? throw new ArgumentNullException(nameof(identifierName));
-            Expression = expression ?? throw new ArgumentNullException(nameof(expression));
+            IdentifierName = identifierName;
+            Expression = expression;
         }
 
         public string IdentifierName { get; init; }

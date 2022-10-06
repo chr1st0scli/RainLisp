@@ -7,8 +7,8 @@ namespace RainLisp.AbstractSyntaxTree
     {
         public If(Expression predicate, Expression consequent, Expression? alternative = null)
         {
-            Predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
-            Consequent = consequent ?? throw new ArgumentNullException(nameof(consequent));
+            Predicate = predicate;
+            Consequent = consequent;
             Alternative = alternative;
         }
 

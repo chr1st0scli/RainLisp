@@ -6,8 +6,8 @@ namespace RainLisp.DerivedExpressions
     {
         public ConditionClause(Expression predicate, IList<Expression> expressions)
         {
-            Predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
-            Expressions = expressions ?? throw new ArgumentNullException(nameof(expressions));
+            Predicate = predicate;
+            Expressions = expressions;
         }
 
         public Expression Predicate { get; init; }
