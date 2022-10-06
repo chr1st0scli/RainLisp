@@ -12,7 +12,7 @@ definition = "(" "define" ID expression ")"
 ```
 
 ```	
-body = {definition} expression
+body = {definition} expression {expression}
 ```
 
 ```

@@ -7,10 +7,12 @@
       ],
       "Body": {
         "Definitions": null,
-        "Expression": {
-          "Name": "x",
-          "TypeName": "Identifier"
-        },
+        "Expressions": [
+          {
+            "Name": "x",
+            "TypeName": "Identifier"
+          }
+        ],
         "TypeName": "Body"
       },
       "TypeName": "Lambda"

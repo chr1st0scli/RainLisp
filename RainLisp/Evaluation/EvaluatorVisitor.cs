@@ -70,14 +70,7 @@ namespace RainLisp.Evaluation
         }
 
         public object EvaluateBegin(Begin begin, IEvaluationEnvironment environment)
-        {
-            // Evaluate every expression in order and return the result of the last one.
-            object result = "undefined";
-            foreach (var expression in begin.Expressions)
-                result = expression.AcceptVisitor(this, environment);
-
-            return result;
-        }
+            => EvaluateSequence(begin.Expressions, environment);
 
         public object EvaluateApplication(Application application, IEvaluationEnvironment environment)
         {
@@ -106,8 +99,7 @@ namespace RainLisp.Evaluation
                     EvaluateDefinition(definition, environment);
             }
 
-            // Evalute the single body's expression.
-            return body.Expression.AcceptVisitor(this, environment);
+            return EvaluateSequence(body.Expressions, environment);
         }
 
         public object EvaluateProgram(Program program, IEvaluationEnvironment environment)
@@ -119,6 +111,16 @@ namespace RainLisp.Evaluation
             object result = "undefined";
             // Evaluate all program expressions and the return the last result.
             foreach (var expression in program.Expressions)
+                result = expression.AcceptVisitor(this, environment);
+
+            return result;
+        }
+
+        private object EvaluateSequence(IList<Expression> expressions, IEvaluationEnvironment environment)
+        {
+            // Evaluate every expression in order and return the result of the last one.
+            object result = "undefined";
+            foreach (var expression in expressions)
                 result = expression.AcceptVisitor(this, environment);
 
             return result;

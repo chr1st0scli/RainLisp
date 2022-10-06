@@ -6,10 +6,12 @@
         "Parameters": null,
         "Body": {
           "Definitions": null,
-          "Expression": {
-            "Value": 1.0,
-            "TypeName": "NumberLiteral"
-          },
+          "Expressions": [
+            {
+              "Value": 1.0,
+              "TypeName": "NumberLiteral"
+            }
+          ],
           "TypeName": "Body"
         },
         "TypeName": "Lambda"

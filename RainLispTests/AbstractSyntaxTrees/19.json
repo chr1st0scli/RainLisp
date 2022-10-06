@@ -8,23 +8,25 @@
       ],
       "Body": {
         "Definitions": null,
-        "Expression": {
-          "Operator": {
-            "Name": "+",
-            "TypeName": "Identifier"
-          },
-          "Operands": [
-            {
-              "Name": "x",
+        "Expressions": [
+          {
+            "Operator": {
+              "Name": "+",
               "TypeName": "Identifier"
             },
-            {
-              "Name": "y",
-              "TypeName": "Identifier"
-            }
-          ],
-          "TypeName": "Application"
-        },
+            "Operands": [
+              {
+                "Name": "x",
+                "TypeName": "Identifier"
+              },
+              {
+                "Name": "y",
+                "TypeName": "Identifier"
+              }
+            ],
+            "TypeName": "Application"
+          }
+        ],
         "TypeName": "Body"
       },
       "TypeName": "Lambda"

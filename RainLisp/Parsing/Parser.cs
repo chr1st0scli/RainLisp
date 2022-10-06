@@ -93,10 +93,9 @@ namespace RainLisp.Parsing
                     definitions.Add(Definition());
             }
 
-            // If I wanted more than one expression, I would have a problem between detecting an additional expression or an erroneous one.
-            // I.e. calling Expression again, I would have to catch the exception. But what would it mean? There is an additional erroneous expression,
-            // or there is no additional expression? Maybe this indicates a problem with my grammar, but why doesn't the user use a singe begin expression to combine many?
-            return new Body(definitions, Expression());
+            var expressions = OneOrMoreExpressionsUntilRightParen(false);
+
+            return new Body(definitions, expressions);
         }
 
         private Expression Expression()
@@ -154,7 +153,7 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
 
             var predicate = Expression();
-            var expressions = ExpressionsUntilRightParenthesis();
+            var expressions = OneOrMoreExpressionsUntilRightParen();
 
             return new ConditionClause(predicate, expressions);
         }
@@ -164,7 +163,7 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
             Require(TokenType.Else);
 
-            var expressions = ExpressionsUntilRightParenthesis();
+            var expressions = OneOrMoreExpressionsUntilRightParen();
 
             return new ConditionElseClause(expressions);
         }
@@ -251,7 +250,7 @@ namespace RainLisp.Parsing
 
         private Begin BeginExpr()
         {
-            var expressions = ExpressionsUntilRightParenthesis();
+            var expressions = OneOrMoreExpressionsUntilRightParen();
 
             return new Begin(expressions);
         }
@@ -318,14 +317,15 @@ namespace RainLisp.Parsing
         }
         #endregion
 
-        private List<Expression> ExpressionsUntilRightParenthesis()
+        private List<Expression> OneOrMoreExpressionsUntilRightParen(bool includeRightParen = true)
         {
+            Func<TokenType, bool> checkBound = includeRightParen ? Match : Check;
             var expressions = new List<Expression>();
 
             do
             {
                 expressions.Add(Expression());
-            } while (!Match(TokenType.RParen));
+            } while (!checkBound(TokenType.RParen));
 
             return expressions;
         }
