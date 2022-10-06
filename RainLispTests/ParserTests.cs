@@ -50,6 +50,20 @@ namespace RainLispTests
         [InlineData(31, "(let ((a 1) (b 2)) (+ a b))")]
         [InlineData(32, "(let ((a 1) (b 2)) (define c 4) (+ a b c))")]
         [InlineData(33, "(let ((a 1) (b 2)) (define c 4) (define d 5) (+ a b c d))")]
+        [InlineData(34, "(define (a) 1 2)")]
+        [InlineData(35, "(define (a b) 1 2 3)")]
+        [InlineData(36, "(define (a b c) 1 2 (+ b c))")]
+        [InlineData(37, "(define (foo x) (define (innerfoo y) 1 (+ x y)) 2 (innerfoo 1))")]
+        [InlineData(38, "(lambda () 1 2)")]
+        [InlineData(39, "(lambda (x) 1 x)")]
+        [InlineData(40, "(lambda (x y) 1 2)")]
+        [InlineData(41, "(lambda (x y) x y (+ x y))")]
+        [InlineData(42, "((lambda () 1 2))")]
+        [InlineData(43, "((lambda (x) 2 x) 1)")]
+        [InlineData(44, "(let ((a 1)) 1 a)")]
+        [InlineData(45, "(let ((a 1) (b 2)) 1 (+ a b))")]
+        [InlineData(46, "(let ((a 1) (b 2)) (define c 4) 1 a b c (+ a b c))")]
+        [InlineData(47, "(let ((a 1) (b 2)) (define c 4) (define d 5) 1 a b c d (+ a b c d))")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             // Arrange

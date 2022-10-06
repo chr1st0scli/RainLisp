@@ -1,0 +1,26 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Parameters": [
+        "x"
+      ],
+      "Body": {
+        "Definitions": null,
+        "Expressions": [
+          {
+            "Value": 1.0,
+            "TypeName": "NumberLiteral"
+          },
+          {
+            "Name": "x",
+            "TypeName": "Identifier"
+          }
+        ],
+        "TypeName": "Body"
+      },
+      "TypeName": "Lambda"
+    }
+  ],
+  "TypeName": "Program"
+}

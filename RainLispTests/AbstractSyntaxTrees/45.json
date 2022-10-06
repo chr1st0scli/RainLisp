@@ -1,0 +1,53 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Operator": {
+        "Parameters": [
+          "a",
+          "b"
+        ],
+        "Body": {
+          "Definitions": null,
+          "Expressions": [
+            {
+              "Value": 1.0,
+              "TypeName": "NumberLiteral"
+            },
+            {
+              "Operator": {
+                "Name": "+",
+                "TypeName": "Identifier"
+              },
+              "Operands": [
+                {
+                  "Name": "a",
+                  "TypeName": "Identifier"
+                },
+                {
+                  "Name": "b",
+                  "TypeName": "Identifier"
+                }
+              ],
+              "TypeName": "Application"
+            }
+          ],
+          "TypeName": "Body"
+        },
+        "TypeName": "Lambda"
+      },
+      "Operands": [
+        {
+          "Value": 1.0,
+          "TypeName": "NumberLiteral"
+        },
+        {
+          "Value": 2.0,
+          "TypeName": "NumberLiteral"
+        }
+      ],
+      "TypeName": "Application"
+    }
+  ],
+  "TypeName": "Program"
+}
