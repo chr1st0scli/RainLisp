@@ -13,6 +13,9 @@ namespace RainLispTests
         [InlineData("+0.5", 0.5)]
         [InlineData("true", true)]
         [InlineData("false", false)]
+        [InlineData("\"\"", "")]
+        [InlineData("\" \"", " ")]
+        [InlineData("\"\\n\\n\"", "\n\n")]
         [InlineData("\"hello world\"", "hello world")]
         public void Evaluate_Literal_Correctly(string expression, object expectedResult)
         {
@@ -52,6 +55,12 @@ namespace RainLispTests
         [InlineData("(define a 2) ((lambda () (begin (set! a 4) a)))", 4d)]
         [InlineData("(define a 2) ((lambda () (set! a 4))) a", 4d)]
         [InlineData("(define a 2) ((lambda () (define b 7) (begin (set! a (+ a b)) (set! b 11)))) a", 9d)]
+        [InlineData("(define (foo) (define a 1) (define b 2) (set! a (+ a b)) a) (foo)", 3d)]
+        [InlineData("((lambda () (define a 1) (define b 2) (set! a (+ a b)) a))", 3d)]
+        [InlineData("(let ((a 1) (b 2)) (set! a (+ a b)) a)", 3d)]
+        [InlineData("(define (foo a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) (foo 10 12)", 242d)]
+        [InlineData("((lambda (a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) 10 12)", 242d)]
+        [InlineData("(let ((a 10) (b 12)) (set! a (+ a b)) (set! b (* a b)) (- b a))", 242d)]
         public void Evaluate_Expression_Correctly(string expression, double expectedResult)
         {
             // Arrange

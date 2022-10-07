@@ -38,6 +38,7 @@ namespace RainLispTests
             yield return new object[] { "\"hello\tworld\"", Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 14) };
 
             // Valid escape sequences.
+            yield return new object[] { "\"\\n\\n\"", Expect(TokenType.String, "\n\n", 1), Expect(EOF, "", 7) };
             yield return new object[] { @"""hello \""wonderful\"" world""", Expect(TokenType.String, "hello \"wonderful\" world", 1), Expect(EOF, "", 28) };
             yield return new object[] { @"""hello \\ wonderful \\ world""", Expect(TokenType.String, "hello \\ wonderful \\ world", 1), Expect(EOF, "", 30) };
             yield return new object[] { @"""\\""", Expect(TokenType.String, @"\", 1), Expect(EOF, "", 5) };
