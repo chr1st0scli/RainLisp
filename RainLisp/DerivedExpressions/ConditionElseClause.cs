@@ -5,9 +5,7 @@ namespace RainLisp.DerivedExpressions
     public class ConditionElseClause
     {
         public ConditionElseClause(IList<Expression> expressions)
-        {
-            Expressions = expressions ?? throw new ArgumentNullException(nameof(expressions));
-        }
+            => Expressions = expressions;
 
         public IList<Expression> Expressions { get; init; }
     }

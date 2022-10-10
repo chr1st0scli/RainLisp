@@ -18,6 +18,10 @@
                   "Definitions": null,
                   "Expressions": [
                     {
+                      "Value": 1.0,
+                      "TypeName": "NumberLiteral"
+                    },
+                    {
                       "Operator": {
                         "Name": "+",
                         "TypeName": "Identifier"
@@ -43,6 +47,10 @@
             }
           ],
           "Expressions": [
+            {
+              "Value": 2.0,
+              "TypeName": "NumberLiteral"
+            },
             {
               "Operator": {
                 "Name": "innerfoo",

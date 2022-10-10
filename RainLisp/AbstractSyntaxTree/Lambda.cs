@@ -8,7 +8,7 @@ namespace RainLisp.AbstractSyntaxTree
         public Lambda(IList<string>? parameters, Body body)
         {
             Parameters = parameters;
-            Body = body ?? throw new ArgumentNullException(nameof(body));
+            Body = body;
         }
 
         public IList<string>? Parameters { get; init; }

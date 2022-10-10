@@ -8,8 +8,33 @@
           "b"
         ],
         "Body": {
-          "Definitions": null,
+          "Definitions": [
+            {
+              "IdentifierName": "c",
+              "Value": {
+                "Value": 4.0,
+                "TypeName": "NumberLiteral"
+              },
+              "TypeName": "Definition"
+            }
+          ],
           "Expressions": [
+            {
+              "Value": 1.0,
+              "TypeName": "NumberLiteral"
+            },
+            {
+              "Name": "a",
+              "TypeName": "Identifier"
+            },
+            {
+              "Name": "b",
+              "TypeName": "Identifier"
+            },
+            {
+              "Name": "c",
+              "TypeName": "Identifier"
+            },
             {
               "Operator": {
                 "Name": "+",
@@ -22,6 +47,10 @@
                 },
                 {
                   "Name": "b",
+                  "TypeName": "Identifier"
+                },
+                {
+                  "Name": "c",
                   "TypeName": "Identifier"
                 }
               ],

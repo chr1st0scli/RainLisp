@@ -3,27 +3,24 @@
   "Expressions": [
     {
       "Operator": {
-        "Parameters": [
-          "a"
-        ],
+        "Parameters": null,
         "Body": {
           "Definitions": null,
           "Expressions": [
             {
-              "Name": "a",
-              "TypeName": "Identifier"
+              "Value": 1.0,
+              "TypeName": "NumberLiteral"
+            },
+            {
+              "Value": 2.0,
+              "TypeName": "NumberLiteral"
             }
           ],
           "TypeName": "Body"
         },
         "TypeName": "Lambda"
       },
-      "Operands": [
-        {
-          "Value": 1.0,
-          "TypeName": "NumberLiteral"
-        }
-      ],
+      "Operands": null,
       "TypeName": "Application"
     }
   ],

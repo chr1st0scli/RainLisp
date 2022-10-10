@@ -4,13 +4,17 @@
     {
       "Operator": {
         "Parameters": [
-          "a"
+          "x"
         ],
         "Body": {
           "Definitions": null,
           "Expressions": [
             {
-              "Name": "a",
+              "Value": 2.0,
+              "TypeName": "NumberLiteral"
+            },
+            {
+              "Name": "x",
               "TypeName": "Identifier"
             }
           ],

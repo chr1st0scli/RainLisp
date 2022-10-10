@@ -13,6 +13,9 @@ namespace RainLispTests
         [InlineData("+0.5", 0.5)]
         [InlineData("true", true)]
         [InlineData("false", false)]
+        [InlineData("\"\"", "")]
+        [InlineData("\" \"", " ")]
+        [InlineData("\"\\n\\n\"", "\n\n")]
         [InlineData("\"hello world\"", "hello world")]
         public void Evaluate_Literal_Correctly(string expression, object expectedResult)
         {
@@ -44,6 +47,9 @@ namespace RainLispTests
         [InlineData("(define a 1) (cond ((<= a 5) 5) ((<= a 10) 10) (else -1))", 5d)]
         [InlineData("(define a 7) (cond ((<= a 5) 5) ((<= a 10) 10) (else -1))", 10d)]
         [InlineData("(define a 28) (cond ((<= a 5) 5) ((<= a 10) 10) (else -1))", -1d)]
+        [InlineData("(define ab 10) (cond (true (set! ab (+ ab 1)) (set! ab (+ ab 1)) ab) (false (set! ab (+ ab 2)) (set! ab (+ ab 2)) ab) (else (set! ab (+ ab 3)) (set! ab (+ ab 3)) ab))", 12d)]
+        [InlineData("(define ab 10) (cond (false (set! ab (+ ab 1)) (set! ab (+ ab 1)) ab) (true (set! ab (+ ab 2)) (set! ab (+ ab 2)) ab) (else (set! ab (+ ab 3)) (set! ab (+ ab 3)) ab))", 14d)]
+        [InlineData("(define ab 10) (cond (false (set! ab (+ ab 1)) (set! ab (+ ab 1)) ab) (false (set! ab (+ ab 2)) (set! ab (+ ab 2)) ab) (else (set! ab (+ ab 3)) (set! ab (+ ab 3)) ab))", 16d)]
         [InlineData("(let ((a 1)) 0)", 0d)]
         [InlineData("(let ((a 1)) a)", 1d)]
         [InlineData("(let ((a 1) (b 2)) (+ a b))", 3d)]
@@ -52,6 +58,12 @@ namespace RainLispTests
         [InlineData("(define a 2) ((lambda () (begin (set! a 4) a)))", 4d)]
         [InlineData("(define a 2) ((lambda () (set! a 4))) a", 4d)]
         [InlineData("(define a 2) ((lambda () (define b 7) (begin (set! a (+ a b)) (set! b 11)))) a", 9d)]
+        [InlineData("(define (foo) (define a 1) (define b 2) (set! a (+ a b)) a) (foo)", 3d)]
+        [InlineData("((lambda () (define a 1) (define b 2) (set! a (+ a b)) a))", 3d)]
+        [InlineData("(let ((a 1) (b 2)) (set! a (+ a b)) a)", 3d)]
+        [InlineData("(define (foo a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) (foo 10 12)", 242d)]
+        [InlineData("((lambda (a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) 10 12)", 242d)]
+        [InlineData("(let ((a 10) (b 12)) (set! a (+ a b)) (set! b (* a b)) (- b a))", 242d)]
         public void Evaluate_Expression_Correctly(string expression, double expectedResult)
         {
             // Arrange

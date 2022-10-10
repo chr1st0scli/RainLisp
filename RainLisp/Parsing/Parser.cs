@@ -41,7 +41,8 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
             Require(TokenType.Definition);
 
-            string identifierName = CurrentToken().Value;
+            var currentToken = CurrentToken();
+            string identifierName = currentToken.Value;
             Definition definition;
 
             if (Match(TokenType.Identifier))
@@ -50,22 +51,17 @@ namespace RainLisp.Parsing
             else if (Match(TokenType.LParen))
             {
                 // Function name
-                identifierName = CurrentToken().Value;
-                Require(TokenType.Identifier);
+                identifierName = RequireValueForIdentifier();
 
                 List<string>? parameters = null;
 
                 // Function parameters
                 if (!Match(TokenType.RParen))
                 {
-                    parameters = new() { CurrentToken().Value };
-                    Require(TokenType.Identifier);
+                    parameters = new() { RequireValueForIdentifier() };
 
                     while (!Match(TokenType.RParen))
-                    {
-                        parameters.Add(CurrentToken().Value);
-                        Require(TokenType.Identifier);
-                    }
+                        parameters.Add(RequireValueForIdentifier());
                 }
 
                 // Defining a function like (define (foo a) a) is just syntactic sugar for (define foo (lambda (a) a))
@@ -73,8 +69,9 @@ namespace RainLisp.Parsing
 
                 definition = new Definition(identifierName, lambda);
             }
+            // Invalid definition, one of the two expected tokens was not encountered.
             else
-                throw new InvalidOperationException($"Invalid definition, expected either an {TokenType.Identifier} or {TokenType.LParen}.");
+                throw new ParsingException(currentToken.Line, currentToken.Position, new[] { TokenType.Identifier, TokenType.LParen });
 
             Require(TokenType.RParen);
 
@@ -93,15 +90,15 @@ namespace RainLisp.Parsing
                     definitions.Add(Definition());
             }
 
-            // If I wanted more than one expression, I would have a problem between detecting an additional expression or an erroneous one.
-            // I.e. calling Expression again, I would have to catch the exception. But what would it mean? There is an additional erroneous expression,
-            // or there is no additional expression? Maybe this indicates a problem with my grammar, but why doesn't the user use a singe begin expression to combine many?
-            return new Body(definitions, Expression());
+            var expressions = OneOrMoreExpressionsUntilRightParen(false);
+
+            return new Body(definitions, expressions);
         }
 
         private Expression Expression()
         {
-            string tokenValue = CurrentToken().Value;
+            var currentToken = CurrentToken();
+            string tokenValue = currentToken.Value;
 
             if (Match(TokenType.Number))
                 return new NumberLiteral(double.Parse(tokenValue, CultureInfo.InvariantCulture));
@@ -117,8 +114,9 @@ namespace RainLisp.Parsing
 
             else
             {
+                // Missing expression, one of the expected tokens was not encountered.
                 if (!Match(TokenType.LParen))
-                    throw new InvalidOperationException("Invalid expression.");
+                    throw new ParsingException(currentToken.Line, currentToken.Position, new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen });
 
                 if (Match(TokenType.Quote))
                     return QuoteExpr();
@@ -154,7 +152,7 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
 
             var predicate = Expression();
-            var expressions = ExpressionsUntilRightParenthesis();
+            var expressions = OneOrMoreExpressionsUntilRightParen();
 
             return new ConditionClause(predicate, expressions);
         }
@@ -164,7 +162,7 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
             Require(TokenType.Else);
 
-            var expressions = ExpressionsUntilRightParenthesis();
+            var expressions = OneOrMoreExpressionsUntilRightParen();
 
             return new ConditionElseClause(expressions);
         }
@@ -173,9 +171,7 @@ namespace RainLisp.Parsing
         {
             Require(TokenType.LParen);
 
-            string identifierName = CurrentToken().Value;
-            Require(TokenType.Identifier);
-
+            string identifierName = RequireValueForIdentifier();
             var expression = Expression();
 
             Require(TokenType.RParen);
@@ -199,9 +195,7 @@ namespace RainLisp.Parsing
 
         private Assignment AssignmentExpr()
         {
-            string identifierName = CurrentToken().Value;
-
-            Require(TokenType.Identifier);
+            string identifierName = RequireValueForIdentifier();
             var value = Expression();
             Require(TokenType.RParen);
 
@@ -251,7 +245,7 @@ namespace RainLisp.Parsing
 
         private Begin BeginExpr()
         {
-            var expressions = ExpressionsUntilRightParenthesis();
+            var expressions = OneOrMoreExpressionsUntilRightParen();
 
             return new Begin(expressions);
         }
@@ -265,14 +259,10 @@ namespace RainLisp.Parsing
             // Optional lambda parameters
             if (!Match(TokenType.RParen))
             {
-                parameters = new() { CurrentToken().Value };
-                Require(TokenType.Identifier);
+                parameters = new() { RequireValueForIdentifier() };
 
                 while (!Match(TokenType.RParen))
-                {
-                    parameters.Add(CurrentToken().Value);
-                    Require(TokenType.Identifier);
-                }
+                    parameters.Add(RequireValueForIdentifier());
             }
 
             var body = Body();
@@ -318,14 +308,15 @@ namespace RainLisp.Parsing
         }
         #endregion
 
-        private List<Expression> ExpressionsUntilRightParenthesis()
+        private List<Expression> OneOrMoreExpressionsUntilRightParen(bool includeRightParen = true)
         {
+            Func<TokenType, bool> checkBound = includeRightParen ? Match : Check;
             var expressions = new List<Expression>();
 
             do
             {
                 expressions.Add(Expression());
-            } while (!Match(TokenType.RParen));
+            } while (!checkBound(TokenType.RParen));
 
             return expressions;
         }
@@ -355,7 +346,18 @@ namespace RainLisp.Parsing
         private void Require(TokenType tokenType)
         {
             if (!Match(tokenType))
-                throw new InvalidOperationException($"Missing required symbol {tokenType}.");
+            {
+                var currentToken = CurrentToken();
+                throw new ParsingException(currentToken.Line, currentToken.Position, new[] { tokenType });
+            }
+        }
+
+        private string RequireValueForIdentifier()
+        {
+            var currentToken = CurrentToken();
+            Require(TokenType.Identifier);
+
+            return currentToken.Value;
         }
         #endregion
     }

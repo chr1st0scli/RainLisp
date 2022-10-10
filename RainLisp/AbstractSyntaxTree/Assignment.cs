@@ -7,8 +7,8 @@ namespace RainLisp.AbstractSyntaxTree
     {
         public Assignment(string identifierName, Expression value)
         {
-            IdentifierName = identifierName ?? throw new ArgumentNullException(nameof(identifierName));
-            Value = value ?? throw new ArgumentNullException(nameof(value));
+            IdentifierName = identifierName;
+            Value = value;
         }
 
         public string IdentifierName { get; init; }

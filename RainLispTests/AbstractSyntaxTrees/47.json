@@ -16,9 +16,37 @@
                 "TypeName": "NumberLiteral"
               },
               "TypeName": "Definition"
+            },
+            {
+              "IdentifierName": "d",
+              "Value": {
+                "Value": 5.0,
+                "TypeName": "NumberLiteral"
+              },
+              "TypeName": "Definition"
             }
           ],
           "Expressions": [
+            {
+              "Value": 1.0,
+              "TypeName": "NumberLiteral"
+            },
+            {
+              "Name": "a",
+              "TypeName": "Identifier"
+            },
+            {
+              "Name": "b",
+              "TypeName": "Identifier"
+            },
+            {
+              "Name": "c",
+              "TypeName": "Identifier"
+            },
+            {
+              "Name": "d",
+              "TypeName": "Identifier"
+            },
             {
               "Operator": {
                 "Name": "+",
@@ -35,6 +63,10 @@
                 },
                 {
                   "Name": "c",
+                  "TypeName": "Identifier"
+                },
+                {
+                  "Name": "d",
                   "TypeName": "Identifier"
                 }
               ],

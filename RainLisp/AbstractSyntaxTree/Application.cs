@@ -7,7 +7,7 @@ namespace RainLisp.AbstractSyntaxTree
     {
         public Application(Expression operatorToApply, IList<Expression>? operands)
         {
-            Operator = operatorToApply ?? throw new ArgumentNullException(nameof(operatorToApply));
+            Operator = operatorToApply;
             Operands = operands;
         }
 

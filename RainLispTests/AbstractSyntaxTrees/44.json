@@ -10,6 +10,10 @@
           "Definitions": null,
           "Expressions": [
             {
+              "Value": 1.0,
+              "TypeName": "NumberLiteral"
+            },
+            {
               "Name": "a",
               "TypeName": "Identifier"
             }

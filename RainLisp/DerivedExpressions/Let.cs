@@ -6,8 +6,8 @@ namespace RainLisp.DerivedExpressions
     {
         public Let(IList<LetClause> clauses, Body body)
         {
-            Clauses = clauses ?? throw new ArgumentNullException(nameof(clauses));
-            Body = body ?? throw new ArgumentNullException(nameof(body));
+            Clauses = clauses;
+            Body = body;
         }
 
         public IList<LetClause> Clauses { get; init; }

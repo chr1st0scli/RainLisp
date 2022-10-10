@@ -3,14 +3,19 @@
   "Expressions": [
     {
       "Parameters": [
-        "x"
+        "x",
+        "y"
       ],
       "Body": {
         "Definitions": null,
         "Expressions": [
           {
-            "Name": "x",
-            "TypeName": "Identifier"
+            "Value": 1.0,
+            "TypeName": "NumberLiteral"
+          },
+          {
+            "Value": 2.0,
+            "TypeName": "NumberLiteral"
           }
         ],
         "TypeName": "Body"
