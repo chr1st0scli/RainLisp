@@ -78,53 +78,98 @@ namespace RainLispTests
             Assert.Equal(expectedAst, ast);
         }
 
+        public enum ParsingError { Definition, Expression, MissingSymbol }
+
         [Theory]
-        [InlineData("(quote)")]
-        [InlineData("(quote a")]
-        [InlineData("(set!)")]
-        [InlineData("(set! a)")]
-        [InlineData("(set! a 1")]
-        [InlineData("(define)")]
-        [InlineData("(define a)")] // error says expecting ( but more accurate would be expecting expression
-        [InlineData("(define a 1")]
-        [InlineData("(define (1) 1)")]
-        [InlineData("(define (foo 1)")] // error says expecting ) but could say expecting identifier, not a number
-        [InlineData("(define (foo a))")]
-        [InlineData("(define (foo) [ define (boo) 1) (boo))")]
-        [InlineData("(define (foo) (define 1 1) 1)")]
-        [InlineData("(define (foo) (define a 1))")] // error says expecting ( but more accurate would be expecting expression in the body
-        [InlineData("(if)")]
-        [InlineData("(if true)")]
-        [InlineData("(if true 1")]
-        [InlineData("(if true 1 0")]
-        [InlineData("(begin)")]
-        [InlineData("(begin 1")]
-        [InlineData("(lambda 1")]
-        [InlineData("(lambda (1) 1)")] // error says expecting ) but could say expecting identifier, not a number
-        [InlineData("(lambda ())")] // error says expecting ( but more accurate would be expecting expression in the body
-        [InlineData("(lambda () 1")]
-        [InlineData("(foo")]
-        [InlineData("(cond 1)")]
-        [InlineData("(cond (true 1)")]
-        [InlineData("(cond (true 1) (false 2)")]
-        [InlineData("(cond (true 1) (false 2) (else)")] // error says expecting ( but more accurate would be expecting expression in else
-        [InlineData("(cond (true 1) (false 2) (else 3)")]
-        [InlineData("(let)")]
-        [InlineData("(let ()")]
-        [InlineData("(let (()")]
-        [InlineData("(let ((a)")] // error says expecting ( but more accurate would be expecting expression in let clause
-        [InlineData("(let ((a 1")]
-        [InlineData("(let ((a 1)")]
-        [InlineData("(let ((a 1))")] // error says expecting ( but more accurate would be expecting expression in let body
-        [InlineData("(let ((a 1)) 1")]
-        public void Parse_InvalidExpression_Throws(string expression)
+        // Invalid definitions.
+        [InlineData("(define)", 1, 8, ParsingError.Definition)]
+        [InlineData("(define 10)", 1, 9, ParsingError.Definition)]
+        [InlineData("(define 10 20)", 1, 9, ParsingError.Definition)]
+        [InlineData("(define (foo) (define 1 1) 1)", 1, 23, ParsingError.Definition)]
+        [InlineData("(define (foo)\n(define 1 1) 1)", 2, 9, ParsingError.Definition)]
+        // Missing expressions.
+        [InlineData("(begin 1", 1, 9, ParsingError.Expression)]
+        [InlineData("(begin)", 1, 7, ParsingError.Expression)]
+        [InlineData("(cond (true 1) (false 2) (else)", 1, 31, ParsingError.Expression)]
+        [InlineData("(cond\n\t(true 1)\n\t(false 2)\n\t(else)", 4, 7, ParsingError.Expression)]
+        [InlineData("(define (foo a))", 1, 16, ParsingError.Expression)]
+        [InlineData("(define (foo) (define a 1))", 1, 27, ParsingError.Expression)]
+        [InlineData("(define a)", 1, 10, ParsingError.Expression)]
+        [InlineData("(foo", 1, 5, ParsingError.Expression)]
+        [InlineData("(if)", 1, 4, ParsingError.Expression)]
+        [InlineData("(if true)", 1, 9, ParsingError.Expression)]
+        [InlineData("(if true 1", 1, 11, ParsingError.Expression)]
+        [InlineData("(lambda ())", 1, 11, ParsingError.Expression)]
+        [InlineData("(lambda ()\n)", 2, 1, ParsingError.Expression)]
+        [InlineData("(lambda () 1", 1, 13, ParsingError.Expression)]
+        [InlineData("(lambda ()\n1", 2, 2, ParsingError.Expression)]
+        [InlineData("(let ((a)", 1, 9, ParsingError.Expression)]
+        [InlineData("(let ((a 1))", 1, 13, ParsingError.Expression)]
+        [InlineData("(let ((a 1)) 1", 1, 15, ParsingError.Expression)]
+        [InlineData("(let ((a 1) (b)) 1", 1, 15, ParsingError.Expression)]
+        [InlineData("(let ((a 1)\n(b)) 1", 2, 3, ParsingError.Expression)]
+        [InlineData("(let ((a 1)\n(b 2)) 1", 2, 9, ParsingError.Expression)]
+        [InlineData("(set! a)", 1, 8, ParsingError.Expression)]
+        // Missing specific symbols.
+        [InlineData("(quote)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(quote a", 1, 9, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(set!)", 1, 6, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(set! a 1", 1, 10, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(define a 1", 1, 12, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(define (1) 1)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(define (foo 1)", 1, 14, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(define (foo) [ define (boo) 1) (boo))", 1, 15, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(define (foo) \n[ define (boo) 1) (boo))", 2, 1, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(if true 1 0", 1, 13, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(if true 1\n\t0", 2, 3, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(lambda 1", 1, 9, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(lambda (1) 1)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(cond 1)", 1, 7, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(cond (true 1)", 1, 15, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
+        [InlineData("(cond (true 1) (false 2)", 1, 25, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
+        [InlineData("(cond (true 1)\n(false 2)", 2, 10, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
+        [InlineData("(cond (true 1) (false 2) (else 3)", 1, 34, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(cond (true 1)\n(false 2)\n(else 3)", 3, 9, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(let)", 1, 5, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(let ()", 1, 7, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(let (()", 1, 8, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(let ((a 1", 1, 11, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(let ((a 1)", 1, 12, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
+        [InlineData("(let ((a 1) (b 21)", 1, 19, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
+        [InlineData("(let ((a 1)\n(b 21)", 2, 7, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
+        public void Parse_InvalidExpression_Throws(string expression, uint expectedLine, uint expectedPosition, ParsingError expectedError, TokenType? expectedMissingToken = null)
         {
             // Arrange
-            var tokens = _tokenizer.Tokenize(expression);
+            ParsingException? exception = null;
+            var expectedMissingSymbols = expectedError switch
+            {
+                ParsingError.Definition => new[] { TokenType.Identifier, TokenType.LParen },
+                ParsingError.Expression => new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen },
+                ParsingError.MissingSymbol => new[] { expectedMissingToken!.Value },
+                _ => throw new NotImplementedException()
+            };
 
             // Act
+            var tokens = _tokenizer.Tokenize(expression);
+            try { _parser.Parse(tokens); }
+            catch (ParsingException ex) { exception = ex; }
+
             // Assert
-            Assert.Throws<InvalidOperationException>(() => _parser.Parse(tokens));
+            Assert.NotNull(exception);
+            Assert.IsType<ParsingException>(exception);
+            Assert.Equal(expectedLine, exception!.Line);
+            Assert.Equal(expectedPosition, exception.Position);
+
+            if (expectedError == ParsingError.MissingSymbol)
+            {
+                Assert.Single(exception.MissingSymbols);
+                Assert.Equal(expectedMissingToken, exception.MissingSymbols[0]);
+            }
+            else
+            {
+                Assert.Equal(expectedMissingSymbols.Length, exception.MissingSymbols.Length);
+                Assert.Equal(exception.MissingSymbols.Intersect(expectedMissingSymbols).ToArray().Length, expectedMissingSymbols.Length);
+            }
         }
     }
 }

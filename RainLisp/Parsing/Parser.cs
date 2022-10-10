@@ -41,7 +41,8 @@ namespace RainLisp.Parsing
             Require(TokenType.LParen);
             Require(TokenType.Definition);
 
-            string identifierName = CurrentToken().Value;
+            var currentToken = CurrentToken();
+            string identifierName = currentToken.Value;
             Definition definition;
 
             if (Match(TokenType.Identifier))
@@ -68,8 +69,9 @@ namespace RainLisp.Parsing
 
                 definition = new Definition(identifierName, lambda);
             }
+            // Invalid definition, one of the two expected tokens was not encountered.
             else
-                throw new InvalidOperationException($"Invalid definition, expected either an {TokenType.Identifier} or {TokenType.LParen}.");
+                throw new ParsingException(currentToken.Line, currentToken.Position, new[] { TokenType.Identifier, TokenType.LParen });
 
             Require(TokenType.RParen);
 
@@ -95,7 +97,8 @@ namespace RainLisp.Parsing
 
         private Expression Expression()
         {
-            string tokenValue = CurrentToken().Value;
+            var currentToken = CurrentToken();
+            string tokenValue = currentToken.Value;
 
             if (Match(TokenType.Number))
                 return new NumberLiteral(double.Parse(tokenValue, CultureInfo.InvariantCulture));
@@ -111,8 +114,9 @@ namespace RainLisp.Parsing
 
             else
             {
+                // Missing expression, one of the expected tokens was not encountered.
                 if (!Match(TokenType.LParen))
-                    throw new InvalidOperationException("Invalid expression.");
+                    throw new ParsingException(currentToken.Line, currentToken.Position, new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen });
 
                 if (Match(TokenType.Quote))
                     return QuoteExpr();
@@ -342,7 +346,10 @@ namespace RainLisp.Parsing
         private void Require(TokenType tokenType)
         {
             if (!Match(tokenType))
-                throw new InvalidOperationException($"Missing required symbol {tokenType}.");
+            {
+                var currentToken = CurrentToken();
+                throw new ParsingException(currentToken.Line, currentToken.Position, new[] { tokenType });
+            }
         }
 
         private string RequireValueForIdentifier()
