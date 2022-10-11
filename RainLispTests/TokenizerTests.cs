@@ -605,57 +605,56 @@ namespace RainLispTests
         [InlineData("\"hi\"\na\nd \"world", 3, 3)]
         public void Tokenize_NonTerminatedString_Throws(string expression, uint expectedLine, uint expectedPosition)
         {
+            Tokenize_InvalidString_Throws<NonTerminatedStringException>(expression, expectedLine, expectedPosition);
+        }
+
+        [Theory]
+        [InlineData("\"hello\nworld.\\\"", 1, 7, '\n')]
+        [InlineData("\"hello\nworld.\"", 1, 7, '\n')]
+        [InlineData("\"hello\rworld.\"", 1, 7, '\r')]
+        [InlineData("\"hello\r\nworld.\"",1, 7, '\r')]
+        [InlineData(@"""hello there
+world.""", 1, 13, '\r')] // Note that if this test is ran on a unix platform, the expected character might not be \r.
+        public void Tokenize_MultilineString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
+        {
+            var exception = Tokenize_InvalidString_Throws<InvalidStringCharacterException>(expression, expectedLine, expectedPosition);
+            Assert.Equal(expectedCharacter, exception!.Character);
+        }
+
+        [Theory]
+        [InlineData(@"""hello \a world""", 1, 9, 'a')]
+        [InlineData(@"""hello \b world""", 1, 9, 'b')] // backspace is not supported.
+        [InlineData(@"""hello \c world""", 1, 9, 'c')]
+        [InlineData(@"""hello \d world""", 1, 9, 'd')]
+        [InlineData(@"""hello \9 world""", 1, 9, '9')]
+        public void Tokenize_InvalidEscapeSequenceInString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
+        {
+            var exception = Tokenize_InvalidString_Throws<InvalidEscapeSequenceException>(expression, expectedLine, expectedPosition);
+            Assert.Equal(expectedCharacter, exception!.Character);
+        }
+
+        private TException? Tokenize_InvalidString_Throws<TException>(string expression, uint expectedLine, uint expectedPosition) where TException : TokenizationException
+        {
             // Arrange
-            NonTerminatedStringException? exception = null;
+            TException? exception = null;
 
             // Act
             try
             {
                 _tokenizer.Tokenize(expression);
             }
-            catch (NonTerminatedStringException ex)
+            catch (TException ex)
             {
                 exception = ex;
             }
 
             // Assert
             Assert.NotNull(exception);
-            Assert.IsType<NonTerminatedStringException>(exception);
+            Assert.IsType<TException>(exception);
             Assert.Equal(expectedLine, exception!.Line);
             Assert.Equal(expectedPosition, exception!.Position);
-        }
 
-        [Theory]
-        [InlineData("\"hello\nworld.\\\"")]
-        [InlineData("\"hello\nworld.\"")]
-        [InlineData("\"hello\rworld.\"")]
-        [InlineData("\"hello\r\nworld.\"")]
-        [InlineData(@"""hello there
-world.""")]
-        public void Tokenize_MultilineString_Throws(string expression)
-        {
-            // Arrange
-            void action() => _tokenizer.Tokenize(expression);
-
-            // Act
-            // Assert
-            Assert.Throws<InvalidStringCharacterException>(action);
-        }
-
-        [Theory]
-        [InlineData(@"""hello \a world""")]
-        [InlineData(@"""hello \b world""")] // backspace is not supported.
-        [InlineData(@"""hello \c world""")]
-        [InlineData(@"""hello \d world""")]
-        [InlineData(@"""hello \9 world""")]
-        public void Tokenize_InvalidEscapeSequenceInString_Throws(string expression)
-        {
-            // Arrange
-            void action() => _tokenizer.Tokenize(expression);
-
-            // Act
-            // Assert
-            Assert.Throws<InvalidEscapeSequenceException>(action);
+            return exception;
         }
     }
 }

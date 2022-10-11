@@ -2,15 +2,7 @@
 {
     public class InvalidStringCharacterException : StringCharacterException
     {
-        public InvalidStringCharacterException(char character) : base(character)
-        {
-        }
-
-        public InvalidStringCharacterException(char character, string? message) : base(character, message)
-        {
-        }
-
-        public InvalidStringCharacterException(char character, string? message, Exception? innerException) : base(character, message, innerException)
+        public InvalidStringCharacterException(uint line, uint position, char character) : base(line, position, character)
         {
         }
     }

@@ -73,7 +73,7 @@ namespace RainLisp.Tokenization
                 char c = expression[i];
 
                 if (charInstring)
-                    stringTokenizer!.AddToString(c);
+                    stringTokenizer!.AddToString(c, line, charPosition);
 
                 // Disregard a character in a comment except a new line that ends it.
                 else if (charInComment)

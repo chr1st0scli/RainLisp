@@ -1,18 +1,8 @@
 ﻿namespace RainLisp.Tokenization
 {
-    public class StringCharacterException : Exception
+    public class StringCharacterException : TokenizationException
     {
-        public StringCharacterException(char character)
-        {
-            Character = character;
-        }
-
-        public StringCharacterException(char character, string? message) : base(message)
-        {
-            Character = character;
-        }
-
-        public StringCharacterException(char character, string? message, Exception? innerException) : base(message, innerException)
+        public StringCharacterException(uint line, uint position, char character) : base(line, position)
         {
             Character = character;
         }

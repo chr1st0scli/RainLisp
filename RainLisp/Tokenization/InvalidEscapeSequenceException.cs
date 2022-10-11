@@ -2,15 +2,7 @@
 {
     public class InvalidEscapeSequenceException : StringCharacterException
     {
-        public InvalidEscapeSequenceException(char character) : base(character)
-        {
-        }
-
-        public InvalidEscapeSequenceException(char character, string? message) : base(character, message)
-        {
-        }
-
-        public InvalidEscapeSequenceException(char character, string? message, Exception? innerException) : base(character, message, innerException)
+        public InvalidEscapeSequenceException(uint line, uint position, char character) : base(line, position, character)
         {
         }
     }
