@@ -20,8 +20,6 @@ namespace RainLisp.Tokenization
 
         public void AddToString(char c, uint line, uint position)
         {
-            CharactersProcessed++;
-
             if (_escaping)
             {
                 if (c == ESCAPABLE_DOUBLE_QUOTE || c == ESCAPE)
@@ -50,8 +48,8 @@ namespace RainLisp.Tokenization
                 // A not escaped double quote ends the string.
                 else if (c == DOUBLE_QUOTE)
                 {
-                    CharactersProcessed--;
                     _stringCompletedAction();
+                    return; // Do not count this character as a processed one.
                 }
 
                 // Multiline string literals are not supported.
@@ -61,6 +59,8 @@ namespace RainLisp.Tokenization
                 else
                     _stringBuilder.Append(c);
             }
+
+            CharactersProcessed++;
         }
 
         public string GetString() => _stringBuilder.ToString();
