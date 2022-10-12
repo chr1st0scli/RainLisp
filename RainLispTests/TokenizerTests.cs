@@ -14,114 +14,107 @@ namespace RainLispTests
 
         public record ExpectedToken(TokenType TokenType, string Value, uint Position, uint Line = 1);
 
-        public static IEnumerable<object[]> GetTokens()
+        public static TheoryData<string, ExpectedToken[]> GetTokens()
         {
             static uint PickLine(uint winOS, uint otherOS) => Environment.NewLine == "\r\n" ? winOS : otherOS;
             static ExpectedToken Expect(TokenType tokenType, string value, uint position, uint line = 1) => new(tokenType, value, position, line);
 
-            yield return new object[] { null!, Expect(EOF, "", 1) };
-            yield return new object[] { "", Expect(EOF, "", 1) };
-            yield return new object[] { " ", Expect(EOF, "", 2) };
-            yield return new object[] { "\n", Expect(EOF, "", 1, 2) };
-
-            yield return new object[] { "1", Expect(Number, "1", 1), Expect(EOF, "", 2) };
-            yield return new object[] { "+1", Expect(Number, "+1", 1), Expect(EOF, "", 3) };
-            yield return new object[] { "-1", Expect(Number, "-1", 1), Expect(EOF, "", 3) };
-            yield return new object[] { "12.3456", Expect(Number, "12.3456", 1), Expect(EOF, "", 8) };
-
-            #region String literals.
-            yield return new object[] { "\"\"", Expect(TokenType.String, "", 1), Expect(EOF, "", 3) };
-            yield return new object[] { "\" \"", Expect(TokenType.String, " ", 1), Expect(EOF, "", 4) };
-            yield return new object[] { "\"helloworld\"", Expect(TokenType.String, "helloworld", 1), Expect(EOF, "", 13) };
-            yield return new object[] { "\"hello world\"", Expect(TokenType.String, "hello world", 1), Expect(EOF, "", 14) };
-            yield return new object[] { "\"hello  world\"", Expect(TokenType.String, "hello  world", 1), Expect(EOF, "", 15) };
-            yield return new object[] { "\"hello\tworld\"", Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 14) };
-
-            // Valid escape sequences.
-            yield return new object[] { "\"\\n\\n\"", Expect(TokenType.String, "\n\n", 1), Expect(EOF, "", 7) };
-            yield return new object[] { @"""hello \""wonderful\"" world""", Expect(TokenType.String, "hello \"wonderful\" world", 1), Expect(EOF, "", 28) };
-            yield return new object[] { @"""hello \\ wonderful \\ world""", Expect(TokenType.String, "hello \\ wonderful \\ world", 1), Expect(EOF, "", 30) };
-            yield return new object[] { @"""\\""", Expect(TokenType.String, @"\", 1), Expect(EOF, "", 5) };
-            yield return new object[] { @"""\\hi""", Expect(TokenType.String, @"\hi", 1), Expect(EOF, "", 7) };
-            yield return new object[] { @"""\\\""""", Expect(TokenType.String, @"\""", 1), Expect(EOF, "", 7) };
-            yield return new object[] { @"""hello\""world""", Expect(TokenType.String, @"hello""world", 1), Expect(EOF, "", 15) };
-            yield return new object[] { @"""hello\\world""", Expect(TokenType.String, @"hello\world", 1), Expect(EOF, "", 15) };
-            yield return new object[] { @"""hello\nworld""", Expect(TokenType.String, "hello\nworld", 1), Expect(EOF, "", 15) };
-            yield return new object[] { @"""hello\rworld""", Expect(TokenType.String, "hello\rworld", 1), Expect(EOF, "", 15) };
-            yield return new object[] { @"""hello\tworld""", Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 15) };
-
-            // Strings adjacent to other tokens.
-            yield return new object[] { "12\"hi\"", Expect(Number, "12", 1), Expect(TokenType.String, "hi", 3), Expect(EOF, "", 7) };
-            yield return new object[] { "12 \"hi\"", Expect(Number, "12", 1), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) };
-            yield return new object[] { "abc\"hi\"", Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) };
-            yield return new object[] { "abc \"hi\"", Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 5), Expect(EOF, "", 9) };
-            yield return new object[] { "\"hi\"12", Expect(TokenType.String, "hi", 1), Expect(Number, "12", 5), Expect(EOF, "", 7) };
-            yield return new object[] { "\"hi\" 12", Expect(TokenType.String, "hi", 1), Expect(Number, "12", 6), Expect(EOF, "", 8) };
-            yield return new object[] { "\"hi\"abc", Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 5), Expect(EOF, "", 8) };
-            yield return new object[] { "\"hi\" abc", Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 6), Expect(EOF, "", 9) };
-            yield return new object[] { "\"hello\"\"world\"", Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 8), Expect(EOF, "", 15) };
-            yield return new object[] { "\"hello\" \"world\"", Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 9), Expect(EOF, "", 16) }; 
-            #endregion
-
-            yield return new object[] { "true", Expect(TokenType.Boolean, "true", 1), Expect(EOF, "", 5) };
-            yield return new object[] { "false", Expect(TokenType.Boolean, "false", 1), Expect(EOF, "", 6) };
-            yield return new object[] { "a", Expect(Identifier, "a", 1), Expect(EOF, "", 2) };
-            yield return new object[] { "abc", Expect(Identifier, "abc", 1), Expect(EOF, "", 4) };
-            yield return new object[] { "+", Expect(Identifier, "+", 1), Expect(EOF, "", 2) };
-
-            yield return new object[]
+            var data = new TheoryData<string, ExpectedToken[]>
             {
-                "(quote abcd)",
+                { null!, new[] { Expect(EOF, "", 1) } },
+                { "", new[] { Expect(EOF, "", 1) } },
+                { " ", new[] { Expect(EOF, "", 2) } },
+                { "\n", new[] { Expect(EOF, "", 1, 2) } },
+
+                { "1", new[] { Expect(Number, "1", 1), Expect(EOF, "", 2) } },
+                { "+1", new[] { Expect(Number, "+1", 1), Expect(EOF, "", 3) } },
+                { "-1", new[] { Expect(Number, "-1", 1), Expect(EOF, "", 3) } },
+                { "12.3456", new[] { Expect(Number, "12.3456", 1), Expect(EOF, "", 8) } }, 
+
+                #region String literals.
+                { "\"\"", new[] { Expect(TokenType.String, "", 1), Expect(EOF, "", 3) } },
+                { "\" \"", new[] { Expect(TokenType.String, " ", 1), Expect(EOF, "", 4) } },
+                { "\"helloworld\"", new[] { Expect(TokenType.String, "helloworld", 1), Expect(EOF, "", 13) } },
+                { "\"hello world\"", new[] { Expect(TokenType.String, "hello world", 1), Expect(EOF, "", 14) } },
+                { "\"hello  world\"", new[] { Expect(TokenType.String, "hello  world", 1), Expect(EOF, "", 15) } },
+                { "\"hello\tworld\"", new[] { Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 14) } }, 
+
+                // Valid escape sequences.
+                { "\"\\n\\n\"", new[] { Expect(TokenType.String, "\n\n", 1), Expect(EOF, "", 7) } },
+                { @"""hello \""wonderful\"" world""", new[] { Expect(TokenType.String, "hello \"wonderful\" world", 1), Expect(EOF, "", 28) } },
+                { @"""hello \\ wonderful \\ world""", new[] { Expect(TokenType.String, "hello \\ wonderful \\ world", 1), Expect(EOF, "", 30) } },
+                { @"""\\""", new[] { Expect(TokenType.String, @"\", 1), Expect(EOF, "", 5) } },
+                { @"""\\hi""", new[] { Expect(TokenType.String, @"\hi", 1), Expect(EOF, "", 7) } },
+                { @"""\\\""""", new[] { Expect(TokenType.String, @"\""", 1), Expect(EOF, "", 7) } },
+                { @"""hello\""world""", new[] { Expect(TokenType.String, @"hello""world", 1), Expect(EOF, "", 15) } },
+                { @"""hello\\world""", new[] { Expect(TokenType.String, @"hello\world", 1), Expect(EOF, "", 15) } },
+                { @"""hello\nworld""", new[] { Expect(TokenType.String, "hello\nworld", 1), Expect(EOF, "", 15) } },
+                { @"""hello\rworld""", new[] { Expect(TokenType.String, "hello\rworld", 1), Expect(EOF, "", 15) } },
+                { @"""hello\tworld""", new[] { Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 15) } }, 
+
+                // Strings adjacent to other tokens.
+                { "12\"hi\"", new[] { Expect(Number, "12", 1), Expect(TokenType.String, "hi", 3), Expect(EOF, "", 7) } },
+                { "12 \"hi\"", new[] { Expect(Number, "12", 1), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) } },
+                { "abc\"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) } },
+                { "abc \"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 5), Expect(EOF, "", 9) } },
+                { "\"hi\"12", new[] { Expect(TokenType.String, "hi", 1), Expect(Number, "12", 5), Expect(EOF, "", 7) } },
+                { "\"hi\" 12", new[] { Expect(TokenType.String, "hi", 1), Expect(Number, "12", 6), Expect(EOF, "", 8) } },
+                { "\"hi\"abc", new[] { Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 5), Expect(EOF, "", 8) } },
+                { "\"hi\" abc", new[] { Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 6), Expect(EOF, "", 9) } },
+                { "\"hello\"\"world\"", new[] { Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 8), Expect(EOF, "", 15) } },
+                { "\"hello\" \"world\"", new[] { Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 9), Expect(EOF, "", 16) } }, 
+                #endregion
+
+                { "true", new[] { Expect(TokenType.Boolean, "true", 1), Expect(EOF, "", 5) } },
+                { "false", new[] { Expect(TokenType.Boolean, "false", 1), Expect(EOF, "", 6) } },
+                { "a", new[] { Expect(Identifier, "a", 1), Expect(EOF, "", 2) } },
+                { "abc", new[] { Expect(Identifier, "abc", 1), Expect(EOF, "", 4) } },
+                { "+", new[] { Expect(Identifier, "+", 1), Expect(EOF, "", 2) } },
+            };
+
+            data.Add("(quote abcd)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Quote, "quote", 2),
                 Expect(Identifier, "abcd", 8),
                 Expect(RParen, ")", 12),
                 Expect(EOF, "", 13)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(set! ab 15)",
+            data.Add("(set! ab 15)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Assignment, "set!", 2),
                 Expect(Identifier, "ab", 7),
                 Expect(Number, "15", 10),
                 Expect(RParen, ")", 12),
                 Expect(EOF, "", 13)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(set! ab 15.4)",
+            data.Add("(set! ab 15.4)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Assignment, "set!", 2),
                 Expect(Identifier, "ab", 7),
                 Expect(Number, "15.4", 10),
                 Expect(RParen, ")", 14),
                 Expect(EOF, "", 15)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(define ab 15)",
+            data.Add("(define ab 15)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Definition, "define", 2),
                 Expect(Identifier, "ab", 9),
                 Expect(Number, "15", 12),
                 Expect(RParen, ")", 14),
                 Expect(EOF, "", 15)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(define ab 15.32)",
+            data.Add("(define ab 15.32)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Definition, "define", 2),
                 Expect(Identifier, "ab", 9),
                 Expect(Number, "15.32", 12),
                 Expect(RParen, ")", 17),
                 Expect(EOF, "", 18)
-            };
+            });
 
             var defineExpectedTokens = new ExpectedToken[]
             {
@@ -141,10 +134,7 @@ namespace RainLispTests
                 new(EOF, "", 29)
             };
 
-            yield return new object[]
-            {
-                "( define (foo x y) (+ x y) )"
-            }.Concat(defineExpectedTokens).ToArray();
+            data.Add("( define (foo x y) (+ x y) )", defineExpectedTokens);
 
             // Set different positions for the same expression.
             var defineExpectedTokens2 = defineExpectedTokens
@@ -152,10 +142,7 @@ namespace RainLispTests
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
                 .ToArray();
 
-            yield return new object[]
-            {
-                "(define(foo x y)(+ x y))"
-            }.Concat(defineExpectedTokens2).ToArray();
+            data.Add("(define(foo x y)(+ x y))", defineExpectedTokens2);
 
             var ifExpectedTokens = new ExpectedToken[]
             {
@@ -172,10 +159,7 @@ namespace RainLispTests
                 new(EOF, "", 19)
             };
 
-            yield return new object[]
-            {
-                "( if (> 1 0) 1 0 )"
-            }.Concat(ifExpectedTokens).ToArray();
+            data.Add("( if (> 1 0) 1 0 )", ifExpectedTokens);
 
             // Set different positions for the same expression.
             var ifExpectedTokens2 = ifExpectedTokens
@@ -183,10 +167,7 @@ namespace RainLispTests
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
                 .ToArray();
 
-            yield return new object[]
-            {
-                "(if(> 1 0) 1 0)",
-            }.Concat(ifExpectedTokens2).ToArray();
+            data.Add("(if(> 1 0) 1 0)", ifExpectedTokens2);
 
             var condExpectedTokens = new ExpectedToken[]
             {
@@ -216,10 +197,7 @@ namespace RainLispTests
                 new(EOF, "", 49)
             };
 
-            yield return new object[]
-            {
-                "( cond ( ( >= 1 0) 0) ( ( <= 2 1) 1) ( else 3) )"
-            }.Concat(condExpectedTokens).ToArray();
+            data.Add("( cond ( ( >= 1 0) 0) ( ( <= 2 1) 1) ( else 3) )", condExpectedTokens);
 
             // Set different positions for the same expression.
             var condExpectedTokens2 = condExpectedTokens
@@ -227,14 +205,9 @@ namespace RainLispTests
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
                 .ToArray();
 
-            yield return new object[]
-            {
-                "(cond((>= 1 0) 0)((<= 2 1) 1)(else 3))"
-            }.Concat(condExpectedTokens2).ToArray();
+            data.Add("(cond((>= 1 0) 0)((<= 2 1) 1)(else 3))", condExpectedTokens2);
 
-            yield return new object[]
-            {
-                "(begin 1 2 3 4)",
+            data.Add("(begin 1 2 3 4)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Begin, "begin", 2),
                 Expect(Number, "1", 8),
@@ -243,7 +216,7 @@ namespace RainLispTests
                 Expect(Number, "4", 14),
                 Expect(RParen, ")", 15),
                 Expect(EOF, "", 16)
-            };
+            });
 
             var lambdaExpectedTokens = new ExpectedToken[]
             {
@@ -262,10 +235,7 @@ namespace RainLispTests
                 new(EOF, "", 25)
             };
 
-            yield return new object[]
-            {
-                "( lambda (x y) (+ x y) )"
-            }.Concat(lambdaExpectedTokens).ToArray();
+            data.Add("( lambda (x y) (+ x y) )", lambdaExpectedTokens);
 
             // Set different positions for the same expression.
             var lambdaExpectedTokens2 = lambdaExpectedTokens
@@ -273,10 +243,7 @@ namespace RainLispTests
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
                 .ToArray();
 
-            yield return new object[]
-            {
-                "(lambda(x y)(+ x y))"
-            }.Concat(lambdaExpectedTokens2).ToArray();
+            data.Add("(lambda(x y)(+ x y))", lambdaExpectedTokens2);
 
             var letExpectedTokens = new ExpectedToken[]
             {
@@ -306,10 +273,7 @@ namespace RainLispTests
                 new(EOF, "", 38)
             };
 
-            yield return new object[]
-            {
-                "( let ((a 1) (b 2) (c 3)) (+ a b c) )"
-            }.Concat(letExpectedTokens).ToArray();
+            data.Add("( let ((a 1) (b 2) (c 3)) (+ a b c) )", letExpectedTokens);
 
             // Set different positions for the same expression.
             var letExpectedTokens2 = letExpectedTokens
@@ -317,102 +281,81 @@ namespace RainLispTests
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
                 .ToArray();
 
-            yield return new object[]
-            {
-                "(let((a 1)(b 2)(c 3))(+ a b c))"
-            }.Concat(letExpectedTokens2).ToArray();
+            data.Add("(let((a 1)(b 2)(c 3))(+ a b c))", letExpectedTokens2);
 
-            yield return new object[]
-            {
-                "(+ 1 2)",
+            data.Add("(+ 1 2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "1", 4),
                 Expect(Number, "2", 6),
                 Expect(RParen, ")", 7),
                 Expect(EOF, "", 8)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(+ +1 -2)",
+            data.Add("(+ +1 -2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "+1", 4),
                 Expect(Number, "-2", 7),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(* 1 2)",
+            data.Add("(* 1 2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "*", 2),
                 Expect(Number, "1", 4),
                 Expect(Number, "2", 6),
                 Expect(RParen, ")", 7),
                 Expect(EOF, "", 8)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(* -1 +2)",
+            data.Add("(* -1 +2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "*", 2),
                 Expect(Number, "-1", 4),
                 Expect(Number, "+2", 7),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(/ 1 2)",
+            data.Add("(/ 1 2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "/", 2),
                 Expect(Number, "1", 4),
                 Expect(Number, "2", 6),
                 Expect(RParen, ")", 7),
                 Expect(EOF, "", 8)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(/ -1 +2)",
+            data.Add("(/ -1 +2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "/", 2),
                 Expect(Number, "-1", 4),
                 Expect(Number, "+2", 7),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(% 1 2)",
+            data.Add("(% 1 2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "%", 2),
                 Expect(Number, "1", 4),
                 Expect(Number, "2", 6),
                 Expect(RParen, ")", 7),
                 Expect(EOF, "", 8)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(% +1 -2)",
+            data.Add("(% +1 -2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "%", 2),
                 Expect(Number, "+1", 4),
                 Expect(Number, "-2", 7),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(+ 0 1 2)",
+            data.Add("(+ 0 1 2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "0", 4),
@@ -420,11 +363,9 @@ namespace RainLispTests
                 Expect(Number, "2", 8),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(+ 0 -1 2)",
+            data.Add("(+ 0 -1 2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "0", 4),
@@ -432,9 +373,9 @@ namespace RainLispTests
                 Expect(Number, "2", 9),
                 Expect(RParen, ")", 10),
                 Expect(EOF, "", 11)
-            };
+            });
 
-            yield return new object[] { "()", Expect(LParen, "(", 1), Expect(RParen, ")", 2), Expect(EOF, "", 3) };
+            data.Add("()", new[] { Expect(LParen, "(", 1), Expect(RParen, ")", 2), Expect(EOF, "", 3) });
 
             var tokensOnDifferentLines = new ExpectedToken[]
             {
@@ -449,10 +390,7 @@ namespace RainLispTests
                 new(EOF, "", 5, PickLine(4, 5))
             };
 
-            yield return new object[]
-            {
-                "(+ 1\n2\r3\r\n4\t5)",
-            }.Concat(tokensOnDifferentLines).ToArray();
+            data.Add("(+ 1\n2\r3\r\n4\t5)", tokensOnDifferentLines);
 
             // Set different lines for the same expression.
             var tokensOnDifferentLines2 = tokensOnDifferentLines
@@ -460,87 +398,64 @@ namespace RainLispTests
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, tokenPositionPair.First.Position, (uint)tokenPositionPair.Second))
                 .ToArray();
 
-            yield return new object[]
-            {
-                "(+ 1\n2\r3\n\r4\t5)",
-            }.Concat(tokensOnDifferentLines2).ToArray();
+            data.Add("(+ 1\n2\r3\n\r4\t5)", tokensOnDifferentLines2);
+            data.Add("(+ 1\n2\r3\r\r4\t5)", tokensOnDifferentLines2);
+            data.Add("(+ 1\n2\r3\n\n4\t5)", tokensOnDifferentLines2);
 
-            yield return new object[]
-            {
-                "(+ 1\n2\r3\r\r4\t5)",
-            }.Concat(tokensOnDifferentLines2).ToArray();
-
-            yield return new object[]
-            {
-                "(+ 1\n2\r3\n\n4\t5)",
-            }.Concat(tokensOnDifferentLines2).ToArray();
-
-            yield return new object[]
-            {
-                "(and true false)",
+            data.Add("(and true false)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "and", 2),
                 Expect(TokenType.Boolean, "true", 6),
                 Expect(TokenType.Boolean, "false", 11),
                 Expect(RParen, ")", 16),
                 Expect(EOF, "", 17)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(or false true)",
+            data.Add("(or false true)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "or", 2),
                 Expect(TokenType.Boolean, "false", 5),
                 Expect(TokenType.Boolean, "true", 11),
                 Expect(RParen, ")", 15),
                 Expect(EOF, "", 16)
-            };
+            });
 
-            yield return new object[]
-            {
-                "(xor false true)",
+            data.Add("(xor false true)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "xor", 2),
                 Expect(TokenType.Boolean, "false", 6),
                 Expect(TokenType.Boolean, "true", 12),
                 Expect(RParen, ")", 16),
                 Expect(EOF, "", 17)
-            };
+            });
 
-            yield return new object[]
-            {
-                @"(+
+            data.Add(@"(+
 1
-2)",
+2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "1", 1, PickLine(2, 3)),
                 Expect(Number, "2", 1, PickLine(3, 5)),
                 Expect(RParen, ")", 2, PickLine(3, 5)),
                 Expect(EOF, "", 3, PickLine(3, 5))
-            };
+            });
 
-            yield return new object[]
-            {
-                "(+ 10 15);This is a comment, () \t\";",
+            data.Add("(+ 10 15);This is a comment, () \t\";", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "10", 4),
                 Expect(Number, "15", 7),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 36),
-            };
+            });
 
-            yield return new object[]
-            {
-                @"; A function for returning the max of two numbers.
+            data.Add(@"; A function for returning the max of two numbers.
 (define (max num1 num2) ; num1 and num2 are numbers
     ; If num1 is greater than num2, return num1. Otherwise, return num2.
     (if (> num1 num2) num1
         num2))
 
-(max 55 21); Expecting 55.",
+(max 55 21); Expecting 55.", new[] {
                 Expect(LParen, "(", 1, PickLine(2, 3)),
                 Expect(Definition, "define", 2, PickLine(2, 3)),
                 Expect(LParen, "(", 9, PickLine(2, 3)),
@@ -565,7 +480,9 @@ namespace RainLispTests
                 Expect(Number, "21", 9, PickLine(7, 13)),
                 Expect(RParen, ")", 11, PickLine(7, 13)),
                 Expect(EOF, "", 27, PickLine(7, 13)),
-            };
+            });
+
+            return data;
         }
 
         [Theory]
@@ -594,68 +511,83 @@ namespace RainLispTests
         [InlineData("\"hi", 1, 1)]
         [InlineData("\"hi 12", 1, 1)]
         [InlineData("13\"hi", 1, 3)]
+        [InlineData("13\n\"hi", 2, 1)]
         [InlineData(@"""hello \\"" wonderful \\ world""", 1, 30)]
+        [InlineData("\"hello \\\\\" wonderful \\\\ world\n\"", 2, 1)]
         [InlineData(@"a b c ""hi", 1, 7)]
+        [InlineData("a \n b \r c \"hi", 3, 4)]
+        [InlineData("a \n b \r c\n\"hi", 4, 1)]
         [InlineData(@"""hi a b c", 1, 1)]
         [InlineData(@" ""hi a b c", 1, 2)]
         [InlineData("a b c\n\"hi", 2, 1)]
         [InlineData("a b c\n\"hi\" d \"world", 2, 8)]
         [InlineData("\"hi\" \"world", 1, 6)]
+        [InlineData("\"hi\" \n\"world", 2, 1)]
         [InlineData("\"hi\"\na\n\"world", 3, 1)]
         [InlineData("\"hi\"\na\nd \"world", 3, 3)]
         public void Tokenize_NonTerminatedString_Throws(string expression, uint expectedLine, uint expectedPosition)
         {
+            Tokenize_InvalidString_Throws<NonTerminatedStringException>(expression, expectedLine, expectedPosition);
+        }
+
+        [Theory]
+        [InlineData("\"hello\nworld.\\\"", 1, 7, '\n')]
+        [InlineData("ab \"hello\nworld.\\\"", 1, 10, '\n')]
+        [InlineData("ab\n\"hello\nworld.\\\"", 2, 7, '\n')]
+        [InlineData("\"hello\nworld.\"", 1, 7, '\n')]
+        [InlineData("12\n \"hello\nworld.\"", 2, 8, '\n')]
+        [InlineData("\"hello\rworld.\"", 1, 7, '\r')]
+        [InlineData("13\"hello\rworld.\"", 1, 9, '\r')]
+        [InlineData("13\n\"hello\rworld.\"", 2, 7, '\r')]
+        [InlineData("\"hello\r\nworld.\"", 1, 7, '\r')]
+        [InlineData("\"cool\" \"hello\r\nworld.\"", 1, 14, '\r')]
+        [InlineData("\"cool\" \n\"hello\r\nworld.\"", 2, 7, '\r')]
+        [InlineData(@"""hello there
+world.""", 1, 13, '\r')] // Note that if this test is ran on a unix platform, the expected character might not be \r.
+        public void Tokenize_MultilineString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
+        {
+            var exception = Tokenize_InvalidString_Throws<InvalidStringCharacterException>(expression, expectedLine, expectedPosition);
+            Assert.Equal(expectedCharacter, exception!.Character);
+        }
+
+        [Theory]
+        [InlineData(@"""hello \a world""", 1, 9, 'a')]
+        [InlineData("12\"hello \\a world\"", 1, 11, 'a')]
+        [InlineData("12\n\"hello \\a world\"", 2, 9, 'a')]
+        [InlineData(@"""hello \b world""", 1, 9, 'b')] // backspace is not supported.
+        [InlineData(@"""hello \c world""", 1, 9, 'c')]
+        [InlineData(@"""hello \d world""", 1, 9, 'd')]
+        [InlineData("\"cool\" \"hello \\d world\"", 1, 16, 'd')]
+        [InlineData("\"cool\"\n\"hello \\d world\"", 2, 9, 'd')]
+        [InlineData(@"""hello \9 world""", 1, 9, '9')]
+        public void Tokenize_InvalidEscapeSequenceInString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
+        {
+            var exception = Tokenize_InvalidString_Throws<InvalidEscapeSequenceException>(expression, expectedLine, expectedPosition);
+            Assert.Equal(expectedCharacter, exception!.Character);
+        }
+
+        private TException? Tokenize_InvalidString_Throws<TException>(string expression, uint expectedLine, uint expectedPosition) where TException : TokenizationException
+        {
             // Arrange
-            NonTerminatedStringException? exception = null;
+            TException? exception = null;
 
             // Act
             try
             {
                 _tokenizer.Tokenize(expression);
             }
-            catch (NonTerminatedStringException ex)
+            catch (TException ex)
             {
                 exception = ex;
             }
 
             // Assert
             Assert.NotNull(exception);
-            Assert.IsType<NonTerminatedStringException>(exception);
+            Assert.IsType<TException>(exception);
             Assert.Equal(expectedLine, exception!.Line);
             Assert.Equal(expectedPosition, exception!.Position);
-        }
 
-        [Theory]
-        [InlineData("\"hello\nworld.\\\"")]
-        [InlineData("\"hello\nworld.\"")]
-        [InlineData("\"hello\rworld.\"")]
-        [InlineData("\"hello\r\nworld.\"")]
-        [InlineData(@"""hello there
-world.""")]
-        public void Tokenize_MultilineString_Throws(string expression)
-        {
-            // Arrange
-            void action() => _tokenizer.Tokenize(expression);
-
-            // Act
-            // Assert
-            Assert.Throws<InvalidStringCharacterException>(action);
-        }
-
-        [Theory]
-        [InlineData(@"""hello \a world""")]
-        [InlineData(@"""hello \b world""")] // backspace is not supported.
-        [InlineData(@"""hello \c world""")]
-        [InlineData(@"""hello \d world""")]
-        [InlineData(@"""hello \9 world""")]
-        public void Tokenize_InvalidEscapeSequenceInString_Throws(string expression)
-        {
-            // Arrange
-            void action() => _tokenizer.Tokenize(expression);
-
-            // Act
-            // Assert
-            Assert.Throws<InvalidEscapeSequenceException>(action);
+            return exception;
         }
     }
 }

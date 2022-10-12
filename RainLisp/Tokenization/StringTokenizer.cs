@@ -18,7 +18,7 @@ namespace RainLisp.Tokenization
             CharactersProcessed = 0;
         }
 
-        public void AddToString(char c)
+        public void AddToString(char c, uint line, uint position)
         {
             CharactersProcessed++;
 
@@ -37,7 +37,7 @@ namespace RainLisp.Tokenization
                     _stringBuilder.Append(TAB);
 
                 else
-                    throw new InvalidEscapeSequenceException(c);
+                    throw new InvalidEscapeSequenceException(line, position, c);
 
                 // Stop escaping, escaping applies to one character only.
                 _escaping = false;
@@ -56,7 +56,7 @@ namespace RainLisp.Tokenization
 
                 // Multiline string literals are not supported.
                 else if (c == CARRIAGE_RETURN || c == NEW_LINE)
-                    throw new InvalidStringCharacterException(c);
+                    throw new InvalidStringCharacterException(line, position, c);
 
                 else
                     _stringBuilder.Append(c);
