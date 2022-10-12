@@ -21,58 +21,56 @@ namespace RainLispTests
 
             var data = new TheoryData<string, ExpectedToken[]>
             {
+                { null!, new[] { Expect(EOF, "", 1) } },
+                { "", new[] { Expect(EOF, "", 1) } },
+                { " ", new[] { Expect(EOF, "", 2) } },
+                { "\n", new[] { Expect(EOF, "", 1, 2) } },
 
+                { "1", new[] { Expect(Number, "1", 1), Expect(EOF, "", 2) } },
+                { "+1", new[] { Expect(Number, "+1", 1), Expect(EOF, "", 3) } },
+                { "-1", new[] { Expect(Number, "-1", 1), Expect(EOF, "", 3) } },
+                { "12.3456", new[] { Expect(Number, "12.3456", 1), Expect(EOF, "", 8) } }, 
+
+                #region String literals.
+                { "\"\"", new[] { Expect(TokenType.String, "", 1), Expect(EOF, "", 3) } },
+                { "\" \"", new[] { Expect(TokenType.String, " ", 1), Expect(EOF, "", 4) } },
+                { "\"helloworld\"", new[] { Expect(TokenType.String, "helloworld", 1), Expect(EOF, "", 13) } },
+                { "\"hello world\"", new[] { Expect(TokenType.String, "hello world", 1), Expect(EOF, "", 14) } },
+                { "\"hello  world\"", new[] { Expect(TokenType.String, "hello  world", 1), Expect(EOF, "", 15) } },
+                { "\"hello\tworld\"", new[] { Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 14) } }, 
+
+                // Valid escape sequences.
+                { "\"\\n\\n\"", new[] { Expect(TokenType.String, "\n\n", 1), Expect(EOF, "", 7) } },
+                { @"""hello \""wonderful\"" world""", new[] { Expect(TokenType.String, "hello \"wonderful\" world", 1), Expect(EOF, "", 28) } },
+                { @"""hello \\ wonderful \\ world""", new[] { Expect(TokenType.String, "hello \\ wonderful \\ world", 1), Expect(EOF, "", 30) } },
+                { @"""\\""", new[] { Expect(TokenType.String, @"\", 1), Expect(EOF, "", 5) } },
+                { @"""\\hi""", new[] { Expect(TokenType.String, @"\hi", 1), Expect(EOF, "", 7) } },
+                { @"""\\\""""", new[] { Expect(TokenType.String, @"\""", 1), Expect(EOF, "", 7) } },
+                { @"""hello\""world""", new[] { Expect(TokenType.String, @"hello""world", 1), Expect(EOF, "", 15) } },
+                { @"""hello\\world""", new[] { Expect(TokenType.String, @"hello\world", 1), Expect(EOF, "", 15) } },
+                { @"""hello\nworld""", new[] { Expect(TokenType.String, "hello\nworld", 1), Expect(EOF, "", 15) } },
+                { @"""hello\rworld""", new[] { Expect(TokenType.String, "hello\rworld", 1), Expect(EOF, "", 15) } },
+                { @"""hello\tworld""", new[] { Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 15) } }, 
+
+                // Strings adjacent to other tokens.
+                { "12\"hi\"", new[] { Expect(Number, "12", 1), Expect(TokenType.String, "hi", 3), Expect(EOF, "", 7) } },
+                { "12 \"hi\"", new[] { Expect(Number, "12", 1), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) } },
+                { "abc\"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) } },
+                { "abc \"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 5), Expect(EOF, "", 9) } },
+                { "\"hi\"12", new[] { Expect(TokenType.String, "hi", 1), Expect(Number, "12", 5), Expect(EOF, "", 7) } },
+                { "\"hi\" 12", new[] { Expect(TokenType.String, "hi", 1), Expect(Number, "12", 6), Expect(EOF, "", 8) } },
+                { "\"hi\"abc", new[] { Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 5), Expect(EOF, "", 8) } },
+                { "\"hi\" abc", new[] { Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 6), Expect(EOF, "", 9) } },
+                { "\"hello\"\"world\"", new[] { Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 8), Expect(EOF, "", 15) } },
+                { "\"hello\" \"world\"", new[] { Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 9), Expect(EOF, "", 16) } }, 
+                #endregion
+
+                { "true", new[] { Expect(TokenType.Boolean, "true", 1), Expect(EOF, "", 5) } },
+                { "false", new[] { Expect(TokenType.Boolean, "false", 1), Expect(EOF, "", 6) } },
+                { "a", new[] { Expect(Identifier, "a", 1), Expect(EOF, "", 2) } },
+                { "abc", new[] { Expect(Identifier, "abc", 1), Expect(EOF, "", 4) } },
+                { "+", new[] { Expect(Identifier, "+", 1), Expect(EOF, "", 2) } },
             };
-            data.Add(null!, new[] { Expect(EOF, "", 1) });
-            data.Add("", new[] { Expect(EOF, "", 1) });
-            data.Add(" ", new[] { Expect(EOF, "", 2) });
-            data.Add("\n", new[] { Expect(EOF, "", 1, 2) });
-
-            data.Add("1", new[] { Expect(Number, "1", 1), Expect(EOF, "", 2) });
-            data.Add("+1", new[] { Expect(Number, "+1", 1), Expect(EOF, "", 3) });
-            data.Add("-1", new[] { Expect(Number, "-1", 1), Expect(EOF, "", 3) });
-            data.Add("12.3456", new[] { Expect(Number, "12.3456", 1), Expect(EOF, "", 8) });
-
-            #region String literals.
-            data.Add("\"\"", new[] { Expect(TokenType.String, "", 1), Expect(EOF, "", 3) });
-            data.Add("\" \"", new[] { Expect(TokenType.String, " ", 1), Expect(EOF, "", 4) });
-            data.Add("\"helloworld\"", new[] { Expect(TokenType.String, "helloworld", 1), Expect(EOF, "", 13) });
-            data.Add("\"hello world\"", new[] { Expect(TokenType.String, "hello world", 1), Expect(EOF, "", 14) });
-            data.Add("\"hello  world\"", new[] { Expect(TokenType.String, "hello  world", 1), Expect(EOF, "", 15) });
-            data.Add("\"hello\tworld\"", new[] { Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 14) });
-
-            // Valid escape sequences.
-            data.Add("\"\\n\\n\"", new[] { Expect(TokenType.String, "\n\n", 1), Expect(EOF, "", 7) });
-            data.Add(@"""hello \""wonderful\"" world""", new[] { Expect(TokenType.String, "hello \"wonderful\" world", 1), Expect(EOF, "", 28) });
-            data.Add(@"""hello \\ wonderful \\ world""", new[] { Expect(TokenType.String, "hello \\ wonderful \\ world", 1), Expect(EOF, "", 30) });
-            data.Add(@"""\\""", new[] { Expect(TokenType.String, @"\", 1), Expect(EOF, "", 5) });
-            data.Add(@"""\\hi""", new[] { Expect(TokenType.String, @"\hi", 1), Expect(EOF, "", 7) });
-            data.Add(@"""\\\""""", new[] { Expect(TokenType.String, @"\""", 1), Expect(EOF, "", 7) });
-            data.Add(@"""hello\""world""", new[] { Expect(TokenType.String, @"hello""world", 1), Expect(EOF, "", 15) });
-            data.Add(@"""hello\\world""", new[] { Expect(TokenType.String, @"hello\world", 1), Expect(EOF, "", 15) });
-            data.Add(@"""hello\nworld""", new[] { Expect(TokenType.String, "hello\nworld", 1), Expect(EOF, "", 15) });
-            data.Add(@"""hello\rworld""", new[] { Expect(TokenType.String, "hello\rworld", 1), Expect(EOF, "", 15) });
-            data.Add(@"""hello\tworld""", new[] { Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 15) });
-
-            // Strings adjacent to other tokens.
-            data.Add("12\"hi\"", new[] { Expect(Number, "12", 1), Expect(TokenType.String, "hi", 3), Expect(EOF, "", 7) });
-            data.Add("12 \"hi\"", new[] { Expect(Number, "12", 1), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) });
-            data.Add("abc\"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) });
-            data.Add("abc \"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 5), Expect(EOF, "", 9) });
-            data.Add("\"hi\"12", new[] { Expect(TokenType.String, "hi", 1), Expect(Number, "12", 5), Expect(EOF, "", 7) });
-            data.Add("\"hi\" 12", new[] { Expect(TokenType.String, "hi", 1), Expect(Number, "12", 6), Expect(EOF, "", 8) });
-            data.Add("\"hi\"abc", new[] { Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 5), Expect(EOF, "", 8) });
-            data.Add("\"hi\" abc", new[] { Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 6), Expect(EOF, "", 9) });
-            data.Add("\"hello\"\"world\"", new[] { Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 8), Expect(EOF, "", 15) });
-            data.Add("\"hello\" \"world\"", new[] { Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 9), Expect(EOF, "", 16) });
-            #endregion
-
-            data.Add("true", new[] { Expect(TokenType.Boolean, "true", 1), Expect(EOF, "", 5) });
-            data.Add("false", new[] { Expect(TokenType.Boolean, "false", 1), Expect(EOF, "", 6) });
-            data.Add("a", new[] { Expect(Identifier, "a", 1), Expect(EOF, "", 2) });
-            data.Add("abc", new[] { Expect(Identifier, "abc", 1), Expect(EOF, "", 4) });
-            data.Add("+", new[] { Expect(Identifier, "+", 1), Expect(EOF, "", 2) });
-
 
             data.Add("(quote abcd)", new[] {
                 Expect(LParen, "(", 1),
@@ -401,9 +399,7 @@ namespace RainLispTests
                 .ToArray();
 
             data.Add("(+ 1\n2\r3\n\r4\t5)", tokensOnDifferentLines2);
-
             data.Add("(+ 1\n2\r3\r\r4\t5)", tokensOnDifferentLines2);
-
             data.Add("(+ 1\n2\r3\n\n4\t5)", tokensOnDifferentLines2);
 
             data.Add("(and true false)", new[] {
