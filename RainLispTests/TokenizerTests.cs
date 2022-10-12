@@ -60,7 +60,7 @@ namespace RainLispTests
             yield return new object[] { "\"hi\"abc", Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 5), Expect(EOF, "", 8) };
             yield return new object[] { "\"hi\" abc", Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 6), Expect(EOF, "", 9) };
             yield return new object[] { "\"hello\"\"world\"", Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 8), Expect(EOF, "", 15) };
-            yield return new object[] { "\"hello\" \"world\"", Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 9), Expect(EOF, "", 16) }; 
+            yield return new object[] { "\"hello\" \"world\"", Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 9), Expect(EOF, "", 16) };
             #endregion
 
             yield return new object[] { "true", Expect(TokenType.Boolean, "true", 1), Expect(EOF, "", 5) };
@@ -594,13 +594,18 @@ namespace RainLispTests
         [InlineData("\"hi", 1, 1)]
         [InlineData("\"hi 12", 1, 1)]
         [InlineData("13\"hi", 1, 3)]
+        [InlineData("13\n\"hi", 2, 1)]
         [InlineData(@"""hello \\"" wonderful \\ world""", 1, 30)]
+        [InlineData("\"hello \\\\\" wonderful \\\\ world\n\"", 2, 1)]
         [InlineData(@"a b c ""hi", 1, 7)]
+        [InlineData("a \n b \r c \"hi", 3, 4)]
+        [InlineData("a \n b \r c\n\"hi", 4, 1)]
         [InlineData(@"""hi a b c", 1, 1)]
         [InlineData(@" ""hi a b c", 1, 2)]
         [InlineData("a b c\n\"hi", 2, 1)]
         [InlineData("a b c\n\"hi\" d \"world", 2, 8)]
         [InlineData("\"hi\" \"world", 1, 6)]
+        [InlineData("\"hi\" \n\"world", 2, 1)]
         [InlineData("\"hi\"\na\n\"world", 3, 1)]
         [InlineData("\"hi\"\na\nd \"world", 3, 3)]
         public void Tokenize_NonTerminatedString_Throws(string expression, uint expectedLine, uint expectedPosition)
@@ -610,9 +615,16 @@ namespace RainLispTests
 
         [Theory]
         [InlineData("\"hello\nworld.\\\"", 1, 7, '\n')]
+        [InlineData("ab \"hello\nworld.\\\"", 1, 10, '\n')]
+        [InlineData("ab\n\"hello\nworld.\\\"", 2, 7, '\n')]
         [InlineData("\"hello\nworld.\"", 1, 7, '\n')]
+        [InlineData("12\n \"hello\nworld.\"", 2, 8, '\n')]
         [InlineData("\"hello\rworld.\"", 1, 7, '\r')]
-        [InlineData("\"hello\r\nworld.\"",1, 7, '\r')]
+        [InlineData("13\"hello\rworld.\"", 1, 9, '\r')]
+        [InlineData("13\n\"hello\rworld.\"", 2, 7, '\r')]
+        [InlineData("\"hello\r\nworld.\"", 1, 7, '\r')]
+        [InlineData("\"cool\" \"hello\r\nworld.\"", 1, 14, '\r')]
+        [InlineData("\"cool\" \n\"hello\r\nworld.\"", 2, 7, '\r')]
         [InlineData(@"""hello there
 world.""", 1, 13, '\r')] // Note that if this test is ran on a unix platform, the expected character might not be \r.
         public void Tokenize_MultilineString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
@@ -623,9 +635,13 @@ world.""", 1, 13, '\r')] // Note that if this test is ran on a unix platform, th
 
         [Theory]
         [InlineData(@"""hello \a world""", 1, 9, 'a')]
+        [InlineData("12\"hello \\a world\"", 1, 11, 'a')]
+        [InlineData("12\n\"hello \\a world\"", 2, 9, 'a')]
         [InlineData(@"""hello \b world""", 1, 9, 'b')] // backspace is not supported.
         [InlineData(@"""hello \c world""", 1, 9, 'c')]
         [InlineData(@"""hello \d world""", 1, 9, 'd')]
+        [InlineData("\"cool\" \"hello \\d world\"", 1, 16, 'd')]
+        [InlineData("\"cool\"\n\"hello \\d world\"", 2, 9, 'd')]
         [InlineData(@"""hello \9 world""", 1, 9, '9')]
         public void Tokenize_InvalidEscapeSequenceInString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
         {

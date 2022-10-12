@@ -21,13 +21,14 @@ namespace RainLisp.Tokenization
             var lexemeStringBuilder = new StringBuilder();
             StringTokenizer? stringTokenizer = null;
 
+            #region Local Helper Methods.
             void RegisterToken(string value, TokenType tokenType, uint position)
             {
                 var token = new Token { Value = value, Type = tokenType, Line = line, Position = position };
                 tokens.Add(token);
             }
 
-            void RegisterEOF() 
+            void RegisterEOF()
                 => RegisterToken(string.Empty, TokenType.EOF, charPosition);
 
             void RegisterStringLiteralToken()
@@ -54,7 +55,7 @@ namespace RainLisp.Tokenization
             void ChangeLine()
             {
                 line++;
-                charPosition = 0;
+                charPosition = 1;
             }
 
             void PlatformBounceNextNewLine(ref int i)
@@ -66,7 +67,8 @@ namespace RainLisp.Tokenization
 
             // The string token's position relates to the actual number of characters typed in the string and not the resulting string value's length.
             uint GetLastStringStartPosition()
-                => charPosition - stringTokenizer!.CharactersProcessed - 1;
+                => charPosition - stringTokenizer!.CharactersProcessed - 1; 
+            #endregion
 
             for (int i = 0; i < expression.Length; i++)
             {
@@ -83,11 +85,13 @@ namespace RainLisp.Tokenization
                         charInComment = false;
                         ChangeLine();
                         PlatformBounceNextNewLine(ref i);
+                        continue; // Skip advancing character position.
                     }
                     else if (c == NEW_LINE)
                     {
                         charInComment = false;
                         ChangeLine();
+                        continue; // Skip advancing character position.
                     }
                 }
                 // Start of a comment.
@@ -118,11 +122,13 @@ namespace RainLisp.Tokenization
                     RegisterUnknownToken();
                     ChangeLine();
                     PlatformBounceNextNewLine(ref i);
+                    continue; // Skip advancing character position.
                 }
                 else if (c == NEW_LINE)
                 {
                     RegisterUnknownToken();
                     ChangeLine();
+                    continue; // Skip advancing character position.
                 }
                 else if (c == SPACE || c == TAB)
                     RegisterUnknownToken();
