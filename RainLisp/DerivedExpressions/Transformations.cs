@@ -61,5 +61,41 @@ namespace RainLisp.DerivedExpressions
 
             return new Application(lambda, operands);
         }
+
+        public static Expression ToIf(this And and)
+        {
+            // And is turned into an if expression in a way that each and's operand will be evaluated until an operand evaluates to false
+            // or the last operand is reached, in which case it will be the result of the evaluation.
+            if (and.Expressions.Count == 1)
+                return and.Expressions[0];
+
+            // In and, a nested if goes inside the consequent of the outer if.
+            return AndOrToIf(and.Expressions, (exp1, exp2) => new If(exp1, exp2, exp1));
+        }
+
+        public static Expression ToIf(this Or or)
+        {
+            // Or is turned into an if expression in a way that each or's operand will be evaluated until an operand evaluates to true
+            // or the last operand is reached, in which case it will be the result of the evaluation.
+            if (or.Expressions.Count == 1)
+                return or.Expressions[0];
+
+            // In or, a nested if goes inside the alternative of the outer if.
+            return AndOrToIf(or.Expressions, (exp1, exp2) => new If(exp1, exp1, exp2));
+        }
+
+        private static If AndOrToIf(IList<Expression> expressions, Func<Expression, Expression, If> createNestedIf, int expressionIndex = 0)
+        {
+            var expression = expressions[expressionIndex];
+
+            Expression nestedExpression;
+            // If expression is next to last, it does not create another nested if but uses the the last expression instead.
+            if (expressionIndex == expressions.Count - 2)
+                nestedExpression = expressions[expressionIndex + 1];
+            else
+                nestedExpression = AndOrToIf(expressions, createNestedIf, ++expressionIndex);
+
+            return createNestedIf(expression, nestedExpression);
+        }
     }
 }

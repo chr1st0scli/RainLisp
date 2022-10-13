@@ -283,5 +283,69 @@ namespace RainLispTests
             // Assert
             Assert.Equal(16d, (double)result);
         }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(4)]
+        [InlineData(6)]
+        public void Evaluate_AndOperands_CorrectNumberOfTimes(int expectedCallCount)
+        {
+            if (expectedCallCount > 6)
+                throw new ArgumentOutOfRangeException(nameof(expectedCallCount));
+
+            // Arrange
+            string expression = $@"
+(define callCount 0)
+
+(define (shouldProceed?)
+    (set! callCount (+ callCount 1))
+
+    (if (>= callCount {expectedCallCount})
+        false
+        true))
+
+; and should stop on the first false and not evaluate the rest of the operands.
+(and (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?))
+callCount";
+
+            // Act
+            var result = interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedCallCount, (double)result);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(4)]
+        [InlineData(6)]
+        public void Evaluate_OrOperands_CorrectNumberOfTimes(int expectedCallCount)
+        {
+            if (expectedCallCount > 6)
+                throw new ArgumentOutOfRangeException(nameof(expectedCallCount));
+
+            // Arrange
+            string expression = $@"
+(define callCount 0)
+
+(define (shouldProceed?)
+    (set! callCount (+ callCount 1))
+
+    (if (>= callCount {expectedCallCount})
+        true
+        false))
+
+; or should stop on the first true and not evaluate the rest of the operands.
+(or (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?))
+callCount";
+
+            // Act
+            var result = interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedCallCount, (double)result);
+        }
     }
 }

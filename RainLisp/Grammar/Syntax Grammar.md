@@ -24,6 +24,8 @@ expression = NUM | STRING | BOOL | ID
 		| "(" "begin" expression {expression} ")"
 		| "(" "lambda" "(" {ID} ")" body ")"
 		| "(" "let" "(" let_clause {let_clause} ")" body ")"
+		| "(" "and" expression {expression} ")"
+		| "(" "or" expression {expression} ")"
 		| "(" expression {expression} ")"
 ```
 
