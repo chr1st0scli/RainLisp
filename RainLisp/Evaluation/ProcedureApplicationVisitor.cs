@@ -27,8 +27,6 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.LessThan => LessThan(evaluatedArguments),
                 PrimitiveProcedureType.LessThanOrEqualTo => LessThanOrEqualTo(evaluatedArguments),
                 PrimitiveProcedureType.EqualTo => EqualTo(evaluatedArguments),
-                PrimitiveProcedureType.LogicalAnd => LogicalAnd(evaluatedArguments),
-                PrimitiveProcedureType.LogicalOr => LogicalOr(evaluatedArguments),
                 PrimitiveProcedureType.LogicalXor => LogicalXor(evaluatedArguments),
                 PrimitiveProcedureType.LogicalNot => LogicalNot(evaluatedArguments),
                 _ => throw new NotImplementedException()
@@ -65,14 +63,6 @@ namespace RainLisp.Evaluation
 
         private static object EqualTo(object[] values)
             => ApplyBinaryOperator((val1, val2) => val1.Equals(val2), values);
-
-        // This should not evaluate further values when first false is encountered
-        private static object LogicalAnd(object[] values)
-            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<bool>(val1) && ValueForPrimitive<bool>(val2), values);
-
-        // This should not evaluate further values when first true is encountered
-        private static object LogicalOr(object[] values)
-            => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<bool>(val1) || ValueForPrimitive<bool>(val2), values);
 
         private static object LogicalXor(object[] values)
             => ApplyMultivalueOperator((val1, val2) => ValueForPrimitive<bool>(val1) ^ ValueForPrimitive<bool>(val2), values);

@@ -404,7 +404,7 @@ namespace RainLispTests
 
             data.Add("(and true false)", new[] {
                 Expect(LParen, "(", 1),
-                Expect(Identifier, "and", 2),
+                Expect(And, "and", 2),
                 Expect(TokenType.Boolean, "true", 6),
                 Expect(TokenType.Boolean, "false", 11),
                 Expect(RParen, ")", 16),
@@ -413,7 +413,7 @@ namespace RainLispTests
 
             data.Add("(or false true)", new[] {
                 Expect(LParen, "(", 1),
-                Expect(Identifier, "or", 2),
+                Expect(Or, "or", 2),
                 Expect(TokenType.Boolean, "false", 5),
                 Expect(TokenType.Boolean, "true", 11),
                 Expect(RParen, ")", 15),

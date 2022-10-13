@@ -12,8 +12,6 @@
         LessThan,
         LessThanOrEqualTo,
         EqualTo,
-        LogicalAnd,
-        LogicalOr,
         LogicalXor,
         LogicalNot
     }

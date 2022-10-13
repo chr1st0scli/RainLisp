@@ -70,7 +70,7 @@ namespace RainLisp.DerivedExpressions
                 return and.Expressions[0];
 
             // In and, a nested if goes inside the consequent of the outer if.
-            return AndOrToIf(and.Expressions, (exp1, exp2) => new If(exp1, exp2, exp1));
+            return AndOrToIf(and.Expressions, (expr, nestedExpr) => new If(expr, nestedExpr, new BooleanLiteral(false)));
         }
 
         public static Expression ToIf(this Or or)
@@ -81,7 +81,7 @@ namespace RainLisp.DerivedExpressions
                 return or.Expressions[0];
 
             // In or, a nested if goes inside the alternative of the outer if.
-            return AndOrToIf(or.Expressions, (exp1, exp2) => new If(exp1, exp1, exp2));
+            return AndOrToIf(or.Expressions, (expr, nestedExpr) => new If(expr, new BooleanLiteral(true), nestedExpr));
         }
 
         private static If AndOrToIf(IList<Expression> expressions, Func<Expression, Expression, If> createNestedIf, int expressionIndex = 0)
