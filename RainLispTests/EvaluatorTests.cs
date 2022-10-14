@@ -5,7 +5,7 @@ namespace RainLispTests
 {
     public class EvaluatorTests
     {
-        private readonly Interpreter interpreter = new();
+        private readonly Interpreter _interpreter = new();
 
         [Theory]
         [InlineData("1", 1d)]
@@ -22,7 +22,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -69,7 +69,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
@@ -100,7 +100,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, Math.Round((double)result, 2, MidpointRounding.AwayFromZero));
@@ -167,7 +167,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (bool)result);
@@ -195,7 +195,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
@@ -223,7 +223,7 @@ namespace RainLispTests
 {lambdaCall}";
 
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
@@ -253,7 +253,7 @@ namespace RainLispTests
 (f)";
 
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
@@ -279,7 +279,7 @@ namespace RainLispTests
   (f 10))";
 
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(16d, (double)result);
@@ -310,8 +310,8 @@ namespace RainLispTests
             IEvaluationEnvironment? environment = null;
 
             // Act
-            var result = interpreter.Evaluate(expression, ref environment);
-            var callCountResult = interpreter.Evaluate("callCount", ref environment);
+            var result = _interpreter.Evaluate(expression, ref environment);
+            var callCountResult = _interpreter.Evaluate("callCount", ref environment);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -343,8 +343,8 @@ namespace RainLispTests
             IEvaluationEnvironment? environment = null;
 
             // Act
-            var result = interpreter.Evaluate(expression, ref environment);
-            var callCountResult = interpreter.Evaluate("callCount", ref environment);
+            var result = _interpreter.Evaluate(expression, ref environment);
+            var callCountResult = _interpreter.Evaluate("callCount", ref environment);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -381,7 +381,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, result);
