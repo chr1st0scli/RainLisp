@@ -1,5 +1,5 @@
 ﻿using RainLisp;
-using RainLisp.Tokenization;
+using RainLisp.Environment;
 
 namespace RainLispTests
 {
@@ -65,7 +65,7 @@ namespace RainLispTests
         [InlineData("(define (foo a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) (foo 10 12)", 242d)]
         [InlineData("((lambda (a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) 10 12)", 242d)]
         [InlineData("(let ((a 10) (b 12)) (set! a (+ a b)) (set! b (* a b)) (- b a))", 242d)]
-        public void Evaluate_Expression_Correctly(string expression, double expectedResult)
+        public void Evaluate_NumericExpression_Correctly(string expression, double expectedResult)
         {
             // Arrange
             // Act
@@ -96,7 +96,7 @@ namespace RainLispTests
         [InlineData("(% 15 6 2)", 1d)]
         [InlineData("(+ 1 (* 2 3))", 7d)]
         [InlineData("(+ 6 (- 7 (* (+ 8 (/ 3 (+ 2 (- 1 (+ (- 5 (* 3 6)) 3)))) 4) 9)))", -97.08)]
-        public void Evaluate_NumberPrimitiveExpression_Correctly(string expression, double expectedResult)
+        public void Evaluate_NumericPrimitiveExpression_Correctly(string expression, double expectedResult)
         {
             // Arrange
             // Act
@@ -163,7 +163,7 @@ namespace RainLispTests
         [InlineData("(not (and (or (> 6 2) (< 6 2)) (or (< 4 2) (> 4 2))))", false)]
         [InlineData("(and (> (+ 5 4) (- 5 4)) (> (/ 4 5) (* 4 5)))", false)]
         [InlineData("(or (> (+ 5 4) (- 5 4)) (> (/ 4 5) (* 4 5)))", true)]
-        public void Evaluate_LogicalPrimitiveExpression_Correctly(string expression, bool expectedResult)
+        public void Evaluate_LogicalExpression_Correctly(string expression, bool expectedResult)
         {
             // Arrange
             // Act
@@ -286,15 +286,13 @@ namespace RainLispTests
         }
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(4)]
-        [InlineData(6)]
-        public void Evaluate_AndOperands_CorrectNumberOfTimes(int expectedCallCount)
+        [InlineData(1, 1, false)]
+        [InlineData(2, 2, false)]
+        [InlineData(4, 4, false)]
+        [InlineData(6, 6, false)]
+        [InlineData(7, 6, true)] // Execute all 6 calls to shouldProceed?
+        public void Evaluate_AndOperands_CorrectNumberOfTimes(int firstCallToReturnFalse, int expectedCallCount, bool expectedResult)
         {
-            if (expectedCallCount > 6)
-                throw new ArgumentOutOfRangeException(nameof(expectedCallCount));
-
             // Arrange
             string expression = $@"
 (define callCount 0)
@@ -302,31 +300,32 @@ namespace RainLispTests
 (define (shouldProceed?)
     (set! callCount (+ callCount 1))
 
-    (if (>= callCount {expectedCallCount})
+    (if (>= callCount {firstCallToReturnFalse})
         false
         true))
 
 ; and should stop on the first false and not evaluate the rest of the operands.
-(and (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?))
-callCount";
+(and (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?))";
+
+            IEvaluationEnvironment? environment = null;
 
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = interpreter.Evaluate(expression, ref environment);
+            var callCountResult = interpreter.Evaluate("callCount", ref environment);
 
             // Assert
-            Assert.Equal(expectedCallCount, (double)result);
+            Assert.Equal(expectedResult, result);
+            Assert.Equal(expectedCallCount, (double)callCountResult);
         }
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(4)]
-        [InlineData(6)]
-        public void Evaluate_OrOperands_CorrectNumberOfTimes(int expectedCallCount)
+        [InlineData(1, 1, true)]
+        [InlineData(2, 2, true)]
+        [InlineData(4, 4, true)]
+        [InlineData(6, 6, true)]
+        [InlineData(7, 6, false)] // Execute all 6 calls to shouldProceed?
+        public void Evaluate_OrOperands_CorrectNumberOfTimes(int firstCallToReturnTrue, int expectedCallCount, bool expectedResult)
         {
-            if (expectedCallCount > 6)
-                throw new ArgumentOutOfRangeException(nameof(expectedCallCount));
-
             // Arrange
             string expression = $@"
 (define callCount 0)
@@ -334,19 +333,22 @@ callCount";
 (define (shouldProceed?)
     (set! callCount (+ callCount 1))
 
-    (if (>= callCount {expectedCallCount})
+    (if (>= callCount {firstCallToReturnTrue})
         true
         false))
 
 ; or should stop on the first true and not evaluate the rest of the operands.
-(or (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?))
-callCount";
+(or (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?))";
+
+            IEvaluationEnvironment? environment = null;
 
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = interpreter.Evaluate(expression, ref environment);
+            var callCountResult = interpreter.Evaluate("callCount", ref environment);
 
             // Assert
-            Assert.Equal(expectedCallCount, (double)result);
+            Assert.Equal(expectedResult, result);
+            Assert.Equal(expectedCallCount, (double)callCountResult);
         }
     }
 }
