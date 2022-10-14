@@ -132,7 +132,7 @@ namespace RainLisp.Parsing
                     return ConditionExpr().ToIf();
 
                 else if (Match(TokenType.Begin))
-                    return BeginExpr();
+                    return new Begin(OneOrMoreExpressionsUntilRightParen());
 
                 else if (Match(TokenType.Lambda))
                     return LambdaExpr();
@@ -140,6 +140,13 @@ namespace RainLisp.Parsing
                 // let is a derived expression, so it gets converted to an equivalent lambda application.
                 else if (Match(TokenType.Let))
                     return LetExpr().ToLambdaApplication();
+
+                // and & or are derived expressions, so that they get converted to equivalent ifs.
+                else if (Match(TokenType.And))
+                    return new And(OneOrMoreExpressionsUntilRightParen()).ToIf();
+
+                else if (Match(TokenType.Or))
+                    return new Or(OneOrMoreExpressionsUntilRightParen()).ToIf();
 
                 // If it is none of the above, then it can only be a function application.
                 else
@@ -241,13 +248,6 @@ namespace RainLisp.Parsing
             } while (!Match(TokenType.RParen));
 
             return new Condition(clauses, elseClause);
-        }
-
-        private Begin BeginExpr()
-        {
-            var expressions = OneOrMoreExpressionsUntilRightParen();
-
-            return new Begin(expressions);
         }
 
         private Lambda LambdaExpr()

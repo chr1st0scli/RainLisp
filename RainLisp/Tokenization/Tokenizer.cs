@@ -171,6 +171,8 @@ namespace RainLisp.Tokenization
                 BEGIN => TokenType.Begin,
                 LAMBDA => TokenType.Lambda,
                 LET => TokenType.Let,
+                AND => TokenType.And,
+                OR => TokenType.Or,
                 _ => GetOtherType()
             };
         }

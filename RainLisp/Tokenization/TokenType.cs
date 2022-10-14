@@ -17,6 +17,8 @@
         Begin,
         Lambda,
         Let,
+        And,
+        Or,
         EOF
     }
 }

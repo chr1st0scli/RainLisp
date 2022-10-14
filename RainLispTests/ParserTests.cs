@@ -110,6 +110,8 @@ namespace RainLispTests
         [InlineData("(let ((a 1)\n(b)) 1", 2, 3, ParsingError.Expression)]
         [InlineData("(let ((a 1)\n(b 2)) 1", 2, 9, ParsingError.Expression)]
         [InlineData("(set! a)", 1, 8, ParsingError.Expression)]
+        [InlineData("(and)", 1, 5, ParsingError.Expression)]    // In traditional Lisp this would return true.
+        [InlineData("(or)", 1, 4, ParsingError.Expression)]     // In traditional Lisp this would return fals.
         // Missing specific symbols.
         [InlineData("(quote)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(quote a", 1, 9, ParsingError.MissingSymbol, TokenType.RParen)]

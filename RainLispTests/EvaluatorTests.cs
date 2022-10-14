@@ -1,10 +1,11 @@
 ﻿using RainLisp;
+using RainLisp.Environment;
 
 namespace RainLispTests
 {
     public class EvaluatorTests
     {
-        private readonly Interpreter interpreter = new();
+        private readonly Interpreter _interpreter = new();
 
         [Theory]
         [InlineData("1", 1d)]
@@ -21,7 +22,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -64,11 +65,11 @@ namespace RainLispTests
         [InlineData("(define (foo a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) (foo 10 12)", 242d)]
         [InlineData("((lambda (a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) 10 12)", 242d)]
         [InlineData("(let ((a 10) (b 12)) (set! a (+ a b)) (set! b (* a b)) (- b a))", 242d)]
-        public void Evaluate_Expression_Correctly(string expression, double expectedResult)
+        public void Evaluate_NumericExpression_Correctly(string expression, double expectedResult)
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
@@ -95,11 +96,11 @@ namespace RainLispTests
         [InlineData("(% 15 6 2)", 1d)]
         [InlineData("(+ 1 (* 2 3))", 7d)]
         [InlineData("(+ 6 (- 7 (* (+ 8 (/ 3 (+ 2 (- 1 (+ (- 5 (* 3 6)) 3)))) 4) 9)))", -97.08)]
-        public void Evaluate_NumberPrimitiveExpression_Correctly(string expression, double expectedResult)
+        public void Evaluate_NumericPrimitiveExpression_Correctly(string expression, double expectedResult)
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, Math.Round((double)result, 2, MidpointRounding.AwayFromZero));
@@ -162,11 +163,11 @@ namespace RainLispTests
         [InlineData("(not (and (or (> 6 2) (< 6 2)) (or (< 4 2) (> 4 2))))", false)]
         [InlineData("(and (> (+ 5 4) (- 5 4)) (> (/ 4 5) (* 4 5)))", false)]
         [InlineData("(or (> (+ 5 4) (- 5 4)) (> (/ 4 5) (* 4 5)))", true)]
-        public void Evaluate_LogicalPrimitiveExpression_Correctly(string expression, bool expectedResult)
+        public void Evaluate_LogicalExpression_Correctly(string expression, bool expectedResult)
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (bool)result);
@@ -194,7 +195,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
@@ -222,7 +223,7 @@ namespace RainLispTests
 {lambdaCall}";
 
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
@@ -252,7 +253,7 @@ namespace RainLispTests
 (f)";
 
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(expectedResult, (double)result);
@@ -278,10 +279,112 @@ namespace RainLispTests
   (f 10))";
 
             // Act
-            var result = interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression);
 
             // Assert
             Assert.Equal(16d, (double)result);
+        }
+
+        [Theory]
+        [InlineData(1, 1, false)]
+        [InlineData(2, 2, false)]
+        [InlineData(4, 4, false)]
+        [InlineData(6, 6, false)]
+        [InlineData(7, 6, true)] // Execute all 6 calls to shouldProceed?
+        public void Evaluate_AndOperands_CorrectNumberOfTimes(int firstCallToReturnFalse, int expectedCallCount, bool expectedResult)
+        {
+            // Arrange
+            string expression = $@"
+(define callCount 0)
+
+(define (shouldProceed?)
+    (set! callCount (+ callCount 1))
+
+    (if (>= callCount {firstCallToReturnFalse})
+        false
+        true))
+
+; and should stop on the first false and not evaluate the rest of the operands.
+(and (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?))";
+
+            IEvaluationEnvironment? environment = null;
+
+            // Act
+            var result = _interpreter.Evaluate(expression, ref environment);
+            var callCountResult = _interpreter.Evaluate("callCount", ref environment);
+
+            // Assert
+            Assert.Equal(expectedResult, result);
+            Assert.Equal(expectedCallCount, (double)callCountResult);
+        }
+
+        [Theory]
+        [InlineData(1, 1, true)]
+        [InlineData(2, 2, true)]
+        [InlineData(4, 4, true)]
+        [InlineData(6, 6, true)]
+        [InlineData(7, 6, false)] // Execute all 6 calls to shouldProceed?
+        public void Evaluate_OrOperands_CorrectNumberOfTimes(int firstCallToReturnTrue, int expectedCallCount, bool expectedResult)
+        {
+            // Arrange
+            string expression = $@"
+(define callCount 0)
+
+(define (shouldProceed?)
+    (set! callCount (+ callCount 1))
+
+    (if (>= callCount {firstCallToReturnTrue})
+        true
+        false))
+
+; or should stop on the first true and not evaluate the rest of the operands.
+(or (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?) (shouldProceed?))";
+
+            IEvaluationEnvironment? environment = null;
+
+            // Act
+            var result = _interpreter.Evaluate(expression, ref environment);
+            var callCountResult = _interpreter.Evaluate("callCount", ref environment);
+
+            // Assert
+            Assert.Equal(expectedResult, result);
+            Assert.Equal(expectedCallCount, (double)callCountResult);
+        }
+
+        [Theory]
+        [InlineData("(and 1)", 1d)]
+        [InlineData("(and false)", false)]
+        [InlineData("(and true)", true)]
+        [InlineData("(and true true)", true)]
+        [InlineData("(and false false)", false)]
+        [InlineData("(and false 1)", false)]
+        [InlineData("(and 1 2 3)", 3d)]
+        [InlineData("(and true true 2)", 2d)]
+        [InlineData("(and 1 true 2 true 3)", 3d)]
+        [InlineData("(and true true 2 true 3)", 3d)]
+        [InlineData("(and true true true true 3)", 3d)]
+        [InlineData("(and true false true 3)", false)]
+        [InlineData("(and false 2 true 3)", false)]
+        [InlineData("(or 1)", 1d)]
+        [InlineData("(or false)", false)]
+        [InlineData("(or true)", true)]
+        [InlineData("(or true true)", true)]
+        [InlineData("(or false false)", false)]
+        [InlineData("(or false 1)", 1d)]
+        [InlineData("(or false false 2)", 2d)]
+        [InlineData("(or 1 false 2 false 3)", 1d)]
+        [InlineData("(or false false 2 false 3)", 2d)]
+        [InlineData("(or false false false false 3)", 3d)]
+        [InlineData("(or false true false 3)", true)]
+        [InlineData("(or true 2 false 3)", true)]
+        public void Evaluate_AndOr_Correctly(string expression, object expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, result);
         }
     }
 }
