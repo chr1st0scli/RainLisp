@@ -80,11 +80,27 @@ namespace RainLisp.DerivedExpressions
             if (or.Expressions.Count == 1)
                 return or.Expressions[0];
 
-            // In or, a nested if goes inside the alternative of the outer if.
-            return AndOrToIf(or.Expressions, (expr, nestedExpr) => new If(expr, new BooleanLiteral(true), nestedExpr));
+            // In or, a nested if goes inside the alternative of the outer if,
+            // but we have to enclose the nested if inside a lambda application, so that expr is evaluated only once.
+            // This is because the if evaluates both the predicate and the consequent if predicate is not false,
+            // so if the predicate and consequent are the same we do not want expr to be evaluated twice.
+            // For example consider that expr might be a function call, this would result in the same function being called twice.
+            static Expression EncloseNestedIfInLambdaApplication(Expression expr, Expression nestedExpr)
+            {
+                const string LAMBDA_PARAM_NAME = "p";
+                var lambdaParameterIdentifier = new Identifier(LAMBDA_PARAM_NAME);
+
+                var ifExpression = new If(lambdaParameterIdentifier, lambdaParameterIdentifier, nestedExpr);
+
+                var lambda = new Lambda(new List<string> { LAMBDA_PARAM_NAME }, new Body(null, new List<Expression> { ifExpression }));
+
+                return new Application(lambda, new List<Expression> { expr });
+            }
+
+            return AndOrToIf(or.Expressions, EncloseNestedIfInLambdaApplication);
         }
 
-        private static If AndOrToIf(IList<Expression> expressions, Func<Expression, Expression, If> createNestedIf, int expressionIndex = 0)
+        private static Expression AndOrToIf(IList<Expression> expressions, Func<Expression, Expression, Expression> createNestedIf, int expressionIndex = 0)
         {
             var expression = expressions[expressionIndex];
 

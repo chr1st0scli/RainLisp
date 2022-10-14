@@ -350,5 +350,41 @@ namespace RainLispTests
             Assert.Equal(expectedResult, result);
             Assert.Equal(expectedCallCount, (double)callCountResult);
         }
+
+        [Theory]
+        [InlineData("(and 1)", 1d)]
+        [InlineData("(and false)", false)]
+        [InlineData("(and true)", true)]
+        [InlineData("(and true true)", true)]
+        [InlineData("(and false false)", false)]
+        [InlineData("(and false 1)", false)]
+        [InlineData("(and 1 2 3)", 3d)]
+        [InlineData("(and true true 2)", 2d)]
+        [InlineData("(and 1 true 2 true 3)", 3d)]
+        [InlineData("(and true true 2 true 3)", 3d)]
+        [InlineData("(and true true true true 3)", 3d)]
+        [InlineData("(and true false true 3)", false)]
+        [InlineData("(and false 2 true 3)", false)]
+        [InlineData("(or 1)", 1d)]
+        [InlineData("(or false)", false)]
+        [InlineData("(or true)", true)]
+        [InlineData("(or true true)", true)]
+        [InlineData("(or false false)", false)]
+        [InlineData("(or false 1)", 1d)]
+        [InlineData("(or false false 2)", 2d)]
+        [InlineData("(or 1 false 2 false 3)", 1d)]
+        [InlineData("(or false false 2 false 3)", 2d)]
+        [InlineData("(or false false false false 3)", 3d)]
+        [InlineData("(or false true false 3)", true)]
+        [InlineData("(or true 2 false 3)", true)]
+        public void Evaluate_AndOr_Correctly(string expression, object expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, result);
+        }
     }
 }

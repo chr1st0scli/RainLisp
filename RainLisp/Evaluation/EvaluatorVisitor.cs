@@ -50,23 +50,20 @@ namespace RainLisp.Evaluation
 
         public object EvaluateIf(If ifExpression, IEvaluationEnvironment environment)
         {
-            // Evaluate the predicate of the if expression and if the result is a boolean, carry on.
-            if (ifExpression.Predicate.AcceptVisitor(this, environment) is bool condition)
-            {
-                // If true, evaluate the consequent part.
-                if (condition)
-                    return ifExpression.Consequent.AcceptVisitor(this, environment);
+            // Evaluate the predicate of the if expression.
+            var conditionValue = ifExpression.Predicate.AcceptVisitor(this, environment);
 
-                // Otherwise, evaluate the optional alternative part.
-                else if (ifExpression.Alternative != null)
-                    return ifExpression.Alternative.AcceptVisitor(this, environment);
+            // Anything but false is true and the consequent part is evaluated.
+            if (!conditionValue.Equals(false))
+                return ifExpression.Consequent.AcceptVisitor(this, environment);
 
-                // If no alternative is provided.
-                else
-                    return "undefined";
-            }
+            // Otherwise, evaluate the optional alternative part.
+            else if (ifExpression.Alternative != null)
+                return ifExpression.Alternative.AcceptVisitor(this, environment);
+
+            // If no alternative is provided.
             else
-                throw new InvalidOperationException();
+                return "undefined";
         }
 
         public object EvaluateBegin(Begin begin, IEvaluationEnvironment environment)
