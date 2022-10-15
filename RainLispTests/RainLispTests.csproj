@@ -26,6 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="AbstractSyntaxTrees\49.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\48.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AbstractSyntaxTrees\47.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

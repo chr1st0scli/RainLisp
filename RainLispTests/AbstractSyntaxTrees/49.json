@@ -1,0 +1,106 @@
+{
+  "Definitions": [],
+  "Expressions": [
+    {
+      "Operator": {
+        "Parameters": [
+          "p"
+        ],
+        "Body": {
+          "Definitions": null,
+          "Expressions": [
+            {
+              "Predicate": {
+                "Name": "p",
+                "TypeName": "Identifier"
+              },
+              "Consequent": {
+                "Name": "p",
+                "TypeName": "Identifier"
+              },
+              "Alternative": {
+                "Operator": {
+                  "Parameters": [
+                    "p"
+                  ],
+                  "Body": {
+                    "Definitions": null,
+                    "Expressions": [
+                      {
+                        "Predicate": {
+                          "Name": "p",
+                          "TypeName": "Identifier"
+                        },
+                        "Consequent": {
+                          "Name": "p",
+                          "TypeName": "Identifier"
+                        },
+                        "Alternative": {
+                          "Operator": {
+                            "Parameters": [
+                              "p"
+                            ],
+                            "Body": {
+                              "Definitions": null,
+                              "Expressions": [
+                                {
+                                  "Predicate": {
+                                    "Name": "p",
+                                    "TypeName": "Identifier"
+                                  },
+                                  "Consequent": {
+                                    "Name": "p",
+                                    "TypeName": "Identifier"
+                                  },
+                                  "Alternative": {
+                                    "Value": 4.0,
+                                    "TypeName": "NumberLiteral"
+                                  },
+                                  "TypeName": "If"
+                                }
+                              ],
+                              "TypeName": "Body"
+                            },
+                            "TypeName": "Lambda"
+                          },
+                          "Operands": [
+                            {
+                              "Value": 3.0,
+                              "TypeName": "NumberLiteral"
+                            }
+                          ],
+                          "TypeName": "Application"
+                        },
+                        "TypeName": "If"
+                      }
+                    ],
+                    "TypeName": "Body"
+                  },
+                  "TypeName": "Lambda"
+                },
+                "Operands": [
+                  {
+                    "Value": 2.0,
+                    "TypeName": "NumberLiteral"
+                  }
+                ],
+                "TypeName": "Application"
+              },
+              "TypeName": "If"
+            }
+          ],
+          "TypeName": "Body"
+        },
+        "TypeName": "Lambda"
+      },
+      "Operands": [
+        {
+          "Value": 1.0,
+          "TypeName": "NumberLiteral"
+        }
+      ],
+      "TypeName": "Application"
+    }
+  ],
+  "TypeName": "Program"
+}
