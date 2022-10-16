@@ -29,6 +29,9 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.EqualTo => EqualTo(evaluatedArguments),
                 PrimitiveProcedureType.LogicalXor => LogicalXor(evaluatedArguments),
                 PrimitiveProcedureType.LogicalNot => LogicalNot(evaluatedArguments),
+                PrimitiveProcedureType.Cons => Cons(evaluatedArguments),
+                PrimitiveProcedureType.Car => Car(evaluatedArguments),
+                PrimitiveProcedureType.Cdr => Cdr(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
@@ -69,6 +72,15 @@ namespace RainLisp.Evaluation
 
         private static object LogicalNot(object[] values)
             => ApplyUnaryOperator(val => !ValueForPrimitive<bool>(val), values);
+
+        private static object Cons(object[] values)
+            => ApplyBinaryOperator<object, object>((val1, val2) => new Pair(val1, val2), values);
+
+        private static object Car(object[] values)
+            => ApplyUnaryOperator(val => ValueForPrimitive<Pair>(val).Car, values);
+
+        private static object Cdr(object[] values)
+            => ApplyUnaryOperator(val => ValueForPrimitive<Pair>(val).Cdr, values);
 
         private static T ApplyMultivalueOperator<T>(Func<T, T, T> primitiveOperator, T[] values)
         {

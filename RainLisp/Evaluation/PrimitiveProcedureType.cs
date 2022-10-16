@@ -13,6 +13,9 @@
         LessThanOrEqualTo,
         EqualTo,
         LogicalXor,
-        LogicalNot
+        LogicalNot,
+        Cons,
+        Car,
+        Cdr
     }
 }
