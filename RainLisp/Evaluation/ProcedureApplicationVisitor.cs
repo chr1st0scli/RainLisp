@@ -32,6 +32,7 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.Cons => Cons(evaluatedArguments),
                 PrimitiveProcedureType.Car => Car(evaluatedArguments),
                 PrimitiveProcedureType.Cdr => Cdr(evaluatedArguments),
+                PrimitiveProcedureType.List => List(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
@@ -82,9 +83,16 @@ namespace RainLisp.Evaluation
         private static object Cdr(object[] values)
             => ApplyUnaryOperator(val => ValueForPrimitive<Pair>(val).Cdr, values);
 
+        private static object List(object[] values)
+        {
+            if ((values?.Length ?? 0) == 0)
+                return new Nil();
+
+            return ApplyFoldRightOperator((val1, val2) => new Pair(val1, val2), new Nil(), values);
+        }
+
         private static T ApplyMultivalueOperator<T>(Func<T, T, T> primitiveOperator, T[] values)
         {
-            ArgumentNullException.ThrowIfNull(primitiveOperator, nameof(primitiveOperator));
             ArgumentNullException.ThrowIfNull(values, nameof(values));
 
             if (values.Length < 2)
@@ -99,7 +107,6 @@ namespace RainLisp.Evaluation
 
         private static TResult ApplyBinaryOperator<T, TResult>(Func<T, T, TResult> primitiveOperator, T[] values)
         {
-            ArgumentNullException.ThrowIfNull(primitiveOperator, nameof(primitiveOperator));
             ArgumentNullException.ThrowIfNull(values, nameof(values));
 
             if (values.Length != 2)
@@ -110,7 +117,6 @@ namespace RainLisp.Evaluation
 
         private static T ApplyUnaryOperator<T>(Func<T, T> primitiveOperator, T[] values)
         {
-            ArgumentNullException.ThrowIfNull(primitiveOperator, nameof(primitiveOperator));
             ArgumentNullException.ThrowIfNull(values, nameof(values));
 
             if (values.Length != 1)
@@ -129,6 +135,14 @@ namespace RainLisp.Evaluation
             {
                 throw new InvalidOperationException($"{value} must be of type {typeof(T).Name}.", ex);
             }
+        }
+
+        private static object ApplyFoldRightOperator(Func<object, object, object> foldOperator, object initial, object[] values, int valueIndex = 0)
+        {
+            if (valueIndex == values.Length)
+                return initial;
+
+            return foldOperator(values[valueIndex], ApplyFoldRightOperator(foldOperator, initial, values, ++valueIndex));
         }
         #endregion
     }

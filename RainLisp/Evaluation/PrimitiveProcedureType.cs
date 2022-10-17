@@ -16,6 +16,7 @@
         LogicalNot,
         Cons,
         Car,
-        Cdr
+        Cdr,
+        List
     }
 }

@@ -18,5 +18,6 @@
         public const string CAR = "car";
         public const string CDR = "cdr";
         public const string NIL = "nil";
+        public const string LIST = "list";
     }
 }

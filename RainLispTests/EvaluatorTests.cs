@@ -406,6 +406,10 @@ namespace RainLispTests
         [InlineData("(car (cdr (cons 1 (cons 2 (cons 3 (cons 4 nil))))))", 2d)]
         [InlineData("(car (cdr (cdr (cons 1 (cons 2 (cons 3 (cons 4 nil)))))))", 3d)]
         [InlineData("(car (cdr (cdr (cdr (cons 1 (cons 2 (cons 3 (cons 4 nil))))))))", 4d)]
+        [InlineData("(car (list 1 2 3 4))", 1d)]
+        [InlineData("(car (cdr (list 1 2 3 4)))", 2d)]
+        [InlineData("(car (cdr (cdr (list 1 2 3 4))))", 3d)]
+        [InlineData("(car (cdr (cdr (cdr (list 1 2 3 4)))))", 4d)]
         public void Evaluate_Lists_Correctly(string expression, object expectedResult)
         {
             // Arrange
