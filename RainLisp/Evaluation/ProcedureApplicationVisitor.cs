@@ -33,6 +33,7 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.Car => Car(evaluatedArguments),
                 PrimitiveProcedureType.Cdr => Cdr(evaluatedArguments),
                 PrimitiveProcedureType.List => List(evaluatedArguments),
+                PrimitiveProcedureType.IsNull => IsNull(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
@@ -78,18 +79,21 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator<object, object>((val1, val2) => new Pair(val1, val2), values);
 
         private static object Car(object[] values)
-            => ApplyUnaryOperator(val => ValueForPrimitive<Pair>(val).Car, values);
+            => ApplyUnaryOperator(val => ValueForPrimitive<Pair>(val).First, values);
 
         private static object Cdr(object[] values)
-            => ApplyUnaryOperator(val => ValueForPrimitive<Pair>(val).Cdr, values);
+            => ApplyUnaryOperator(val => ValueForPrimitive<Pair>(val).Second, values);
 
         private static object List(object[] values)
         {
-            if ((values?.Length ?? 0) == 0)
+            if (values == null || values.Length == 0)
                 return new Nil();
 
             return ApplyFoldRightOperator((val1, val2) => new Pair(val1, val2), new Nil(), values);
         }
+
+        private static object IsNull(object[] values)
+            => ApplyUnaryOperator(val => val.GetType() == typeof(Nil) , values);
 
         private static T ApplyMultivalueOperator<T>(Func<T, T, T> primitiveOperator, T[] values)
         {

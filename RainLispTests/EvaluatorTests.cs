@@ -394,6 +394,8 @@ namespace RainLispTests
         [InlineData("(cdr (cons true false))", false)]
         [InlineData("(car (cons \"hello\" \"world\"))", "hello")]
         [InlineData("(cdr (cons \"hello\" \"world\"))", "world")]
+        [InlineData("(car (cons 1 true))", 1d)]
+        [InlineData("(cdr (cons 1 true))", true)]
         [InlineData("(car (car (cons (cons 1 2) (cons 3 4))))", 1d)]
         [InlineData("(cdr (car (cons (cons 1 2) (cons 3 4))))", 2d)]
         [InlineData("(car (cdr (cons (cons 1 2) (cons 3 4))))", 3d)]
@@ -410,6 +412,11 @@ namespace RainLispTests
         [InlineData("(car (cdr (list 1 2 3 4)))", 2d)]
         [InlineData("(car (cdr (cdr (list 1 2 3 4))))", 3d)]
         [InlineData("(car (cdr (cdr (cdr (list 1 2 3 4)))))", 4d)]
+        [InlineData("(null? 1)", false)]
+        [InlineData("(null? true)", false)]
+        [InlineData("(null? \"hello\")", false)]
+        [InlineData("(null? (cons 1 2))", false)]
+        [InlineData("(null? (list))", true)] // TODO support test other forms of empty list such as '()
         public void Evaluate_Lists_Correctly(string expression, object expectedResult)
         {
             // Arrange

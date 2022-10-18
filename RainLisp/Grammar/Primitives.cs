@@ -19,5 +19,6 @@
         public const string CDR = "cdr";
         public const string NIL = "nil";
         public const string LIST = "list";
+        public const string IS_NULL = "null?";
     }
 }

@@ -17,6 +17,7 @@
         Cons,
         Car,
         Cdr,
-        List
+        List,
+        IsNull
     }
 }
