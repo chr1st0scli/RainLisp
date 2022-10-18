@@ -53,6 +53,10 @@ namespace RainLispTests
                 environmentJObject["actualEnvironment"]["definitions"][primitiveProcedureName].Parent.Remove();
             }
 
+            // Remove standard LISP libraries.
+            foreach (string functionName in CommonLibraries.FunctionNames)
+                environmentJObject["actualEnvironment"]["definitions"][functionName].Parent.Remove();
+
             string actualEnvironment = environmentJObject.ToString();
             string expectedEnvironment = File.ReadAllText($"Environments\\{environmentIndex:00}.json");
 

@@ -426,5 +426,44 @@ namespace RainLispTests
             // Assert
             Assert.Equal(expectedResult, result);
         }
+
+        [Theory]
+        [InlineData(@"
+(fold-left +
+           (filter (lambda (x) (<= x 14)) 
+                   (map (lambda (x) (+ x 10)) 
+                        (list 1 2 3 4 5 6 7 8)))
+           0)", 50d)]
+        [InlineData(@"
+(fold-right +
+           (filter (lambda (x) (<= x 14)) 
+                   (map (lambda (x) (+ x 10)) 
+                        (list 1 2 3 4 5 6 7 8)))
+           0)", 50d)]
+        [InlineData(@"
+(fold-left +
+           (filter (lambda (x) (>= x 15)) 
+                   (map (lambda (x) (+ x 10)) 
+                        (list 1 2 3 4 5 6 7 8)))
+           0)", 66d)]
+        [InlineData(@"
+(fold-right +
+           (filter (lambda (x) (>= x 15)) 
+                   (map (lambda (x) (+ x 10)) 
+                        (list 1 2 3 4 5 6 7 8)))
+           0)", 66d)]
+        [InlineData("(fold-left + (list 1 2 3 4) 0)", 10d)]
+        [InlineData("(fold-right + (list 1 2 3 4) 0)", 10d)]
+        [InlineData("(fold-left - (list 1 2 3 4) 0)", 2d)]
+        [InlineData("(fold-right - (list 1 2 3 4) 0)", -2d)]
+        public void Evaluate_LibraryFunctions_Correctly(string expression, object expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, result);
+        }
     }
 }
