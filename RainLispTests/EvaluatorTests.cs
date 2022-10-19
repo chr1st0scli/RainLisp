@@ -429,33 +429,38 @@ namespace RainLispTests
 
         [Theory]
         [InlineData(@"
-(fold-left +
+(fold-left + 0
            (filter (lambda (x) (<= x 14)) 
                    (map (lambda (x) (+ x 10)) 
-                        (list 1 2 3 4 5 6 7 8)))
-           0)", 50d)]
+                        (list 1 2 3 4 5 6 7 8))))", 50d)]
         [InlineData(@"
-(fold-right +
+(fold-right + 0
            (filter (lambda (x) (<= x 14)) 
                    (map (lambda (x) (+ x 10)) 
-                        (list 1 2 3 4 5 6 7 8)))
-           0)", 50d)]
+                        (list 1 2 3 4 5 6 7 8))))", 50d)]
         [InlineData(@"
-(fold-left +
+(fold-left + 0
            (filter (lambda (x) (>= x 15)) 
                    (map (lambda (x) (+ x 10)) 
-                        (list 1 2 3 4 5 6 7 8)))
-           0)", 66d)]
+                        (list 1 2 3 4 5 6 7 8))))", 66d)]
         [InlineData(@"
-(fold-right +
+(fold-right + 0
            (filter (lambda (x) (>= x 15)) 
                    (map (lambda (x) (+ x 10)) 
-                        (list 1 2 3 4 5 6 7 8)))
-           0)", 66d)]
-        [InlineData("(fold-left + (list 1 2 3 4) 0)", 10d)]
-        [InlineData("(fold-right + (list 1 2 3 4) 0)", 10d)]
-        [InlineData("(fold-left - (list 1 2 3 4) 0)", 2d)]
-        [InlineData("(fold-right - (list 1 2 3 4) 0)", -2d)]
+                        (list 1 2 3 4 5 6 7 8))))", 66d)]
+        [InlineData("(fold-left + 0 (list 1 2 3 4))", 10d)]
+        [InlineData("(fold-right + 0 (list 1 2 3 4))", 10d)]
+        [InlineData("(fold-left - 0 (list 1 2 3 4))", -10d)]
+        [InlineData("(fold-right - 0 (list 1 2 3 4))", -2d)]
+        [InlineData("(reduce + (list 1 2 3 4))", 10d)]
+        [InlineData("(reduce - (list 1 2 3 4))", -8d)]
+        [InlineData("(reduce + (list 1))", 1d)]
+        [InlineData("(reduce - (list 1))", 1d)]
+        [InlineData("(cadr (list 1 2 3 4 5))", 2d)]
+        [InlineData("(car (cddr (list 1 2 3 4 5)))", 3d)]
+        [InlineData("(caddr (list 1 2 3 4 5))", 3d)]
+        [InlineData("(car (cdddr (list 1 2 3 4 5)))", 4d)]
+        [InlineData("(cadddr (list 1 2 3 4 5))", 4d)]
         public void Evaluate_LibraryFunctions_Correctly(string expression, object expectedResult)
         {
             // Arrange

@@ -2,32 +2,51 @@
 {
     public static class CommonLibraries
     {
-        public static string[] FunctionNames { get; } = new[] { "map", "filter", "fold-left", "fold-right" };
+        public static string[] FunctionNames { get; } = new[] { "cadr", "cddr", "caddr", "cdddr", "cadddr", "map", "filter", "fold-left", "fold-right", "reduce" };
 
         public const string LIBS = @"
-(define (map op list)
-  (if (null? list)
+(define (cadr sequence)
+  (car (cdr sequence)))
+
+(define (cddr sequence)
+  (cdr (cdr sequence)))
+
+(define (caddr sequence)
+  (car (cdr (cdr sequence))))
+
+(define (cdddr sequence)
+  (cdr (cdr (cdr sequence))))
+
+(define (cadddr sequence)
+  (car (cdr (cdr (cdr sequence)))))
+
+(define (map proc sequence)
+  (if (null? sequence)
       nil
-  	(cons (op (car list)) (map op (cdr list)))))
+  	(cons (proc (car sequence)) (map proc (cdr sequence)))))
 
-(define (filter op list)
-  (if (null? list)
-      nil
-      (let ((first (car list))
-            (rest (cdr list)))
-        (if (op first)
-            (cons first (filter op rest))
-            (filter op rest)))))
+(define (filter predicate sequence)
+  (cond ((null? sequence) nil)
+        ((predicate (car sequence))
+         (cons (car sequence) (filter predicate (cdr sequence))))
+        (else (filter predicate (cdr sequence)))))
 
-(define (fold-left op list initial)
-  (if (null? list)
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest)) (cdr rest))))
+  (iter initial sequence))
+
+(define (fold-right op initial sequence)
+  (if (null? sequence)
       initial
-      (fold-left op (cdr list) (op (car list) initial))))
+      (op (car sequence) (fold-right op initial (cdr sequence)))))
 
-(define (fold-right op list initial)
-  (if (null? list)
-      initial
-      (op (car list) (fold-right op (cdr list) initial))))
+(define (reduce op sequence)
+  (cond ((null? sequence) nil)
+        ((null? (cdr sequence)) (car sequence))
+        (else (fold-left op (car sequence) (cdr sequence)))))
 ";
     }
 }
