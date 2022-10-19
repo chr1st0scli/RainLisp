@@ -386,5 +386,89 @@ namespace RainLispTests
             // Assert
             Assert.Equal(expectedResult, result);
         }
+
+        [Theory]
+        [InlineData("(car (cons 1 2))", 1d)]
+        [InlineData("(cdr (cons 1 2))", 2d)]
+        [InlineData("(car (cons true false))", true)]
+        [InlineData("(cdr (cons true false))", false)]
+        [InlineData("(car (cons \"hello\" \"world\"))", "hello")]
+        [InlineData("(cdr (cons \"hello\" \"world\"))", "world")]
+        [InlineData("(car (cons 1 true))", 1d)]
+        [InlineData("(cdr (cons 1 true))", true)]
+        [InlineData("(car (car (cons (cons 1 2) (cons 3 4))))", 1d)]
+        [InlineData("(cdr (car (cons (cons 1 2) (cons 3 4))))", 2d)]
+        [InlineData("(car (cdr (cons (cons 1 2) (cons 3 4))))", 3d)]
+        [InlineData("(cdr (cdr (cons (cons 1 2) (cons 3 4))))", 4d)]
+        [InlineData("(cdr (cons (cons 1 (cons 2 3)) 4))", 4d)]
+        [InlineData("(car (car (cons (cons 1 (cons 2 3)) 4)))", 1d)]
+        [InlineData("(car (cdr (car (cons (cons 1 (cons 2 3)) 4))))", 2d)]
+        [InlineData("(cdr (cdr (car (cons (cons 1 (cons 2 3)) 4))))", 3d)]
+        [InlineData("(car (cons 1 (cons 2 (cons 3 (cons 4 nil)))))", 1d)]
+        [InlineData("(car (cdr (cons 1 (cons 2 (cons 3 (cons 4 nil))))))", 2d)]
+        [InlineData("(car (cdr (cdr (cons 1 (cons 2 (cons 3 (cons 4 nil)))))))", 3d)]
+        [InlineData("(car (cdr (cdr (cdr (cons 1 (cons 2 (cons 3 (cons 4 nil))))))))", 4d)]
+        [InlineData("(car (list 1 2 3 4))", 1d)]
+        [InlineData("(car (cdr (list 1 2 3 4)))", 2d)]
+        [InlineData("(car (cdr (cdr (list 1 2 3 4))))", 3d)]
+        [InlineData("(car (cdr (cdr (cdr (list 1 2 3 4)))))", 4d)]
+        [InlineData("(null? 1)", false)]
+        [InlineData("(null? true)", false)]
+        [InlineData("(null? \"hello\")", false)]
+        [InlineData("(null? (cons 1 2))", false)]
+        [InlineData("(null? (list))", true)] // TODO support test other forms of empty list such as '()
+        public void Evaluate_Lists_Correctly(string expression, object expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, result);
+        }
+
+        [Theory]
+        [InlineData(@"
+(fold-left + 0
+           (filter (lambda (x) (<= x 14)) 
+                   (map (lambda (x) (+ x 10)) 
+                        (list 1 2 3 4 5 6 7 8))))", 50d)]
+        [InlineData(@"
+(fold-right + 0
+           (filter (lambda (x) (<= x 14)) 
+                   (map (lambda (x) (+ x 10)) 
+                        (list 1 2 3 4 5 6 7 8))))", 50d)]
+        [InlineData(@"
+(fold-left + 0
+           (filter (lambda (x) (>= x 15)) 
+                   (map (lambda (x) (+ x 10)) 
+                        (list 1 2 3 4 5 6 7 8))))", 66d)]
+        [InlineData(@"
+(fold-right + 0
+           (filter (lambda (x) (>= x 15)) 
+                   (map (lambda (x) (+ x 10)) 
+                        (list 1 2 3 4 5 6 7 8))))", 66d)]
+        [InlineData("(fold-left + 0 (list 1 2 3 4))", 10d)]
+        [InlineData("(fold-right + 0 (list 1 2 3 4))", 10d)]
+        [InlineData("(fold-left - 0 (list 1 2 3 4))", -10d)]
+        [InlineData("(fold-right - 0 (list 1 2 3 4))", -2d)]
+        [InlineData("(reduce + (list 1 2 3 4))", 10d)]
+        [InlineData("(reduce - (list 1 2 3 4))", -8d)]
+        [InlineData("(reduce + (list 1))", 1d)]
+        [InlineData("(reduce - (list 1))", 1d)]
+        [InlineData("(cadr (list 1 2 3 4 5))", 2d)]
+        [InlineData("(car (cddr (list 1 2 3 4 5)))", 3d)]
+        [InlineData("(caddr (list 1 2 3 4 5))", 3d)]
+        [InlineData("(car (cdddr (list 1 2 3 4 5)))", 4d)]
+        [InlineData("(cadddr (list 1 2 3 4 5))", 4d)]
+        public void Evaluate_LibraryFunctions_Correctly(string expression, object expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, result);
+        }
     }
 }

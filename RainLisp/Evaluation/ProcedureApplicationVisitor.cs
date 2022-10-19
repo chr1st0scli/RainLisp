@@ -29,6 +29,11 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.EqualTo => EqualTo(evaluatedArguments),
                 PrimitiveProcedureType.LogicalXor => LogicalXor(evaluatedArguments),
                 PrimitiveProcedureType.LogicalNot => LogicalNot(evaluatedArguments),
+                PrimitiveProcedureType.Cons => Cons(evaluatedArguments),
+                PrimitiveProcedureType.Car => Car(evaluatedArguments),
+                PrimitiveProcedureType.Cdr => Cdr(evaluatedArguments),
+                PrimitiveProcedureType.List => List(evaluatedArguments),
+                PrimitiveProcedureType.IsNull => IsNull(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
@@ -70,9 +75,28 @@ namespace RainLisp.Evaluation
         private static object LogicalNot(object[] values)
             => ApplyUnaryOperator(val => !ValueForPrimitive<bool>(val), values);
 
+        private static object Cons(object[] values)
+            => ApplyBinaryOperator<object, object>((val1, val2) => new Pair(val1, val2), values);
+
+        private static object Car(object[] values)
+            => ApplyUnaryOperator(val => ValueForPrimitive<Pair>(val).First, values);
+
+        private static object Cdr(object[] values)
+            => ApplyUnaryOperator(val => ValueForPrimitive<Pair>(val).Second, values);
+
+        private static object List(object[] values)
+        {
+            if (values == null || values.Length == 0)
+                return new Nil();
+
+            return ApplyFoldRightOperator((val1, val2) => new Pair(val1, val2), new Nil(), values);
+        }
+
+        private static object IsNull(object[] values)
+            => ApplyUnaryOperator(val => val.GetType() == typeof(Nil) , values);
+
         private static T ApplyMultivalueOperator<T>(Func<T, T, T> primitiveOperator, T[] values)
         {
-            ArgumentNullException.ThrowIfNull(primitiveOperator, nameof(primitiveOperator));
             ArgumentNullException.ThrowIfNull(values, nameof(values));
 
             if (values.Length < 2)
@@ -87,7 +111,6 @@ namespace RainLisp.Evaluation
 
         private static TResult ApplyBinaryOperator<T, TResult>(Func<T, T, TResult> primitiveOperator, T[] values)
         {
-            ArgumentNullException.ThrowIfNull(primitiveOperator, nameof(primitiveOperator));
             ArgumentNullException.ThrowIfNull(values, nameof(values));
 
             if (values.Length != 2)
@@ -98,7 +121,6 @@ namespace RainLisp.Evaluation
 
         private static T ApplyUnaryOperator<T>(Func<T, T> primitiveOperator, T[] values)
         {
-            ArgumentNullException.ThrowIfNull(primitiveOperator, nameof(primitiveOperator));
             ArgumentNullException.ThrowIfNull(values, nameof(values));
 
             if (values.Length != 1)
@@ -117,6 +139,14 @@ namespace RainLisp.Evaluation
             {
                 throw new InvalidOperationException($"{value} must be of type {typeof(T).Name}.", ex);
             }
+        }
+
+        private static object ApplyFoldRightOperator(Func<object, object, object> foldOperator, object initial, object[] values, int valueIndex = 0)
+        {
+            if (valueIndex == values.Length)
+                return initial;
+
+            return foldOperator(values[valueIndex], ApplyFoldRightOperator(foldOperator, initial, values, ++valueIndex));
         }
         #endregion
     }

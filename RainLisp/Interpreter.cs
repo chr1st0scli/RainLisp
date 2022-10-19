@@ -9,17 +9,17 @@ namespace RainLisp
 {
     public class Interpreter
     {
-        private readonly ITokenizer tokenizer;
-        private readonly IParser parser;
-        private readonly IEvaluatorVisitor evaluator;
-        private readonly IEnvironmentFactory? environmentFactory;
+        private readonly ITokenizer _tokenizer;
+        private readonly IParser _parser;
+        private readonly IEvaluatorVisitor _evaluator;
+        private readonly IEnvironmentFactory? _environmentFactory;
 
         public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null, IEnvironmentFactory? environmentFactory = null)
         {
-            this.tokenizer = tokenizer ?? new Tokenizer();
-            this.parser = parser ?? new Parser();
-            this.evaluator = evaluator ?? new EvaluatorVisitor(new ProcedureApplicationVisitor());
-            this.environmentFactory = environmentFactory;
+            _tokenizer = tokenizer ?? new Tokenizer();
+            _parser = parser ?? new Parser();
+            _evaluator = evaluator ?? new EvaluatorVisitor(new ProcedureApplicationVisitor());
+            _environmentFactory = environmentFactory;
         }
 
         public object Evaluate(string expression)
@@ -36,8 +36,8 @@ namespace RainLisp
 
         public object Evaluate(string expression, ref IEvaluationEnvironment? environment)
         {
-            var tokens = tokenizer.Tokenize(expression);
-            var programAST = parser.Parse(tokens);
+            var tokens = _tokenizer.Tokenize(expression);
+            var programAST = _parser.Parse(tokens);
 
             return Evaluate(programAST, ref environment);
         }
@@ -46,7 +46,7 @@ namespace RainLisp
         {
             environment ??= CreateGlobalEnvironment();
 
-            return evaluator.EvaluateProgram(program, environment);
+            return _evaluator.EvaluateProgram(program, environment);
         }
 
         public void ReadEvalPrintLoop(Func<string> read, Action<string> print)
@@ -62,10 +62,10 @@ namespace RainLisp
                 {
                     string expression = read();
 
-                    var tokens = tokenizer.Tokenize(expression);
-                    var programAST = parser.Parse(tokens);
+                    var tokens = _tokenizer.Tokenize(expression);
+                    var programAST = _parser.Parse(tokens);
 
-                    var result = evaluator.EvaluateProgram(programAST, environment);
+                    var result = _evaluator.EvaluateProgram(programAST, environment);
 
                     print(result.ToString()!);
                 }
@@ -78,7 +78,7 @@ namespace RainLisp
 
         private IEvaluationEnvironment CreateGlobalEnvironment()
         {
-            var environment = environmentFactory?.CreateEnvironment() ?? new EvaluationEnvironment();
+            var environment = _environmentFactory?.CreateEnvironment() ?? new EvaluationEnvironment();
 
             // Define primitive procedures.
             environment.DefineIdentifier(PLUS, new PrimitiveProcedure(PrimitiveProcedureType.Add));
@@ -93,6 +93,17 @@ namespace RainLisp
             environment.DefineIdentifier(EQUAL, new PrimitiveProcedure(PrimitiveProcedureType.EqualTo));
             environment.DefineIdentifier(XOR, new PrimitiveProcedure(PrimitiveProcedureType.LogicalXor));
             environment.DefineIdentifier(NOT, new PrimitiveProcedure(PrimitiveProcedureType.LogicalNot));
+            environment.DefineIdentifier(CONS, new PrimitiveProcedure(PrimitiveProcedureType.Cons));
+            environment.DefineIdentifier(CAR, new PrimitiveProcedure(PrimitiveProcedureType.Car));
+            environment.DefineIdentifier(CDR, new PrimitiveProcedure(PrimitiveProcedureType.Cdr));
+            environment.DefineIdentifier(LIST, new PrimitiveProcedure(PrimitiveProcedureType.List));
+            environment.DefineIdentifier(IS_NULL, new PrimitiveProcedure(PrimitiveProcedureType.IsNull));
+
+            environment.DefineIdentifier(NIL, new Nil());
+
+            // Install common libraries in the environment.
+            IEvaluationEnvironment? env = environment;
+            Evaluate(CommonLibraries.LIBS, ref env);
 
             return environment;
         }

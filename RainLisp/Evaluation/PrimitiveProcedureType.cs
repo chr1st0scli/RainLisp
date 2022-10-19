@@ -13,6 +13,11 @@
         LessThanOrEqualTo,
         EqualTo,
         LogicalXor,
-        LogicalNot
+        LogicalNot,
+        Cons,
+        Car,
+        Cdr,
+        List,
+        IsNull
     }
 }
