@@ -87,13 +87,13 @@ namespace RainLisp.Evaluation
         private static object List(object[] values)
         {
             if (values == null || values.Length == 0)
-                return new Nil();
+                return Nil.GetNil();
 
-            return ApplyFoldRightOperator((val1, val2) => new Pair(val1, val2), new Nil(), values);
+            return ApplyFoldRightOperator((val1, val2) => new Pair(val1, val2), Nil.GetNil(), values);
         }
 
         private static object IsNull(object[] values)
-            => ApplyUnaryOperator(val => val.GetType() == typeof(Nil) , values);
+            => ApplyUnaryOperator(val => val == Nil.GetNil() , values);
 
         private static T ApplyMultivalueOperator<T>(Func<T, T, T> primitiveOperator, T[] values)
         {

@@ -13,13 +13,15 @@ namespace RainLisp
         private readonly IParser _parser;
         private readonly IEvaluatorVisitor _evaluator;
         private readonly IEnvironmentFactory? _environmentFactory;
+        private readonly bool _installLispLibraries;
 
-        public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null, IEnvironmentFactory? environmentFactory = null)
+        public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null, IEnvironmentFactory? environmentFactory = null, bool installLispLibraries = true)
         {
             _tokenizer = tokenizer ?? new Tokenizer();
             _parser = parser ?? new Parser();
             _evaluator = evaluator ?? new EvaluatorVisitor(new ProcedureApplicationVisitor());
             _environmentFactory = environmentFactory;
+            _installLispLibraries = installLispLibraries;
         }
 
         public object Evaluate(string expression)
@@ -99,11 +101,14 @@ namespace RainLisp
             environment.DefineIdentifier(LIST, new PrimitiveProcedure(PrimitiveProcedureType.List));
             environment.DefineIdentifier(IS_NULL, new PrimitiveProcedure(PrimitiveProcedureType.IsNull));
 
-            environment.DefineIdentifier(NIL, new Nil());
+            environment.DefineIdentifier(NIL, Nil.GetNil());
 
-            // Install common libraries in the environment.
-            IEvaluationEnvironment? env = environment;
-            Evaluate(CommonLibraries.LIBS, ref env);
+            if (_installLispLibraries)
+            {
+                // Install common libraries in the environment.
+                IEvaluationEnvironment? env = environment;
+                Evaluate(CommonLibraries.LIBS, ref env);
+            }
 
             return environment;
         }
