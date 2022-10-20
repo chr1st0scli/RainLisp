@@ -2,8 +2,6 @@
 {
     public static class CommonLibraries
     {
-        public static string[] FunctionNames { get; } = new[] { "cadr", "cddr", "caddr", "cdddr", "cadddr", "map", "filter", "fold-left", "fold-right", "reduce" };
-
         public const string LIBS = @"
 (define (cadr sequence)
   (car (cdr sequence)))

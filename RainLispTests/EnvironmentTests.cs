@@ -9,7 +9,7 @@ namespace RainLispTests
 {
     public class EnvironmentTests
     {
-        private readonly Interpreter interpreter = new(environmentFactory: new TestableEnvironmentFactory());
+        private readonly Interpreter interpreter = new(environmentFactory: new TestableEnvironmentFactory(), installLispLibraries: false);
 
         [Theory]
         [InlineData(0, "(define a 0)")]
@@ -52,10 +52,6 @@ namespace RainLispTests
                 string? primitiveProcedureName = field?.GetRawConstantValue()?.ToString();
                 environmentJObject["actualEnvironment"]["definitions"][primitiveProcedureName].Parent.Remove();
             }
-
-            // Remove standard LISP libraries.
-            foreach (string functionName in CommonLibraries.FunctionNames)
-                environmentJObject["actualEnvironment"]["definitions"][functionName].Parent.Remove();
 
             string actualEnvironment = environmentJObject.ToString();
             string expectedEnvironment = File.ReadAllText($"Environments\\{environmentIndex:00}.json");
