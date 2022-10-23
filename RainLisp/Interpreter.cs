@@ -24,19 +24,19 @@ namespace RainLisp
             _installLispLibraries = installLispLibraries;
         }
 
-        public object Evaluate(string expression)
+        public EvaluationResult Evaluate(string expression)
         {
             IEvaluationEnvironment? environment = null;
             return Evaluate(expression, ref environment);
         }
 
-        public object Evaluate(Program program)
+        public EvaluationResult Evaluate(Program program)
         {
             IEvaluationEnvironment? environment = null;
             return Evaluate(program, ref environment);
         }
 
-        public object Evaluate(string expression, ref IEvaluationEnvironment? environment)
+        public EvaluationResult Evaluate(string expression, ref IEvaluationEnvironment? environment)
         {
             var tokens = _tokenizer.Tokenize(expression);
             var programAST = _parser.Parse(tokens);
@@ -44,7 +44,7 @@ namespace RainLisp
             return Evaluate(programAST, ref environment);
         }
 
-        public object Evaluate(Program program, ref IEvaluationEnvironment? environment)
+        public EvaluationResult Evaluate(Program program, ref IEvaluationEnvironment? environment)
         {
             environment ??= CreateGlobalEnvironment();
 
