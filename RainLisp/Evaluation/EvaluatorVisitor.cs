@@ -10,14 +10,14 @@ namespace RainLisp.Evaluation
         public EvaluatorVisitor(IProcedureApplicationVisitor procedureApplicationVisitor)
             => _procedureApplicationVisitor = procedureApplicationVisitor ?? throw new ArgumentNullException(nameof(procedureApplicationVisitor));
 
-        public PrimitiveDatum EvaluateNumberLiteral(NumberLiteral numberLiteral)
-            => new(numberLiteral.Value);
+        public EvaluationResult EvaluateNumberLiteral(NumberLiteral numberLiteral)
+            => new PrimitiveDatum(numberLiteral.Value);
 
-        public PrimitiveDatum EvaluateStringLiteral(StringLiteral stringLiteral)
-            => new(stringLiteral.Value);
+        public EvaluationResult EvaluateStringLiteral(StringLiteral stringLiteral)
+            => new PrimitiveDatum(stringLiteral.Value);
 
-        public PrimitiveDatum EvaluateBooleanLiteral(BooleanLiteral boolLiteral)
-            => new(boolLiteral.Value);
+        public EvaluationResult EvaluateBooleanLiteral(BooleanLiteral boolLiteral)
+            => new PrimitiveDatum(boolLiteral.Value);
 
         public EvaluationResult EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment)
             => environment.LookupIdentifierValue(identifier.Name);
@@ -25,7 +25,7 @@ namespace RainLisp.Evaluation
         public EvaluationResult EvaluateQuote(Quote quote)
             => throw new NotImplementedException();
 
-        public Unspecified EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment)
+        public EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment)
         {
             // Defer the evaluation of the expression to get the value to assign to the identifier, until it is certain that the definition exists.
             var valueProvider = () => assignment.Value.AcceptVisitor(this, environment);
@@ -35,7 +35,7 @@ namespace RainLisp.Evaluation
             return Unspecified.GetUnspecified();
         }
 
-        public Unspecified EvaluateDefinition(Definition definition, IEvaluationEnvironment environment)
+        public EvaluationResult EvaluateDefinition(Definition definition, IEvaluationEnvironment environment)
         {
             // Evaluate the expression to get the initial value to assign to the identifier.
             var value = definition.Value.AcceptVisitor(this, environment);
@@ -45,8 +45,8 @@ namespace RainLisp.Evaluation
             return Unspecified.GetUnspecified();
         }
 
-        public UserProcedure EvaluateLambda(Lambda lambda, IEvaluationEnvironment environment)
-            => new(lambda.Parameters, lambda.Body, environment);
+        public EvaluationResult EvaluateLambda(Lambda lambda, IEvaluationEnvironment environment)
+            => new UserProcedure(lambda.Parameters, lambda.Body, environment);
 
         public EvaluationResult EvaluateIf(If ifExpression, IEvaluationEnvironment environment)
         {

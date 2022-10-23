@@ -5,21 +5,21 @@ namespace RainLisp.Evaluation
 {
     public interface IEvaluatorVisitor
     {
-        PrimitiveDatum EvaluateNumberLiteral(NumberLiteral numberLiteral);
+        EvaluationResult EvaluateNumberLiteral(NumberLiteral numberLiteral);
 
-        PrimitiveDatum EvaluateStringLiteral(StringLiteral stringLiteral);
+        EvaluationResult EvaluateStringLiteral(StringLiteral stringLiteral);
 
-        PrimitiveDatum EvaluateBooleanLiteral(BooleanLiteral boolLiteral);
+        EvaluationResult EvaluateBooleanLiteral(BooleanLiteral boolLiteral);
 
         EvaluationResult EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment);
 
         EvaluationResult EvaluateQuote(Quote quote);
 
-        Unspecified EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment);
 
-        Unspecified EvaluateDefinition(Definition definition, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateDefinition(Definition definition, IEvaluationEnvironment environment);
 
-        UserProcedure EvaluateLambda(Lambda lambda, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateLambda(Lambda lambda, IEvaluationEnvironment environment);
 
         EvaluationResult EvaluateIf(If ifExpression, IEvaluationEnvironment environment);
 
