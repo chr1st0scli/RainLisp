@@ -54,7 +54,7 @@ namespace RainLisp.Evaluation
             var conditionValue = ifExpression.Predicate.AcceptVisitor(this, environment);
 
             // Anything but false is true and the consequent part is evaluated.
-            if (conditionValue is PrimitiveDatum primitiveBool && !primitiveBool.Value.Equals(false) || conditionValue is not PrimitiveDatum)
+            if (conditionValue is not PrimitiveDatum primitiveBool || !primitiveBool.Value.Equals(false))
                 return ifExpression.Consequent.AcceptVisitor(this, environment);
 
             // Otherwise, evaluate the optional alternative part.
