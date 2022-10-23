@@ -1,6 +1,6 @@
 ﻿using RainLisp.Environment;
 
-namespace RainLisp.Evaluation
+namespace RainLisp.Evaluation.Results
 {
     public abstract class Procedure : EvaluationResult
     {
