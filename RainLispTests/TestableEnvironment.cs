@@ -1,4 +1,5 @@
-﻿using RainLisp.Environment;
+﻿using RainLisp.Evaluation;
+using RainLisp.Evaluation.Results;
 
 namespace RainLispTests
 {
@@ -17,23 +18,25 @@ namespace RainLispTests
             nextEnvironments = new List<IEvaluationEnvironment>();
         }
 
-        public void DefineIdentifier(string identifierName, object value)
+        public void DefineIdentifier(string identifierName, EvaluationResult value)
             => actualEnvironment.DefineIdentifier(identifierName, value);
 
-        public IEvaluationEnvironment ExtendEnvironment(IList<string>? parameters, object[]? evaluatedArguments)
+        public IEvaluationEnvironment ExtendEnvironment(IList<string>? parameters, EvaluationResult[]? evaluatedArguments)
         {
-            var extendedEnvironment = new TestableEnvironment();
-            extendedEnvironment.actualEnvironment = actualEnvironment.ExtendEnvironment(parameters, evaluatedArguments);
+            var extendedEnvironment = new TestableEnvironment
+            {
+                actualEnvironment = actualEnvironment.ExtendEnvironment(parameters, evaluatedArguments)
+            };
 
             nextEnvironments.Add(extendedEnvironment);
 
             return extendedEnvironment;
         }
 
-        public object LookupIdentifierValue(string identifierName)
+        public EvaluationResult LookupIdentifierValue(string identifierName)
             => actualEnvironment.LookupIdentifierValue(identifierName);
 
-        public void SetIdentifierValue(string identifierName, Func<object> valueProvider)
+        public void SetIdentifierValue(string identifierName, Func<EvaluationResult> valueProvider)
             => actualEnvironment.SetIdentifierValue(identifierName, valueProvider);
     }
 }

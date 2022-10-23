@@ -1,15 +1,15 @@
-﻿namespace RainLisp.Evaluation
+﻿namespace RainLisp.Evaluation.Results
 {
     public class Pair : EvaluationResult
     {
-        public Pair(object first, object second)
+        public Pair(EvaluationResult first, EvaluationResult second)
         {
             First = first ?? throw new ArgumentNullException(nameof(first));
             Second = second ?? throw new ArgumentNullException(nameof(second));
         }
 
-        public object First { get; init; }
+        public EvaluationResult First { get; init; }
 
-        public object Second { get; init; }
+        public EvaluationResult Second { get; init; }
     }
 }

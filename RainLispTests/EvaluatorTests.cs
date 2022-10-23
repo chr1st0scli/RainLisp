@@ -1,5 +1,6 @@
 ﻿using RainLisp;
-using RainLisp.Environment;
+using RainLisp.Evaluation;
+using RainLisp.Evaluation.Results;
 
 namespace RainLispTests
 {
@@ -25,7 +26,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, result);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -72,7 +73,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (double)result);
+            Assert.Equal(expectedResult, (double)((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -103,7 +104,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, Math.Round((double)result, 2, MidpointRounding.AwayFromZero));
+            Assert.Equal(expectedResult, Math.Round((double)((PrimitiveDatum)result).Value, 2, MidpointRounding.AwayFromZero));
         }
 
         [Theory]
@@ -170,7 +171,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (bool)result);
+            Assert.Equal(expectedResult, (bool)((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -198,7 +199,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (double)result);
+            Assert.Equal(expectedResult, (double)((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -226,7 +227,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (double)result);
+            Assert.Equal(expectedResult, (double)((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -256,7 +257,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (double)result);
+            Assert.Equal(expectedResult, (double)((PrimitiveDatum)result).Value);
         }
 
         [Fact]
@@ -282,7 +283,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(16d, (double)result);
+            Assert.Equal(16d, (double)((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -314,8 +315,8 @@ namespace RainLispTests
             var callCountResult = _interpreter.Evaluate("callCount", ref environment);
 
             // Assert
-            Assert.Equal(expectedResult, result);
-            Assert.Equal(expectedCallCount, (double)callCountResult);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
+            Assert.Equal(expectedCallCount, (double)((PrimitiveDatum)callCountResult).Value);
         }
 
         [Theory]
@@ -347,8 +348,8 @@ namespace RainLispTests
             var callCountResult = _interpreter.Evaluate("callCount", ref environment);
 
             // Assert
-            Assert.Equal(expectedResult, result);
-            Assert.Equal(expectedCallCount, (double)callCountResult);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
+            Assert.Equal(expectedCallCount, (double)((PrimitiveDatum)callCountResult).Value);
         }
 
         [Theory]
@@ -384,7 +385,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, result);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -424,7 +425,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, result);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -468,7 +469,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, result);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
         }
     }
 }

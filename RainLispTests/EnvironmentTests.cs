@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RainLisp;
-using RainLisp.Environment;
+using RainLisp.Evaluation;
 using RainLisp.Grammar;
 using System.Reflection;
 
@@ -51,6 +51,16 @@ namespace RainLispTests
             {
                 string? primitiveProcedureName = field?.GetRawConstantValue()?.ToString();
                 environmentJObject["actualEnvironment"]["definitions"][primitiveProcedureName].Parent.Remove();
+            }
+
+            // Flatten the identifier values out of PrimitiveDatum.
+            foreach (var definitionToken in environmentJObject.SelectTokens("$..definitions").ToList())
+            {
+                foreach (var identifierToken in definitionToken.Children())
+                {
+                    var identifierValue = identifierToken.First().First().First();
+                    identifierToken.First().Replace(identifierValue);
+                }
             }
 
             string actualEnvironment = environmentJObject.ToString();

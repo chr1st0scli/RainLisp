@@ -1,6 +1,4 @@
-﻿using RainLisp.Environment;
-
-namespace RainLisp.Evaluation
+﻿namespace RainLisp.Evaluation.Results
 {
     public class PrimitiveProcedure : Procedure
     {
@@ -9,7 +7,7 @@ namespace RainLisp.Evaluation
 
         public PrimitiveProcedureType ProcedureType { get; init; }
 
-        public override object AcceptVisitor(IProcedureApplicationVisitor visitor, object[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
+        public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
             => visitor.ApplyPrimitiveProcedure(this, evaluatedArguments!); // A primitive procedure does not expect null for arguments.
     }
 }

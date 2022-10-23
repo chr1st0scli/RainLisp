@@ -1,34 +1,34 @@
 ﻿using RainLisp.AbstractSyntaxTree;
-using RainLisp.Environment;
+using RainLisp.Evaluation.Results;
 
 namespace RainLisp.Evaluation
 {
     public interface IEvaluatorVisitor
     {
-        object EvaluateNumberLiteral(NumberLiteral numberLiteral);
+        EvaluationResult EvaluateNumberLiteral(NumberLiteral numberLiteral);
 
-        object EvaluateStringLiteral(StringLiteral stringLiteral);
+        EvaluationResult EvaluateStringLiteral(StringLiteral stringLiteral);
 
-        object EvaluateBooleanLiteral(BooleanLiteral boolLiteral);
+        EvaluationResult EvaluateBooleanLiteral(BooleanLiteral boolLiteral);
 
-        object EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment);
 
-        object EvaluateQuote(Quote quote);
+        EvaluationResult EvaluateQuote(Quote quote);
 
-        object EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment);
 
-        object EvaluateDefinition(Definition definition, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateDefinition(Definition definition, IEvaluationEnvironment environment);
 
-        object EvaluateLambda(Lambda lambda, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateLambda(Lambda lambda, IEvaluationEnvironment environment);
 
-        object EvaluateIf(If ifExpression, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateIf(If ifExpression, IEvaluationEnvironment environment);
 
-        object EvaluateBegin(Begin begin, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateBegin(Begin begin, IEvaluationEnvironment environment);
 
-        object EvaluateApplication(Application application, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateApplication(Application application, IEvaluationEnvironment environment);
 
-        object EvaluateBody(Body body, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateBody(Body body, IEvaluationEnvironment environment);
 
-        object EvaluateProgram(Program program, IEvaluationEnvironment environment);
+        EvaluationResult EvaluateProgram(Program program, IEvaluationEnvironment environment);
     }
 }

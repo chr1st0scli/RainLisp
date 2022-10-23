@@ -1,7 +1,6 @@
 ﻿using RainLisp.AbstractSyntaxTree;
-using RainLisp.Environment;
 
-namespace RainLisp.Evaluation
+namespace RainLisp.Evaluation.Results
 {
     public class UserProcedure : Procedure
     {
@@ -18,7 +17,7 @@ namespace RainLisp.Evaluation
 
         public IEvaluationEnvironment Environment { get; init; }
 
-        public override object AcceptVisitor(IProcedureApplicationVisitor visitor, object[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
+        public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
             => visitor.ApplyUserProcedure(this, evaluatedArguments, environment, evaluatorVisitor);
     }
 }
