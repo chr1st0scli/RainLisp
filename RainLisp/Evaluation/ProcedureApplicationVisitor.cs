@@ -84,7 +84,7 @@ namespace RainLisp.Evaluation
         private static EvaluationResult Cdr(EvaluationResult[] values)
             => ApplyUnaryOperator(val => ValueAs<Pair>(val), val => val.Second, values);
 
-        private static EvaluationResult List(EvaluationResult[] values)
+        private static EvaluationResult List(EvaluationResult[]? values)
         {
             if (values == null || values.Length == 0)
                 return Nil.GetNil();
