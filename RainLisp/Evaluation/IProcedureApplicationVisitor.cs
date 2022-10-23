@@ -4,8 +4,8 @@ namespace RainLisp.Evaluation
 {
     public interface IProcedureApplicationVisitor
     {
-        object ApplyUserProcedure(UserProcedure procedure, object[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor);
+        EvaluationResult ApplyUserProcedure(UserProcedure procedure, EvaluationResult[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor);
 
-        object ApplyPrimitiveProcedure(PrimitiveProcedure procedure, object[] evaluatedArguments);
+        EvaluationResult ApplyPrimitiveProcedure(PrimitiveProcedure procedure, EvaluationResult[] evaluatedArguments);
     }
 }

@@ -18,7 +18,7 @@ namespace RainLisp.AbstractSyntaxTree
 
         public Expression? Alternative { get; init; }
 
-        public override object AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
+        public override EvaluationResult AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
             => visitor.EvaluateIf(this, environment);
     }
 }

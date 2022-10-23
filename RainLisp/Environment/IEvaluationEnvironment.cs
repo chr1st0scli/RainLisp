@@ -1,13 +1,15 @@
-﻿namespace RainLisp.Environment
+﻿using RainLisp.Evaluation;
+
+namespace RainLisp.Environment
 {
     public interface IEvaluationEnvironment
     {
-        IEvaluationEnvironment ExtendEnvironment(IList<string>? parameters, object[]? evaluatedArguments);
+        IEvaluationEnvironment ExtendEnvironment(IList<string>? parameters, EvaluationResult[]? evaluatedArguments);
 
-        void DefineIdentifier(string identifierName, object value);
+        void DefineIdentifier(string identifierName, EvaluationResult value);
 
-        void SetIdentifierValue(string identifierName, Func<object> valueProvider);
+        void SetIdentifierValue(string identifierName, Func<EvaluationResult> valueProvider);
 
-        object LookupIdentifierValue(string identifierName);
+        EvaluationResult LookupIdentifierValue(string identifierName);
     }
 }
