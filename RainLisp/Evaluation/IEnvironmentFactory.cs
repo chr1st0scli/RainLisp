@@ -1,4 +1,4 @@
-﻿namespace RainLisp.Environment
+﻿namespace RainLisp.Evaluation
 {
     public interface IEnvironmentFactory
     {

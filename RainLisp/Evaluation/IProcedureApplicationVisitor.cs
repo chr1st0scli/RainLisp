@@ -1,5 +1,4 @@
-﻿using RainLisp.Environment;
-using RainLisp.Evaluation.Results;
+﻿using RainLisp.Evaluation.Results;
 
 namespace RainLisp.Evaluation
 {

@@ -1,6 +1,6 @@
 ﻿using RainLisp.Evaluation.Results;
 
-namespace RainLisp.Environment
+namespace RainLisp.Evaluation
 {
     public interface IEvaluationEnvironment
     {

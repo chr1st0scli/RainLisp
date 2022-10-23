@@ -1,5 +1,4 @@
 ﻿using RainLisp.AbstractSyntaxTree;
-using RainLisp.Environment;
 using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
 using RainLisp.Parsing;
