@@ -79,10 +79,10 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator((val1, val2) => new Pair(val1, val2), values);
 
         private static EvaluationResult Car(EvaluationResult[] values)
-            => ApplyUnaryOperator(val => As<Pair>(val), val => val.First, values);
+            => ApplyUnaryOperator(AsPair, val => val.First, values);
 
         private static EvaluationResult Cdr(EvaluationResult[] values)
-            => ApplyUnaryOperator(val => As<Pair>(val), val => val.Second, values);
+            => ApplyUnaryOperator(AsPair, val => val.Second, values);
 
         private static EvaluationResult List(EvaluationResult[]? values)
         {
@@ -146,6 +146,8 @@ namespace RainLisp.Evaluation
         private static double AsDouble(EvaluationResult value) => AsPrimitive<double>(value);
 
         private static bool AsBool(EvaluationResult value) => AsPrimitive<bool>(value);
+
+        private static Pair AsPair(EvaluationResult value) => As<Pair>(value);
 
         private static T AsPrimitive<T>(EvaluationResult value) where T : struct
         {
