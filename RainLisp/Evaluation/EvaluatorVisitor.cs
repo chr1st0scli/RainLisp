@@ -116,11 +116,12 @@ namespace RainLisp.Evaluation
         private EvaluationResult EvaluateSequence(IList<Expression> expressions, IEvaluationEnvironment environment)
         {
             // Evaluate every expression in order and return the result of the last one.
-            EvaluationResult result = Unspecified.GetUnspecified();
+            EvaluationResult? result = null;
             foreach (var expression in expressions)
                 result = expression.AcceptVisitor(this, environment);
 
-            return result;
+            // result is not null because the syntax grammar specifies there is at least one expression in both a body and begin.
+            return result!;
         }
     }
 }
