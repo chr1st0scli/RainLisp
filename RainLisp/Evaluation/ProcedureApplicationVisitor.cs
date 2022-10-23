@@ -40,49 +40,49 @@ namespace RainLisp.Evaluation
 
         #region Primitive Operations
         private static EvaluationResult Add(EvaluationResult[] values)
-            => ApplyMultivalueOperator(val => ValueAsPrimitive<double>(val), (val1, val2) => val1 + val2, values);
+            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 + val2, values);
 
         private static EvaluationResult Subtract(EvaluationResult[] values)
-            => ApplyMultivalueOperator(val => ValueAsPrimitive<double>(val), (val1, val2) => val1 - val2, values);
+            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 - val2, values);
 
         private static EvaluationResult Multiply(EvaluationResult[] values)
-            => ApplyMultivalueOperator(val => ValueAsPrimitive<double>(val), (val1, val2) => val1 * val2, values);
+            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 * val2, values);
 
         private static EvaluationResult Divide(EvaluationResult[] values)
-            => ApplyMultivalueOperator(val => ValueAsPrimitive<double>(val), (val1, val2) => val1 / val2, values);
+            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 / val2, values);
 
         private static EvaluationResult Modulo(EvaluationResult[] values)
-            => ApplyMultivalueOperator(val => ValueAsPrimitive<double>(val), (val1, val2) => val1 % val2, values);
+            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, values);
 
         private static EvaluationResult GreaterThan(EvaluationResult[] values)
-            => ApplyBinaryOperator(val => ValueAsPrimitive<double>(val), (val1, val2) => new PrimitiveDatum(val1 > val2), values);
+            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 > val2), values);
 
         private static EvaluationResult GreaterThanOrEqualTo(EvaluationResult[] values)
-            => ApplyBinaryOperator(val => ValueAsPrimitive<double>(val), (val1, val2) => new PrimitiveDatum(val1 >= val2), values);
+            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 >= val2), values);
 
         private static EvaluationResult LessThan(EvaluationResult[] values)
-            => ApplyBinaryOperator(val => ValueAsPrimitive<double>(val), (val1, val2) => new PrimitiveDatum(val1 < val2), values);
+            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 < val2), values);
 
         private static EvaluationResult LessThanOrEqualTo(EvaluationResult[] values)
-            => ApplyBinaryOperator(val => ValueAsPrimitive<double>(val), (val1, val2) => new PrimitiveDatum(val1 <= val2), values);
+            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 <= val2), values);
 
         private static EvaluationResult EqualTo(EvaluationResult[] values)
-            => ApplyBinaryOperator(val => ValueAs<PrimitiveDatum>(val), (val1, val2) => new PrimitiveDatum(val1.Value.Equals(val2.Value)), values);
+            => ApplyBinaryOperator(val => As<PrimitiveDatum>(val), (val1, val2) => new PrimitiveDatum(val1.Value.Equals(val2.Value)), values);
 
         private static EvaluationResult LogicalXor(EvaluationResult[] values)
-            => ApplyMultivalueOperator(val => ValueAsPrimitive<bool>(val), (val1, val2) => val1 ^ val2, values);
+            => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, values);
 
         private static EvaluationResult LogicalNot(EvaluationResult[] values)
-            => ApplyUnaryOperator(val => ValueAsPrimitive<bool>(val), val => new PrimitiveDatum(!val), values);
+            => ApplyUnaryOperator(AsBool, val => new PrimitiveDatum(!val), values);
 
         private static EvaluationResult Cons(EvaluationResult[] values)
-            => ApplyBinaryOperator(val => val, (val1, val2) => new Pair(val1, val2), values);
+            => ApplyBinaryOperator((val1, val2) => new Pair(val1, val2), values);
 
         private static EvaluationResult Car(EvaluationResult[] values)
-            => ApplyUnaryOperator(val => ValueAs<Pair>(val), val => val.First, values);
+            => ApplyUnaryOperator(val => As<Pair>(val), val => val.First, values);
 
         private static EvaluationResult Cdr(EvaluationResult[] values)
-            => ApplyUnaryOperator(val => ValueAs<Pair>(val), val => val.Second, values);
+            => ApplyUnaryOperator(val => As<Pair>(val), val => val.Second, values);
 
         private static EvaluationResult List(EvaluationResult[]? values)
         {
@@ -94,50 +94,68 @@ namespace RainLisp.Evaluation
 
         private static EvaluationResult IsNull(EvaluationResult[] values)
             => ApplyUnaryOperator(val => val, val => new PrimitiveDatum(val == Nil.GetNil()), values);
+        #endregion
 
-        private static EvaluationResult ApplyMultivalueOperator<T>(Func<EvaluationResult, T> toPrimitive, Func<T, T, T> primitiveOperator, EvaluationResult[] values)
+        #region Helpers
+        private delegate T Transform<T>(EvaluationResult value);
+
+        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, Func<T, T, T> calculate, EvaluationResult[] values)
         {
             ArgumentNullException.ThrowIfNull(values, nameof(values));
 
             if (values.Length < 2)
                 throw new ArgumentException("Too few arguments.", nameof(values));
 
-            T accumulator = toPrimitive(values[0]);
+            T accumulator = transform(values[0]);
             for (int i = 1; i < values.Length; i++)
-                accumulator = primitiveOperator(accumulator, toPrimitive(values[i]));
+                accumulator = calculate(accumulator, transform(values[i]));
 
             return new PrimitiveDatum(accumulator!);
         }
 
-        private static EvaluationResult ApplyBinaryOperator<T>(Func<EvaluationResult, T> toPrimitive, Func<T, T, EvaluationResult> primitiveOperator, EvaluationResult[] values)
+        private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, Func<T, T, EvaluationResult> calculate, EvaluationResult[] values)
         {
             ArgumentNullException.ThrowIfNull(values, nameof(values));
 
             if (values.Length != 2)
                 throw new ArgumentException("Exactly two arguments expected.", nameof(values));
 
-            return primitiveOperator(toPrimitive(values[0]), toPrimitive(values[1]));
+            return calculate(transform(values[0]), transform(values[1]));
         }
 
-        private static EvaluationResult ApplyUnaryOperator<T>(Func<EvaluationResult, T> toPrimitive, Func<T, EvaluationResult> primitiveOperator, EvaluationResult[] values)
+        private static EvaluationResult ApplyBinaryOperator(Func<EvaluationResult, EvaluationResult, EvaluationResult> calculate, EvaluationResult[] values)
+        {
+            ArgumentNullException.ThrowIfNull(values, nameof(values));
+
+            if (values.Length != 2)
+                throw new ArgumentException("Exactly two arguments expected.", nameof(values));
+
+            return calculate(values[0], values[1]);
+        }
+
+        private static EvaluationResult ApplyUnaryOperator<T>(Transform<T> transform, Func<T, EvaluationResult> calculate, EvaluationResult[] values)
         {
             ArgumentNullException.ThrowIfNull(values, nameof(values));
 
             if (values.Length != 1)
                 throw new ArgumentException("Exactly one argument expected.", nameof(values));
 
-            return primitiveOperator(toPrimitive(values[0]));
+            return calculate(transform(values[0]));
         }
 
-        private static T ValueAsPrimitive<T>(EvaluationResult value)
+        private static double AsDouble(EvaluationResult value) => AsPrimitive<double>(value);
+
+        private static bool AsBool(EvaluationResult value) => AsPrimitive<bool>(value);
+
+        private static T AsPrimitive<T>(EvaluationResult value) where T : struct
         {
             if (value is PrimitiveDatum datum)
-                return ValueAs<T>(datum.Value);
+                return As<T>(datum.Value);
             else
                 throw new InvalidOperationException($"{value} must be of type {typeof(T).Name}.");
         }
 
-        private static T ValueAs<T>(object value)
+        private static T As<T>(object value)
         {
             try
             {
