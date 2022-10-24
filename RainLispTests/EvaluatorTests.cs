@@ -418,6 +418,9 @@ namespace RainLispTests
         [InlineData("(null? \"hello\")", false)]
         [InlineData("(null? (cons 1 2))", false)]
         [InlineData("(null? (list))", true)] // TODO support test other forms of empty list such as '()
+        [InlineData("(null? (list 1))", false)]
+        [InlineData("(car (list 1))", 1d)]
+        [InlineData("(null? (cdr (list 1)))", true)]
         public void Evaluate_Lists_Correctly(string expression, object expectedResult)
         {
             // Arrange
@@ -470,6 +473,68 @@ namespace RainLispTests
 
             // Assert
             Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
+        }
+
+        [Theory]
+        [InlineData("(+)", 2, true, 0)]
+        [InlineData("(+ 1)", 2, true, 1)]
+        [InlineData("(-)", 2, true, 0)]
+        [InlineData("(- 1)", 2, true, 1)]
+        [InlineData("(*)", 2, true, 0)]
+        [InlineData("(* 1)", 2, true, 1)]
+        [InlineData("(/)", 2, true, 0)]
+        [InlineData("(/ 1)", 2, true, 1)]
+        [InlineData("(%)", 2, true, 0)]
+        [InlineData("(% 1)", 2, true, 1)]
+        [InlineData("(>)", 2, false, 0)]
+        [InlineData("(> 1)", 2, false, 1)]
+        [InlineData("(> 1 2 3)", 2, false, 3)]
+        [InlineData("(>=)", 2, false, 0)]
+        [InlineData("(>= 1)", 2, false, 1)]
+        [InlineData("(>= 1 2 3)", 2, false, 3)]
+        [InlineData("(<)", 2, false, 0)]
+        [InlineData("(< 1)", 2, false, 1)]
+        [InlineData("(< 1 2 3)", 2, false, 3)]
+        [InlineData("(<=)", 2, false, 0)]
+        [InlineData("(<= 1)", 2, false, 1)]
+        [InlineData("(<= 1 2 3)", 2, false, 3)]
+        [InlineData("(=)", 2, false, 0)]
+        [InlineData("(= 1)", 2, false, 1)]
+        [InlineData("(= 1 2 3)", 2, false, 3)]
+        [InlineData("(xor)", 2, true, 0)]
+        [InlineData("(xor true)", 2, true, 1)]
+        [InlineData("(not)", 1, false, 0)]
+        [InlineData("(not true false)", 1, false, 2)]
+        [InlineData("(cons)", 2, false, 0)]
+        [InlineData("(cons 1)", 2, false, 1)]
+        [InlineData("(cons 1 2 3)", 2, false, 3)]
+        [InlineData("(car)", 1, false, 0)]
+        [InlineData("(car 1 2)", 1, false, 2)]
+        [InlineData("(cdr)", 1, false, 0)]
+        [InlineData("(cdr 1 2)", 1, false, 2)]
+        [InlineData("(null?)", 1, false, 0)]
+        [InlineData("(null? 1 2)", 1, false, 2)]
+        public void Evaluate_WrongNumberOfArguments_Throws(string expression, int expected, bool orMore, int actual)
+        {
+            // Arrange
+            WrongNumberOfArgumentsException? exception = null;
+
+            // Act
+            try
+            {
+                _interpreter.Evaluate(expression);
+            }
+            catch (WrongNumberOfArgumentsException ex)
+            {
+                exception = ex;
+            }
+
+            // Assert
+            Assert.NotNull(exception);
+            Assert.IsType<WrongNumberOfArgumentsException>(exception);
+            Assert.Equal(expected, exception!.Expected);
+            Assert.Equal(orMore, exception.OrMore);
+            Assert.Equal(actual, exception.Actual);
         }
     }
 }
