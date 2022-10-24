@@ -1,6 +1,6 @@
 ﻿namespace RainLisp.Evaluation.Results
 {
-    public class PrimitiveProcedure : Procedure
+    public class PrimitiveProcedure : EvaluationResult
     {
         public PrimitiveProcedure(PrimitiveProcedureType procedureType)
             => ProcedureType = procedureType;

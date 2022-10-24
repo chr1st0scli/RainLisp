@@ -2,7 +2,7 @@
 
 namespace RainLisp.Evaluation.Results
 {
-    public class UserProcedure : Procedure
+    public class UserProcedure : EvaluationResult
     {
         public UserProcedure(IList<string>? parameters, Body body, IEvaluationEnvironment environment)
         {
