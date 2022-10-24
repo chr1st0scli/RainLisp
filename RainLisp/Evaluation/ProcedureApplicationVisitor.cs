@@ -1,4 +1,5 @@
 ﻿using RainLisp.Evaluation.Results;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RainLisp.Evaluation
 {
@@ -12,7 +13,7 @@ namespace RainLisp.Evaluation
             return evaluatorVisitor.EvaluateBody(procedure.Body, extendedEnvironment);
         }
 
-        public EvaluationResult ApplyPrimitiveProcedure(PrimitiveProcedure procedure, EvaluationResult[] evaluatedArguments)
+        public EvaluationResult ApplyPrimitiveProcedure(PrimitiveProcedure procedure, EvaluationResult[]? evaluatedArguments)
         {
             // Dispatch to different methods based on enum instead of different procedure runtime types to avoid class explosion for primitive operations.
             return procedure.ProcedureType switch
@@ -39,49 +40,49 @@ namespace RainLisp.Evaluation
         }
 
         #region Primitive Operations
-        private static EvaluationResult Add(EvaluationResult[] values)
+        private static EvaluationResult Add(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 + val2, values);
 
-        private static EvaluationResult Subtract(EvaluationResult[] values)
+        private static EvaluationResult Subtract(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 - val2, values);
 
-        private static EvaluationResult Multiply(EvaluationResult[] values)
+        private static EvaluationResult Multiply(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 * val2, values);
 
-        private static EvaluationResult Divide(EvaluationResult[] values)
+        private static EvaluationResult Divide(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 / val2, values);
 
-        private static EvaluationResult Modulo(EvaluationResult[] values)
+        private static EvaluationResult Modulo(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, values);
 
-        private static EvaluationResult GreaterThan(EvaluationResult[] values)
+        private static EvaluationResult GreaterThan(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 > val2), values);
 
-        private static EvaluationResult GreaterThanOrEqualTo(EvaluationResult[] values)
+        private static EvaluationResult GreaterThanOrEqualTo(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 >= val2), values);
 
-        private static EvaluationResult LessThan(EvaluationResult[] values)
+        private static EvaluationResult LessThan(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 < val2), values);
 
-        private static EvaluationResult LessThanOrEqualTo(EvaluationResult[] values)
+        private static EvaluationResult LessThanOrEqualTo(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 <= val2), values);
 
-        private static EvaluationResult EqualTo(EvaluationResult[] values)
+        private static EvaluationResult EqualTo(EvaluationResult[]? values)
             => ApplyBinaryOperator(val => As<PrimitiveDatum>(val), (val1, val2) => new PrimitiveDatum(val1.Value.Equals(val2.Value)), values);
 
-        private static EvaluationResult LogicalXor(EvaluationResult[] values)
+        private static EvaluationResult LogicalXor(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, values);
 
-        private static EvaluationResult LogicalNot(EvaluationResult[] values)
+        private static EvaluationResult LogicalNot(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsBool, val => new PrimitiveDatum(!val), values);
 
-        private static EvaluationResult Cons(EvaluationResult[] values)
+        private static EvaluationResult Cons(EvaluationResult[]? values)
             => ApplyBinaryOperator((val1, val2) => new Pair(val1, val2), values);
 
-        private static EvaluationResult Car(EvaluationResult[] values)
+        private static EvaluationResult Car(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsPair, val => val.First, values);
 
-        private static EvaluationResult Cdr(EvaluationResult[] values)
+        private static EvaluationResult Cdr(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsPair, val => val.Second, values);
 
         private static EvaluationResult List(EvaluationResult[]? values)
@@ -92,55 +93,54 @@ namespace RainLisp.Evaluation
             return ApplyFoldRightOperator((val1, val2) => new Pair(val1, val2), Nil.GetNil(), values);
         }
 
-        private static EvaluationResult IsNull(EvaluationResult[] values)
-            => ApplyUnaryOperator(val => val, val => new PrimitiveDatum(val == Nil.GetNil()), values);
+        private static EvaluationResult IsNull(EvaluationResult[]? values)
+            => ApplyUnaryOperator(val => new PrimitiveDatum(val == Nil.GetNil()), values);
         #endregion
 
         #region Helpers
+        [return: NotNull]
         private delegate T Transform<T>(EvaluationResult value);
 
-        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, Func<T, T, T> calculate, EvaluationResult[] values)
-        {
-            ArgumentNullException.ThrowIfNull(values, nameof(values));
+        [return: NotNull]
+        private delegate T CalculateMultiple<T>(T value1, T value2);
 
-            if (values.Length < 2)
-                throw new ArgumentException("Too few arguments.", nameof(values));
+        private delegate EvaluationResult CalculateBinary<T>(T value1, T value2);
+
+        private delegate EvaluationResult CalculateUnary<T>(T value);
+
+        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, EvaluationResult[]? values)
+        {
+            Require(values, 2, true);
 
             T accumulator = transform(values[0]);
             for (int i = 1; i < values.Length; i++)
                 accumulator = calculate(accumulator, transform(values[i]));
 
-            return new PrimitiveDatum(accumulator!);
+            return new PrimitiveDatum(accumulator);
         }
 
-        private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, Func<T, T, EvaluationResult> calculate, EvaluationResult[] values)
+        private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, CalculateBinary<T> calculate, EvaluationResult[]? values)
         {
-            ArgumentNullException.ThrowIfNull(values, nameof(values));
-
-            if (values.Length != 2)
-                throw new ArgumentException("Exactly two arguments expected.", nameof(values));
-
+            Require(values, 2);
             return calculate(transform(values[0]), transform(values[1]));
         }
 
-        private static EvaluationResult ApplyBinaryOperator(Func<EvaluationResult, EvaluationResult, EvaluationResult> calculate, EvaluationResult[] values)
+        private static EvaluationResult ApplyBinaryOperator(CalculateBinary<EvaluationResult> calculate, EvaluationResult[]? values)
         {
-            ArgumentNullException.ThrowIfNull(values, nameof(values));
-
-            if (values.Length != 2)
-                throw new ArgumentException("Exactly two arguments expected.", nameof(values));
-
+            Require(values, 2);
             return calculate(values[0], values[1]);
         }
 
-        private static EvaluationResult ApplyUnaryOperator<T>(Transform<T> transform, Func<T, EvaluationResult> calculate, EvaluationResult[] values)
+        private static EvaluationResult ApplyUnaryOperator<T>(Transform<T> transform, CalculateUnary<T> calculate, EvaluationResult[]? values)
         {
-            ArgumentNullException.ThrowIfNull(values, nameof(values));
-
-            if (values.Length != 1)
-                throw new ArgumentException("Exactly one argument expected.", nameof(values));
-
+            Require(values, 1);
             return calculate(transform(values[0]));
+        }
+
+        private static EvaluationResult ApplyUnaryOperator(CalculateUnary<EvaluationResult> calculate, EvaluationResult[]? values)
+        {
+            Require(values, 1);
+            return calculate(values[0]);
         }
 
         private static double AsDouble(EvaluationResult value) => AsPrimitive<double>(value);
@@ -154,27 +154,40 @@ namespace RainLisp.Evaluation
             if (value is PrimitiveDatum datum)
                 return As<T>(datum.Value);
             else
-                throw new InvalidOperationException($"{value} must be of type {typeof(T).Name}.");
+                throw new WrongTypeOfArgumentException(value.GetType(), typeof(T));
         }
 
         private static T As<T>(object value)
         {
-            try
-            {
-                return (T)value;
-            }
-            catch (InvalidCastException ex)
-            {
-                throw new InvalidOperationException($"{value} must be of type {typeof(T).Name}.", ex);
-            }
+            if (value is T valueAsT)
+                return valueAsT;
+
+            throw new WrongTypeOfArgumentException(value.GetType(), typeof(T));
         }
 
-        private static EvaluationResult ApplyFoldRightOperator(Func<EvaluationResult, EvaluationResult, EvaluationResult> foldOperator, EvaluationResult initial, EvaluationResult[] values, int valueIndex = 0)
+        private static EvaluationResult ApplyFoldRightOperator(CalculateMultiple<EvaluationResult> foldOperator, EvaluationResult initial, EvaluationResult[] values, int valueIndex = 0)
         {
             if (valueIndex == values.Length)
                 return initial;
 
             return foldOperator(values[valueIndex], ApplyFoldRightOperator(foldOperator, initial, values, ++valueIndex));
+        }
+
+        private static void Require([NotNull] EvaluationResult[]? values, int expected, bool orMore = false)
+        {
+            if (expected <= 0)
+                throw new ArgumentOutOfRangeException(nameof(expected));
+
+            if (values == null)
+                throw new WrongNumberOfArgumentsException(0, expected, orMore);
+
+            if (orMore)
+            {
+                if (values.Length < expected)
+                    throw new WrongNumberOfArgumentsException(values.Length, expected, true);
+            }
+            else if (values.Length != expected)
+                throw new WrongNumberOfArgumentsException(values.Length, expected);
         }
         #endregion
     }

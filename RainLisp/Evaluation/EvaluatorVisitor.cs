@@ -73,7 +73,7 @@ namespace RainLisp.Evaluation
         {
             // Operator is either a lambda that is evaluated to a user procedure, or another application that returns a user procedure, 
             // or an identifier that evaluates to an already defined procedure (either user or primitive).
-            var evaluatedOperator = application.Operator
+            var procedure = application.Operator
                 .AcceptVisitor(this, environment);
 
             // Evaluate arguments from left to right.
@@ -81,10 +81,7 @@ namespace RainLisp.Evaluation
                 ?.Select(expr => expr.AcceptVisitor(this, environment))
                 .ToArray();
 
-            if (evaluatedOperator is Procedure procedure)
-                return procedure.AcceptVisitor(_procedureApplicationVisitor, evaluatedArguments, environment, this);
-            else
-                throw new InvalidOperationException("Unknown procedure type.");
+            return procedure.AcceptVisitor(_procedureApplicationVisitor, evaluatedArguments, environment, this);
         }
 
         public EvaluationResult EvaluateBody(Body body, IEvaluationEnvironment environment)
