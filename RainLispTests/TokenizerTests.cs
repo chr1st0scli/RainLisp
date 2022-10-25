@@ -547,7 +547,7 @@ world.""", 1, 13, '\r')] // Note that if this test is ran on a unix platform, th
         public void Tokenize_MultilineString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
         {
             var exception = Tokenize_InvalidString_Throws<InvalidStringCharacterException>(expression, expectedLine, expectedPosition);
-            Assert.Equal(expectedCharacter, exception!.Character);
+            Assert.Equal(expectedCharacter, exception.Character);
         }
 
         [Theory]
@@ -563,10 +563,10 @@ world.""", 1, 13, '\r')] // Note that if this test is ran on a unix platform, th
         public void Tokenize_InvalidEscapeSequenceInString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
         {
             var exception = Tokenize_InvalidString_Throws<InvalidEscapeSequenceException>(expression, expectedLine, expectedPosition);
-            Assert.Equal(expectedCharacter, exception!.Character);
+            Assert.Equal(expectedCharacter, exception.Character);
         }
 
-        private TException? Tokenize_InvalidString_Throws<TException>(string expression, uint expectedLine, uint expectedPosition) where TException : TokenizationException
+        private TException Tokenize_InvalidString_Throws<TException>(string expression, uint expectedLine, uint expectedPosition) where TException : TokenizationException
         {
             // Arrange
             TException? exception = null;

@@ -15,16 +15,16 @@ namespace RainLisp.Evaluation
 
         public IEvaluationEnvironment ExtendEnvironment(IList<string>? parameters, EvaluationResult[]? evaluatedArguments)
         {
-            if (parameters?.Count != evaluatedArguments?.Length)
-                throw new InvalidOperationException("Wrong number of arguments.");
+            int parametersCount = parameters?.Count ?? 0;
+            int argumentsCount = evaluatedArguments?.Length ?? 0;
+
+            if (parametersCount != argumentsCount)
+                throw new WrongNumberOfArgumentsException(argumentsCount, parametersCount);
 
             var extendedEnvironment = new EvaluationEnvironment { previousEnvironment = this };
 
-            if (parameters?.Count > 0 && evaluatedArguments?.Length > 0)
-            {
-                for (int i = 0; i < parameters.Count; i++)
-                    extendedEnvironment.DefineIdentifier(parameters[i], evaluatedArguments[i]);
-            }
+            for (int i = 0; i < parametersCount; i++)
+                extendedEnvironment.DefineIdentifier(parameters![i], evaluatedArguments![i]);
 
             return extendedEnvironment;
         }
@@ -66,7 +66,7 @@ namespace RainLisp.Evaluation
                 }
             }
 
-            throw new InvalidOperationException($"{identifierName} is undefined.");
+            throw new UnknownIdentifierException(identifierName);
         }
     }
 }

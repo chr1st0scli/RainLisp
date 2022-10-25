@@ -162,6 +162,9 @@ namespace RainLisp.Evaluation
             if (value is T valueAsT)
                 return valueAsT;
 
+            if (value is PrimitiveDatum datum)
+                throw new WrongTypeOfArgumentException(datum.Value.GetType(), typeof(T));
+
             throw new WrongTypeOfArgumentException(value.GetType(), typeof(T));
         }
 
