@@ -36,4 +36,12 @@
 
         public Type Expected { get; init; }
     }
+
+    public class UnknownIdentifierException : Exception
+    {
+        public UnknownIdentifierException(string identifierName)
+            => IdentifierName = identifierName;
+
+        public string IdentifierName { get; init; }
+    }
 }

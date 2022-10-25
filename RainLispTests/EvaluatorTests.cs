@@ -125,6 +125,8 @@ namespace RainLispTests
         [InlineData("(= true false)", false)]
         [InlineData("(= \"abc\" \"abcd\")", false)]
         [InlineData("(= \"abcd\" \"abcd\")", true)]
+        [InlineData("(= \"abcd\" 1)", false)]
+        [InlineData("(= true 1)", false)]
         [InlineData("(not true)", false)]
         [InlineData("(not false)", true)]
         [InlineData("(not (not true))", true)]
@@ -418,6 +420,10 @@ namespace RainLispTests
         [InlineData("(null? \"hello\")", false)]
         [InlineData("(null? (cons 1 2))", false)]
         [InlineData("(null? (list))", true)] // TODO support test other forms of empty list such as '()
+        [InlineData("(null? (list 1))", false)]
+        [InlineData("(car (list 1))", 1d)]
+        [InlineData("(null? (cdr (list 1)))", true)]
+        [InlineData("(null? nil)", true)]
         public void Evaluate_Lists_Correctly(string expression, object expectedResult)
         {
             // Arrange
@@ -470,6 +476,241 @@ namespace RainLispTests
 
             // Assert
             Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
+        }
+
+        [Theory]
+        [InlineData("(+)", 2, true, 0)]
+        [InlineData("(+ 1)", 2, true, 1)]
+        [InlineData("(-)", 2, true, 0)]
+        [InlineData("(- 1)", 2, true, 1)]
+        [InlineData("(*)", 2, true, 0)]
+        [InlineData("(* 1)", 2, true, 1)]
+        [InlineData("(/)", 2, true, 0)]
+        [InlineData("(/ 1)", 2, true, 1)]
+        [InlineData("(%)", 2, true, 0)]
+        [InlineData("(% 1)", 2, true, 1)]
+        [InlineData("(>)", 2, false, 0)]
+        [InlineData("(> 1)", 2, false, 1)]
+        [InlineData("(> 1 2 3)", 2, false, 3)]
+        [InlineData("(>=)", 2, false, 0)]
+        [InlineData("(>= 1)", 2, false, 1)]
+        [InlineData("(>= 1 2 3)", 2, false, 3)]
+        [InlineData("(<)", 2, false, 0)]
+        [InlineData("(< 1)", 2, false, 1)]
+        [InlineData("(< 1 2 3)", 2, false, 3)]
+        [InlineData("(<=)", 2, false, 0)]
+        [InlineData("(<= 1)", 2, false, 1)]
+        [InlineData("(<= 1 2 3)", 2, false, 3)]
+        [InlineData("(=)", 2, false, 0)]
+        [InlineData("(= 1)", 2, false, 1)]
+        [InlineData("(= 1 2 3)", 2, false, 3)]
+        [InlineData("(xor)", 2, true, 0)]
+        [InlineData("(xor true)", 2, true, 1)]
+        [InlineData("(not)", 1, false, 0)]
+        [InlineData("(not true false)", 1, false, 2)]
+        [InlineData("(cons)", 2, false, 0)]
+        [InlineData("(cons 1)", 2, false, 1)]
+        [InlineData("(cons 1 2 3)", 2, false, 3)]
+        [InlineData("(car)", 1, false, 0)]
+        [InlineData("(car 1 2)", 1, false, 2)]
+        [InlineData("(cdr)", 1, false, 0)]
+        [InlineData("(cdr 1 2)", 1, false, 2)]
+        [InlineData("(null?)", 1, false, 0)]
+        [InlineData("(null? 1 2)", 1, false, 2)]
+        [InlineData("(define (foo) 1) (foo 1)", 0, false, 1)]
+        [InlineData("(define (foo) 1) (foo 1 2)", 0, false, 2)]
+        [InlineData("(define (foo x) x) (foo)", 1, false, 0)]
+        [InlineData("(define (foo x) x) (foo 1 2)", 1, false, 2)]
+        [InlineData("(define (foo x y) (+ x y)) (foo)", 2, false, 0)]
+        [InlineData("(define (foo x y) (+ x y)) (foo 1)", 2, false, 1)]
+        [InlineData("(define (foo x y) (+ x y)) (foo 1 2 3)", 2, false, 3)]
+        public void Evaluate_WrongNumberOfArguments_Throws(string expression, int expected, bool orMore, int actual)
+        {
+            // Arrange
+            // Act
+            var exception = Evaluate_WrongExpression_Throws<WrongNumberOfArgumentsException>(expression);
+
+            // Assert
+            Assert.Equal(expected, exception!.Expected);
+            Assert.Equal(orMore, exception.OrMore);
+            Assert.Equal(actual, exception.Actual);
+        }
+
+        [Theory]
+        // +
+        [InlineData("(+ \"hi\" 1)", typeof(double), typeof(string))]
+        [InlineData("(+ 1 \"hi\")", typeof(double), typeof(string))]
+        [InlineData("(+ \"hi\" \"there\")", typeof(double), typeof(string))] // maybe we should be able to concat strings like that.
+        [InlineData("(+ 1 false)", typeof(double), typeof(bool))]
+        [InlineData("(+ true 1)", typeof(double), typeof(bool))]
+        [InlineData("(+ nil nil)", typeof(double), typeof(Nil))]
+        [InlineData("(+ (cons 1 2) (cons 3 4))", typeof(double), typeof(Pair))]
+        [InlineData("(+ (lambda(x) x) (lambda(x) x))", typeof(double), typeof(UserProcedure))]
+        [InlineData("(+ - -)", typeof(double), typeof(PrimitiveProcedure))]
+        // -
+        [InlineData("(- \"hi\" 1)", typeof(double), typeof(string))]
+        [InlineData("(- 1 \"hi\")", typeof(double), typeof(string))]
+        [InlineData("(- \"hi\" \"there\")", typeof(double), typeof(string))]
+        [InlineData("(- 1 false)", typeof(double), typeof(bool))]
+        [InlineData("(- true 1)", typeof(double), typeof(bool))]
+        [InlineData("(- nil nil)", typeof(double), typeof(Nil))]
+        [InlineData("(- (cons 1 2) (cons 3 4))", typeof(double), typeof(Pair))]
+        [InlineData("(- (lambda(x) x) (lambda(x) x))", typeof(double), typeof(UserProcedure))]
+        [InlineData("(- - -)", typeof(double), typeof(PrimitiveProcedure))]
+        // *
+        [InlineData("(* \"hi\" 1)", typeof(double), typeof(string))]
+        [InlineData("(* 1 \"hi\")", typeof(double), typeof(string))]
+        [InlineData("(* \"hi\" \"there\")", typeof(double), typeof(string))]
+        [InlineData("(* 1 false)", typeof(double), typeof(bool))]
+        [InlineData("(* true 1)", typeof(double), typeof(bool))]
+        [InlineData("(* nil nil)", typeof(double), typeof(Nil))]
+        [InlineData("(* (cons 1 2) (cons 3 4))", typeof(double), typeof(Pair))]
+        [InlineData("(* (lambda(x) x) (lambda(x) x))", typeof(double), typeof(UserProcedure))]
+        [InlineData("(* - -)", typeof(double), typeof(PrimitiveProcedure))]
+        // /
+        [InlineData("(/ \"hi\" 1)", typeof(double), typeof(string))]
+        [InlineData("(/ 1 \"hi\")", typeof(double), typeof(string))]
+        [InlineData("(/ \"hi\" \"there\")", typeof(double), typeof(string))]
+        [InlineData("(/ 1 false)", typeof(double), typeof(bool))]
+        [InlineData("(/ true 1)", typeof(double), typeof(bool))]
+        [InlineData("(/ nil nil)", typeof(double), typeof(Nil))]
+        [InlineData("(/ (cons 1 2) (cons 3 4))", typeof(double), typeof(Pair))]
+        [InlineData("(/ (lambda(x) x) (lambda(x) x))", typeof(double), typeof(UserProcedure))]
+        [InlineData("(/ - -)", typeof(double), typeof(PrimitiveProcedure))]
+        // %
+        [InlineData("(% \"hi\" 1)", typeof(double), typeof(string))]
+        [InlineData("(% 1 \"hi\")", typeof(double), typeof(string))]
+        [InlineData("(% \"hi\" \"there\")", typeof(double), typeof(string))]
+        [InlineData("(% 1 false)", typeof(double), typeof(bool))]
+        [InlineData("(% true 1)", typeof(double), typeof(bool))]
+        [InlineData("(% nil nil)", typeof(double), typeof(Nil))]
+        [InlineData("(% (cons 1 2) (cons 3 4))", typeof(double), typeof(Pair))]
+        [InlineData("(% (lambda(x) x) (lambda(x) x))", typeof(double), typeof(UserProcedure))]
+        [InlineData("(% - -)", typeof(double), typeof(PrimitiveProcedure))]
+        // >
+        [InlineData("(> \"hi\" 1)", typeof(double), typeof(string))]
+        [InlineData("(> 1 \"hi\")", typeof(double), typeof(string))]
+        [InlineData("(> \"hi\" \"there\")", typeof(double), typeof(string))]
+        [InlineData("(> 1 false)", typeof(double), typeof(bool))]
+        [InlineData("(> true 1)", typeof(double), typeof(bool))]
+        [InlineData("(> nil nil)", typeof(double), typeof(Nil))]
+        [InlineData("(> (cons 1 2) (cons 3 4))", typeof(double), typeof(Pair))]
+        [InlineData("(> (lambda(x) x) (lambda(x) x))", typeof(double), typeof(UserProcedure))]
+        [InlineData("(> - -)", typeof(double), typeof(PrimitiveProcedure))]
+        // >=
+        [InlineData("(>= \"hi\" 1)", typeof(double), typeof(string))]
+        [InlineData("(>= 1 \"hi\")", typeof(double), typeof(string))]
+        [InlineData("(>= \"hi\" \"there\")", typeof(double), typeof(string))]
+        [InlineData("(>= 1 false)", typeof(double), typeof(bool))]
+        [InlineData("(>= true 1)", typeof(double), typeof(bool))]
+        [InlineData("(>= nil nil)", typeof(double), typeof(Nil))]
+        [InlineData("(>= (cons 1 2) (cons 3 4))", typeof(double), typeof(Pair))]
+        [InlineData("(>= (lambda(x) x) (lambda(x) x))", typeof(double), typeof(UserProcedure))]
+        [InlineData("(>= - -)", typeof(double), typeof(PrimitiveProcedure))]
+        // <
+        [InlineData("(< \"hi\" 1)", typeof(double), typeof(string))]
+        [InlineData("(< 1 \"hi\")", typeof(double), typeof(string))]
+        [InlineData("(< \"hi\" \"there\")", typeof(double), typeof(string))]
+        [InlineData("(< 1 false)", typeof(double), typeof(bool))]
+        [InlineData("(< true 1)", typeof(double), typeof(bool))]
+        [InlineData("(< nil nil)", typeof(double), typeof(Nil))]
+        [InlineData("(< (cons 1 2) (cons 3 4))", typeof(double), typeof(Pair))]
+        [InlineData("(< (lambda(x) x) (lambda(x) x))", typeof(double), typeof(UserProcedure))]
+        [InlineData("(< - -)", typeof(double), typeof(PrimitiveProcedure))]
+        // <=
+        [InlineData("(<= \"hi\" 1)", typeof(double), typeof(string))]
+        [InlineData("(<= 1 \"hi\")", typeof(double), typeof(string))]
+        [InlineData("(<= \"hi\" \"there\")", typeof(double), typeof(string))]
+        [InlineData("(<= 1 false)", typeof(double), typeof(bool))]
+        [InlineData("(<= true 1)", typeof(double), typeof(bool))]
+        [InlineData("(<= nil nil)", typeof(double), typeof(Nil))]
+        [InlineData("(<= (cons 1 2) (cons 3 4))", typeof(double), typeof(Pair))]
+        [InlineData("(<= (lambda(x) x) (lambda(x) x))", typeof(double), typeof(UserProcedure))]
+        [InlineData("(<= - -)", typeof(double), typeof(PrimitiveProcedure))]
+        // =
+        [InlineData("(= nil nil)", typeof(PrimitiveDatum), typeof(Nil))]
+        [InlineData("(= (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum), typeof(Pair))]
+        [InlineData("(= (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum), typeof(UserProcedure))]
+        [InlineData("(= - -)", typeof(PrimitiveDatum), typeof(PrimitiveProcedure))]
+        // xor
+        [InlineData("(xor \"hi\" 1)", typeof(bool), typeof(string))]
+        [InlineData("(xor 1 \"hi\")", typeof(bool), typeof(double))]
+        [InlineData("(xor \"hi\" \"there\")", typeof(bool), typeof(string))]
+        [InlineData("(xor 1 false)", typeof(bool), typeof(double))]
+        [InlineData("(xor true 1)", typeof(bool), typeof(double))]
+        [InlineData("(xor nil nil)", typeof(bool), typeof(Nil))]
+        [InlineData("(xor (cons 1 2) (cons 3 4))", typeof(bool), typeof(Pair))]
+        [InlineData("(xor (lambda(x) x) (lambda(x) x))", typeof(bool), typeof(UserProcedure))]
+        [InlineData("(xor - -)", typeof(bool), typeof(PrimitiveProcedure))]
+        // not
+        [InlineData("(not \"hi\")", typeof(bool), typeof(string))]
+        [InlineData("(not 1)", typeof(bool), typeof(double))]
+        [InlineData("(not nil)", typeof(bool), typeof(Nil))]
+        [InlineData("(not (cons 1 2))", typeof(bool), typeof(Pair))]
+        [InlineData("(not (lambda(x) x))", typeof(bool), typeof(UserProcedure))]
+        [InlineData("(not -)", typeof(bool), typeof(PrimitiveProcedure))]
+        // car
+        [InlineData("(car \"hi\")", typeof(Pair), typeof(string))]
+        [InlineData("(car 1)", typeof(Pair), typeof(double))]
+        [InlineData("(car true)", typeof(Pair), typeof(bool))]
+        [InlineData("(car nil)", typeof(Pair), typeof(Nil))]
+        [InlineData("(car (lambda(x) x))", typeof(Pair), typeof(UserProcedure))]
+        [InlineData("(car -)", typeof(Pair), typeof(PrimitiveProcedure))]
+        // cdr
+        [InlineData("(cdr \"hi\")", typeof(Pair), typeof(string))]
+        [InlineData("(cdr 1)", typeof(Pair), typeof(double))]
+        [InlineData("(cdr true)", typeof(Pair), typeof(bool))]
+        [InlineData("(cdr nil)", typeof(Pair), typeof(Nil))]
+        [InlineData("(cdr (lambda(x) x))", typeof(Pair), typeof(UserProcedure))]
+        [InlineData("(cdr -)", typeof(Pair), typeof(PrimitiveProcedure))]
+        public void Evaluate_WrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
+        {
+            // Arrange
+            // Act
+            var exception = Evaluate_WrongExpression_Throws<WrongTypeOfArgumentException>(expression);
+
+            // Assert
+            Assert.Equal(expected, exception.Expected);
+            Assert.Equal(actual, exception.Actual);
+        }
+
+        [Theory]
+        [InlineData("foo", "foo")]
+        [InlineData("(foo)", "foo")]
+        [InlineData("(set! ab 32)", "ab")]
+        [InlineData("(define a 1) (set! a 2) (set! b 3)", "b")]
+        [InlineData("(+ 1 2 ab 3)", "ab")]
+        [InlineData("(define (foo x) x) (foo 5) (foo boo)", "boo")]
+        public void Evaluate_UnknownIdentifier_Throws(string expression, string expectedIdentifierName)
+        {
+            // Arrange
+            // Act
+            var exception = Evaluate_WrongExpression_Throws<UnknownIdentifierException>(expression);
+
+            // Assert
+            Assert.Equal(expectedIdentifierName, exception.IdentifierName);
+        }
+
+        private TException Evaluate_WrongExpression_Throws<TException>(string expression) where TException : Exception
+        {
+            // Arrange
+            TException? exception = null;
+
+            // Act
+            try
+            {
+                _interpreter.Evaluate(expression);
+            }
+            catch (TException ex)
+            {
+                exception = ex;
+            }
+
+            // Assert
+            Assert.NotNull(exception);
+            Assert.IsType<TException>(exception);
+
+            return exception!;
         }
     }
 }
