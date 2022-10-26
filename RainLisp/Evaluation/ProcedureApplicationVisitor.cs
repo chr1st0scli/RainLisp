@@ -73,14 +73,7 @@ namespace RainLisp.Evaluation
             => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, values);
 
         private static EvaluationResult LogicalNot(EvaluationResult[]? values)
-            => ApplyUnaryOperator(val => 
-            {
-                // All values are true except for false. So, not returns true only for false and false in all other cases.
-                if (val is PrimitiveDatum primitiveDatum && primitiveDatum.Value is bool boolValue && !boolValue)
-                    return new PrimitiveDatum(true);
-
-                return new PrimitiveDatum(false);
-            }, values);
+            => ApplyUnaryOperator(AsBool, val => new PrimitiveDatum(!val), values);
 
         private static EvaluationResult Cons(EvaluationResult[]? values)
             => ApplyBinaryOperator((val1, val2) => new Pair(val1, val2), values);
@@ -151,7 +144,14 @@ namespace RainLisp.Evaluation
 
         private static double AsDouble(EvaluationResult value) => AsPrimitive<double>(value);
 
-        private static bool AsBool(EvaluationResult value) => AsPrimitive<bool>(value);
+        private static bool AsBool(EvaluationResult value)
+        {
+            // All values are true except for false.
+            if (value is PrimitiveDatum primitiveDatum && primitiveDatum.Value is bool boolValue && !boolValue)
+                return false;
+
+            return true;
+        }
 
         private static Pair AsPair(EvaluationResult value) => As<Pair>(value);
 
