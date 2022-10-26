@@ -42,7 +42,7 @@ namespace RainLispTests
             var environmentJObject = JObject.FromObject(environment, jsonSerializer);
 
             // Remove the circular references of all previous environments.
-            foreach (var token in environmentJObject.SelectTokens("$..previousEnvironment").ToList())
+            foreach (var token in environmentJObject.SelectTokens("$.._previousEnvironment").ToList())
                 token.Parent.Remove();
 
             // Remove the primitives from the definitions output, because we are not interested to check them.
@@ -50,17 +50,20 @@ namespace RainLispTests
             foreach (var field in fields)
             {
                 string? primitiveProcedureName = field?.GetRawConstantValue()?.ToString();
-                environmentJObject["actualEnvironment"]["definitions"][primitiveProcedureName].Parent.Remove();
+                environmentJObject["actualEnvironment"]["_definitions"][primitiveProcedureName].Parent.Remove();
             }
 
             // Flatten the identifier values out of PrimitiveDatum.
-            foreach (var definitionToken in environmentJObject.SelectTokens("$..definitions").ToList())
+            foreach (var definitionToken in environmentJObject.SelectTokens("$.._definitions").ToList())
             {
                 foreach (var identifierToken in definitionToken.Children())
                 {
                     var identifierValue = identifierToken.First().First().First();
                     identifierToken.First().Replace(identifierValue);
                 }
+
+                // Rename _definitions to definitions to match the test files.
+                definitionToken.Parent.Replace(new JProperty("definitions", definitionToken));
             }
 
             string actualEnvironment = environmentJObject.ToString();
