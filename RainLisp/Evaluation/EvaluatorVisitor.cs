@@ -103,7 +103,7 @@ namespace RainLisp.Evaluation
                 EvaluateDefinition(definition, environment);
 
             EvaluationResult result = Unspecified.GetUnspecified();
-            // Evaluate all program expressions and the return the last result.
+            // Evaluate all program expressions and then return the last result.
             foreach (var expression in program.Expressions)
                 result = expression.AcceptVisitor(this, environment);
 
