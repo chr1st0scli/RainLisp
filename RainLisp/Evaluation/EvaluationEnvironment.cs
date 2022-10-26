@@ -30,19 +30,10 @@ namespace RainLisp.Evaluation
         }
 
         public void DefineIdentifier(string identifierName, EvaluationResult value)
-        {
-            if (string.IsNullOrWhiteSpace(identifierName))
-                throw new ArgumentException("Identifier name is required.", nameof(identifierName));
-
-            ArgumentNullException.ThrowIfNull(value, nameof(value));
-
-            definitions[identifierName] = value;
-        }
+            => definitions[identifierName] = value;
 
         public void SetIdentifierValue(string identifierName, Func<EvaluationResult> valueProvider)
         {
-            ArgumentNullException.ThrowIfNull(valueProvider, nameof(valueProvider));
-
             // Check that the identifier we want to assign to exists.
             LookupIdentifierValue(identifierName, out EvaluationEnvironment environment);
 
@@ -54,9 +45,6 @@ namespace RainLisp.Evaluation
 
         private EvaluationResult LookupIdentifierValue(string identifierName, out EvaluationEnvironment environment)
         {
-            if (string.IsNullOrWhiteSpace(identifierName))
-                throw new ArgumentException("Identifier name is required.", nameof(identifierName));
-
             for (var env = this; env != null; env = env.previousEnvironment)
             {
                 if (env.definitions.TryGetValue(identifierName, out EvaluationResult? value))
