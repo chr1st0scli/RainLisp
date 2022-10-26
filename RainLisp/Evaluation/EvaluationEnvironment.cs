@@ -4,14 +4,11 @@ namespace RainLisp.Evaluation
 {
     public class EvaluationEnvironment : IEvaluationEnvironment
     {
-        private readonly IDictionary<string, EvaluationResult> definitions;
-
-        private EvaluationEnvironment? previousEnvironment;
+        private readonly IDictionary<string, EvaluationResult> _definitions;
+        private EvaluationEnvironment? _previousEnvironment;
 
         public EvaluationEnvironment()
-        {
-            definitions = new Dictionary<string, EvaluationResult>();
-        }
+            => _definitions = new Dictionary<string, EvaluationResult>();
 
         public IEvaluationEnvironment ExtendEnvironment(IList<string>? parameters, EvaluationResult[]? evaluatedArguments)
         {
@@ -21,7 +18,7 @@ namespace RainLisp.Evaluation
             if (parametersCount != argumentsCount)
                 throw new WrongNumberOfArgumentsException(argumentsCount, parametersCount);
 
-            var extendedEnvironment = new EvaluationEnvironment { previousEnvironment = this };
+            var extendedEnvironment = new EvaluationEnvironment { _previousEnvironment = this };
 
             for (int i = 0; i < parametersCount; i++)
                 extendedEnvironment.DefineIdentifier(parameters![i], evaluatedArguments![i]);
@@ -30,7 +27,7 @@ namespace RainLisp.Evaluation
         }
 
         public void DefineIdentifier(string identifierName, EvaluationResult value)
-            => definitions[identifierName] = value;
+            => _definitions[identifierName] = value;
 
         public void SetIdentifierValue(string identifierName, Func<EvaluationResult> valueProvider)
         {
@@ -45,9 +42,9 @@ namespace RainLisp.Evaluation
 
         private EvaluationResult LookupIdentifierValue(string identifierName, out EvaluationEnvironment environment)
         {
-            for (var env = this; env != null; env = env.previousEnvironment)
+            for (var env = this; env != null; env = env._previousEnvironment)
             {
-                if (env.definitions.TryGetValue(identifierName, out EvaluationResult? value))
+                if (env._definitions.TryGetValue(identifierName, out EvaluationResult? value))
                 {
                     environment = env;
                     return value;

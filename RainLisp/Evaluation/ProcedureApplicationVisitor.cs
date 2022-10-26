@@ -144,7 +144,14 @@ namespace RainLisp.Evaluation
 
         private static double AsDouble(EvaluationResult value) => AsPrimitive<double>(value);
 
-        private static bool AsBool(EvaluationResult value) => AsPrimitive<bool>(value);
+        private static bool AsBool(EvaluationResult value)
+        {
+            // All values are true except for false.
+            if (value is PrimitiveDatum primitiveDatum && primitiveDatum.Value is bool boolValue && !boolValue)
+                return false;
+
+            return true;
+        }
 
         private static Pair AsPair(EvaluationResult value) => As<Pair>(value);
 
