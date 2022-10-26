@@ -81,7 +81,7 @@ namespace RainLisp.Evaluation
                 ?.Select(expr => expr.AcceptVisitor(this, environment))
                 .ToArray();
 
-            return procedure.AcceptVisitor(_procedureApplicationVisitor, evaluatedArguments, environment, this);
+            return procedure.AcceptVisitor(_procedureApplicationVisitor, evaluatedArguments, this);
         }
 
         public EvaluationResult EvaluateBody(Body body, IEvaluationEnvironment environment)
