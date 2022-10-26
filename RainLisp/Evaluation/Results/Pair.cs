@@ -4,8 +4,8 @@
     {
         public Pair(EvaluationResult first, EvaluationResult second)
         {
-            First = first ?? throw new ArgumentNullException(nameof(first));
-            Second = second ?? throw new ArgumentNullException(nameof(second));
+            First = first;
+            Second = second;
         }
 
         public EvaluationResult First { get; init; }

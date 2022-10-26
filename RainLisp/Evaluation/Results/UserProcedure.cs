@@ -7,8 +7,8 @@ namespace RainLisp.Evaluation.Results
         public UserProcedure(IList<string>? parameters, Body body, IEvaluationEnvironment environment)
         {
             Parameters = parameters;
-            Body = body ?? throw new ArgumentNullException(nameof(body));
-            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            Body = body;
+            Environment = environment;
         }
 
         public IList<string>? Parameters { get; init; }
@@ -17,7 +17,7 @@ namespace RainLisp.Evaluation.Results
 
         public IEvaluationEnvironment Environment { get; init; }
 
-        public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
-            => visitor.ApplyUserProcedure(this, evaluatedArguments, environment, evaluatorVisitor);
+        public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluatorVisitor evaluatorVisitor)
+            => visitor.ApplyUserProcedure(this, evaluatedArguments, evaluatorVisitor);
     }
 }

@@ -7,7 +7,7 @@
 
         public PrimitiveProcedureType ProcedureType { get; init; }
 
-        public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluationEnvironment environment, IEvaluatorVisitor evaluatorVisitor)
+        public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluatorVisitor evaluatorVisitor)
             => visitor.ApplyPrimitiveProcedure(this, evaluatedArguments);
     }
 }
