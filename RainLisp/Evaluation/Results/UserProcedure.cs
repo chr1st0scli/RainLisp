@@ -7,8 +7,8 @@ namespace RainLisp.Evaluation.Results
         public UserProcedure(IList<string>? parameters, Body body, IEvaluationEnvironment environment)
         {
             Parameters = parameters;
-            Body = body ?? throw new ArgumentNullException(nameof(body));
-            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            Body = body;
+            Environment = environment;
         }
 
         public IList<string>? Parameters { get; init; }
