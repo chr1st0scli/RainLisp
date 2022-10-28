@@ -1,10 +1,10 @@
 ﻿namespace RainLisp.Evaluation.Results
 {
-    public class PrimitiveDatum : EvaluationResult
+    public class PrimitiveDatum<T> : EvaluationResult
     {
-        public PrimitiveDatum(object value)
+        public PrimitiveDatum(T value)
             => Value = value;
 
-        public object Value { get; init; }
+        public T Value { get; init; }
     }
 }

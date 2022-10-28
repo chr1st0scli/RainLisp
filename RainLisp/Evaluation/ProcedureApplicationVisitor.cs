@@ -55,25 +55,25 @@ namespace RainLisp.Evaluation
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, values);
 
         private static EvaluationResult GreaterThan(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 > val2), values);
+            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum<bool>(val1 > val2), values);
 
         private static EvaluationResult GreaterThanOrEqualTo(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 >= val2), values);
+            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum<bool>(val1 >= val2), values);
 
         private static EvaluationResult LessThan(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 < val2), values);
+            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum<bool>(val1 < val2), values);
 
         private static EvaluationResult LessThanOrEqualTo(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum(val1 <= val2), values);
+            => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum<bool>(val1 <= val2), values);
 
         private static EvaluationResult EqualTo(EvaluationResult[]? values)
-            => ApplyBinaryOperator(val => As<PrimitiveDatum>(val), (val1, val2) => new PrimitiveDatum(val1.Value.Equals(val2.Value)), values);
+            => ApplyBinaryOperator(AsAnyPrimitive, (val1, val2) => new PrimitiveDatum<bool>(val1.Equals(val2)), values);
 
         private static EvaluationResult LogicalXor(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, values);
 
         private static EvaluationResult LogicalNot(EvaluationResult[]? values)
-            => ApplyUnaryOperator(AsBool, val => new PrimitiveDatum(!val), values);
+            => ApplyUnaryOperator(AsBool, val => new PrimitiveDatum<bool>(!val), values);
 
         private static EvaluationResult Cons(EvaluationResult[]? values)
             => ApplyBinaryOperator((val1, val2) => new Pair(val1, val2), values);
@@ -93,7 +93,7 @@ namespace RainLisp.Evaluation
         }
 
         private static EvaluationResult IsNull(EvaluationResult[]? values)
-            => ApplyUnaryOperator(val => new PrimitiveDatum(val == Nil.GetNil()), values);
+            => ApplyUnaryOperator(val => new PrimitiveDatum<bool>(val == Nil.GetNil()), values);
         #endregion
 
         #region Helpers
@@ -115,7 +115,7 @@ namespace RainLisp.Evaluation
             for (int i = 1; i < values.Length; i++)
                 accumulator = calculate(accumulator, transform(values[i]));
 
-            return new PrimitiveDatum(accumulator);
+            return new PrimitiveDatum<T>(accumulator);
         }
 
         private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, CalculateBinary<T> calculate, EvaluationResult[]? values)
@@ -142,36 +142,43 @@ namespace RainLisp.Evaluation
             return calculate(values[0]);
         }
 
-        private static double AsDouble(EvaluationResult value) => AsPrimitive<double>(value);
+        private static double AsDouble(EvaluationResult value)
+        {
+            if (value is PrimitiveDatum<double> datum)
+                return datum.Value;
+            else
+                throw new WrongTypeOfArgumentException(value.GetType(), typeof(PrimitiveDatum<double>));
+        }
 
         private static bool AsBool(EvaluationResult value)
         {
             // All values are true except for false.
-            if (value is PrimitiveDatum primitiveDatum && primitiveDatum.Value is bool boolValue && !boolValue)
+            if (value is PrimitiveDatum<bool> primitiveDatum && !primitiveDatum.Value)
                 return false;
 
             return true;
         }
 
-        private static Pair AsPair(EvaluationResult value) => As<Pair>(value);
-
-        private static T AsPrimitive<T>(EvaluationResult value) where T : struct
+        private static Pair AsPair(EvaluationResult value)
         {
-            if (value is PrimitiveDatum datum)
-                return As<T>(datum.Value);
-            else
-                throw new WrongTypeOfArgumentException(value.GetType(), typeof(T));
+            if (value is Pair pair)
+                return pair;
+
+            throw new WrongTypeOfArgumentException(value.GetType(), typeof(Pair));
         }
 
-        private static T As<T>(object value)
+        private static object AsAnyPrimitive(EvaluationResult value)
         {
-            if (value is T valueAsT)
-                return valueAsT;
+            if (value is PrimitiveDatum<double> numberDatum)
+                return numberDatum.Value;
 
-            if (value is PrimitiveDatum datum)
-                throw new WrongTypeOfArgumentException(datum.Value.GetType(), typeof(T));
+            else if (value is PrimitiveDatum<bool> boolDatum)
+                return boolDatum.Value;
 
-            throw new WrongTypeOfArgumentException(value.GetType(), typeof(T));
+            else if (value is PrimitiveDatum<string> stringDatum)
+                return stringDatum.Value;
+
+            throw new WrongTypeOfArgumentException(value.GetType(), typeof(PrimitiveDatum<object>));
         }
 
         private static EvaluationResult ApplyFoldRightOperator(CalculateMultiple<EvaluationResult> foldOperator, EvaluationResult initial, EvaluationResult[] values, int valueIndex = 0)
