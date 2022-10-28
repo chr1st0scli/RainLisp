@@ -73,7 +73,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (double)((PrimitiveDatum)result).Value);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -188,7 +188,62 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (bool)((PrimitiveDatum)result).Value);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
+        }
+
+        [Theory]
+        [InlineData("(car l)", 3d)]
+        [InlineData("(cadr l)", 2d)]
+        [InlineData("(caddr l)", 1d)]
+        public void Evaluate_FunctionArguments_FromLeftToRight(string expression, double expectedResult)
+        {
+            // Arrange
+            string program = $@"
+(define (foo a b c) true)
+
+(define l nil)
+
+(foo (set! l (cons 1 l))
+     (set! l (cons 2 l))
+     (set! l (cons 3 l)))
+{expression}";
+
+            // Act
+            var result = _interpreter.Evaluate(program);
+
+            // Assert
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
+        }
+
+        [Theory]
+        [InlineData("(define a 1)")]
+        [InlineData("(define (foo) 1)")]
+        [InlineData("(define (foo x) x)")]
+        [InlineData("(define a 0) (set! a 2)")]
+        [InlineData("(define a 0) (set! a (lambda () true))")]
+        [InlineData("(if false 1)")]    // If with no alternative to enter.
+        public void Evaluate_ExpressionWithNothingToReturn_GivesUnspecified(string expression)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.IsType<Unspecified>(result);
+            Assert.Equal(Unspecified.GetUnspecified(), result);
+        }
+
+        [Theory]
+        [InlineData("(list)")]  // TODO, add quote alternatives.
+        public void Evaluate_EmptyList_ReturnsNil(string expression)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.IsType<Nil>(result);
+            Assert.Equal(Nil.GetNil(), result);
         }
 
         [Theory]
@@ -216,7 +271,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (double)((PrimitiveDatum)result).Value);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -244,7 +299,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (double)((PrimitiveDatum)result).Value);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
         }
 
         [Theory]
@@ -274,7 +329,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, (double)((PrimitiveDatum)result).Value);
+            Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
         }
 
         [Fact]
@@ -300,16 +355,16 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(16d, (double)((PrimitiveDatum)result).Value);
+            Assert.Equal(16d, ((PrimitiveDatum)result).Value);
         }
 
         [Theory]
-        [InlineData(1, 1, false)]
-        [InlineData(2, 2, false)]
-        [InlineData(4, 4, false)]
-        [InlineData(6, 6, false)]
-        [InlineData(7, 6, true)] // Execute all 6 calls to shouldProceed?
-        public void Evaluate_AndOperands_CorrectNumberOfTimes(int firstCallToReturnFalse, int expectedCallCount, bool expectedResult)
+        [InlineData(1, 1d, false)]
+        [InlineData(2, 2d, false)]
+        [InlineData(4, 4d, false)]
+        [InlineData(6, 6d, false)]
+        [InlineData(7, 6d, true)] // Execute all 6 calls to shouldProceed?
+        public void Evaluate_AndOperands_CorrectNumberOfTimes(int firstCallToReturnFalse, double expectedCallCount, bool expectedResult)
         {
             // Arrange
             string expression = $@"
@@ -333,16 +388,16 @@ namespace RainLispTests
 
             // Assert
             Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
-            Assert.Equal(expectedCallCount, (double)((PrimitiveDatum)callCountResult).Value);
+            Assert.Equal(expectedCallCount, ((PrimitiveDatum)callCountResult).Value);
         }
 
         [Theory]
-        [InlineData(1, 1, true)]
-        [InlineData(2, 2, true)]
-        [InlineData(4, 4, true)]
-        [InlineData(6, 6, true)]
-        [InlineData(7, 6, false)] // Execute all 6 calls to shouldProceed?
-        public void Evaluate_OrOperands_CorrectNumberOfTimes(int firstCallToReturnTrue, int expectedCallCount, bool expectedResult)
+        [InlineData(1, 1d, true)]
+        [InlineData(2, 2d, true)]
+        [InlineData(4, 4d, true)]
+        [InlineData(6, 6d, true)]
+        [InlineData(7, 6d, false)] // Execute all 6 calls to shouldProceed?
+        public void Evaluate_OrOperands_CorrectNumberOfTimes(int firstCallToReturnTrue, double expectedCallCount, bool expectedResult)
         {
             // Arrange
             string expression = $@"
@@ -366,7 +421,7 @@ namespace RainLispTests
 
             // Assert
             Assert.Equal(expectedResult, ((PrimitiveDatum)result).Value);
-            Assert.Equal(expectedCallCount, (double)((PrimitiveDatum)callCountResult).Value);
+            Assert.Equal(expectedCallCount, ((PrimitiveDatum)callCountResult).Value);
         }
 
         [Theory]
