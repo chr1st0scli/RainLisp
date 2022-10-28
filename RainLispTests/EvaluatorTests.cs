@@ -141,6 +141,8 @@ namespace RainLispTests
         [InlineData("(< 3 2)", false)]
         [InlineData("(<= 3 2)", false)]
         [InlineData("(= 21 21)", true)]
+        [InlineData("(= 21.56 21.56)", true)]
+        [InlineData("(= 21.56 21.57)", false)]
         [InlineData("(= 32 23)", false)]
         [InlineData("(= true true)", true)]
         [InlineData("(= false false)", true)]
@@ -754,9 +756,13 @@ namespace RainLispTests
         [InlineData("(<= - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
         // =
         [InlineData("(= nil nil)", typeof(IPrimitiveDatum), typeof(Nil))]
+        [InlineData("(= 12 nil)", typeof(IPrimitiveDatum), typeof(Nil))]
         [InlineData("(= (cons 1 2) (cons 3 4))", typeof(IPrimitiveDatum), typeof(Pair))]
+        [InlineData("(= (cons 1 2) 12)", typeof(IPrimitiveDatum), typeof(Pair))]
         [InlineData("(= (lambda(x) x) (lambda(x) x))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
+        [InlineData("(= 14 (lambda(x) x))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
         [InlineData("(= - -)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
+        [InlineData("(= - 14)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
         // car
         [InlineData("(car \"hi\")", typeof(Pair), typeof(PrimitiveDatum<string>))]
         [InlineData("(car 1)", typeof(Pair), typeof(PrimitiveDatum<double>))]
