@@ -97,17 +97,15 @@ namespace RainLisp.Evaluation
         #endregion
 
         #region Helpers
-        [return: NotNull]
         private delegate T Transform<T>(EvaluationResult value);
 
-        [return: NotNull]
         private delegate T CalculateMultiple<T>(T value1, T value2);
 
         private delegate EvaluationResult CalculateBinary<T>(T value1, T value2);
 
         private delegate EvaluationResult CalculateUnary<T>(T value);
 
-        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, EvaluationResult[]? values)
+        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, EvaluationResult[]? values) where T : notnull
         {
             Require(values, 2, true);
 
