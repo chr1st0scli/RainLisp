@@ -753,10 +753,10 @@ namespace RainLispTests
         [InlineData("(<= (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
         [InlineData("(<= - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
         // =
-        [InlineData("(= nil nil)", typeof(PrimitiveDatum<object>), typeof(Nil))]
-        [InlineData("(= (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<object>), typeof(Pair))]
-        [InlineData("(= (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<object>), typeof(UserProcedure))]
-        [InlineData("(= - -)", typeof(PrimitiveDatum<object>), typeof(PrimitiveProcedure))]
+        [InlineData("(= nil nil)", typeof(IPrimitiveDatum), typeof(Nil))]
+        [InlineData("(= (cons 1 2) (cons 3 4))", typeof(IPrimitiveDatum), typeof(Pair))]
+        [InlineData("(= (lambda(x) x) (lambda(x) x))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
+        [InlineData("(= - -)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
         // car
         [InlineData("(car \"hi\")", typeof(Pair), typeof(PrimitiveDatum<string>))]
         [InlineData("(car 1)", typeof(Pair), typeof(PrimitiveDatum<double>))]

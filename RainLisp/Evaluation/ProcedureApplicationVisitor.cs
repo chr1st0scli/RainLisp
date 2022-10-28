@@ -169,16 +169,10 @@ namespace RainLisp.Evaluation
 
         private static object AsAnyPrimitive(EvaluationResult value)
         {
-            if (value is PrimitiveDatum<double> numberDatum)
-                return numberDatum.Value;
+            if (value is IPrimitiveDatum primitiveDatum)
+                return primitiveDatum.GetValueAsObject();
 
-            else if (value is PrimitiveDatum<bool> boolDatum)
-                return boolDatum.Value;
-
-            else if (value is PrimitiveDatum<string> stringDatum)
-                return stringDatum.Value;
-
-            throw new WrongTypeOfArgumentException(value.GetType(), typeof(PrimitiveDatum<object>));
+            throw new WrongTypeOfArgumentException(value.GetType(), typeof(IPrimitiveDatum));
         }
 
         private static EvaluationResult ApplyFoldRightOperator(CalculateMultiple<EvaluationResult> foldOperator, EvaluationResult initial, EvaluationResult[] values, int valueIndex = 0)
