@@ -8,8 +8,8 @@
             Second = second;
         }
 
-        public EvaluationResult First { get; init; }
+        public EvaluationResult First { get; set; }
 
-        public EvaluationResult Second { get; init; }
+        public EvaluationResult Second { get; set; }
     }
 }

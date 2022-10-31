@@ -20,5 +20,7 @@
         public const string NIL = "nil";
         public const string LIST = "list";
         public const string IS_NULL = "null?";
+        public const string SET_CAR = "set-car!";
+        public const string SET_CDR = "set-cdr!";
     }
 }

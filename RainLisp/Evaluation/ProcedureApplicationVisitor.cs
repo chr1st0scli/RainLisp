@@ -34,6 +34,8 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.Cdr => Cdr(evaluatedArguments),
                 PrimitiveProcedureType.List => List(evaluatedArguments),
                 PrimitiveProcedureType.IsNull => IsNull(evaluatedArguments),
+                PrimitiveProcedureType.SetCar => SetCar(evaluatedArguments),
+                PrimitiveProcedureType.SetCdr => SetCdr(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
@@ -67,7 +69,7 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator(AsDouble, (val1, val2) => new PrimitiveDatum<bool>(val1 <= val2), values);
 
         private static EvaluationResult EqualTo(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsAnyPrimitive, (val1, val2) => new PrimitiveDatum<bool>(val1.Equals(val2)), values);
+            => ApplyBinaryOperator(AsAnyPrimitive, (object val1, object val2) => new PrimitiveDatum<bool>(val1.Equals(val2)), values);
 
         private static EvaluationResult LogicalXor(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, values);
@@ -94,6 +96,20 @@ namespace RainLisp.Evaluation
 
         private static EvaluationResult IsNull(EvaluationResult[]? values)
             => ApplyUnaryOperator(val => new PrimitiveDatum<bool>(val == Nil.GetNil()), values);
+
+        private static EvaluationResult SetCar(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsPair, (Pair val1, EvaluationResult val2) =>
+            {
+                val1.First = val2;
+                return Unspecified.GetUnspecified();
+            }, values);
+
+        private static EvaluationResult SetCdr(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsPair, (Pair val1, EvaluationResult val2) =>
+            {
+                val1.Second = val2;
+                return Unspecified.GetUnspecified();
+            }, values);
         #endregion
 
         #region Helpers
@@ -102,6 +118,8 @@ namespace RainLisp.Evaluation
         private delegate T CalculateMultiple<T>(T value1, T value2);
 
         private delegate EvaluationResult CalculateBinary<T>(T value1, T value2);
+
+        private delegate EvaluationResult CalculateBinaryWithResult<T>(T value1, EvaluationResult value2);
 
         private delegate EvaluationResult CalculateUnary<T>(T value);
 
@@ -120,6 +138,12 @@ namespace RainLisp.Evaluation
         {
             Require(values, 2);
             return calculate(transform(values[0]), transform(values[1]));
+        }
+
+        private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, CalculateBinaryWithResult<T> calculate, EvaluationResult[]? values)
+        {
+            Require(values, 2);
+            return calculate(transform(values[0]), values[1]);
         }
 
         private static EvaluationResult ApplyBinaryOperator(CalculateBinary<EvaluationResult> calculate, EvaluationResult[]? values)
