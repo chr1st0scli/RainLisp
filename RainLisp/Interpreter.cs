@@ -100,6 +100,8 @@ namespace RainLisp
             environment.DefineIdentifier(CDR, new PrimitiveProcedure(PrimitiveProcedureType.Cdr));
             environment.DefineIdentifier(LIST, new PrimitiveProcedure(PrimitiveProcedureType.List));
             environment.DefineIdentifier(IS_NULL, new PrimitiveProcedure(PrimitiveProcedureType.IsNull));
+            environment.DefineIdentifier(SET_CAR, new PrimitiveProcedure(PrimitiveProcedureType.SetCar));
+            environment.DefineIdentifier(SET_CDR, new PrimitiveProcedure(PrimitiveProcedureType.SetCdr));
 
             environment.DefineIdentifier(NIL, Nil.GetNil());
 

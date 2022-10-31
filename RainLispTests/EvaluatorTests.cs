@@ -246,6 +246,8 @@ namespace RainLispTests
         [InlineData("(define a 0) (set! a 2)")]
         [InlineData("(define a 0) (set! a (lambda () true))")]
         [InlineData("(if false 1)")]    // If with no alternative to enter.
+        [InlineData("(set-car! (cons 1 2) 0)")]
+        [InlineData("(set-cdr! (cons 1 2) 0)")]
         public void Evaluate_ExpressionWithNothingToReturn_GivesUnspecified(string expression)
         {
             // Arrange
@@ -516,6 +518,17 @@ namespace RainLispTests
         [InlineData("(car (cdr (cdr (list 1 2 3 4))))", 3d)]
         [InlineData("(car (cdr (cdr (cdr (list 1 2 3 4)))))", 4d)]
         [InlineData("(car (list 1))", 1d)]
+        [InlineData("(define x (cons 1 2)) (set-car! x 3) (car x)", 3d)]
+        [InlineData("(define x (cons 1 2)) (set-car! x 3) (cdr x)", 2d)]
+        [InlineData("(define x (cons 1 2)) (set-cdr! x 3) (car x)", 1d)]
+        [InlineData("(define x (cons 1 2)) (set-cdr! x 3) (cdr x)", 3d)]
+        [InlineData("(define x (list 1 2)) (set-car! x 3) (car x)", 3d)]
+        [InlineData("(define x (list 1 2)) (set-car! x 3) (cadr x)", 2d)]
+        [InlineData("(define x (list 1 2)) (set-cdr! x 3) (car x)", 1d)]
+        [InlineData("(define x (list 1 2)) (set-cdr! x 3) (cdr x)", 3d)]
+        [InlineData("(define x (list 1 2)) (set-cdr! x (list 3 4)) (car x)", 1d)]
+        [InlineData("(define x (list 1 2)) (set-cdr! x (list 3 4)) (cadr x)", 3d)]
+        [InlineData("(define x (list 1 2)) (set-cdr! x (list 3 4)) (caddr x)", 4d)]
         public void Evaluate_ListReturningNumber_Correctly(string expression, double expectedResult)
         {
             // Arrange
@@ -595,6 +608,17 @@ namespace RainLispTests
         [InlineData("(caddr (list 1 2 3 4 5))", 3d)]
         [InlineData("(car (cdddr (list 1 2 3 4 5)))", 4d)]
         [InlineData("(cadddr (list 1 2 3 4 5))", 4d)]
+        [InlineData("(car (append (list 1 2) (list 3 4)))", 1d)]
+        [InlineData("(cadr (append (list 1 2) (list 3 4)))", 2d)]
+        [InlineData("(caddr (append (list 1 2) (list 3 4)))", 3d)]
+        [InlineData("(cadddr (append (list 1 2) (list 3 4)))", 4d)]
+        [InlineData("(length (append (list 1 2) nil))", 2d)]
+        [InlineData("(length (append nil (list 3 4 5)))", 3d)]
+        [InlineData("(length (append nil nil))", 0d)]
+        [InlineData("(length (list))", 0d)]
+        [InlineData("(length nil)", 0d)]
+        [InlineData("(length (list 1 2 3))", 3d)]
+        [InlineData("(length (cons 1 (cons 2 nil)))", 2d)]
         public void Evaluate_LibraryFunctions_Correctly(string expression, double expectedResult)
         {
             // Arrange

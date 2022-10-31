@@ -18,6 +18,8 @@
         Car,
         Cdr,
         List,
-        IsNull
+        IsNull,
+        SetCar,
+        SetCdr
     }
 }
