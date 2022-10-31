@@ -595,6 +595,16 @@ namespace RainLispTests
         [InlineData("(caddr (list 1 2 3 4 5))", 3d)]
         [InlineData("(car (cdddr (list 1 2 3 4 5)))", 4d)]
         [InlineData("(cadddr (list 1 2 3 4 5))", 4d)]
+        [InlineData("(car (append (list 1 2) (list 3 4)))", 1d)]
+        [InlineData("(cadr (append (list 1 2) (list 3 4)))", 2d)]
+        [InlineData("(caddr (append (list 1 2) (list 3 4)))", 3d)]
+        [InlineData("(cadddr (append (list 1 2) (list 3 4)))", 4d)]
+        [InlineData("(length (append (list 1 2) nil))", 2d)]
+        [InlineData("(length (append nil (list 3 4 5)))", 3d)]
+        [InlineData("(length (list))", 0d)]
+        [InlineData("(length nil)", 0d)]
+        [InlineData("(length (list 1 2 3))", 3d)]
+        [InlineData("(length (cons 1 (cons 2 nil)))", 2d)]
         public void Evaluate_LibraryFunctions_Correctly(string expression, double expectedResult)
         {
             // Arrange
