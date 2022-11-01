@@ -8,5 +8,8 @@
         public T Value { get; init; }
 
         public object GetValueAsObject() => Value;
+
+        public override string? ToString()
+            => Value.ToString();
     }
 }

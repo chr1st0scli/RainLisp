@@ -13,5 +13,8 @@
             nil ??= new Nil();
             return nil;
         }
+
+        public override string? ToString()
+            => "()";
     }
 }

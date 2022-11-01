@@ -13,5 +13,8 @@
             unspecified ??= new Unspecified();
             return unspecified;
         }
+
+        public override string? ToString()
+            => string.Empty;
     }
 }

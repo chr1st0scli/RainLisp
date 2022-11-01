@@ -9,5 +9,8 @@
 
         public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluatorVisitor evaluatorVisitor)
             => visitor.ApplyPrimitiveProcedure(this, evaluatedArguments);
+
+        public override string? ToString()
+            => $"{nameof(PrimitiveProcedure)}, {nameof(ProcedureType)}: {ProcedureType}";
     }
 }
