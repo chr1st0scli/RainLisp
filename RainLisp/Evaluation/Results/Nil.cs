@@ -14,7 +14,7 @@
             return nil;
         }
 
-        public override TResult AcceptVisitor<TResult>(IEvaluationResultVisitor<TResult> visitor)
+        public override T AcceptVisitor<T>(IEvaluationResultVisitor<T> visitor)
             => visitor.VisitNil(this);
     }
 }

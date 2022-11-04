@@ -14,7 +14,7 @@
             return unspecified;
         }
 
-        public override TResult AcceptVisitor<TResult>(IEvaluationResultVisitor<TResult> visitor)
+        public override T AcceptVisitor<T>(IEvaluationResultVisitor<T> visitor)
             => visitor.VisitUnspecified(this);
     }
 }
