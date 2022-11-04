@@ -20,7 +20,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Theory]
@@ -33,7 +33,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<bool>)result).Value);
+            Assert.Equal(expectedResult, ((BoolDatum)result).Value);
         }
 
         [Theory]
@@ -48,7 +48,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<string>)result).Value);
+            Assert.Equal(expectedResult, ((StringDatum)result).Value);
         }
 
         [Theory]
@@ -95,7 +95,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Theory]
@@ -126,7 +126,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, Math.Round(((PrimitiveDatum<double>)result).Value, 2, MidpointRounding.AwayFromZero));
+            Assert.Equal(expectedResult, Math.Round(((NumberDatum)result).Value, 2, MidpointRounding.AwayFromZero));
         }
 
         [Theory]
@@ -212,7 +212,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<bool>)result).Value);
+            Assert.Equal(expectedResult, ((BoolDatum)result).Value);
         }
 
         [Theory]
@@ -236,7 +236,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(program);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Theory]
@@ -297,7 +297,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Theory]
@@ -325,7 +325,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Theory]
@@ -355,7 +355,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Fact]
@@ -381,7 +381,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(16d, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(16d, ((NumberDatum)result).Value);
         }
 
         [Theory]
@@ -413,8 +413,8 @@ namespace RainLispTests
             var callCountResult = _interpreter.Evaluate("callCount", ref environment);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<bool>)result).Value);
-            Assert.Equal(expectedCallCount, ((PrimitiveDatum<double>)callCountResult).Value);
+            Assert.Equal(expectedResult, ((BoolDatum)result).Value);
+            Assert.Equal(expectedCallCount, ((NumberDatum)callCountResult).Value);
         }
 
         [Theory]
@@ -446,8 +446,8 @@ namespace RainLispTests
             var callCountResult = _interpreter.Evaluate("callCount", ref environment);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<bool>)result).Value);
-            Assert.Equal(expectedCallCount, ((PrimitiveDatum<double>)callCountResult).Value);
+            Assert.Equal(expectedResult, ((BoolDatum)result).Value);
+            Assert.Equal(expectedCallCount, ((NumberDatum)callCountResult).Value);
         }
 
         [Theory]
@@ -470,7 +470,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Theory]
@@ -494,7 +494,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<bool>)result).Value);
+            Assert.Equal(expectedResult, ((BoolDatum)result).Value);
         }
 
         [Theory]
@@ -536,7 +536,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Theory]
@@ -558,7 +558,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<bool>)result).Value);
+            Assert.Equal(expectedResult, ((BoolDatum)result).Value);
         }
 
         [Theory]
@@ -571,7 +571,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<string>)result).Value);
+            Assert.Equal(expectedResult, ((StringDatum)result).Value);
         }
 
         [Theory]
@@ -626,7 +626,7 @@ namespace RainLispTests
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((PrimitiveDatum<double>)result).Value);
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Theory]
@@ -689,95 +689,95 @@ namespace RainLispTests
 
         [Theory]
         // +
-        [InlineData("(+ \"hi\" 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(+ 1 \"hi\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(+ \"hi\" \"there\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))] // maybe we should be able to concat strings like that.
-        [InlineData("(+ 1 false)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(+ true 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(+ nil nil)", typeof(PrimitiveDatum<double>), typeof(Nil))]
-        [InlineData("(+ (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<double>), typeof(Pair))]
-        [InlineData("(+ (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
-        [InlineData("(+ - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
+        [InlineData("(+ \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(+ 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(+ \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))] // maybe we should be able to concat strings like that.
+        [InlineData("(+ 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(+ true 1)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(+ nil nil)", typeof(NumberDatum), typeof(Nil))]
+        [InlineData("(+ (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(+ (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
+        [InlineData("(+ - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
         // -
-        [InlineData("(- \"hi\" 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(- 1 \"hi\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(- \"hi\" \"there\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(- 1 false)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(- true 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(- nil nil)", typeof(PrimitiveDatum<double>), typeof(Nil))]
-        [InlineData("(- (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<double>), typeof(Pair))]
-        [InlineData("(- (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
-        [InlineData("(- - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
+        [InlineData("(- \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(- 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(- \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(- 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(- true 1)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(- nil nil)", typeof(NumberDatum), typeof(Nil))]
+        [InlineData("(- (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(- (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
+        [InlineData("(- - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
         // *
-        [InlineData("(* \"hi\" 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(* 1 \"hi\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(* \"hi\" \"there\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(* 1 false)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(* true 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(* nil nil)", typeof(PrimitiveDatum<double>), typeof(Nil))]
-        [InlineData("(* (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<double>), typeof(Pair))]
-        [InlineData("(* (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
-        [InlineData("(* - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
+        [InlineData("(* \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(* 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(* \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(* 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(* true 1)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(* nil nil)", typeof(NumberDatum), typeof(Nil))]
+        [InlineData("(* (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(* (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
+        [InlineData("(* - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
         // /
-        [InlineData("(/ \"hi\" 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(/ 1 \"hi\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(/ \"hi\" \"there\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(/ 1 false)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(/ true 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(/ nil nil)", typeof(PrimitiveDatum<double>), typeof(Nil))]
-        [InlineData("(/ (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<double>), typeof(Pair))]
-        [InlineData("(/ (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
-        [InlineData("(/ - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
+        [InlineData("(/ \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(/ 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(/ \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(/ 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(/ true 1)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(/ nil nil)", typeof(NumberDatum), typeof(Nil))]
+        [InlineData("(/ (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(/ (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
+        [InlineData("(/ - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
         // %
-        [InlineData("(% \"hi\" 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(% 1 \"hi\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(% \"hi\" \"there\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(% 1 false)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(% true 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(% nil nil)", typeof(PrimitiveDatum<double>), typeof(Nil))]
-        [InlineData("(% (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<double>), typeof(Pair))]
-        [InlineData("(% (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
-        [InlineData("(% - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
+        [InlineData("(% \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(% 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(% \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(% 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(% true 1)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(% nil nil)", typeof(NumberDatum), typeof(Nil))]
+        [InlineData("(% (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(% (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
+        [InlineData("(% - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
         // >
-        [InlineData("(> \"hi\" 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(> 1 \"hi\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(> \"hi\" \"there\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(> 1 false)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(> true 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(> nil nil)", typeof(PrimitiveDatum<double>), typeof(Nil))]
-        [InlineData("(> (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<double>), typeof(Pair))]
-        [InlineData("(> (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
-        [InlineData("(> - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
+        [InlineData("(> \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(> 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(> \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(> 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(> true 1)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(> nil nil)", typeof(NumberDatum), typeof(Nil))]
+        [InlineData("(> (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(> (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
+        [InlineData("(> - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
         // >=
-        [InlineData("(>= \"hi\" 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(>= 1 \"hi\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(>= \"hi\" \"there\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(>= 1 false)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(>= true 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(>= nil nil)", typeof(PrimitiveDatum<double>), typeof(Nil))]
-        [InlineData("(>= (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<double>), typeof(Pair))]
-        [InlineData("(>= (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
-        [InlineData("(>= - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
+        [InlineData("(>= \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(>= 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(>= \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(>= 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(>= true 1)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(>= nil nil)", typeof(NumberDatum), typeof(Nil))]
+        [InlineData("(>= (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(>= (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
+        [InlineData("(>= - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
         // <
-        [InlineData("(< \"hi\" 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(< 1 \"hi\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(< \"hi\" \"there\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(< 1 false)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(< true 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(< nil nil)", typeof(PrimitiveDatum<double>), typeof(Nil))]
-        [InlineData("(< (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<double>), typeof(Pair))]
-        [InlineData("(< (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
-        [InlineData("(< - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
+        [InlineData("(< \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(< 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(< \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(< 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(< true 1)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(< nil nil)", typeof(NumberDatum), typeof(Nil))]
+        [InlineData("(< (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(< (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
+        [InlineData("(< - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
         // <=
-        [InlineData("(<= \"hi\" 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(<= 1 \"hi\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(<= \"hi\" \"there\")", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<string>))]
-        [InlineData("(<= 1 false)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(<= true 1)", typeof(PrimitiveDatum<double>), typeof(PrimitiveDatum<bool>))]
-        [InlineData("(<= nil nil)", typeof(PrimitiveDatum<double>), typeof(Nil))]
-        [InlineData("(<= (cons 1 2) (cons 3 4))", typeof(PrimitiveDatum<double>), typeof(Pair))]
-        [InlineData("(<= (lambda(x) x) (lambda(x) x))", typeof(PrimitiveDatum<double>), typeof(UserProcedure))]
-        [InlineData("(<= - -)", typeof(PrimitiveDatum<double>), typeof(PrimitiveProcedure))]
+        [InlineData("(<= \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(<= 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(<= \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(<= 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(<= true 1)", typeof(NumberDatum), typeof(BoolDatum))]
+        [InlineData("(<= nil nil)", typeof(NumberDatum), typeof(Nil))]
+        [InlineData("(<= (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(<= (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
+        [InlineData("(<= - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
         // =
         [InlineData("(= nil nil)", typeof(IPrimitiveDatum), typeof(Nil))]
         [InlineData("(= 12 nil)", typeof(IPrimitiveDatum), typeof(Nil))]
@@ -788,16 +788,16 @@ namespace RainLispTests
         [InlineData("(= - -)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
         [InlineData("(= - 14)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
         // car
-        [InlineData("(car \"hi\")", typeof(Pair), typeof(PrimitiveDatum<string>))]
-        [InlineData("(car 1)", typeof(Pair), typeof(PrimitiveDatum<double>))]
-        [InlineData("(car true)", typeof(Pair), typeof(PrimitiveDatum<bool>))]
+        [InlineData("(car \"hi\")", typeof(Pair), typeof(StringDatum))]
+        [InlineData("(car 1)", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("(car true)", typeof(Pair), typeof(BoolDatum))]
         [InlineData("(car nil)", typeof(Pair), typeof(Nil))]
         [InlineData("(car (lambda(x) x))", typeof(Pair), typeof(UserProcedure))]
         [InlineData("(car -)", typeof(Pair), typeof(PrimitiveProcedure))]
         // cdr
-        [InlineData("(cdr \"hi\")", typeof(Pair), typeof(PrimitiveDatum<string>))]
-        [InlineData("(cdr 1)", typeof(Pair), typeof(PrimitiveDatum<double>))]
-        [InlineData("(cdr true)", typeof(Pair), typeof(PrimitiveDatum<bool>))]
+        [InlineData("(cdr \"hi\")", typeof(Pair), typeof(StringDatum))]
+        [InlineData("(cdr 1)", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("(cdr true)", typeof(Pair), typeof(BoolDatum))]
         [InlineData("(cdr nil)", typeof(Pair), typeof(Nil))]
         [InlineData("(cdr (lambda(x) x))", typeof(Pair), typeof(UserProcedure))]
         [InlineData("(cdr -)", typeof(Pair), typeof(PrimitiveProcedure))]

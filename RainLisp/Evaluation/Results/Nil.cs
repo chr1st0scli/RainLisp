@@ -13,5 +13,8 @@
             nil ??= new Nil();
             return nil;
         }
+
+        public override T AcceptVisitor<T>(IEvaluationResultVisitor<T> visitor)
+            => visitor.VisitNil(this);
     }
 }

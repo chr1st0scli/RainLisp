@@ -11,5 +11,8 @@
         public EvaluationResult First { get; set; }
 
         public EvaluationResult Second { get; set; }
+
+        public override T AcceptVisitor<T>(IEvaluationResultVisitor<T> visitor)
+            => visitor.VisitPair(this);
     }
 }

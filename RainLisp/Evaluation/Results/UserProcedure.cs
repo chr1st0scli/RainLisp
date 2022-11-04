@@ -17,6 +17,9 @@ namespace RainLisp.Evaluation.Results
 
         public IEvaluationEnvironment Environment { get; init; }
 
+        public override T AcceptVisitor<T>(IEvaluationResultVisitor<T> visitor)
+            => visitor.VisitUserProcedure(this);
+
         public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluatorVisitor evaluatorVisitor)
             => visitor.ApplyUserProcedure(this, evaluatedArguments, evaluatorVisitor);
     }

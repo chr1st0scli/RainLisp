@@ -1,6 +1,6 @@
 ﻿namespace RainLisp.Evaluation.Results
 {
-    public class PrimitiveDatum<T> : EvaluationResult, IPrimitiveDatum where T : notnull
+    public abstract class PrimitiveDatum<T> : EvaluationResult, IPrimitiveDatum where T : notnull
     {
         public PrimitiveDatum(T value)
             => Value = value;

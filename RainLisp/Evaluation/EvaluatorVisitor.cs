@@ -11,13 +11,13 @@ namespace RainLisp.Evaluation
             => _procedureApplicationVisitor = procedureApplicationVisitor ?? throw new ArgumentNullException(nameof(procedureApplicationVisitor));
 
         public EvaluationResult EvaluateNumberLiteral(NumberLiteral numberLiteral)
-            => new PrimitiveDatum<double>(numberLiteral.Value);
+            => new NumberDatum(numberLiteral.Value);
 
         public EvaluationResult EvaluateStringLiteral(StringLiteral stringLiteral)
-            => new PrimitiveDatum<string>(stringLiteral.Value);
+            => new StringDatum(stringLiteral.Value);
 
         public EvaluationResult EvaluateBooleanLiteral(BooleanLiteral boolLiteral)
-            => new PrimitiveDatum<bool>(boolLiteral.Value);
+            => new BoolDatum(boolLiteral.Value);
 
         public EvaluationResult EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment)
             => environment.LookupIdentifierValue(identifier.Name);
@@ -54,7 +54,7 @@ namespace RainLisp.Evaluation
             var conditionValue = ifExpression.Predicate.AcceptVisitor(this, environment);
 
             // Anything but false is true and the consequent part is evaluated.
-            if (conditionValue is not PrimitiveDatum<bool> primitiveBool || primitiveBool.Value)
+            if (conditionValue is not BoolDatum primitiveBool || primitiveBool.Value)
                 return ifExpression.Consequent.AcceptVisitor(this, environment);
 
             // Otherwise, evaluate the optional alternative part.
