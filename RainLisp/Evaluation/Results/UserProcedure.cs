@@ -26,7 +26,7 @@ namespace RainLisp.Evaluation.Results
             if (Parameters != null && Parameters.Count > 0)
                 parameters = string.Join(", ", Parameters);
 
-            return $"{nameof(UserProcedure)}, {nameof(Parameters)}: {parameters}";
+            return $"[{nameof(UserProcedure)}] {nameof(Parameters)}: {parameters}";
         }
     }
 }

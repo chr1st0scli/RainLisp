@@ -11,6 +11,6 @@
             => visitor.ApplyPrimitiveProcedure(this, evaluatedArguments);
 
         public override string? ToString()
-            => $"{nameof(PrimitiveProcedure)}, {nameof(ProcedureType)}: {ProcedureType}";
+            => $"[{nameof(PrimitiveProcedure)}] {ProcedureType}";
     }
 }
