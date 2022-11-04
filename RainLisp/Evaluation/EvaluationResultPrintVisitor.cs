@@ -1,4 +1,5 @@
 ﻿using RainLisp.Evaluation.Results;
+using System.Globalization;
 using System.Text;
 
 namespace RainLisp.Evaluation
@@ -7,7 +8,17 @@ namespace RainLisp.Evaluation
     {
         public string VisitPrimitiveDatum(IPrimitiveDatum primitiveDatum)
         {
-            return primitiveDatum.GetValueAsObject().ToString();
+            if (primitiveDatum is PrimitiveDatum<double> doublePrimitive)
+                return doublePrimitive.Value.ToString(CultureInfo.InvariantCulture);
+
+            else if (primitiveDatum is PrimitiveDatum<bool> boolPrimitive)
+                return boolPrimitive.Value.ToString().ToLower();
+
+            else if (primitiveDatum is PrimitiveDatum<string> stringPrimitive)
+                return "\"" + stringPrimitive.Value + "\"";
+
+            else
+                throw new NotImplementedException();
         }
 
         public string VisitPrimitiveProcedure(PrimitiveProcedure primitiveProcedure)
