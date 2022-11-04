@@ -1,4 +1,5 @@
 ﻿using RainLisp;
+using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
 
 namespace RainLispTests
@@ -6,6 +7,7 @@ namespace RainLispTests
     public class PrintEvaluationResultTests
     {
         private readonly Interpreter _interpreter = new();
+        private readonly IEvaluationResultVisitor<string> _printVisitor = new EvaluationResultPrintVisitor();
 
         [Theory]
         [InlineData("0", "0")]
@@ -22,10 +24,11 @@ namespace RainLispTests
             // Arrange
             // Act
             var result = _interpreter.Evaluate(expression);
+            string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
             Assert.IsAssignableFrom<IPrimitiveDatum>(result);
-            Assert.Equal(expectedResult, result.ToString());
+            Assert.Equal(expectedResult, printedResult);
         }
 
         [Theory]
@@ -53,10 +56,11 @@ namespace RainLispTests
             // Arrange
             // Act
             var result = _interpreter.Evaluate(expression);
+            string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
             Assert.IsType<PrimitiveProcedure>(result);
-            Assert.Equal(expectedResult, result.ToString());
+            Assert.Equal(expectedResult, printedResult);
         }
 
         [Theory]
@@ -70,10 +74,11 @@ namespace RainLispTests
             // Arrange
             // Act
             var result = _interpreter.Evaluate(expression);
+            string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
             Assert.IsType<UserProcedure>(result);
-            Assert.Equal(expectedResult, result.ToString());
+            Assert.Equal(expectedResult, printedResult);
         }
 
         [Fact]
@@ -82,10 +87,11 @@ namespace RainLispTests
             // Arrange
             // Act
             var result = _interpreter.Evaluate("(define a 1)");
+            string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
             Assert.IsType<Unspecified>(result);
-            Assert.Equal(string.Empty, result.ToString());
+            Assert.Equal(string.Empty, printedResult);
         }
 
         [Theory]
@@ -96,10 +102,11 @@ namespace RainLispTests
             // Arrange
             // Act
             var result = _interpreter.Evaluate(expression);
+            string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
             Assert.IsType<Nil>(result);
-            Assert.Equal(expectedResult, result.ToString());
+            Assert.Equal(expectedResult, printedResult);
         }
 
         [Theory]
@@ -131,10 +138,11 @@ namespace RainLispTests
             // Arrange
             // Act
             var result = _interpreter.Evaluate(expression);
+            string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
             Assert.IsType<Pair>(result);
-            Assert.Equal(expectedResult, result.ToString());
+            Assert.Equal(expectedResult, printedResult);
         }
 
         [Theory]
@@ -158,10 +166,11 @@ namespace RainLispTests
 
             // Act
             var result = _interpreter.Evaluate(expression);
+            string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
             Assert.IsType<Pair>(result);
-            Assert.Equal(expectedResult, result.ToString());
+            Assert.Equal(expectedResult, printedResult);
         }
 
         [Theory]
@@ -185,10 +194,11 @@ namespace RainLispTests
 
             // Act
             var result = _interpreter.Evaluate(expression);
+            string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
             Assert.IsType<Pair>(result);
-            Assert.Equal(expectedResult, result.ToString());
+            Assert.Equal(expectedResult, printedResult);
         }
     }
 }

@@ -9,7 +9,7 @@
 
         public object GetValueAsObject() => Value;
 
-        public override string? ToString()
-            => Value.ToString();
+        public override TResult AcceptVisitor<TResult>(IEvaluationResultVisitor<TResult> visitor)
+            => visitor.VisitPrimitiveDatum(this);
     }
 }

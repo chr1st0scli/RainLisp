@@ -14,7 +14,7 @@
             return nil;
         }
 
-        public override string? ToString()
-            => "()";
+        public override TResult AcceptVisitor<TResult>(IEvaluationResultVisitor<TResult> visitor)
+            => visitor.VisitNil(this);
     }
 }

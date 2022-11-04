@@ -14,7 +14,7 @@
             return unspecified;
         }
 
-        public override string? ToString()
-            => string.Empty;
+        public override TResult AcceptVisitor<TResult>(IEvaluationResultVisitor<TResult> visitor)
+            => visitor.VisitUnspecified(this);
     }
 }

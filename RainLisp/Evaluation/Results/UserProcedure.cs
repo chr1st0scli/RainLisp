@@ -17,16 +17,10 @@ namespace RainLisp.Evaluation.Results
 
         public IEvaluationEnvironment Environment { get; init; }
 
+        public override TResult AcceptVisitor<TResult>(IEvaluationResultVisitor<TResult> visitor)
+            => visitor.VisitUserProcedure(this);
+
         public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluatorVisitor evaluatorVisitor)
             => visitor.ApplyUserProcedure(this, evaluatedArguments, evaluatorVisitor);
-
-        public override string? ToString()
-        {
-            string parameters = "0";
-            if (Parameters != null && Parameters.Count > 0)
-                parameters = string.Join(", ", Parameters);
-
-            return $"[{nameof(UserProcedure)}] {nameof(Parameters)}: {parameters}";
-        }
     }
 }
