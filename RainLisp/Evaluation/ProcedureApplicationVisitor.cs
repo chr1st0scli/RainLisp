@@ -115,7 +115,7 @@ namespace RainLisp.Evaluation
         #region Helpers
         private delegate T Transform<T>(EvaluationResult value);
 
-        private delegate EvaluationResult TransformToEvaluationResult<T>(T value);
+        private delegate EvaluationResult TransformBack<T>(T value);
 
         private delegate T CalculateMultiple<T>(T value1, T value2);
 
@@ -125,7 +125,7 @@ namespace RainLisp.Evaluation
 
         private delegate EvaluationResult CalculateUnary<T>(T value);
 
-        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, EvaluationResult[]? values, TransformToEvaluationResult<T> resultTransform) where T : notnull
+        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, EvaluationResult[]? values, TransformBack<T> resultTransform) where T : notnull
         {
             Require(values, 2, true);
 
@@ -177,7 +177,7 @@ namespace RainLisp.Evaluation
         private static bool AsBool(EvaluationResult value)
         {
             // All values are true except for false.
-            if (value is BoolDatum primitiveDatum && !primitiveDatum.Value)
+            if (value is BoolDatum datum && !datum.Value)
                 return false;
 
             return true;

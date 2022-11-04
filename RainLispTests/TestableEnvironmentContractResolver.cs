@@ -9,7 +9,7 @@ namespace RainLispTests
     {
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
-            string valuePropName = nameof(PrimitiveDatum<int>.Value);
+            string valuePropName = nameof(PrimitiveDatum<bool>.Value);
             var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
             var props = type.GetProperties(flags)
