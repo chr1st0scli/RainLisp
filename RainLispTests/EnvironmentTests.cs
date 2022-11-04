@@ -29,7 +29,7 @@ namespace RainLispTests
             // Serialize the global environment's private fields in JSON to compare its internal structure.
             var jsonSerializer = new JsonSerializer
             {
-                ContractResolver = new PrivateFieldsContractResolver(),
+                ContractResolver = new TestableEnvironmentContractResolver(),
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 Formatting = Formatting.Indented,
                 NullValueHandling = NullValueHandling.Ignore,

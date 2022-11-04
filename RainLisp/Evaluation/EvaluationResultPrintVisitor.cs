@@ -6,19 +6,19 @@ namespace RainLisp.Evaluation
 {
     public class EvaluationResultPrintVisitor : IEvaluationResultVisitor<string>
     {
-        public string VisitPrimitiveDatum(IPrimitiveDatum primitiveDatum)
+        public string VisitNumberDatum(NumberDatum numberDatum)
         {
-            if (primitiveDatum is PrimitiveDatum<double> doublePrimitive)
-                return doublePrimitive.Value.ToString(CultureInfo.InvariantCulture);
+            return numberDatum.Value.ToString(CultureInfo.InvariantCulture);
+        }
 
-            else if (primitiveDatum is PrimitiveDatum<bool> boolPrimitive)
-                return boolPrimitive.Value.ToString().ToLower();
+        public string VisitBoolDatum(BoolDatum boolDatum)
+        {
+            return boolDatum.Value.ToString().ToLower();
+        }
 
-            else if (primitiveDatum is PrimitiveDatum<string> stringPrimitive)
-                return "\"" + stringPrimitive.Value + "\"";
-
-            else
-                throw new NotImplementedException();
+        public string VisitStringDatum(StringDatum stringDatum)
+        {
+            return "\"" + stringDatum.Value + "\"";
         }
 
         public string VisitPrimitiveProcedure(PrimitiveProcedure primitiveProcedure)

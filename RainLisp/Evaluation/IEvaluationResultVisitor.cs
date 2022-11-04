@@ -4,7 +4,11 @@ namespace RainLisp.Evaluation
 {
     public interface IEvaluationResultVisitor<out T>
     {
-        T VisitPrimitiveDatum(IPrimitiveDatum primitiveDatum);
+        T VisitNumberDatum(NumberDatum numberDatum);
+
+        T VisitBoolDatum(BoolDatum boolDatum);
+
+        T VisitStringDatum(StringDatum stringDatum);
 
         T VisitPrimitiveProcedure(PrimitiveProcedure primitiveProcedure);
 
