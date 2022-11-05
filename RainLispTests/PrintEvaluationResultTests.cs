@@ -17,8 +17,14 @@ namespace RainLispTests
         [InlineData("213423.643243", "213423.643243")]
         [InlineData("true", "true")]
         [InlineData("false", "false")]
+        [InlineData("\"\"", "\"\"")]
         [InlineData("\"hello world\"", "\"hello world\"")]
-        [InlineData("\"hello\\nworld\"", "\"hello\nworld\"")]
+        [InlineData("\"hello\\nworld\"", "\"hello\\nworld\"")]
+        [InlineData("\"hello\\rworld\"", "\"hello\\rworld\"")]
+        [InlineData("\"hello\\r\\nworld\"", "\"hello\\r\\nworld\"")]
+        [InlineData("\"hello\\tworld\"", "\"hello\\tworld\"")]
+        [InlineData("\"hello\\\"world\"", "\"hello\\\"world\"")]
+        [InlineData("\"hello\\\\world\"", "\"hello\\\\world\"")]
         public void Evaluate_ExpressionGivingPrimitive_PrintsCorrectly(string expression, string expectedResult)
         {
             // Arrange
