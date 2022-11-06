@@ -98,8 +98,6 @@ namespace RainLisp.Evaluation
 
         public EvaluationResult EvaluateProgram(Program program, IEvaluationEnvironment environment)
         {
-            EvaluationResult result = Unspecified.GetUnspecified();
-
             // Establish all definitions in the environment.
             if (program.Definitions?.Count > 0)
             {
@@ -107,14 +105,20 @@ namespace RainLisp.Evaluation
                     EvaluateDefinition(definition, environment);
             }
 
-            // Evaluate all program expressions and then return the last result.
-            if (program.Expressions?.Count > 0)
-            {
-                foreach (var expression in program.Expressions)
-                    result = expression.AcceptVisitor(this, environment); 
-            }
+            if (program.Expressions == null || program.Expressions.Count == 0)
+                return Unspecified.GetUnspecified();
 
-            return result;
+            // If there is a single expression, evaluate it and return the result.
+            if (program.Expressions.Count == 1)
+                return program.Expressions[0].AcceptVisitor(this, environment);
+
+            // Evaluate all program expressions.
+            var programResult = new ProgramResult() { Results = new List<EvaluationResult>() };
+
+            foreach (var expression in program.Expressions)
+                programResult.Results.Add(expression.AcceptVisitor(this, environment));
+
+            return programResult;
         }
 
         private EvaluationResult EvaluateSequence(IList<Expression> expressions, IEvaluationEnvironment environment)

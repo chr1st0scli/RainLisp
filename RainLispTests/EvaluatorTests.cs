@@ -93,6 +93,7 @@ namespace RainLispTests
             // Arrange
             // Act
             var result = _interpreter.Evaluate(expression);
+            result = GetLastResult(result);
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -234,6 +235,7 @@ namespace RainLispTests
 
             // Act
             var result = _interpreter.Evaluate(program);
+            result = GetLastResult(result);
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -534,6 +536,7 @@ namespace RainLispTests
             // Arrange
             // Act
             var result = _interpreter.Evaluate(expression);
+            result = GetLastResult(result);
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -850,6 +853,13 @@ namespace RainLispTests
             Assert.IsType<TException>(exception);
 
             return exception!;
+        }
+
+        private EvaluationResult GetLastResult(EvaluationResult result)
+        {
+            if (result is ProgramResult programResult && programResult.Results?.Count > 1)
+                return programResult.Results.Last();
+            return result;
         }
     }
 }
