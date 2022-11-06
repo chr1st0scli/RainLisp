@@ -53,7 +53,7 @@ namespace RainLisp
             return _evaluator.EvaluateProgram(program, environment);
         }
 
-        public void ReadEvalPrintLoop(Func<string> read, Action<string> print)
+        public void ReadEvalPrintLoop(Func<string?> read, Action<string> print)
         {
             ArgumentNullException.ThrowIfNull(read, nameof(read));
             ArgumentNullException.ThrowIfNull(print, nameof(print));
@@ -64,7 +64,7 @@ namespace RainLisp
             {
                 try
                 {
-                    string expression = read();
+                    string? expression = read();
 
                     var tokens = _tokenizer.Tokenize(expression);
                     var programAST = _parser.Parse(tokens);
