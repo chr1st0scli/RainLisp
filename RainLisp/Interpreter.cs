@@ -12,15 +12,17 @@ namespace RainLisp
         private readonly ITokenizer _tokenizer;
         private readonly IParser _parser;
         private readonly IEvaluatorVisitor _evaluator;
+        private readonly IEvaluationResultVisitor<string> _resultPrinter;
         private readonly IEnvironmentFactory? _environmentFactory;
         private readonly bool _installLispLibraries;
 
-        public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null, IEnvironmentFactory? environmentFactory = null, bool installLispLibraries = true)
+        public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null, IEnvironmentFactory? environmentFactory = null, IEvaluationResultVisitor<string>? resultPrinter = null, bool installLispLibraries = true)
         {
             _tokenizer = tokenizer ?? new Tokenizer();
             _parser = parser ?? new Parser();
             _evaluator = evaluator ?? new EvaluatorVisitor(new ProcedureApplicationVisitor());
             _environmentFactory = environmentFactory;
+            _resultPrinter = resultPrinter ?? new EvaluationResultPrintVisitor();
             _installLispLibraries = installLispLibraries;
         }
 
@@ -68,8 +70,9 @@ namespace RainLisp
                     var programAST = _parser.Parse(tokens);
 
                     var result = _evaluator.EvaluateProgram(programAST, environment);
+                    string resultToPrint = result.AcceptVisitor(_resultPrinter);
 
-                    print(result.ToString()!);
+                    print(resultToPrint);
                 }
                 catch (Exception ex)
                 {
