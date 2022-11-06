@@ -5,7 +5,9 @@ VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RainLisp", "RainLisp\RainLisp.csproj", "{D03792CD-1531-4C4F-9BFF-F5A3DA995C68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RainLispTests", "RainLispTests\RainLispTests.csproj", "{C14530F8-F41B-4388-AEDC-179135AF2197}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RainLispTests", "RainLispTests\RainLispTests.csproj", "{C14530F8-F41B-4388-AEDC-179135AF2197}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RainLispConsole", "RainLispConsole\RainLispConsole.csproj", "{9E70E874-1D62-40F5-8EE9-F00309BC6034}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C14530F8-F41B-4388-AEDC-179135AF2197}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C14530F8-F41B-4388-AEDC-179135AF2197}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C14530F8-F41B-4388-AEDC-179135AF2197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E70E874-1D62-40F5-8EE9-F00309BC6034}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E70E874-1D62-40F5-8EE9-F00309BC6034}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E70E874-1D62-40F5-8EE9-F00309BC6034}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E70E874-1D62-40F5-8EE9-F00309BC6034}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

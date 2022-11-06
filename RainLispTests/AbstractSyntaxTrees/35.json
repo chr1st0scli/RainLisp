@@ -29,6 +29,6 @@
       "TypeName": "Definition"
     }
   ],
-  "Expressions": [],
+  "Expressions": null,
   "TypeName": "Program"
 }
