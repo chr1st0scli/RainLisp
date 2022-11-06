@@ -28,9 +28,15 @@ namespace RainLisp.Parsing
             while (!Check(TokenType.EOF))
             {
                 if (CheckNext(TokenType.Definition))
+                {
+                    program.Definitions ??= new List<Definition>();
                     program.Definitions.Add(Definition());
+                }
                 else
+                {
+                    program.Expressions ??= new List<Expression>();
                     program.Expressions.Add(Expression());
+                }
             }
 
             return program;

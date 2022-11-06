@@ -98,14 +98,21 @@ namespace RainLisp.Evaluation
 
         public EvaluationResult EvaluateProgram(Program program, IEvaluationEnvironment environment)
         {
-            // Establish all definitions in the environment.
-            foreach (var definition in program.Definitions)
-                EvaluateDefinition(definition, environment);
-
             EvaluationResult result = Unspecified.GetUnspecified();
+
+            // Establish all definitions in the environment.
+            if (program.Definitions?.Count > 0)
+            {
+                foreach (var definition in program.Definitions)
+                    EvaluateDefinition(definition, environment);
+            }
+
             // Evaluate all program expressions and then return the last result.
-            foreach (var expression in program.Expressions)
-                result = expression.AcceptVisitor(this, environment);
+            if (program.Expressions?.Count > 0)
+            {
+                foreach (var expression in program.Expressions)
+                    result = expression.AcceptVisitor(this, environment); 
+            }
 
             return result;
         }
