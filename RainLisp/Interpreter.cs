@@ -102,6 +102,10 @@ namespace RainLisp
                 {
                     print(string.Format(ErrorMessages.UNKNOWN_IDENTIFIER, ex.IdentifierName));
                 }
+                catch (UserException ex)
+                {
+                    print(string.Format(ErrorMessages.USER_ERROR, ex.Message));
+                }
                 catch (Exception ex)
                 {
                     print(ex.ToString());
@@ -133,6 +137,11 @@ namespace RainLisp
             environment.DefineIdentifier(IS_NULL, new PrimitiveProcedure(PrimitiveProcedureType.IsNull));
             environment.DefineIdentifier(SET_CAR, new PrimitiveProcedure(PrimitiveProcedureType.SetCar));
             environment.DefineIdentifier(SET_CDR, new PrimitiveProcedure(PrimitiveProcedureType.SetCdr));
+            environment.DefineIdentifier(DISPLAY, new PrimitiveProcedure(PrimitiveProcedureType.Display));
+            environment.DefineIdentifier(DEBUG, new PrimitiveProcedure(PrimitiveProcedureType.Debug));
+            environment.DefineIdentifier(TRACE, new PrimitiveProcedure(PrimitiveProcedureType.Trace));
+            environment.DefineIdentifier(NEW_LINE, new PrimitiveProcedure(PrimitiveProcedureType.NewLine));
+            environment.DefineIdentifier(ERROR, new PrimitiveProcedure(PrimitiveProcedureType.Error));
 
             environment.DefineIdentifier(NIL, Nil.GetNil());
 

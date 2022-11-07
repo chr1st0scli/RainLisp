@@ -14,7 +14,7 @@ namespace RainLisp.Evaluation
 
         public EvaluationResult ApplyPrimitiveProcedure(PrimitiveProcedure procedure, EvaluationResult[]? evaluatedArguments)
         {
-            // Dispatch to different methods based on enum instead of different procedure runtime types to avoid class explosion for primitive operations.
+            // Dispatch to different methods based on enum (data-directed style) instead of different procedure runtime types to avoid class explosion for primitive operations.
             return procedure.ProcedureType switch
             {
                 PrimitiveProcedureType.Add => Add(evaluatedArguments),
@@ -36,6 +36,11 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.IsNull => IsNull(evaluatedArguments),
                 PrimitiveProcedureType.SetCar => SetCar(evaluatedArguments),
                 PrimitiveProcedureType.SetCdr => SetCdr(evaluatedArguments),
+                PrimitiveProcedureType.Display => Display(evaluatedArguments),
+                PrimitiveProcedureType.Debug => Debug(evaluatedArguments),
+                PrimitiveProcedureType.Trace => Trace(evaluatedArguments),
+                PrimitiveProcedureType.NewLine => NewLine(evaluatedArguments),
+                PrimitiveProcedureType.Error => Error(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
@@ -110,6 +115,37 @@ namespace RainLisp.Evaluation
                 val1.Second = val2;
                 return Unspecified.GetUnspecified();
             }, values);
+
+        private static EvaluationResult Display(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsAnyPrimitive, val => 
+            {
+                Console.Write(val);
+                return Unspecified.GetUnspecified();
+            }, values);
+
+        private static EvaluationResult Debug(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsAnyPrimitive, val =>
+            {
+                System.Diagnostics.Debug.Write(val);
+                return Unspecified.GetUnspecified();
+            }, values);
+
+        private static EvaluationResult Trace(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsAnyPrimitive, val =>
+            {
+                System.Diagnostics.Trace.Write(val);
+                return Unspecified.GetUnspecified();
+            }, values);
+
+        private static EvaluationResult NewLine(EvaluationResult[]? values)
+        {
+            RequireZero(values);
+            Console.WriteLine();
+            return Unspecified.GetUnspecified();
+        }
+
+        private static EvaluationResult Error(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsAnyPrimitive, val => throw new UserException(val.ToString()), values);
         #endregion
 
         #region Helpers
@@ -222,6 +258,12 @@ namespace RainLisp.Evaluation
             }
             else if (values.Length != expected)
                 throw new WrongNumberOfArgumentsException(values.Length, expected);
+        }
+
+        private static void RequireZero(EvaluationResult[]? values)
+        {
+            if (values != null && values.Length > 0)
+                throw new WrongNumberOfArgumentsException(values.Length, 0);
         }
         #endregion
     }
