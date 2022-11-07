@@ -17,6 +17,20 @@
             OrMore = orMore;
         }
 
+        public WrongNumberOfArgumentsException(int actual, int expected, bool orMore, string? message) : base(message)
+        {
+            Actual = actual;
+            Expected = expected;
+            OrMore = orMore;
+        }
+
+        public WrongNumberOfArgumentsException(int actual, int expected, bool orMore, string? message, Exception? innerException) : base(message, innerException)
+        {
+            Actual = actual;
+            Expected = expected;
+            OrMore = orMore;
+        }
+
         public int Actual { get; init; }
 
         public int Expected { get; init; }
@@ -28,8 +42,20 @@
     {
         public WrongTypeOfArgumentException(Type actual, Type expected)
         {
-            Expected = expected;
             Actual = actual;
+            Expected = expected;
+        }
+
+        public WrongTypeOfArgumentException(Type actual, Type expected, string? message) : base(message)
+        {
+            Actual = actual;
+            Expected = expected;
+        }
+
+        public WrongTypeOfArgumentException(Type actual, Type expected, string? message, Exception? innerException) : base(message, innerException)
+        {
+            Actual = actual;
+            Expected = expected;
         }
 
         public Type Actual { get; init; }
@@ -40,6 +66,12 @@
     public class UnknownIdentifierException : Exception
     {
         public UnknownIdentifierException(string identifierName)
+            => IdentifierName = identifierName;
+
+        public UnknownIdentifierException(string identifierName, string? message) : base(message)
+            => IdentifierName = identifierName;
+
+        public UnknownIdentifierException(string identifierName, string? message, Exception? innerException) : base(message, innerException)
             => IdentifierName = identifierName;
 
         public string IdentifierName { get; init; }

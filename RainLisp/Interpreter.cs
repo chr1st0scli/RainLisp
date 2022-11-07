@@ -74,6 +74,34 @@ namespace RainLisp
 
                     print(resultToPrint);
                 }
+                catch (NonTerminatedStringException ex)
+                {
+                    print(string.Format(ErrorMessages.NON_TERMINATED_STRING, ex.Line, ex.Position));
+                }
+                catch (InvalidEscapeSequenceException ex)
+                {
+                    print(string.Format(ErrorMessages.INVALID_ESCAPE_SEQUENCE, ex.Character, ex.Line, ex.Position));
+                }
+                catch (InvalidStringCharacterException ex)
+                {
+                    print(string.Format(ErrorMessages.INVALID_STRING_CHARACTER, ex.Character, ex.Line, ex.Position));
+                }
+                catch (ParsingException ex)
+                {
+                    print(string.Format(ErrorMessages.PARSING_ERROR, ex.Line, ex.Position));
+                }
+                catch (WrongNumberOfArgumentsException ex)
+                {
+                    print(string.Format(ex.OrMore ? ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS_EXT : ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS, ex.Expected, ex.Actual));
+                }
+                catch (WrongTypeOfArgumentException ex)
+                {
+                    print(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, ex.Expected.Name, ex.Actual.Name));
+                }
+                catch (UnknownIdentifierException ex)
+                {
+                    print(string.Format(ErrorMessages.UNKNOWN_IDENTIFIER, ex.IdentifierName));
+                }
                 catch (Exception ex)
                 {
                     print(ex.ToString());
