@@ -22,5 +22,10 @@
         public const string IS_NULL = "null?";
         public const string SET_CAR = "set-car!";
         public const string SET_CDR = "set-cdr!";
+        public const string DISPLAY = "display";
+        public const string DEBUG = "debug";
+        public const string TRACE = "trace";
+        public const string NEW_LINE = "newline";
+        public const string ERROR = "error";
     }
 }

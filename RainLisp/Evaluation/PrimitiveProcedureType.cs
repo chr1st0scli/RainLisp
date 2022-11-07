@@ -20,6 +20,11 @@
         List,
         IsNull,
         SetCar,
-        SetCdr
+        SetCdr,
+        Display,
+        Debug,
+        Trace,
+        NewLine,
+        Error
     }
 }
