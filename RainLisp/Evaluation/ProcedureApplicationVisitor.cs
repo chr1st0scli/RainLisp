@@ -163,7 +163,7 @@ namespace RainLisp.Evaluation
 
         private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, EvaluationResult[]? values, TransformBack<T> resultTransform) where T : notnull
         {
-            Require(values, 2, true);
+            RequireMoreThanZero(values, 2, true);
 
             T accumulator = transform(values[0]);
             for (int i = 1; i < values.Length; i++)
@@ -174,31 +174,31 @@ namespace RainLisp.Evaluation
 
         private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, CalculateBinary<T> calculate, EvaluationResult[]? values)
         {
-            Require(values, 2);
+            RequireMoreThanZero(values, 2);
             return calculate(transform(values[0]), transform(values[1]));
         }
 
         private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, CalculateBinaryWithResult<T> calculate, EvaluationResult[]? values)
         {
-            Require(values, 2);
+            RequireMoreThanZero(values, 2);
             return calculate(transform(values[0]), values[1]);
         }
 
         private static EvaluationResult ApplyBinaryOperator(CalculateBinary<EvaluationResult> calculate, EvaluationResult[]? values)
         {
-            Require(values, 2);
+            RequireMoreThanZero(values, 2);
             return calculate(values[0], values[1]);
         }
 
         private static EvaluationResult ApplyUnaryOperator<T>(Transform<T> transform, CalculateUnary<T> calculate, EvaluationResult[]? values)
         {
-            Require(values, 1);
+            RequireMoreThanZero(values, 1);
             return calculate(transform(values[0]));
         }
 
         private static EvaluationResult ApplyUnaryOperator(CalculateUnary<EvaluationResult> calculate, EvaluationResult[]? values)
         {
-            Require(values, 1);
+            RequireMoreThanZero(values, 1);
             return calculate(values[0]);
         }
 
@@ -243,7 +243,7 @@ namespace RainLisp.Evaluation
             return foldOperator(values[valueIndex], ApplyFoldRightOperator(foldOperator, initial, values, ++valueIndex));
         }
 
-        private static void Require([NotNull] EvaluationResult[]? values, int expected, bool orMore = false)
+        private static void RequireMoreThanZero([NotNull] EvaluationResult[]? values, int expected, bool orMore = false)
         {
             if (expected <= 0)
                 throw new ArgumentOutOfRangeException(nameof(expected));
