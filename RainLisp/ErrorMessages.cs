@@ -12,6 +12,7 @@
         public const string WRONG_NUMBER_OF_ARGUMENTS_EXT = "Wrong number of arguments, expecting {0} or more but got {1}.";
         public const string WRONG_TYPE_OF_ARGUMENT = "Wrong type of argument, expecting {0} but got {1}.";
         public const string UNKNOWN_IDENTIFIER = "Unknown identifier {0}.";
+        public const string NOT_PROCEDURE = "Not a procedure.";
         public const string USER_ERROR = "User error: {0}";
     }
 }

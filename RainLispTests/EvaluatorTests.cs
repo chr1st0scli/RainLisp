@@ -250,6 +250,10 @@ namespace RainLispTests
         [InlineData("(if false 1)")]    // If with no alternative to enter.
         [InlineData("(set-car! (cons 1 2) 0)")]
         [InlineData("(set-cdr! (cons 1 2) 0)")]
+        [InlineData("(display 0)")]
+        [InlineData("(debug 0)")]
+        [InlineData("(trace 0)")]
+        [InlineData("(newline)")]
         public void Evaluate_ExpressionWithNothingToReturn_GivesUnspecified(string expression)
         {
             // Arrange
@@ -671,6 +675,22 @@ namespace RainLispTests
         [InlineData("(cdr 1 2)", 1, false, 2)]
         [InlineData("(null?)", 1, false, 0)]
         [InlineData("(null? 1 2)", 1, false, 2)]
+        [InlineData("(set-car!)", 2, false, 0)]
+        [InlineData("(set-car! (cons 1 2))", 2, false, 1)]
+        [InlineData("(set-car! (cons 1 2) 3 4)", 2, false, 3)]
+        [InlineData("(set-cdr!)", 2, false, 0)]
+        [InlineData("(set-cdr! (cons 1 2))", 2, false, 1)]
+        [InlineData("(set-cdr! (cons 1 2) 3 4)", 2, false, 3)]
+        [InlineData("(display)", 1, false, 0)]
+        [InlineData("(display 1 2)", 1, false, 2)]
+        [InlineData("(debug)", 1, false, 0)]
+        [InlineData("(debug 1 2)", 1, false, 2)]
+        [InlineData("(trace)", 1, false, 0)]
+        [InlineData("(trace 1 2)", 1, false, 2)]
+        [InlineData("(newline 1)", 0, false, 1)]
+        [InlineData("(newline 1 2)", 0, false, 2)]
+        [InlineData("(error)", 1, false, 0)]
+        [InlineData("(error 1 2)", 1, false, 2)]
         [InlineData("(define (foo) 1) (foo 1)", 0, false, 1)]
         [InlineData("(define (foo) 1) (foo 1 2)", 0, false, 2)]
         [InlineData("(define (foo x) x) (foo)", 1, false, 0)]
@@ -804,6 +824,44 @@ namespace RainLispTests
         [InlineData("(cdr nil)", typeof(Pair), typeof(Nil))]
         [InlineData("(cdr (lambda(x) x))", typeof(Pair), typeof(UserProcedure))]
         [InlineData("(cdr -)", typeof(Pair), typeof(PrimitiveProcedure))]
+        // set-car!
+        [InlineData("(set-car! \"hi\" 1)", typeof(Pair), typeof(StringDatum))]
+        [InlineData("(set-car! 1 1)", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("(set-car! true 1)", typeof(Pair), typeof(BoolDatum))]
+        [InlineData("(set-car! nil 1)", typeof(Pair), typeof(Nil))]
+        [InlineData("(set-car! (lambda(x) x) 1)", typeof(Pair), typeof(UserProcedure))]
+        [InlineData("(set-car! - 1)", typeof(Pair), typeof(PrimitiveProcedure))]
+        // set-cdr!
+        [InlineData("(set-cdr! \"hi\" 1)", typeof(Pair), typeof(StringDatum))]
+        [InlineData("(set-cdr! 1 1)", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("(set-cdr! true 1)", typeof(Pair), typeof(BoolDatum))]
+        [InlineData("(set-cdr! nil 1)", typeof(Pair), typeof(Nil))]
+        [InlineData("(set-cdr! (lambda(x) x) 1)", typeof(Pair), typeof(UserProcedure))]
+        [InlineData("(set-cdr! - 1)", typeof(Pair), typeof(PrimitiveProcedure))]
+        // display
+        [InlineData("(display nil)", typeof(IPrimitiveDatum), typeof(Nil))]
+        [InlineData("(display (cons 1 2))", typeof(IPrimitiveDatum), typeof(Pair))]
+        [InlineData("(display +)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
+        [InlineData("(display (lambda () 1))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
+        [InlineData("(display (newline))", typeof(IPrimitiveDatum), typeof(Unspecified))]
+        // debug
+        [InlineData("(debug nil)", typeof(IPrimitiveDatum), typeof(Nil))]
+        [InlineData("(debug (cons 1 2))", typeof(IPrimitiveDatum), typeof(Pair))]
+        [InlineData("(debug +)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
+        [InlineData("(debug (lambda () 1))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
+        [InlineData("(debug (newline))", typeof(IPrimitiveDatum), typeof(Unspecified))]
+        // trace
+        [InlineData("(trace nil)", typeof(IPrimitiveDatum), typeof(Nil))]
+        [InlineData("(trace (cons 1 2))", typeof(IPrimitiveDatum), typeof(Pair))]
+        [InlineData("(trace +)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
+        [InlineData("(trace (lambda () 1))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
+        [InlineData("(trace (newline))", typeof(IPrimitiveDatum), typeof(Unspecified))]
+        // error
+        [InlineData("(error nil)", typeof(IPrimitiveDatum), typeof(Nil))]
+        [InlineData("(error (cons 1 2))", typeof(IPrimitiveDatum), typeof(Pair))]
+        [InlineData("(error +)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
+        [InlineData("(error (lambda () 1))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
+        [InlineData("(error (newline))", typeof(IPrimitiveDatum), typeof(Unspecified))]
         public void Evaluate_WrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
         {
             // Arrange
@@ -833,6 +891,40 @@ namespace RainLispTests
             Assert.Equal(expectedIdentifierName, exception.IdentifierName);
         }
 
+        [Theory]
+        [InlineData("(error 1)", "1")]
+        [InlineData("(error 12.31)", "12.31")]
+        [InlineData("(error true)", "true")]
+        [InlineData("(error false)", "false")]
+        [InlineData("(error \"This is a user error.\")", "This is a user error.")]
+        public void Evaluate_ErrorExpression_Throws(string expression, string expectedMessage)
+        {
+            // Arrange
+            // Act
+            var exception = Evaluate_WrongExpression_Throws<UserException>(expression);
+
+            // Assert
+            Assert.Equal(expectedMessage, exception.Message);
+        }
+
+        [Theory]
+        [InlineData("(1)")]
+        [InlineData("(1 1)")]
+        [InlineData("(true)")]
+        [InlineData("(true 12.12)")]
+        [InlineData("(\"hello\")")]
+        [InlineData("(\"hello\" \"world\")")]
+        [InlineData("(nil)")]
+        [InlineData("(nil 1)")]
+        [InlineData("((cons 1 2))")]
+        [InlineData("((cons 1 2) 1)")]
+        [InlineData("((newline))")]
+        [InlineData("((newline) 1)")]
+        public void Evaluate_ExpressionCallingNonProcedure_Throws(string expression)
+        {
+            Evaluate_WrongExpression_Throws<NotProcedureException>(expression);
+        }
+
         private TException Evaluate_WrongExpression_Throws<TException>(string expression) where TException : Exception
         {
             // Arrange
@@ -855,7 +947,7 @@ namespace RainLispTests
             return exception!;
         }
 
-        private EvaluationResult GetLastResult(EvaluationResult result)
+        private static EvaluationResult GetLastResult(EvaluationResult result)
         {
             if (result is ProgramResult programResult && programResult.Results?.Count > 1)
                 return programResult.Results.Last();
