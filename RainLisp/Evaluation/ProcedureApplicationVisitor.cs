@@ -1,5 +1,6 @@
 ﻿using RainLisp.Evaluation.Results;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 
 namespace RainLisp.Evaluation
 {
@@ -145,7 +146,20 @@ namespace RainLisp.Evaluation
         }
 
         private static EvaluationResult Error(EvaluationResult[]? values)
-            => ApplyUnaryOperator(AsAnyPrimitive, val => throw new UserException(val.ToString()), values);
+            => ApplyUnaryOperator(AsAnyPrimitive, val => 
+            {
+                string? message;
+                if (val is double doubleVal)
+                    message = doubleVal.ToString(CultureInfo.InvariantCulture);
+                else
+                {
+                    message = val.ToString();
+                    if (val is bool boolVal)
+                        message = message?.ToLower();
+                }
+
+                throw new UserException(message);
+            }, values);
         #endregion
 
         #region Helpers

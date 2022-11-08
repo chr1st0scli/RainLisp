@@ -77,6 +77,21 @@
         public string IdentifierName { get; init; }
     }
 
+    public class NotProcedureException : Exception
+    {
+        public NotProcedureException()
+        {
+        }
+
+        public NotProcedureException(string? message) : base(message)
+        {
+        }
+
+        public NotProcedureException(string? message, Exception? innerException) : base(message, innerException)
+        {
+        }
+    }
+
     public class UserException : Exception
     {
         public UserException()
