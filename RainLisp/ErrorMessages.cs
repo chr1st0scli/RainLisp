@@ -14,5 +14,7 @@
         public const string UNKNOWN_IDENTIFIER = "Unknown identifier {0}.";
         public const string NOT_PROCEDURE = "Not a procedure.";
         public const string USER_ERROR = "User error: {0}";
+
+        public const string UNKNOWN_ERROR = "Unknown error.";
     }
 }
