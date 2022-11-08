@@ -53,18 +53,10 @@ namespace RainLisp
             return _evaluator.EvaluateProgram(program, environment);
         }
 
-        public void ReadEvalPrintLoop(Func<string?> read, Action<string> print)
+        public void ReadEvalPrintLoop(Func<string?> read, Action<string> print, Action<string, Exception> printError)
         {
             ArgumentNullException.ThrowIfNull(read, nameof(read));
             ArgumentNullException.ThrowIfNull(print, nameof(print));
-
-            void PrintError(string message, Exception ex)
-            {
-                print(message);
-                // Print the exception's message if one provided.
-                if (!string.IsNullOrWhiteSpace(ex.Message) && !ex.Message.StartsWith("Exception of type"))
-                    print(ex.Message);
-            }
 
             var environment = CreateGlobalEnvironment();
 
@@ -84,43 +76,43 @@ namespace RainLisp
                 }
                 catch (NonTerminatedStringException ex)
                 {
-                    PrintError(string.Format(ErrorMessages.NON_TERMINATED_STRING, ex.Line, ex.Position), ex);
+                    printError(string.Format(ErrorMessages.NON_TERMINATED_STRING, ex.Line, ex.Position), ex);
                 }
                 catch (InvalidEscapeSequenceException ex)
                 {
-                    PrintError(string.Format(ErrorMessages.INVALID_ESCAPE_SEQUENCE, ex.Character, ex.Line, ex.Position), ex);
+                    printError(string.Format(ErrorMessages.INVALID_ESCAPE_SEQUENCE, ex.Character, ex.Line, ex.Position), ex);
                 }
                 catch (InvalidStringCharacterException ex)
                 {
-                    PrintError(string.Format(ErrorMessages.INVALID_STRING_CHARACTER, ex.Character, ex.Line, ex.Position), ex);
+                    printError(string.Format(ErrorMessages.INVALID_STRING_CHARACTER, ex.Character, ex.Line, ex.Position), ex);
                 }
                 catch (ParsingException ex)
                 {
-                    PrintError(string.Format(ErrorMessages.PARSING_ERROR, ex.Line, ex.Position), ex);
+                    printError(string.Format(ErrorMessages.PARSING_ERROR, ex.Line, ex.Position), ex);
                 }
                 catch (WrongNumberOfArgumentsException ex)
                 {
-                    PrintError(string.Format(ex.OrMore ? ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS_EXT : ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS, ex.Expected, ex.Actual), ex);
+                    printError(string.Format(ex.OrMore ? ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS_EXT : ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS, ex.Expected, ex.Actual), ex);
                 }
                 catch (WrongTypeOfArgumentException ex)
                 {
-                    PrintError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, ex.Expected.Name, ex.Actual.Name), ex);
+                    printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, ex.Expected.Name, ex.Actual.Name), ex);
                 }
                 catch (UnknownIdentifierException ex)
                 {
-                    PrintError(string.Format(ErrorMessages.UNKNOWN_IDENTIFIER, ex.IdentifierName), ex);
+                    printError(string.Format(ErrorMessages.UNKNOWN_IDENTIFIER, ex.IdentifierName), ex);
                 }
                 catch (NotProcedureException ex)
                 {
-                    PrintError(ErrorMessages.NOT_PROCEDURE, ex);
+                    printError(ErrorMessages.NOT_PROCEDURE, ex);
                 }
                 catch (UserException ex)
                 {
-                    PrintError(string.Format(ErrorMessages.USER_ERROR, ex.Message), ex);
+                    printError(string.Format(ErrorMessages.USER_ERROR, ex.Message), ex);
                 }
                 catch (Exception ex)
                 {
-                    print(ex.ToString());
+                    printError(ErrorMessages.UNKNOWN_ERROR, ex);
                 }
             }
         }
