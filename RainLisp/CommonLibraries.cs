@@ -49,6 +49,9 @@
 (define (append list1 list2)
   (fold-right cons list2 list1))
 
+(define (reverse sequence)
+  (fold-left (lambda (x y) (cons y x)) nil sequence))
+
 (define (length sequence)
   (define (length-iter seq count)
     (if (null? seq)
