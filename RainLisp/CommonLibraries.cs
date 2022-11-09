@@ -21,7 +21,7 @@
 (define (map proc sequence)
   (if (null? sequence)
       nil
-  	(cons (proc (car sequence)) (map proc (cdr sequence)))))
+      (cons (proc (car sequence)) (map proc (cdr sequence)))))
 
 (define (filter predicate sequence)
   (cond ((null? sequence) nil)
