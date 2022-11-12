@@ -46,6 +46,9 @@ namespace RainLisp.Evaluation
             return sb.ToString();
         }
 
+        public string VisitDateTimeDatum(DateTimeDatum dateTimeDatum)
+            => dateTimeDatum.Value.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+
         public string VisitPrimitiveProcedure(PrimitiveProcedure primitiveProcedure)
             => $"[{nameof(PrimitiveProcedure)}] {primitiveProcedure.ProcedureType}";
 

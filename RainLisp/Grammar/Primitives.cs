@@ -27,5 +27,31 @@
         public const string TRACE = "trace";
         public const string NEW_LINE = "newline";
         public const string ERROR = "error";
+        public const string NOW = "now";
+        public const string UTC_NOW = "utc-now";
+        public const string MAKE_DATE = "make-date";
+        public const string MAKE_DATE_TIME = "make-date-time";
+        public const string YEAR = "year";
+        public const string MONTH = "month";
+        public const string DAY = "day";
+        public const string HOUR = "hour";
+        public const string MINUTE = "minute";
+        public const string SECOND = "second";
+        public const string MILLISECOND = "millisecond";
+        public const string IS_UTC = "utc?";
+        public const string TO_LOCAL = "to-local";
+        public const string TO_UTC = "to-utc";
+        public const string ADD_YEARS = "add-years";
+        public const string ADD_MONTHS = "add-months";
+        public const string ADD_DAYS = "add-days";
+        public const string ADD_HOURS = "add-hours";
+        public const string ADD_MINUTES = "add-minutes";
+        public const string ADD_SECONDS = "add-seconds";
+        public const string ADD_MILLISECONDS = "add-milliseconds";
+        public const string DAYS_DIFF = "days-diff";
+        public const string HOURS_DIFF = "hours-diff";
+        public const string MINUTES_DIFF = "minutes-diff";
+        public const string SECONDS_DIFF = "seconds-diff";
+        public const string MILLISECONDS_DIFF = "milliseconds-diff";
     }
 }
