@@ -146,6 +146,32 @@ namespace RainLisp
             environment.DefineIdentifier(TRACE, new PrimitiveProcedure(PrimitiveProcedureType.Trace));
             environment.DefineIdentifier(NEW_LINE, new PrimitiveProcedure(PrimitiveProcedureType.NewLine));
             environment.DefineIdentifier(ERROR, new PrimitiveProcedure(PrimitiveProcedureType.Error));
+            environment.DefineIdentifier(NOW, new PrimitiveProcedure(PrimitiveProcedureType.Now));
+            environment.DefineIdentifier(UTC_NOW, new PrimitiveProcedure(PrimitiveProcedureType.UtcNow));
+            environment.DefineIdentifier(MAKE_DATE, new PrimitiveProcedure(PrimitiveProcedureType.MakeDate));
+            environment.DefineIdentifier(MAKE_DATE_TIME, new PrimitiveProcedure(PrimitiveProcedureType.MakeDateTime));
+            environment.DefineIdentifier(YEAR, new PrimitiveProcedure(PrimitiveProcedureType.Year));
+            environment.DefineIdentifier(MONTH, new PrimitiveProcedure(PrimitiveProcedureType.Month));
+            environment.DefineIdentifier(DAY, new PrimitiveProcedure(PrimitiveProcedureType.Day));
+            environment.DefineIdentifier(HOUR, new PrimitiveProcedure(PrimitiveProcedureType.Hour));
+            environment.DefineIdentifier(MINUTE, new PrimitiveProcedure(PrimitiveProcedureType.Minute));
+            environment.DefineIdentifier(SECOND, new PrimitiveProcedure(PrimitiveProcedureType.Second));
+            environment.DefineIdentifier(MILLISECOND, new PrimitiveProcedure(PrimitiveProcedureType.Millisecond));
+            environment.DefineIdentifier(IS_UTC, new PrimitiveProcedure(PrimitiveProcedureType.IsUtc));
+            environment.DefineIdentifier(TO_LOCAL, new PrimitiveProcedure(PrimitiveProcedureType.ToLocal));
+            environment.DefineIdentifier(TO_UTC, new PrimitiveProcedure(PrimitiveProcedureType.ToUtc));
+            environment.DefineIdentifier(ADD_YEARS, new PrimitiveProcedure(PrimitiveProcedureType.AddYears));
+            environment.DefineIdentifier(ADD_MONTHS, new PrimitiveProcedure(PrimitiveProcedureType.AddMonths));
+            environment.DefineIdentifier(ADD_DAYS, new PrimitiveProcedure(PrimitiveProcedureType.AddDays));
+            environment.DefineIdentifier(ADD_HOURS, new PrimitiveProcedure(PrimitiveProcedureType.AddHours));
+            environment.DefineIdentifier(ADD_MINUTES, new PrimitiveProcedure(PrimitiveProcedureType.AddMinutes));
+            environment.DefineIdentifier(ADD_SECONDS, new PrimitiveProcedure(PrimitiveProcedureType.AddSeconds));
+            environment.DefineIdentifier(ADD_MILLISECONDS, new PrimitiveProcedure(PrimitiveProcedureType.AddMilliseconds));
+            environment.DefineIdentifier(DAYS_DIFF, new PrimitiveProcedure(PrimitiveProcedureType.DaysDiff));
+            environment.DefineIdentifier(HOURS_DIFF, new PrimitiveProcedure(PrimitiveProcedureType.HoursDiff));
+            environment.DefineIdentifier(MINUTES_DIFF, new PrimitiveProcedure(PrimitiveProcedureType.MinutesDiff));
+            environment.DefineIdentifier(SECONDS_DIFF, new PrimitiveProcedure(PrimitiveProcedureType.SecondsDiff));
+            environment.DefineIdentifier(MILLISECONDS_DIFF, new PrimitiveProcedure(PrimitiveProcedureType.MillisecondsDiff));
 
             environment.DefineIdentifier(NIL, Nil.GetNil());
 

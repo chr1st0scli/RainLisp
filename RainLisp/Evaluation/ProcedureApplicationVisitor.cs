@@ -42,6 +42,32 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.Trace => Trace(evaluatedArguments),
                 PrimitiveProcedureType.NewLine => NewLine(evaluatedArguments),
                 PrimitiveProcedureType.Error => Error(evaluatedArguments),
+                PrimitiveProcedureType.Now => Now(evaluatedArguments),
+                PrimitiveProcedureType.UtcNow => UtcNow(evaluatedArguments),
+                PrimitiveProcedureType.MakeDate => MakeDate(evaluatedArguments),
+                PrimitiveProcedureType.MakeDateTime => MakeDateTime(evaluatedArguments),
+                PrimitiveProcedureType.Year => Year(evaluatedArguments),
+                PrimitiveProcedureType.Month => Month(evaluatedArguments),
+                PrimitiveProcedureType.Day => Day(evaluatedArguments),
+                PrimitiveProcedureType.Hour => Hour(evaluatedArguments),
+                PrimitiveProcedureType.Minute => Minute(evaluatedArguments),
+                PrimitiveProcedureType.Second => Second(evaluatedArguments),
+                PrimitiveProcedureType.Millisecond => Millisecond(evaluatedArguments),
+                PrimitiveProcedureType.IsUtc => IsUtc(evaluatedArguments),
+                PrimitiveProcedureType.ToLocal => ToLocal(evaluatedArguments),
+                PrimitiveProcedureType.ToUtc => ToUtc(evaluatedArguments),
+                PrimitiveProcedureType.AddYears => AddYears(evaluatedArguments),
+                PrimitiveProcedureType.AddMonths => AddMonths(evaluatedArguments),
+                PrimitiveProcedureType.AddDays => AddDays(evaluatedArguments),
+                PrimitiveProcedureType.AddHours => AddHours(evaluatedArguments),
+                PrimitiveProcedureType.AddMinutes => AddMinutes(evaluatedArguments),
+                PrimitiveProcedureType.AddSeconds => AddSeconds(evaluatedArguments),
+                PrimitiveProcedureType.AddMilliseconds => AddMilliseconds(evaluatedArguments),
+                PrimitiveProcedureType.DaysDiff => DaysDiff(evaluatedArguments),
+                PrimitiveProcedureType.HoursDiff => HoursDiff(evaluatedArguments),
+                PrimitiveProcedureType.MinutesDiff => MinutesDiff(evaluatedArguments),
+                PrimitiveProcedureType.SecondsDiff => SecondsDiff(evaluatedArguments),
+                PrimitiveProcedureType.MillisecondsDiff => MillisecondsDiff(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
@@ -160,6 +186,108 @@ namespace RainLisp.Evaluation
 
                 throw new UserException(message);
             }, values);
+
+        private static EvaluationResult Now(EvaluationResult[]? values)
+        {
+            RequireZero(values);
+            return new DateTimeDatum(DateTime.Now);
+        }
+
+        private static EvaluationResult UtcNow(EvaluationResult[]? values)
+        {
+            RequireZero(values);
+            return new DateTimeDatum(DateTime.UtcNow);
+        }
+
+        private static EvaluationResult MakeDate(EvaluationResult[]? values)
+        {
+            RequireMoreThanZero(values, 3);
+            int year = (int)AsDouble(values[0]);
+            int month = (int)AsDouble(values[1]);
+            int day = (int)AsDouble(values[2]);
+
+            return new DateTimeDatum(new DateTime(year, month, day));
+        }
+
+        private static EvaluationResult MakeDateTime(EvaluationResult[]? values)
+        {
+            RequireMoreThanZero(values, 7);
+            int year = (int)AsDouble(values[0]);
+            int month = (int)AsDouble(values[1]);
+            int day = (int)AsDouble(values[2]);
+            int hour = (int)AsDouble(values[3]);
+            int minute = (int)AsDouble(values[4]);
+            int second = (int)AsDouble(values[5]);
+            int millisecond = (int)AsDouble(values[6]);
+
+            return new DateTimeDatum(new DateTime(year, month, day, hour, minute, second, millisecond));
+        }
+
+        private static EvaluationResult Year(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Year), values);
+
+        private static EvaluationResult Month(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Month), values);
+
+        private static EvaluationResult Day(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Day), values);
+
+        private static EvaluationResult Hour(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Hour), values);
+
+        private static EvaluationResult Minute(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Minute), values);
+
+        private static EvaluationResult Second(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Second), values);
+
+        private static EvaluationResult Millisecond(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Millisecond), values);
+
+        private static EvaluationResult IsUtc(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new BoolDatum(val.Kind == DateTimeKind.Utc), values);
+
+        private static EvaluationResult ToLocal(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Utc, TimeZoneInfo.Local)), values);
+
+        private static EvaluationResult ToUtc(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDateTime, val => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Local, TimeZoneInfo.Utc)), values);
+
+        private static EvaluationResult AddYears(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(dt.AddYears((int)value)), values);
+
+        private static EvaluationResult AddMonths(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(dt.AddMonths((int)value)), values);
+
+        private static EvaluationResult AddDays(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(dt.AddDays(value)), values);
+
+        private static EvaluationResult AddHours(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(dt.AddHours(value)), values);
+
+        private static EvaluationResult AddMinutes(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(dt.AddMinutes(value)), values);
+
+        private static EvaluationResult AddSeconds(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(dt.AddSeconds(value)), values);
+
+        private static EvaluationResult AddMilliseconds(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(dt.AddMilliseconds(value)), values);
+
+        private static EvaluationResult DaysDiff(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(val2.Subtract(val1).Days), values);
+
+        private static EvaluationResult HoursDiff(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(val2.Subtract(val1).Hours), values);
+
+        private static EvaluationResult MinutesDiff(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(val2.Subtract(val1).Minutes), values);
+
+        private static EvaluationResult SecondsDiff(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(val2.Subtract(val1).Seconds), values);
+
+        private static EvaluationResult MillisecondsDiff(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(val2.Subtract(val1).Milliseconds), values);
         #endregion
 
         #region Helpers
@@ -170,6 +298,8 @@ namespace RainLisp.Evaluation
         private delegate T CalculateMultiple<T>(T value1, T value2);
 
         private delegate EvaluationResult CalculateBinary<T>(T value1, T value2);
+
+        private delegate EvaluationResult CalculateBinary<T1, T2>(T1 value1, T2 value2);
 
         private delegate EvaluationResult CalculateBinaryWithResult<T>(T value1, EvaluationResult value2);
 
@@ -190,6 +320,12 @@ namespace RainLisp.Evaluation
         {
             RequireMoreThanZero(values, 2);
             return calculate(transform(values[0]), transform(values[1]));
+        }
+
+        private static EvaluationResult ApplyBinaryOperator<T1, T2>(Transform<T1> transform1, Transform<T2> transform2, CalculateBinary<T1, T2> calculate, EvaluationResult[]? values)
+        {
+            RequireMoreThanZero(values, 2);
+            return calculate(transform1(values[0]), transform2(values[1]));
         }
 
         private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, CalculateBinaryWithResult<T> calculate, EvaluationResult[]? values)
@@ -222,6 +358,14 @@ namespace RainLisp.Evaluation
                 return datum.Value;
             else
                 throw new WrongTypeOfArgumentException(value.GetType(), typeof(NumberDatum));
+        }
+
+        private static DateTime AsDateTime(EvaluationResult value)
+        {
+            if (value is DateTimeDatum datum)
+                return datum.Value;
+            else
+                throw new WrongTypeOfArgumentException(value.GetType(), typeof(DateTimeDatum));
         }
 
         private static bool AsBool(EvaluationResult value)

@@ -10,6 +10,8 @@ namespace RainLisp.Evaluation
 
         T VisitStringDatum(StringDatum stringDatum);
 
+        T VisitDateTimeDatum(DateTimeDatum dateTimeDatum);
+
         T VisitPrimitiveProcedure(PrimitiveProcedure primitiveProcedure);
 
         T VisitUserProcedure(UserProcedure userProcedure);
