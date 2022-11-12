@@ -361,28 +361,13 @@ namespace RainLisp.Evaluation
         }
 
         private static double AsDouble(EvaluationResult value)
-        {
-            if (value is NumberDatum datum)
-                return datum.Value;
-
-            throw new WrongTypeOfArgumentException(value.GetType(), typeof(NumberDatum));
-        }
+            => As<NumberDatum>(value).Value;
 
         private static string AsString(EvaluationResult value)
-        {
-            if (value is StringDatum datum)
-                return datum.Value;
-
-            throw new WrongTypeOfArgumentException(value.GetType(), typeof(StringDatum));
-        }
+            => As<StringDatum>(value).Value;
 
         private static DateTime AsDateTime(EvaluationResult value)
-        {
-            if (value is DateTimeDatum datum)
-                return datum.Value;
-
-            throw new WrongTypeOfArgumentException(value.GetType(), typeof(DateTimeDatum));
-        }
+            => As<DateTimeDatum>(value).Value;
 
         private static bool AsBool(EvaluationResult value)
         {
@@ -394,19 +379,17 @@ namespace RainLisp.Evaluation
         }
 
         private static Pair AsPair(EvaluationResult value)
-        {
-            if (value is Pair pair)
-                return pair;
-
-            throw new WrongTypeOfArgumentException(value.GetType(), typeof(Pair));
-        }
+            => As<Pair>(value);
 
         private static object AsAnyPrimitive(EvaluationResult value)
-        {
-            if (value is IPrimitiveDatum primitiveDatum)
-                return primitiveDatum.GetValueAsObject();
+            => As<IPrimitiveDatum>(value).GetValueAsObject();
 
-            throw new WrongTypeOfArgumentException(value.GetType(), typeof(IPrimitiveDatum));
+        private static T As<T>(EvaluationResult value)
+        {
+            if (value is T t)
+                return t;
+
+            throw new WrongTypeOfArgumentException(value.GetType(), typeof(T));
         }
 
         private static EvaluationResult ApplyFoldRightOperator(CalculateMultiple<EvaluationResult> foldOperator, EvaluationResult initial, EvaluationResult[] values, int valueIndex = 0)
