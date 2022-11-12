@@ -172,6 +172,8 @@ namespace RainLisp
             environment.DefineIdentifier(MINUTES_DIFF, new PrimitiveProcedure(PrimitiveProcedureType.MinutesDiff));
             environment.DefineIdentifier(SECONDS_DIFF, new PrimitiveProcedure(PrimitiveProcedureType.SecondsDiff));
             environment.DefineIdentifier(MILLISECONDS_DIFF, new PrimitiveProcedure(PrimitiveProcedureType.MillisecondsDiff));
+            environment.DefineIdentifier(PARSE_DATE_TIME, new PrimitiveProcedure(PrimitiveProcedureType.ParseDateTime));
+            environment.DefineIdentifier(DATE_TIME_TO_STRING, new PrimitiveProcedure(PrimitiveProcedureType.DateTimeToString));
 
             environment.DefineIdentifier(NIL, Nil.GetNil());
 

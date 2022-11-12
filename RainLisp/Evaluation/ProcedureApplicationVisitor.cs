@@ -68,6 +68,8 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.MinutesDiff => MinutesDiff(evaluatedArguments),
                 PrimitiveProcedureType.SecondsDiff => SecondsDiff(evaluatedArguments),
                 PrimitiveProcedureType.MillisecondsDiff => MillisecondsDiff(evaluatedArguments),
+                PrimitiveProcedureType.ParseDateTime => ParseDateTime(evaluatedArguments),
+                PrimitiveProcedureType.DateTimeToString => DateTimeToString(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
@@ -288,6 +290,12 @@ namespace RainLisp.Evaluation
 
         private static EvaluationResult MillisecondsDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(val2.Subtract(val1).Milliseconds), values);
+
+        private static EvaluationResult ParseDateTime(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsString, (dt, format) => new DateTimeDatum(DateTime.ParseExact(dt, format, CultureInfo.InvariantCulture)), values);
+
+        private static EvaluationResult DateTimeToString(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDateTime, AsString, (dt, format) => new StringDatum(dt.ToString(format)), values);
         #endregion
 
         #region Helpers
@@ -356,16 +364,24 @@ namespace RainLisp.Evaluation
         {
             if (value is NumberDatum datum)
                 return datum.Value;
-            else
-                throw new WrongTypeOfArgumentException(value.GetType(), typeof(NumberDatum));
+
+            throw new WrongTypeOfArgumentException(value.GetType(), typeof(NumberDatum));
+        }
+
+        private static string AsString(EvaluationResult value)
+        {
+            if (value is StringDatum datum)
+                return datum.Value;
+
+            throw new WrongTypeOfArgumentException(value.GetType(), typeof(StringDatum));
         }
 
         private static DateTime AsDateTime(EvaluationResult value)
         {
             if (value is DateTimeDatum datum)
                 return datum.Value;
-            else
-                throw new WrongTypeOfArgumentException(value.GetType(), typeof(DateTimeDatum));
+
+            throw new WrongTypeOfArgumentException(value.GetType(), typeof(DateTimeDatum));
         }
 
         private static bool AsBool(EvaluationResult value)

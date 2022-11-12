@@ -52,5 +52,7 @@
         MinutesDiff,
         SecondsDiff,
         MillisecondsDiff,
+        ParseDateTime,
+        DateTimeToString
     }
 }
