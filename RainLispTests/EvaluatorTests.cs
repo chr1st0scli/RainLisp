@@ -653,132 +653,12 @@ namespace RainLispTests
         [InlineData("(define (foo x y) (+ x y)) (foo)", 2, false, 0)]
         [InlineData("(define (foo x y) (+ x y)) (foo 1)", 2, false, 1)]
         [InlineData("(define (foo x y) (+ x y)) (foo 1 2 3)", 2, false, 3)]
-        [InlineData("(+)", 2, true, 0)]
-        [InlineData("(+ 1)", 2, true, 1)]
-        [InlineData("(-)", 2, true, 0)]
-        [InlineData("(- 1)", 2, true, 1)]
-        [InlineData("(*)", 2, true, 0)]
-        [InlineData("(* 1)", 2, true, 1)]
-        [InlineData("(/)", 2, true, 0)]
-        [InlineData("(/ 1)", 2, true, 1)]
-        [InlineData("(%)", 2, true, 0)]
-        [InlineData("(% 1)", 2, true, 1)]
-        [InlineData("(>)", 2, false, 0)]
-        [InlineData("(> 1)", 2, false, 1)]
-        [InlineData("(> 1 2 3)", 2, false, 3)]
-        [InlineData("(>=)", 2, false, 0)]
-        [InlineData("(>= 1)", 2, false, 1)]
-        [InlineData("(>= 1 2 3)", 2, false, 3)]
-        [InlineData("(<)", 2, false, 0)]
-        [InlineData("(< 1)", 2, false, 1)]
-        [InlineData("(< 1 2 3)", 2, false, 3)]
-        [InlineData("(<=)", 2, false, 0)]
-        [InlineData("(<= 1)", 2, false, 1)]
-        [InlineData("(<= 1 2 3)", 2, false, 3)]
-        [InlineData("(=)", 2, false, 0)]
-        [InlineData("(= 1)", 2, false, 1)]
-        [InlineData("(= 1 2 3)", 2, false, 3)]
-        [InlineData("(xor)", 2, true, 0)]
-        [InlineData("(xor true)", 2, true, 1)]
-        [InlineData("(not)", 1, false, 0)]
-        [InlineData("(not true false)", 1, false, 2)]
-        [InlineData("(cons)", 2, false, 0)]
-        [InlineData("(cons 1)", 2, false, 1)]
-        [InlineData("(cons 1 2 3)", 2, false, 3)]
-        [InlineData("(car)", 1, false, 0)]
-        [InlineData("(car 1 2)", 1, false, 2)]
-        [InlineData("(cdr)", 1, false, 0)]
-        [InlineData("(cdr 1 2)", 1, false, 2)]
-        [InlineData("(null?)", 1, false, 0)]
-        [InlineData("(null? 1 2)", 1, false, 2)]
-        [InlineData("(set-car!)", 2, false, 0)]
-        [InlineData("(set-car! (cons 1 2))", 2, false, 1)]
-        [InlineData("(set-car! (cons 1 2) 3 4)", 2, false, 3)]
-        [InlineData("(set-cdr!)", 2, false, 0)]
-        [InlineData("(set-cdr! (cons 1 2))", 2, false, 1)]
-        [InlineData("(set-cdr! (cons 1 2) 3 4)", 2, false, 3)]
-        [InlineData("(display)", 1, false, 0)]
-        [InlineData("(display 1 2)", 1, false, 2)]
-        [InlineData("(debug)", 1, false, 0)]
-        [InlineData("(debug 1 2)", 1, false, 2)]
-        [InlineData("(trace)", 1, false, 0)]
-        [InlineData("(trace 1 2)", 1, false, 2)]
-        [InlineData("(newline 1)", 0, false, 1)]
-        [InlineData("(newline 1 2)", 0, false, 2)]
-        [InlineData("(error)", 1, false, 0)]
-        [InlineData("(error 1 2)", 1, false, 2)]
-        [InlineData("(now 1)", 0, false, 1)]
-        [InlineData("(now 1 2)", 0, false, 2)]
-        [InlineData("(utc-now 1)", 0, false, 1)]
-        [InlineData("(utc-now 1 2)", 0, false, 2)]
         [InlineData("(make-date)", 3, false, 0)]
         [InlineData("(make-date 1)", 3, false, 1)]
         [InlineData("(make-date 1 2 3 4)", 3, false, 4)]
         [InlineData("(make-datetime)", 7, false, 0)]
         [InlineData("(make-datetime 1)", 7, false, 1)]
         [InlineData("(make-datetime 1 2 3 4 5 6 7 8)", 7, false, 8)]
-        [InlineData("(year)", 1, false, 0)]
-        [InlineData("(year 1 2)", 1, false, 2)]
-        [InlineData("(month)", 1, false, 0)]
-        [InlineData("(month 1 2)", 1, false, 2)]
-        [InlineData("(day)", 1, false, 0)]
-        [InlineData("(day 1 2)", 1, false, 2)]
-        [InlineData("(hour)", 1, false, 0)]
-        [InlineData("(hour 1 2)", 1, false, 2)]
-        [InlineData("(minute)", 1, false, 0)]
-        [InlineData("(minute 1 2)", 1, false, 2)]
-        [InlineData("(second)", 1, false, 0)]
-        [InlineData("(second 1 2)", 1, false, 2)]
-        [InlineData("(millisecond)", 1, false, 0)]
-        [InlineData("(millisecond 1 2)", 1, false, 2)]
-        [InlineData("(utc?)", 1, false, 0)]
-        [InlineData("(utc? 1 2)", 1, false, 2)]
-        [InlineData("(to-local)", 1, false, 0)]
-        [InlineData("(to-local 1 2)", 1, false, 2)]
-        [InlineData("(to-utc)", 1, false, 0)]
-        [InlineData("(to-utc 1 2)", 1, false, 2)]
-        [InlineData("(add-years)", 2, false, 0)]
-        [InlineData("(add-years 1)", 2, false, 1)]
-        [InlineData("(add-years 1 2 3)", 2, false, 3)]
-        [InlineData("(add-months)", 2, false, 0)]
-        [InlineData("(add-months 1)", 2, false, 1)]
-        [InlineData("(add-months 1 2 3)", 2, false, 3)]
-        [InlineData("(add-days)", 2, false, 0)]
-        [InlineData("(add-days 1)", 2, false, 1)]
-        [InlineData("(add-days 1 2 3)", 2, false, 3)]
-        [InlineData("(add-hours)", 2, false, 0)]
-        [InlineData("(add-hours 1)", 2, false, 1)]
-        [InlineData("(add-hours 1 2 3)", 2, false, 3)]
-        [InlineData("(add-minutes)", 2, false, 0)]
-        [InlineData("(add-minutes 1)", 2, false, 1)]
-        [InlineData("(add-minutes 1 2 3)", 2, false, 3)]
-        [InlineData("(add-seconds)", 2, false, 0)]
-        [InlineData("(add-seconds 1)", 2, false, 1)]
-        [InlineData("(add-seconds 1 2 3)", 2, false, 3)]
-        [InlineData("(add-milliseconds)", 2, false, 0)]
-        [InlineData("(add-milliseconds 1)", 2, false, 1)]
-        [InlineData("(add-milliseconds 1 2 3)", 2, false, 3)]
-        [InlineData("(days-diff)", 2, false, 0)]
-        [InlineData("(days-diff 1)", 2, false, 1)]
-        [InlineData("(days-diff 1 2 3)", 2, false, 3)]
-        [InlineData("(hours-diff)", 2, false, 0)]
-        [InlineData("(hours-diff 1)", 2, false, 1)]
-        [InlineData("(hours-diff 1 2 3)", 2, false, 3)]
-        [InlineData("(minutes-diff)", 2, false, 0)]
-        [InlineData("(minutes-diff 1)", 2, false, 1)]
-        [InlineData("(minutes-diff 1 2 3)", 2, false, 3)]
-        [InlineData("(seconds-diff)", 2, false, 0)]
-        [InlineData("(seconds-diff 1)", 2, false, 1)]
-        [InlineData("(seconds-diff 1 2 3)", 2, false, 3)]
-        [InlineData("(milliseconds-diff)", 2, false, 0)]
-        [InlineData("(milliseconds-diff 1)", 2, false, 1)]
-        [InlineData("(milliseconds-diff 1 2 3)", 2, false, 3)]
-        [InlineData("(parse-datetime)", 2, false, 0)]
-        [InlineData("(parse-datetime 1)", 2, false, 1)]
-        [InlineData("(parse-datetime 1 2 3)", 2, false, 3)]
-        [InlineData("(datetime-to-string)", 2, false, 0)]
-        [InlineData("(datetime-to-string 1)", 2, false, 1)]
-        [InlineData("(datetime-to-string 1 2 3)", 2, false, 3)]
         public void Evaluate_WrongNumberOfArguments_Throws(string expression, int expected, bool orMore, int actual)
         {
             // Arrange
@@ -789,6 +669,48 @@ namespace RainLispTests
             Assert.Equal(expected, exception!.Expected);
             Assert.Equal(orMore, exception.OrMore);
             Assert.Equal(actual, exception.Actual);
+        }
+
+        [Theory]
+        [InlineData("({0})", 2, 0)]
+        [InlineData("({0} 1)", 2, 1)]
+        public void Evaluate_CallExpectingTwoOrMoreWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
+        {
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "+", "-", "*", "/", "%", "xor" }, expression, expected, true, actual);
+        }
+
+        [Theory]
+        [InlineData("({0})", 2, 0)]
+        [InlineData("({0} 1)", 2, 1)]
+        [InlineData("({0} 1 2 3)", 2, 3)]
+        public void Evaluate_CallExpectingTwoWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
+        {
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
+                {
+                    ">", ">=", "<", "<=", "=", "cons", "set-car!", "set-cdr!",
+                    "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds",
+                    "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff", "parse-datetime", "datetime-to-string"
+                }, expression, expected, false, actual);
+        }
+
+        [Theory]
+        [InlineData("({0})", 1, 0)]
+        [InlineData("({0} 1 2)", 1, 2)]
+        public void Evaluate_CallExpectingOneWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
+        {
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
+                {
+                    "not", "car", "cdr", "null?", "display", "debug", "trace", "error",
+                    "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc"
+                }, expression, expected, false, actual);
+        }
+
+        [Theory]
+        [InlineData("({0} 1)", 0, 1)]
+        [InlineData("({0} 1 2)", 0, 2)]
+        public void Evaluate_CallExpectingZeroWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
+        {
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "newline", "now", "utc-now" }, expression, expected, false, actual);
         }
 
         [Theory]
@@ -1043,6 +965,21 @@ namespace RainLispTests
         public void Evaluate_ExpressionCallingNonProcedure_Throws(string expression)
         {
             Evaluate_WrongExpression_Throws<NotProcedureException>(expression);
+        }
+
+        private void Evaluate_CallsWithWrongNumberOfArguments_Throws(string[] procedureNames, string expression, int expected, bool orMore, int actual)
+        {
+            // Arrange
+            // Act
+            foreach (string procName in procedureNames)
+            {
+                var exception = Evaluate_WrongExpression_Throws<WrongNumberOfArgumentsException>(string.Format(expression, procName));
+
+                // Assert
+                Assert.Equal(expected, exception!.Expected);
+                Assert.Equal(orMore, exception.OrMore);
+                Assert.Equal(actual, exception.Actual);
+            }
         }
 
         private void Evaluate_CallsWithWrongExpression_Throws(string[] procedureNames, string expression, Type expected, Type actual)
