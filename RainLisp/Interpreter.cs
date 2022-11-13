@@ -152,7 +152,7 @@ namespace RainLisp
             Install(NOW, PrimitiveProcedureType.Now);
             Install(UTC_NOW, PrimitiveProcedureType.UtcNow);
             Install(MAKE_DATE, PrimitiveProcedureType.MakeDate);
-            Install(MAKE_DATE_TIME, PrimitiveProcedureType.MakeDateTime);
+            Install(MAKE_DATETIME, PrimitiveProcedureType.MakeDateTime);
             Install(YEAR, PrimitiveProcedureType.Year);
             Install(MONTH, PrimitiveProcedureType.Month);
             Install(DAY, PrimitiveProcedureType.Day);
@@ -175,8 +175,8 @@ namespace RainLisp
             Install(MINUTES_DIFF, PrimitiveProcedureType.MinutesDiff);
             Install(SECONDS_DIFF, PrimitiveProcedureType.SecondsDiff);
             Install(MILLISECONDS_DIFF, PrimitiveProcedureType.MillisecondsDiff);
-            Install(PARSE_DATE_TIME, PrimitiveProcedureType.ParseDateTime);
-            Install(DATE_TIME_TO_STRING, PrimitiveProcedureType.DateTimeToString);
+            Install(PARSE_DATETIME, PrimitiveProcedureType.ParseDateTime);
+            Install(DATETIME_TO_STRING, PrimitiveProcedureType.DateTimeToString);
 
             environment.DefineIdentifier(NIL, Nil.GetNil());
 

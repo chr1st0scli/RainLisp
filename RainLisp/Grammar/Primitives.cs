@@ -30,7 +30,7 @@
         public const string NOW = "now";
         public const string UTC_NOW = "utc-now";
         public const string MAKE_DATE = "make-date";
-        public const string MAKE_DATE_TIME = "make-date-time";
+        public const string MAKE_DATETIME = "make-datetime";
         public const string YEAR = "year";
         public const string MONTH = "month";
         public const string DAY = "day";
@@ -53,7 +53,7 @@
         public const string MINUTES_DIFF = "minutes-diff";
         public const string SECONDS_DIFF = "seconds-diff";
         public const string MILLISECONDS_DIFF = "milliseconds-diff";
-        public const string PARSE_DATE_TIME = "parse-date-time";
-        public const string DATE_TIME_TO_STRING = "date-time-to-string";
+        public const string PARSE_DATETIME = "parse-datetime";
+        public const string DATETIME_TO_STRING = "datetime-to-string";
     }
 }
