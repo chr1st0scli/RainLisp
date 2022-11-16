@@ -110,6 +110,10 @@ namespace RainLisp
                 {
                     printError(string.Format(ErrorMessages.USER_ERROR, ex.Message), ex);
                 }
+                catch (InvalidValueException ex)
+                {
+                    printError(ErrorMessages.INVALID_VALUE, ex);
+                }
                 catch (Exception ex)
                 {
                     printError(ErrorMessages.UNKNOWN_ERROR, ex);
