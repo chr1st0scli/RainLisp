@@ -295,7 +295,7 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator(AsString, (dt, format) => new DateTimeDatum(ValueOrThrowInvalid(() => DateTime.ParseExact(dt, format, CultureInfo.InvariantCulture))), values);
 
         private static EvaluationResult DateTimeToString(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, AsString, (dt, format) => new StringDatum(ValueOrThrowInvalid(() => dt.ToString(format))), values);
+            => ApplyBinaryOperator(AsDateTime, AsString, (dt, format) => new StringDatum(ValueOrThrowInvalid(() => dt.ToString(format, CultureInfo.InvariantCulture))), values);
         #endregion
 
         #region Helpers

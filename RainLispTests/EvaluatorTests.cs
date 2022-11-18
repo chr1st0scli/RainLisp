@@ -217,6 +217,45 @@ namespace RainLispTests
         }
 
         [Theory]
+        [InlineData("(utc? (now))", false)]
+        [InlineData("(utc? (utc-now))", true)]
+        [InlineData("(utc? (to-utc (now)))", true)]
+        [InlineData("(utc? (to-local (utc-now)))", false)]
+        [InlineData("(year (make-date 2022 12 31))", 2022d)]
+        [InlineData("(month (make-date 2022 12 31))", 12d)]
+        [InlineData("(day (make-date 2022 12 31))", 31d)]
+        [InlineData("(year (make-datetime 2022 12 31 22 34 12 321))", 2022d)]
+        [InlineData("(month (make-datetime 2022 12 31 22 34 12 321))", 12d)]
+        [InlineData("(day (make-datetime 2022 12 31 22 34 12 321))", 31d)]
+        [InlineData("(hour (make-datetime 2022 12 31 22 34 12 321))", 22d)]
+        [InlineData("(minute (make-datetime 2022 12 31 22 34 12 321))", 34d)]
+        [InlineData("(second (make-datetime 2022 12 31 22 34 12 321))", 12d)]
+        [InlineData("(millisecond (make-datetime 2022 12 31 22 34 12 321))", 321d)]
+        [InlineData("(year (add-years (make-datetime 2022 12 31 22 34 12 321) 1))", 2023d)]
+        [InlineData("(month (add-months (make-datetime 2022 12 31 22 34 12 321) 1))", 1d)]
+        [InlineData("(day (add-days (make-datetime 2022 12 31 22 34 12 321) -1))", 30d)]
+        [InlineData("(hour (add-hours (make-datetime 2022 12 31 22 34 12 321) 1))", 23d)]
+        [InlineData("(minute (add-minutes (make-datetime 2022 12 31 22 34 12 321) 6))", 40d)]
+        [InlineData("(second (add-seconds (make-datetime 2022 12 31 22 34 12 321) 8))", 20d)]
+        [InlineData("(millisecond (add-milliseconds (make-datetime 2022 12 31 22 34 12 321) 29))", 350d)]
+        [InlineData("(days-diff (make-date 2022 1 1) (make-date 2023 12 31))", 729d)]
+        [InlineData("(hours-diff (make-datetime 2022 1 1 9 25 30 100) (make-datetime 2023 12 31 23 55 45 300))", 14d)]
+        [InlineData("(minutes-diff (make-datetime 2022 1 1 9 25 30 100) (make-datetime 2023 12 31 23 55 45 300))", 30d)]
+        [InlineData("(seconds-diff (make-datetime 2022 1 1 9 25 30 100) (make-datetime 2023 12 31 23 55 45 300))", 15d)]
+        [InlineData("(milliseconds-diff (make-datetime 2022 1 1 9 25 30 100) (make-datetime 2023 12 31 23 55 45 300))", 200d)]
+        [InlineData("(= (parse-datetime \"2022/12/31 21:35:44.321\" \"yyyy/MM/dd HH:mm:ss.fff\") (make-datetime 2022 12 31 21 35 44 321))", true)]
+        [InlineData("(datetime-to-string (make-datetime 2022 12 31 21 35 44 321) \"yyyy/MM/dd HH:mm:ss.fff\")", "2022/12/31 21:35:44.321")]
+        public void Evaluate_DateTimeExpression_Correctly(string expression, object expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, ((IPrimitiveDatum)result).GetValueAsObject());
+        }
+
+        [Theory]
         [InlineData("(car l)", 3d)]
         [InlineData("(cadr l)", 2d)]
         [InlineData("(caddr l)", 1d)]
@@ -723,6 +762,7 @@ namespace RainLispTests
         [InlineData("(= 14 (lambda(x) x))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
         [InlineData("(= - -)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
         [InlineData("(= - 14)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
+        [InlineData("(= (now) -)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
         // make-date
         [InlineData("(make-date nil 2 3)", typeof(NumberDatum), typeof(Nil))]
         [InlineData("(make-date 2022 (cons 1 2) 3)", typeof(NumberDatum), typeof(Pair))]
@@ -845,6 +885,7 @@ namespace RainLispTests
         [InlineData("({0} (lambda () 1) 1)", typeof(DateTimeDatum), typeof(UserProcedure))]
         [InlineData("({0} (newline) 1)", typeof(DateTimeDatum), typeof(Unspecified))]
         [InlineData("({0} true 1)", typeof(DateTimeDatum), typeof(BoolDatum))]
+        [InlineData("({0} 1 1)", typeof(DateTimeDatum), typeof(NumberDatum))]
         [InlineData("({0} \"hello\" 1)", typeof(DateTimeDatum), typeof(StringDatum))]
         [InlineData("({0} (now) nil)", typeof(NumberDatum), typeof(Nil))]
         [InlineData("({0} (now) (cons 1 2))", typeof(NumberDatum), typeof(Pair))]
@@ -853,6 +894,7 @@ namespace RainLispTests
         [InlineData("({0} (now) (newline))", typeof(NumberDatum), typeof(Unspecified))]
         [InlineData("({0} (now) true)", typeof(NumberDatum), typeof(BoolDatum))]
         [InlineData("({0} (now) \"hello\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} (now) (now))", typeof(NumberDatum), typeof(DateTimeDatum))]
         public void Evaluate_CallExpectingDateTimeAndNumberWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
         {
             Evaluate_CallsWithWrongExpression_Throws(new[] { "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds" }, expression, expected, actual);
@@ -865,6 +907,7 @@ namespace RainLispTests
         [InlineData("({0} (lambda () 1) 1)", typeof(DateTimeDatum), typeof(UserProcedure))]
         [InlineData("({0} (newline) 1)", typeof(DateTimeDatum), typeof(Unspecified))]
         [InlineData("({0} true 1)", typeof(DateTimeDatum), typeof(BoolDatum))]
+        [InlineData("({0} 1 (now))", typeof(DateTimeDatum), typeof(NumberDatum))]
         [InlineData("({0} \"hello\" 1)", typeof(DateTimeDatum), typeof(StringDatum))]
         [InlineData("({0} (now) nil)", typeof(DateTimeDatum), typeof(Nil))]
         [InlineData("({0} (now) (cons 1 2))", typeof(DateTimeDatum), typeof(Pair))]
@@ -872,6 +915,7 @@ namespace RainLispTests
         [InlineData("({0} (now) (lambda () 1))", typeof(DateTimeDatum), typeof(UserProcedure))]
         [InlineData("({0} (now) (newline))", typeof(DateTimeDatum), typeof(Unspecified))]
         [InlineData("({0} (now) true)", typeof(DateTimeDatum), typeof(BoolDatum))]
+        [InlineData("({0} (now) 1)", typeof(DateTimeDatum), typeof(NumberDatum))]
         [InlineData("({0} (now) \"hello\")", typeof(DateTimeDatum), typeof(StringDatum))]
         public void Evaluate_CallExpecting2DateTimesWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
         {
@@ -885,6 +929,8 @@ namespace RainLispTests
         [InlineData("({0} (lambda () 1) 1)", typeof(StringDatum), typeof(UserProcedure))]
         [InlineData("({0} (newline) 1)", typeof(StringDatum), typeof(Unspecified))]
         [InlineData("({0} true 1)", typeof(StringDatum), typeof(BoolDatum))]
+        [InlineData("({0} 1 \"hello\")", typeof(StringDatum), typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" 1)", typeof(StringDatum), typeof(NumberDatum))]
         [InlineData("({0} \"hello\" nil)", typeof(StringDatum), typeof(Nil))]
         [InlineData("({0} \"hello\" (cons 1 2))", typeof(StringDatum), typeof(Pair))]
         [InlineData("({0} \"hello\" +)", typeof(StringDatum), typeof(PrimitiveProcedure))]
@@ -903,6 +949,7 @@ namespace RainLispTests
         [InlineData("({0} (lambda () 1) 1)", typeof(DateTimeDatum), typeof(UserProcedure))]
         [InlineData("({0} (newline) 1)", typeof(DateTimeDatum), typeof(Unspecified))]
         [InlineData("({0} true 1)", typeof(DateTimeDatum), typeof(BoolDatum))]
+        [InlineData("({0} 1 1)", typeof(DateTimeDatum), typeof(NumberDatum))]
         [InlineData("({0} \"hello\" 1)", typeof(DateTimeDatum), typeof(StringDatum))]
         [InlineData("({0} (now) nil)", typeof(StringDatum), typeof(Nil))]
         [InlineData("({0} (now) (cons 1 2))", typeof(StringDatum), typeof(Pair))]
@@ -910,6 +957,7 @@ namespace RainLispTests
         [InlineData("({0} (now) (lambda () 1))", typeof(StringDatum), typeof(UserProcedure))]
         [InlineData("({0} (now) (newline))", typeof(StringDatum), typeof(Unspecified))]
         [InlineData("({0} (now) true)", typeof(StringDatum), typeof(BoolDatum))]
+        [InlineData("({0} (now) 1)", typeof(StringDatum), typeof(NumberDatum))]
         public void Evaluate_CallExpectingDateTimeAndStringWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
         {
             Evaluate_CallsWithWrongExpression_Throws(new[] { "datetime-to-string" }, expression, expected, actual);
@@ -956,6 +1004,7 @@ namespace RainLispTests
         [InlineData("(true 12.12)")]
         [InlineData("(\"hello\")")]
         [InlineData("(\"hello\" \"world\")")]
+        [InlineData("((now) 1)")]
         [InlineData("(nil)")]
         [InlineData("(nil 1)")]
         [InlineData("((cons 1 2))")]
@@ -965,6 +1014,46 @@ namespace RainLispTests
         public void Evaluate_ExpressionCallingNonProcedure_Throws(string expression)
         {
             Evaluate_WrongExpression_Throws<NotProcedureException>(expression);
+        }
+
+        [Theory]
+        [InlineData("(make-date 0 1 1)")]
+        [InlineData("(make-date 10000 1 1)")]
+        [InlineData("(make-date 2022 0 1)")]
+        [InlineData("(make-date 2022 13 1)")]
+        [InlineData("(make-date 2022 1 0)")]
+        [InlineData("(make-date 2022 1 32)")]
+        [InlineData("(make-datetime 2022 1 1 -1 1 1 1)")]
+        [InlineData("(make-datetime 2022 1 1 24 1 1 1)")]
+        [InlineData("(make-datetime 2022 1 1 1 -1 1 1)")]
+        [InlineData("(make-datetime 2022 1 1 1 60 1 1)")]
+        [InlineData("(make-datetime 2022 1 1 1 1 -1 1)")]
+        [InlineData("(make-datetime 2022 1 1 1 1 60 1)")]
+        [InlineData("(make-datetime 2022 1 1 1 1 1 -1)")]
+        [InlineData("(make-datetime 2022 1 1 1 1 1 1000)")]
+        [InlineData("(to-local (now))")] // now is not UTC to be made local.
+        [InlineData("(to-utc (utc-now))")] // utc-now is not local to be made UTC.
+        [InlineData("(add-years (make-date 2022 1 1) 8000)")]
+        [InlineData("(add-years (make-date 2022 1 1) -3000)")]
+        [InlineData("(add-months (make-date 2022 1 1) 96000)")]
+        [InlineData("(add-months (make-date 2022 1 1) -36000)")]
+        [InlineData("(add-days (make-date 2022 1 1) 2980000)")]
+        [InlineData("(add-days (make-date 2022 1 1) -1080000)")]
+        [InlineData("(add-hours (make-date 2022 1 1) 71520000)")]
+        [InlineData("(add-hours (make-date 2022 1 1) -25920000)")]
+        [InlineData("(add-minutes (make-date 2022 1 1) 4291200000)")]
+        [InlineData("(add-minutes (make-date 2022 1 1) -1555200000)")]
+        [InlineData("(add-seconds (make-date 2022 1 1) 257472000000)")]
+        [InlineData("(add-seconds (make-date 2022 1 1) -93312000000)")]
+        [InlineData("(add-milliseconds (make-date 2022 1 1) 257472000000000)")]
+        [InlineData("(add-milliseconds (make-date 2022 1 1) -93312000000000)")]
+        [InlineData("(parse-datetime \"\" \"yyyy-MM-dd\")")]
+        [InlineData("(parse-datetime \"2022/12/31\" \"\")")]
+        [InlineData("(parse-datetime \"2022/12/31\" \"yyyy-MM-dd\")")]
+        [InlineData("(datetime-to-string (now) \"q\")")]
+        public void Evaluate_ExpressionWithInvalidValue_Throws(string expression)
+        {
+            Evaluate_WrongExpression_Throws<InvalidValueException>(expression);
         }
 
         private void Evaluate_CallsWithWrongNumberOfArguments_Throws(string[] procedureNames, string expression, int expected, bool orMore, int actual)
