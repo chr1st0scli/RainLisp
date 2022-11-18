@@ -217,6 +217,45 @@ namespace RainLispTests
         }
 
         [Theory]
+        [InlineData("(utc? (now))", false)]
+        [InlineData("(utc? (utc-now))", true)]
+        [InlineData("(utc? (to-utc (now)))", true)]
+        [InlineData("(utc? (to-local (utc-now)))", false)]
+        [InlineData("(year (make-date 2022 12 31))", 2022d)]
+        [InlineData("(month (make-date 2022 12 31))", 12d)]
+        [InlineData("(day (make-date 2022 12 31))", 31d)]
+        [InlineData("(year (make-datetime 2022 12 31 22 34 12 321))", 2022d)]
+        [InlineData("(month (make-datetime 2022 12 31 22 34 12 321))", 12d)]
+        [InlineData("(day (make-datetime 2022 12 31 22 34 12 321))", 31d)]
+        [InlineData("(hour (make-datetime 2022 12 31 22 34 12 321))", 22d)]
+        [InlineData("(minute (make-datetime 2022 12 31 22 34 12 321))", 34d)]
+        [InlineData("(second (make-datetime 2022 12 31 22 34 12 321))", 12d)]
+        [InlineData("(millisecond (make-datetime 2022 12 31 22 34 12 321))", 321d)]
+        [InlineData("(year (add-years (make-datetime 2022 12 31 22 34 12 321) 1))", 2023d)]
+        [InlineData("(month (add-months (make-datetime 2022 12 31 22 34 12 321) 1))", 1d)]
+        [InlineData("(day (add-days (make-datetime 2022 12 31 22 34 12 321) -1))", 30d)]
+        [InlineData("(hour (add-hours (make-datetime 2022 12 31 22 34 12 321) 1))", 23d)]
+        [InlineData("(minute (add-minutes (make-datetime 2022 12 31 22 34 12 321) 6))", 40d)]
+        [InlineData("(second (add-seconds (make-datetime 2022 12 31 22 34 12 321) 8))", 20d)]
+        [InlineData("(millisecond (add-milliseconds (make-datetime 2022 12 31 22 34 12 321) 29))", 350d)]
+        [InlineData("(days-diff (make-date 2022 1 1) (make-date 2023 12 31))", 729d)]
+        [InlineData("(hours-diff (make-datetime 2022 1 1 9 25 30 100) (make-datetime 2023 12 31 23 55 45 300))", 14d)]
+        [InlineData("(minutes-diff (make-datetime 2022 1 1 9 25 30 100) (make-datetime 2023 12 31 23 55 45 300))", 30d)]
+        [InlineData("(seconds-diff (make-datetime 2022 1 1 9 25 30 100) (make-datetime 2023 12 31 23 55 45 300))", 15d)]
+        [InlineData("(milliseconds-diff (make-datetime 2022 1 1 9 25 30 100) (make-datetime 2023 12 31 23 55 45 300))", 200d)]
+        [InlineData("(= (parse-datetime \"2022/12/31 21:35:44.321\" \"yyyy/MM/dd HH:mm:ss.fff\") (make-datetime 2022 12 31 21 35 44 321))", true)]
+        [InlineData("(datetime-to-string (make-datetime 2022 12 31 21 35 44 321) \"yyyy/MM/dd HH:mm:ss.fff\")", "2022/12/31 21:35:44.321")]
+        public void Evaluate_DateTimeExpression_Correctly(string expression, object expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, ((IPrimitiveDatum)result).GetValueAsObject());
+        }
+
+        [Theory]
         [InlineData("(car l)", 3d)]
         [InlineData("(cadr l)", 2d)]
         [InlineData("(caddr l)", 1d)]
@@ -1008,6 +1047,10 @@ namespace RainLispTests
         [InlineData("(add-seconds (make-date 2022 1 1) -93312000000)")]
         [InlineData("(add-milliseconds (make-date 2022 1 1) 257472000000000)")]
         [InlineData("(add-milliseconds (make-date 2022 1 1) -93312000000000)")]
+        [InlineData("(parse-datetime \"\" \"yyyy-MM-dd\")")]
+        [InlineData("(parse-datetime \"2022/12/31\" \"\")")]
+        [InlineData("(parse-datetime \"2022/12/31\" \"yyyy-MM-dd\")")]
+        [InlineData("(datetime-to-string (now) \"q\")")]
         public void Evaluate_ExpressionWithInvalidValue_Throws(string expression)
         {
             Evaluate_WrongExpression_Throws<InvalidValueException>(expression);
