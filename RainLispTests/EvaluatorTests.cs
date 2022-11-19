@@ -683,6 +683,11 @@ namespace RainLispTests
         [InlineData("(length nil)", 0d)]
         [InlineData("(length (list 1 2 3))", 3d)]
         [InlineData("(length (cons 1 (cons 2 nil)))", 2d)]
+        [InlineData("(length (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 4d)]
+        [InlineData("(car (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 1d)]
+        [InlineData("(cadr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 11d)]
+        [InlineData("(caddr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 2d)]
+        [InlineData("(cadddr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 12d)]
         public void Evaluate_LibraryFunctions_Correctly(string expression, double expectedResult)
         {
             // Arrange

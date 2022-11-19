@@ -52,6 +52,9 @@
 (define (reverse sequence)
   (fold-left (lambda (x y) (cons y x)) nil sequence))
 
+(define (flatmap proc sequence)
+  (fold-right append nil (map proc sequence)))
+
 (define (length sequence)
   (define (length-iter seq count)
     (if (null? seq)
