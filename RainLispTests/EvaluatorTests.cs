@@ -760,40 +760,41 @@ namespace RainLispTests
 
         [Theory]
         // =
-        [InlineData("(= nil nil)", typeof(IPrimitiveDatum), typeof(Nil))]
-        [InlineData("(= 12 nil)", typeof(IPrimitiveDatum), typeof(Nil))]
-        [InlineData("(= (cons 1 2) (cons 3 4))", typeof(IPrimitiveDatum), typeof(Pair))]
-        [InlineData("(= (cons 1 2) 12)", typeof(IPrimitiveDatum), typeof(Pair))]
-        [InlineData("(= (lambda(x) x) (lambda(x) x))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
-        [InlineData("(= 14 (lambda(x) x))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
-        [InlineData("(= - -)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
-        [InlineData("(= - 14)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
-        [InlineData("(= (now) -)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
+        [InlineData("(= nil nil)", typeof(Nil), typeof(IPrimitiveDatum))]
+        [InlineData("(= 12 nil)", typeof(Nil), typeof(IPrimitiveDatum))]
+        [InlineData("(= (cons 1 2) (cons 3 4))", typeof(Pair), typeof(IPrimitiveDatum))]
+        [InlineData("(= (cons 1 2) 12)", typeof(Pair), typeof(IPrimitiveDatum))]
+        [InlineData("(= (lambda(x) x) (lambda(x) x))", typeof(UserProcedure), typeof(IPrimitiveDatum))]
+        [InlineData("(= 14 (lambda(x) x))", typeof(UserProcedure), typeof(IPrimitiveDatum))]
+        [InlineData("(= - -)", typeof(PrimitiveProcedure), typeof(IPrimitiveDatum))]
+        [InlineData("(= - 14)", typeof(PrimitiveProcedure), typeof(IPrimitiveDatum))]
+        [InlineData("(= (now) -)", typeof(PrimitiveProcedure), typeof(IPrimitiveDatum))]
         // make-date
-        [InlineData("(make-date nil 2 3)", typeof(NumberDatum), typeof(Nil))]
-        [InlineData("(make-date 2022 (cons 1 2) 3)", typeof(NumberDatum), typeof(Pair))]
-        [InlineData("(make-date 2022 1 +)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
-        [InlineData("(make-date (lambda () 1) 1 2)", typeof(NumberDatum), typeof(UserProcedure))]
-        [InlineData("(make-date 2022 (newline) 3)", typeof(NumberDatum), typeof(Unspecified))]
-        [InlineData("(make-date 2022 2 true)", typeof(NumberDatum), typeof(BoolDatum))]
-        [InlineData("(make-date \"hello\" 2 3)", typeof(NumberDatum), typeof(StringDatum))]
-        [InlineData("(make-date 2022 (now) 3)", typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("(make-date nil 2 3)", typeof(Nil), typeof(NumberDatum))]
+        [InlineData("(make-date 2022 (cons 1 2) 3)", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("(make-date 2022 1 +)", typeof(PrimitiveProcedure), typeof(NumberDatum))]
+        [InlineData("(make-date (lambda () 1) 1 2)", typeof(UserProcedure), typeof(NumberDatum))]
+        [InlineData("(make-date 2022 (newline) 3)", typeof(Unspecified), typeof(NumberDatum))]
+        [InlineData("(make-date 2022 2 true)", typeof(BoolDatum), typeof(NumberDatum))]
+        [InlineData("(make-date \"hello\" 2 3)", typeof(StringDatum), typeof(NumberDatum))]
+        [InlineData("(make-date 2022 (now) 3)", typeof(DateTimeDatum), typeof(NumberDatum))]
         // make-datetime
-        [InlineData("(make-datetime nil 1 1 2 3 2 3)", typeof(NumberDatum), typeof(Nil))]
-        [InlineData("(make-datetime 2022 (cons 1 2) 1 2 3 4 3)", typeof(NumberDatum), typeof(Pair))]
-        [InlineData("(make-datetime 2022 1 2 3 4 1 +)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
-        [InlineData("(make-datetime 2022 1 2 3 (lambda () 1) 1 2)", typeof(NumberDatum), typeof(UserProcedure))]
-        [InlineData("(make-datetime 2022 1 2 3 4 (newline) 3)", typeof(NumberDatum), typeof(Unspecified))]
-        [InlineData("(make-datetime 2022 1 2 3 4 2 true)", typeof(NumberDatum), typeof(BoolDatum))]
-        [InlineData("(make-datetime 2022 1 2 3 \"hello\" 2 3)", typeof(NumberDatum), typeof(StringDatum))]
-        [InlineData("(make-datetime 2022 1 2 3 4 (now) 3)", typeof(NumberDatum), typeof(DateTimeDatum))]
-        public void Evaluate_WrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
+        [InlineData("(make-datetime nil 1 1 2 3 2 3)", typeof(Nil), typeof(NumberDatum))]
+        [InlineData("(make-datetime 2022 (cons 1 2) 1 2 3 4 3)", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("(make-datetime 2022 1 2 3 4 1 +)", typeof(PrimitiveProcedure), typeof(NumberDatum))]
+        [InlineData("(make-datetime 2022 1 2 3 (lambda () 1) 1 2)", typeof(UserProcedure), typeof(NumberDatum))]
+        [InlineData("(make-datetime 2022 1 2 3 4 (newline) 3)", typeof(Unspecified), typeof(NumberDatum))]
+        [InlineData("(make-datetime 2022 1 2 3 4 2 true)", typeof(BoolDatum), typeof(NumberDatum))]
+        [InlineData("(make-datetime 2022 1 2 3 \"hello\" 2 3)", typeof(StringDatum), typeof(NumberDatum))]
+        [InlineData("(make-datetime 2022 1 2 3 4 (now) 3)", typeof(DateTimeDatum), typeof(NumberDatum))]
+        public void Evaluate_WrongTypeOfArgument_Throws(string expression, Type actual, Type expected)
         {
             // Arrange
             // Act
             var exception = Evaluate_WrongExpression_Throws<WrongTypeOfArgumentException>(expression);
 
             // Assert
+            Assert.Single(exception.Expected);
             Assert.Equal(expected, exception.Expected[0]);
             Assert.Equal(actual, exception.Actual);
         }

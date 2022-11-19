@@ -97,7 +97,7 @@ namespace RainLisp
                 catch (WrongTypeOfArgumentException ex)
                 {
                     if (ex.Expected.Length > 1) 
-                        printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT_ALT, string.Join(", ", ex.Expected.Select(t => t.Name)), ex.Actual.Name), ex);
+                        printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT_FOR_MANY, string.Join(", ", ex.Expected.Select(t => t.Name)), ex.Actual.Name), ex);
                     else
                         printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, ex.Expected[0].Name, ex.Actual.Name), ex);
                 }
