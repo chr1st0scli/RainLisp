@@ -245,6 +245,12 @@ namespace RainLispTests
         [InlineData("(milliseconds-diff (make-datetime 2022 1 1 9 25 30 100) (make-datetime 2023 12 31 23 55 45 300))", 200d)]
         [InlineData("(= (parse-datetime \"2022/12/31 21:35:44.321\" \"yyyy/MM/dd HH:mm:ss.fff\") (make-datetime 2022 12 31 21 35 44 321))", true)]
         [InlineData("(datetime-to-string (make-datetime 2022 12 31 21 35 44 321) \"yyyy/MM/dd HH:mm:ss.fff\")", "2022/12/31 21:35:44.321")]
+        [InlineData("(< (now) (add-days (now) 1))", true)]
+        [InlineData("(<= (now) (add-days (now) 1))", true)]
+        [InlineData("(define dt (now)) (<= dt dt)", true)]
+        [InlineData("(> (now) (add-days (now) 1))", false)]
+        [InlineData("(>= (now) (add-days (now) 1))", false)]
+        [InlineData("(define dt (now)) (>= dt dt)", true)]
         public void Evaluate_DateTimeExpression_Correctly(string expression, object expectedResult)
         {
             // Arrange
@@ -788,179 +794,208 @@ namespace RainLispTests
             var exception = Evaluate_WrongExpression_Throws<WrongTypeOfArgumentException>(expression);
 
             // Assert
-            Assert.Equal(expected, exception.Expected);
+            Assert.Equal(expected, exception.Expected[0]);
             Assert.Equal(actual, exception.Actual);
         }
 
         [Theory]
-        [InlineData("({0} \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
-        [InlineData("({0} 1 \"hi\")", typeof(NumberDatum), typeof(StringDatum))]
-        [InlineData("({0} \"hi\" \"there\")", typeof(NumberDatum), typeof(StringDatum))]
-        [InlineData("({0} 1 false)", typeof(NumberDatum), typeof(BoolDatum))]
-        [InlineData("({0} true 1)", typeof(NumberDatum), typeof(BoolDatum))]
-        [InlineData("({0} true true)", typeof(NumberDatum), typeof(BoolDatum))]
-        [InlineData("({0} nil 1)", typeof(NumberDatum), typeof(Nil))]
-        [InlineData("({0} 1 nil)", typeof(NumberDatum), typeof(Nil))]
-        [InlineData("({0} nil nil)", typeof(NumberDatum), typeof(Nil))]
-        [InlineData("({0} (cons 1 2) 1)", typeof(NumberDatum), typeof(Pair))]
-        [InlineData("({0} 1 (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
-        [InlineData("({0} (cons 1 2) (cons 3 4))", typeof(NumberDatum), typeof(Pair))]
-        [InlineData("({0} (lambda(x) x) 1)", typeof(NumberDatum), typeof(UserProcedure))]
-        [InlineData("({0} 1 (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
-        [InlineData("({0} (lambda(x) x) (lambda(x) x))", typeof(NumberDatum), typeof(UserProcedure))]
-        [InlineData("({0} - 1)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} 1 -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} - -)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
+        [InlineData("({0} \"hi\" 1)", typeof(StringDatum))]
+        [InlineData("({0} 1 \"hi\")", typeof(StringDatum))]
+        [InlineData("({0} \"hi\" \"there\")", typeof(StringDatum))]
+        [InlineData("({0} 1 false)", typeof(BoolDatum))]
+        [InlineData("({0} true 1)", typeof(BoolDatum))]
+        [InlineData("({0} true true)", typeof(BoolDatum))]
+        [InlineData("({0} nil 1)", typeof(Nil))]
+        [InlineData("({0} 1 nil)", typeof(Nil))]
+        [InlineData("({0} nil nil)", typeof(Nil))]
+        [InlineData("({0} (cons 1 2) 1)", typeof(Pair))]
+        [InlineData("({0} 1 (cons 3 4))", typeof(Pair))]
+        [InlineData("({0} (cons 1 2) (cons 3 4))", typeof(Pair))]
+        [InlineData("({0} (lambda(x) x) 1)", typeof(UserProcedure))]
+        [InlineData("({0} 1 (lambda(x) x))", typeof(UserProcedure))]
+        [InlineData("({0} (lambda(x) x) (lambda(x) x))", typeof(UserProcedure))]
+        [InlineData("({0} - 1)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} 1 -)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} - -)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} (now) 1)", typeof(DateTimeDatum))]
+        [InlineData("({0} 1 (now))", typeof(DateTimeDatum))]
+        [InlineData("({0} (now) (now))", typeof(DateTimeDatum))]
+        [InlineData("({0} (newline) 1)", typeof(Unspecified))]
+        [InlineData("({0} 1 (newline))", typeof(Unspecified))]
+        [InlineData("({0} (newline) (newline))", typeof(Unspecified))]
+        public void Evaluate_CallExpectingNumbersWithWrongTypeOfArgument_Throws(string expression, Type actual)
+        {
+            // maybe we should be able to concat strings with +.
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "+", "-", "*", "/", "%" }, expression, actual, typeof(NumberDatum));
+        }
+
+        [Theory]
+        [InlineData("({0} \"hi\" 1)", typeof(StringDatum), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} 1 \"hi\")", typeof(StringDatum), typeof(NumberDatum))]
+        [InlineData("({0} \"hi\" \"there\")", typeof(StringDatum), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} 1 false)", typeof(BoolDatum), typeof(NumberDatum))]
+        [InlineData("({0} true 1)", typeof(BoolDatum), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} true true)", typeof(BoolDatum), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} nil 1)", typeof(Nil), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} 1 nil)", typeof(Nil), typeof(NumberDatum))]
+        [InlineData("({0} nil nil)", typeof(Nil), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} (cons 1 2) 1)", typeof(Pair), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} 1 (cons 3 4))", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("({0} (cons 1 2) (cons 3 4))", typeof(Pair), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} (lambda(x) x) 1)", typeof(UserProcedure), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} 1 (lambda(x) x))", typeof(UserProcedure), typeof(NumberDatum))]
+        [InlineData("({0} (lambda(x) x) (lambda(x) x))", typeof(UserProcedure), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} - 1)", typeof(PrimitiveProcedure), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} 1 -)", typeof(PrimitiveProcedure), typeof(NumberDatum))]
+        [InlineData("({0} - -)", typeof(PrimitiveProcedure), typeof(NumberDatum), typeof(DateTimeDatum))]
         [InlineData("({0} (now) 1)", typeof(NumberDatum), typeof(DateTimeDatum))]
-        [InlineData("({0} 1 (now))", typeof(NumberDatum), typeof(DateTimeDatum))]
-        [InlineData("({0} (now) (now))", typeof(NumberDatum), typeof(DateTimeDatum))]
-        [InlineData("({0} (newline) 1)", typeof(NumberDatum), typeof(Unspecified))]
-        [InlineData("({0} 1 (newline))", typeof(NumberDatum), typeof(Unspecified))]
-        [InlineData("({0} (newline) (newline))", typeof(NumberDatum), typeof(Unspecified))]
-        public void Evaluate_CallExpectingNumbersWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
-        {
-            // maybe we should be able to concat strings with +.
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "+", "-", "*", "/", "%", ">", ">=", "<", "<=" }, expression, expected, actual);
-        }
-
-        [Theory]
-        [InlineData("({0} \"hi\")", typeof(Pair), typeof(StringDatum))]
-        [InlineData("({0} 1)", typeof(Pair), typeof(NumberDatum))]
-        [InlineData("({0} true)", typeof(Pair), typeof(BoolDatum))]
-        [InlineData("({0} (now))", typeof(Pair), typeof(DateTimeDatum))]
-        [InlineData("({0} nil)", typeof(Pair), typeof(Nil))]
-        [InlineData("({0} (newline))", typeof(Pair), typeof(Unspecified))]
-        [InlineData("({0} (lambda(x) x))", typeof(Pair), typeof(UserProcedure))]
-        [InlineData("({0} -)", typeof(Pair), typeof(PrimitiveProcedure))]
-        public void Evaluate_CallExpectingPairWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
-        {
-            // maybe we should be able to concat strings with +.
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "car", "cdr" }, expression, expected, actual);
-        }
-
-        [Theory]
-        [InlineData("({0} \"hi\" 1)", typeof(Pair), typeof(StringDatum))]
-        [InlineData("({0} 1 1)", typeof(Pair), typeof(NumberDatum))]
-        [InlineData("({0} true 1)", typeof(Pair), typeof(BoolDatum))]
-        [InlineData("({0} (now) 1)", typeof(Pair), typeof(DateTimeDatum))]
-        [InlineData("({0} nil 1)", typeof(Pair), typeof(Nil))]
-        [InlineData("({0} (newline) 1)", typeof(Pair), typeof(Unspecified))]
-        [InlineData("({0} (lambda(x) x) 1)", typeof(Pair), typeof(UserProcedure))]
-        [InlineData("({0} - 1)", typeof(Pair), typeof(PrimitiveProcedure))]
-        public void Evaluate_CallExpectingPairAndAnythingWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
-        {
-            // maybe we should be able to concat strings with +.
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "set-car!", "set-cdr!" }, expression, expected, actual);
-        }
-
-        [Theory]
-        [InlineData("({0} nil)", typeof(IPrimitiveDatum), typeof(Nil))]
-        [InlineData("({0} (newline))", typeof(IPrimitiveDatum), typeof(Unspecified))]
-        [InlineData("({0} (cons 1 2))", typeof(IPrimitiveDatum), typeof(Pair))]
-        [InlineData("({0} +)", typeof(IPrimitiveDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} (lambda () 1))", typeof(IPrimitiveDatum), typeof(UserProcedure))]
-        public void Evaluate_CallExpectingPrimitiveWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
-        {
-            // maybe we should be able to concat strings with +.
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "display", "debug", "trace", "error" }, expression, expected, actual);
-        }
-
-        [Theory]
-        [InlineData("({0} nil)", typeof(DateTimeDatum), typeof(Nil))]
-        [InlineData("({0} (cons 1 2))", typeof(DateTimeDatum), typeof(Pair))]
-        [InlineData("({0} +)", typeof(DateTimeDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} (lambda () 1))", typeof(DateTimeDatum), typeof(UserProcedure))]
-        [InlineData("({0} (newline))", typeof(DateTimeDatum), typeof(Unspecified))]
-        [InlineData("({0} true)", typeof(DateTimeDatum), typeof(BoolDatum))]
-        [InlineData("({0} \"hello\")", typeof(DateTimeDatum), typeof(StringDatum))]
-        public void Evaluate_CallExpectingDateTimeWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
-        {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc" }, expression, expected, actual);
-        }
-
-        [Theory]
-        [InlineData("({0} nil 1)", typeof(DateTimeDatum), typeof(Nil))]
-        [InlineData("({0} (cons 1 2) 1)", typeof(DateTimeDatum), typeof(Pair))]
-        [InlineData("({0} + 1)", typeof(DateTimeDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} (lambda () 1) 1)", typeof(DateTimeDatum), typeof(UserProcedure))]
-        [InlineData("({0} (newline) 1)", typeof(DateTimeDatum), typeof(Unspecified))]
-        [InlineData("({0} true 1)", typeof(DateTimeDatum), typeof(BoolDatum))]
-        [InlineData("({0} 1 1)", typeof(DateTimeDatum), typeof(NumberDatum))]
-        [InlineData("({0} \"hello\" 1)", typeof(DateTimeDatum), typeof(StringDatum))]
-        [InlineData("({0} (now) nil)", typeof(NumberDatum), typeof(Nil))]
-        [InlineData("({0} (now) (cons 1 2))", typeof(NumberDatum), typeof(Pair))]
-        [InlineData("({0} (now) +)", typeof(NumberDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} (now) (lambda () 1))", typeof(NumberDatum), typeof(UserProcedure))]
-        [InlineData("({0} (now) (newline))", typeof(NumberDatum), typeof(Unspecified))]
-        [InlineData("({0} (now) true)", typeof(NumberDatum), typeof(BoolDatum))]
-        [InlineData("({0} (now) \"hello\")", typeof(NumberDatum), typeof(StringDatum))]
-        [InlineData("({0} (now) (now))", typeof(NumberDatum), typeof(DateTimeDatum))]
-        public void Evaluate_CallExpectingDateTimeAndNumberWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
-        {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds" }, expression, expected, actual);
-        }
-
-        [Theory]
-        [InlineData("({0} nil 1)", typeof(DateTimeDatum), typeof(Nil))]
-        [InlineData("({0} (cons 1 2) 1)", typeof(DateTimeDatum), typeof(Pair))]
-        [InlineData("({0} + 1)", typeof(DateTimeDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} (lambda () 1) 1)", typeof(DateTimeDatum), typeof(UserProcedure))]
-        [InlineData("({0} (newline) 1)", typeof(DateTimeDatum), typeof(Unspecified))]
-        [InlineData("({0} true 1)", typeof(DateTimeDatum), typeof(BoolDatum))]
         [InlineData("({0} 1 (now))", typeof(DateTimeDatum), typeof(NumberDatum))]
-        [InlineData("({0} \"hello\" 1)", typeof(DateTimeDatum), typeof(StringDatum))]
-        [InlineData("({0} (now) nil)", typeof(DateTimeDatum), typeof(Nil))]
-        [InlineData("({0} (now) (cons 1 2))", typeof(DateTimeDatum), typeof(Pair))]
-        [InlineData("({0} (now) +)", typeof(DateTimeDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} (now) (lambda () 1))", typeof(DateTimeDatum), typeof(UserProcedure))]
-        [InlineData("({0} (now) (newline))", typeof(DateTimeDatum), typeof(Unspecified))]
-        [InlineData("({0} (now) true)", typeof(DateTimeDatum), typeof(BoolDatum))]
-        [InlineData("({0} (now) 1)", typeof(DateTimeDatum), typeof(NumberDatum))]
-        [InlineData("({0} (now) \"hello\")", typeof(DateTimeDatum), typeof(StringDatum))]
-        public void Evaluate_CallExpecting2DateTimesWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
+        [InlineData("({0} (newline) 1)", typeof(Unspecified), typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} 1 (newline))", typeof(Unspecified), typeof(NumberDatum))]
+        [InlineData("({0} (newline) (newline))", typeof(Unspecified), typeof(NumberDatum), typeof(DateTimeDatum))]
+        public void Evaluate_CallExpectingNumberOrDateTimeWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff" }, expression, expected, actual);
+            Evaluate_CallsWithWrongExpression_Throws(new[] { ">", ">=", "<", "<=" }, expression, actual, expected);
         }
 
         [Theory]
-        [InlineData("({0} nil 1)", typeof(StringDatum), typeof(Nil))]
-        [InlineData("({0} (cons 1 2) 1)", typeof(StringDatum), typeof(Pair))]
-        [InlineData("({0} + 1)", typeof(StringDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} (lambda () 1) 1)", typeof(StringDatum), typeof(UserProcedure))]
-        [InlineData("({0} (newline) 1)", typeof(StringDatum), typeof(Unspecified))]
-        [InlineData("({0} true 1)", typeof(StringDatum), typeof(BoolDatum))]
-        [InlineData("({0} 1 \"hello\")", typeof(StringDatum), typeof(NumberDatum))]
-        [InlineData("({0} \"hello\" 1)", typeof(StringDatum), typeof(NumberDatum))]
-        [InlineData("({0} \"hello\" nil)", typeof(StringDatum), typeof(Nil))]
-        [InlineData("({0} \"hello\" (cons 1 2))", typeof(StringDatum), typeof(Pair))]
-        [InlineData("({0} \"hello\" +)", typeof(StringDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} \"hello\" (lambda () 1))", typeof(StringDatum), typeof(UserProcedure))]
-        [InlineData("({0} \"hello\" (newline))", typeof(StringDatum), typeof(Unspecified))]
-        [InlineData("({0} \"hello\" true)", typeof(StringDatum), typeof(BoolDatum))]
-        public void Evaluate_CallExpecting2StringsWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
+        [InlineData("({0} \"hi\")", typeof(StringDatum))]
+        [InlineData("({0} 1)", typeof(NumberDatum))]
+        [InlineData("({0} true)", typeof(BoolDatum))]
+        [InlineData("({0} (now))", typeof(DateTimeDatum))]
+        [InlineData("({0} nil)", typeof(Nil))]
+        [InlineData("({0} (newline))", typeof(Unspecified))]
+        [InlineData("({0} (lambda(x) x))", typeof(UserProcedure))]
+        [InlineData("({0} -)", typeof(PrimitiveProcedure))]
+        public void Evaluate_CallExpectingPairWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "parse-datetime" }, expression, expected, actual);
+            // maybe we should be able to concat strings with +.
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "car", "cdr" }, expression, actual, typeof(Pair));
         }
 
         [Theory]
-        [InlineData("({0} nil 1)", typeof(DateTimeDatum), typeof(Nil))]
-        [InlineData("({0} (cons 1 2) 1)", typeof(DateTimeDatum), typeof(Pair))]
-        [InlineData("({0} + 1)", typeof(DateTimeDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} (lambda () 1) 1)", typeof(DateTimeDatum), typeof(UserProcedure))]
-        [InlineData("({0} (newline) 1)", typeof(DateTimeDatum), typeof(Unspecified))]
-        [InlineData("({0} true 1)", typeof(DateTimeDatum), typeof(BoolDatum))]
-        [InlineData("({0} 1 1)", typeof(DateTimeDatum), typeof(NumberDatum))]
-        [InlineData("({0} \"hello\" 1)", typeof(DateTimeDatum), typeof(StringDatum))]
-        [InlineData("({0} (now) nil)", typeof(StringDatum), typeof(Nil))]
-        [InlineData("({0} (now) (cons 1 2))", typeof(StringDatum), typeof(Pair))]
-        [InlineData("({0} (now) +)", typeof(StringDatum), typeof(PrimitiveProcedure))]
-        [InlineData("({0} (now) (lambda () 1))", typeof(StringDatum), typeof(UserProcedure))]
-        [InlineData("({0} (now) (newline))", typeof(StringDatum), typeof(Unspecified))]
-        [InlineData("({0} (now) true)", typeof(StringDatum), typeof(BoolDatum))]
-        [InlineData("({0} (now) 1)", typeof(StringDatum), typeof(NumberDatum))]
-        public void Evaluate_CallExpectingDateTimeAndStringWithWrongTypeOfArgument_Throws(string expression, Type expected, Type actual)
+        [InlineData("({0} \"hi\" 1)", typeof(StringDatum))]
+        [InlineData("({0} 1 1)", typeof(NumberDatum))]
+        [InlineData("({0} true 1)", typeof(BoolDatum))]
+        [InlineData("({0} (now) 1)", typeof(DateTimeDatum))]
+        [InlineData("({0} nil 1)", typeof(Nil))]
+        [InlineData("({0} (newline) 1)", typeof(Unspecified))]
+        [InlineData("({0} (lambda(x) x) 1)", typeof(UserProcedure))]
+        [InlineData("({0} - 1)", typeof(PrimitiveProcedure))]
+        public void Evaluate_CallExpectingPairAndAnythingWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "datetime-to-string" }, expression, expected, actual);
+            // maybe we should be able to concat strings with +.
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "set-car!", "set-cdr!" }, expression, actual, typeof(Pair));
+        }
+
+        [Theory]
+        [InlineData("({0} nil)", typeof(Nil))]
+        [InlineData("({0} (newline))", typeof(Unspecified))]
+        [InlineData("({0} (cons 1 2))", typeof(Pair))]
+        [InlineData("({0} +)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} (lambda () 1))", typeof(UserProcedure))]
+        public void Evaluate_CallExpectingPrimitiveWithWrongTypeOfArgument_Throws(string expression, Type actual)
+        {
+            // maybe we should be able to concat strings with +.
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "display", "debug", "trace", "error" }, expression, actual, typeof(IPrimitiveDatum));
+        }
+
+        [Theory]
+        [InlineData("({0} nil)", typeof(Nil))]
+        [InlineData("({0} (cons 1 2))", typeof(Pair))]
+        [InlineData("({0} +)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} (lambda () 1))", typeof(UserProcedure))]
+        [InlineData("({0} (newline))", typeof(Unspecified))]
+        [InlineData("({0} true)", typeof(BoolDatum))]
+        [InlineData("({0} \"hello\")", typeof(StringDatum))]
+        public void Evaluate_CallExpectingDateTimeWithWrongTypeOfArgument_Throws(string expression, Type actual)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc" }, expression, actual, typeof(DateTimeDatum));
+        }
+
+        [Theory]
+        [InlineData("({0} nil 1)", typeof(Nil), typeof(DateTimeDatum))]
+        [InlineData("({0} (cons 1 2) 1)", typeof(Pair), typeof(DateTimeDatum))]
+        [InlineData("({0} + 1)", typeof(PrimitiveProcedure), typeof(DateTimeDatum))]
+        [InlineData("({0} (lambda () 1) 1)", typeof(UserProcedure), typeof(DateTimeDatum))]
+        [InlineData("({0} (newline) 1)", typeof(Unspecified), typeof(DateTimeDatum))]
+        [InlineData("({0} true 1)", typeof(BoolDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} 1 1)", typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} \"hello\" 1)", typeof(StringDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} (now) nil)", typeof(Nil), typeof(NumberDatum))]
+        [InlineData("({0} (now) (cons 1 2))", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("({0} (now) +)", typeof(PrimitiveProcedure), typeof(NumberDatum))]
+        [InlineData("({0} (now) (lambda () 1))", typeof(UserProcedure), typeof(NumberDatum))]
+        [InlineData("({0} (now) (newline))", typeof(Unspecified), typeof(NumberDatum))]
+        [InlineData("({0} (now) true)", typeof(BoolDatum), typeof(NumberDatum))]
+        [InlineData("({0} (now) \"hello\")", typeof(StringDatum), typeof(NumberDatum))]
+        [InlineData("({0} (now) (now))", typeof(DateTimeDatum), typeof(NumberDatum))]
+        public void Evaluate_CallExpectingDateTimeAndNumberWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds" }, expression, actual, expected);
+        }
+
+        [Theory]
+        [InlineData("({0} nil 1)", typeof(Nil))]
+        [InlineData("({0} (cons 1 2) 1)", typeof(Pair))]
+        [InlineData("({0} + 1)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} (lambda () 1) 1)", typeof(UserProcedure))]
+        [InlineData("({0} (newline) 1)", typeof(Unspecified))]
+        [InlineData("({0} true 1)", typeof(BoolDatum))]
+        [InlineData("({0} 1 (now))", typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" 1)", typeof(StringDatum))]
+        [InlineData("({0} (now) nil)", typeof(Nil))]
+        [InlineData("({0} (now) (cons 1 2))", typeof(Pair))]
+        [InlineData("({0} (now) +)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} (now) (lambda () 1))", typeof(UserProcedure))]
+        [InlineData("({0} (now) (newline))", typeof(Unspecified))]
+        [InlineData("({0} (now) true)", typeof(BoolDatum))]
+        [InlineData("({0} (now) 1)", typeof(NumberDatum))]
+        [InlineData("({0} (now) \"hello\")", typeof(StringDatum))]
+        public void Evaluate_CallExpecting2DateTimesWithWrongTypeOfArgument_Throws(string expression, Type actual)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff" }, expression, actual, typeof(DateTimeDatum));
+        }
+
+        [Theory]
+        [InlineData("({0} nil 1)", typeof(Nil))]
+        [InlineData("({0} (cons 1 2) 1)", typeof(Pair))]
+        [InlineData("({0} + 1)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} (lambda () 1) 1)", typeof(UserProcedure))]
+        [InlineData("({0} (newline) 1)", typeof(Unspecified))]
+        [InlineData("({0} true 1)", typeof(BoolDatum))]
+        [InlineData("({0} 1 \"hello\")", typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" 1)", typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" nil)", typeof(Nil))]
+        [InlineData("({0} \"hello\" (cons 1 2))", typeof(Pair))]
+        [InlineData("({0} \"hello\" +)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} \"hello\" (lambda () 1))", typeof(UserProcedure))]
+        [InlineData("({0} \"hello\" (newline))", typeof(Unspecified))]
+        [InlineData("({0} \"hello\" true)", typeof(BoolDatum))]
+        public void Evaluate_CallExpecting2StringsWithWrongTypeOfArgument_Throws(string expression, Type actual)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "parse-datetime" }, expression, actual, typeof(StringDatum));
+        }
+
+        [Theory]
+        [InlineData("({0} nil 1)", typeof(Nil), typeof(DateTimeDatum))]
+        [InlineData("({0} (cons 1 2) 1)", typeof(Pair), typeof(DateTimeDatum))]
+        [InlineData("({0} + 1)", typeof(PrimitiveProcedure), typeof(DateTimeDatum))]
+        [InlineData("({0} (lambda () 1) 1)", typeof(UserProcedure), typeof(DateTimeDatum))]
+        [InlineData("({0} (newline) 1)", typeof(Unspecified), typeof(DateTimeDatum))]
+        [InlineData("({0} true 1)", typeof(BoolDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} 1 1)", typeof(NumberDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} \"hello\" 1)", typeof(StringDatum), typeof(DateTimeDatum))]
+        [InlineData("({0} (now) nil)", typeof(Nil), typeof(StringDatum))]
+        [InlineData("({0} (now) (cons 1 2))", typeof(Pair), typeof(StringDatum))]
+        [InlineData("({0} (now) +)", typeof(PrimitiveProcedure), typeof(StringDatum))]
+        [InlineData("({0} (now) (lambda () 1))", typeof(UserProcedure), typeof(StringDatum))]
+        [InlineData("({0} (now) (newline))", typeof(Unspecified), typeof(StringDatum))]
+        [InlineData("({0} (now) true)", typeof(BoolDatum), typeof(StringDatum))]
+        [InlineData("({0} (now) 1)", typeof(NumberDatum), typeof(StringDatum))]
+        public void Evaluate_CallExpectingDateTimeAndStringWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "datetime-to-string" }, expression, actual, expected);
         }
 
         [Theory]
@@ -1071,7 +1106,7 @@ namespace RainLispTests
             }
         }
 
-        private void Evaluate_CallsWithWrongExpression_Throws(string[] procedureNames, string expression, Type expected, Type actual)
+        private void Evaluate_CallsWithWrongExpression_Throws(string[] procedureNames, string expression, Type actual, params Type[] expected)
         {
             // Arrange
             // Act
@@ -1080,7 +1115,11 @@ namespace RainLispTests
                 var exception = Evaluate_WrongExpression_Throws<WrongTypeOfArgumentException>(string.Format(expression, procName));
 
                 // Assert
-                Assert.Equal(expected, exception.Expected);
+                Assert.Equal(expected.Length, exception.Expected.Length);
+
+                for (int i = 0; i < exception.Expected.Length; i++)
+                    Assert.Equal(expected[i], exception.Expected[i]);
+
                 Assert.Equal(actual, exception.Actual);
             }
         }

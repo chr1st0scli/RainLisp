@@ -91,16 +91,24 @@ namespace RainLisp.Evaluation
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, values, result => new NumberDatum(result));
 
         private static EvaluationResult GreaterThan(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDouble, (val1, val2) => new BoolDatum(val1 > val2), values);
+            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>, 
+                (val1, val2) => new BoolDatum(val1.Value > val2.Value), 
+                (val1, val2) => new BoolDatum(val1.Value > val2.Value), values);
 
         private static EvaluationResult GreaterThanOrEqualTo(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDouble, (val1, val2) => new BoolDatum(val1 >= val2), values);
+            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>, 
+                (val1, val2) => new BoolDatum(val1.Value >= val2.Value), 
+                (val1, val2) => new BoolDatum(val1.Value >= val2.Value), values);
 
         private static EvaluationResult LessThan(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDouble, (val1, val2) => new BoolDatum(val1 < val2), values);
+            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>, 
+                (val1, val2) => new BoolDatum(val1.Value < val2.Value), 
+                (val1, val2) => new BoolDatum(val1.Value < val2.Value), values);
 
         private static EvaluationResult LessThanOrEqualTo(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDouble, (val1, val2) => new BoolDatum(val1 <= val2), values);
+            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>, 
+                (val1, val2) => new BoolDatum(val1.Value <= val2.Value), 
+                (val1, val2) => new BoolDatum(val1.Value <= val2.Value), values);
 
         private static EvaluationResult EqualTo(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsAnyPrimitive, (object val1, object val2) => new BoolDatum(val1.Equals(val2)), values);
@@ -348,6 +356,19 @@ namespace RainLisp.Evaluation
             return calculate(values[0], values[1]);
         }
 
+        private static EvaluationResult ApplyBinaryOperatorOnEither<T1, T2>(Transform<T1> transform, Transform<T2> transformAlt, CalculateBinary<T1> calculate, CalculateBinary<T2> calculateAlt, EvaluationResult[]? values)
+        {
+            RequireMoreThanZero(values, 2);
+
+            if (values[0] is T1 t1)
+                return calculate(t1, transform(values[1]));
+
+            else if (values[0] is T2 t2)
+                return calculateAlt(t2, transformAlt(values[1]));
+
+            throw new WrongTypeOfArgumentException(values[0].GetType(), new[] { typeof(T1), typeof(T2) });
+        }
+
         private static EvaluationResult ApplyUnaryOperator<T>(Transform<T> transform, CalculateUnary<T> calculate, EvaluationResult[]? values)
         {
             RequireMoreThanZero(values, 1);
@@ -389,7 +410,7 @@ namespace RainLisp.Evaluation
             if (value is T t)
                 return t;
 
-            throw new WrongTypeOfArgumentException(value.GetType(), typeof(T));
+            throw new WrongTypeOfArgumentException(value.GetType(), new[] { typeof(T) });
         }
 
         private static EvaluationResult ApplyFoldRightOperator(CalculateMultiple<EvaluationResult> foldOperator, EvaluationResult initial, EvaluationResult[] values, int valueIndex = 0)

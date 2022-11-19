@@ -40,19 +40,19 @@
 
     public class WrongTypeOfArgumentException : Exception
     {
-        public WrongTypeOfArgumentException(Type actual, Type expected)
+        public WrongTypeOfArgumentException(Type actual, Type[] expected)
         {
             Actual = actual;
             Expected = expected;
         }
 
-        public WrongTypeOfArgumentException(Type actual, Type expected, string? message) : base(message)
+        public WrongTypeOfArgumentException(Type actual, Type[] expected, string? message) : base(message)
         {
             Actual = actual;
             Expected = expected;
         }
 
-        public WrongTypeOfArgumentException(Type actual, Type expected, string? message, Exception? innerException) : base(message, innerException)
+        public WrongTypeOfArgumentException(Type actual, Type[] expected, string? message, Exception? innerException) : base(message, innerException)
         {
             Actual = actual;
             Expected = expected;
@@ -60,7 +60,7 @@
 
         public Type Actual { get; init; }
 
-        public Type Expected { get; init; }
+        public Type[] Expected { get; init; }
     }
 
     public class UnknownIdentifierException : Exception
