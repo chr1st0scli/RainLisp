@@ -76,7 +76,7 @@ namespace RainLisp.Evaluation
 
         #region Primitive Operations
         private static EvaluationResult Add(EvaluationResult[]? values)
-            => ApplyMultivalueOperatorOnEither<NumberDatum, StringDatum, double, string>(AsDouble, AsString,
+            => ApplyMultivalueOperatorOnEitherPrimitive<NumberDatum, StringDatum, double, string>(AsDouble, AsString,
                 (val1, val2) => val1 + val2,
                 (val1, val2) => val1 + val2,
                 values,
@@ -336,21 +336,20 @@ namespace RainLisp.Evaluation
             return resultTransform(accumulator);
         }
 
-        private static EvaluationResult ApplyMultivalueOperatorOnEither<T1, T2, T3, T4>(Transform<T3> transform, Transform<T4> transformAlt, CalculateMultiple<T3> calculate, CalculateMultiple<T4> calculateAlt, EvaluationResult[]? values, TransformBack<T3> resultTransform, TransformBack<T4> resultTransformAlt)
+        private static EvaluationResult ApplyMultivalueOperatorOnEitherPrimitive<T1, T2, T3, T4>(Transform<T3> transform, Transform<T4> transformAlt, CalculateMultiple<T3> calculate, CalculateMultiple<T4> calculateAlt, EvaluationResult[]? values, TransformBack<T3> resultTransform, TransformBack<T4> resultTransformAlt)
+            where T1 : PrimitiveDatum<T3> where T2 : PrimitiveDatum<T4> where T3 : notnull where T4 : notnull
         {
             RequireMoreThanZero(values, 2, true);
 
             if (values[0] is T1 t1)
             {
-                T3 accumulator = transform(values[0]);
-                accumulator = AccumulateRest(transform, calculate, accumulator, values);
+                T3 accumulator = AccumulateRest(transform, calculate, t1.Value, values);
 
                 return resultTransform(accumulator);
             }
             else if (values[0] is T2 t2)
             {
-                T4 accumulator = transformAlt(values[0]);
-                accumulator = AccumulateRest(transformAlt, calculateAlt, accumulator, values);
+                T4 accumulator = AccumulateRest(transformAlt, calculateAlt, t2.Value, values);
 
                 return resultTransformAlt(accumulator);
             }
