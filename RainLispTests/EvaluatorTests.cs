@@ -226,6 +226,23 @@ namespace RainLispTests
         }
 
         [Theory]
+        [InlineData("(+ \"\" \"\")", "")]
+        [InlineData("(+ \"\" \" \")", " ")]
+        [InlineData("(+ \"hello \" \"world\")", "hello world")]
+        [InlineData("(+ \"hello\" \" \" \"world\")", "hello world")]
+        [InlineData("(+ \"hello\" \" wonderful \" \"world\")", "hello wonderful world")]
+        [InlineData("(+ \"hello\" \" magnificent\" \" wonderful\" \" world\")", "hello magnificent wonderful world")]
+        public void Evaluate_StringConcatenation_Correctly(string expression, string expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression);
+
+            // Assert
+            Assert.Equal(expectedResult, ((StringDatum)result).Value);
+        }
+
+        [Theory]
         [InlineData("(utc? (now))", false)]
         [InlineData("(utc? (utc-now))", true)]
         [InlineData("(utc? (to-utc (now)))", true)]
@@ -808,6 +825,42 @@ namespace RainLispTests
         }
 
         [Theory]
+        [InlineData("({0} \"hi\" 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} 1 \"hi\")", typeof(StringDatum), typeof(NumberDatum))]
+        [InlineData("({0} 1 false)", typeof(BoolDatum), typeof(NumberDatum))]
+        [InlineData("({0} true 1)", typeof(BoolDatum), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} \"hello\" true)", typeof(BoolDatum), typeof(StringDatum))]
+        [InlineData("({0} true true)", typeof(BoolDatum), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} nil 1)", typeof(Nil), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} 1 nil)", typeof(Nil), typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" nil)", typeof(Nil), typeof(StringDatum))]
+        [InlineData("({0} nil nil)", typeof(Nil), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} (cons 1 2) 1)", typeof(Pair), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} 1 (cons 3 4))", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" (cons 3 4))", typeof(Pair), typeof(StringDatum))]
+        [InlineData("({0} (cons 1 2) (cons 3 4))", typeof(Pair), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} (lambda(x) x) 1)", typeof(UserProcedure), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} 1 (lambda(x) x))", typeof(UserProcedure), typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" (lambda(x) x))", typeof(UserProcedure), typeof(StringDatum))]
+        [InlineData("({0} (lambda(x) x) (lambda(x) x))", typeof(UserProcedure), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} - 1)", typeof(PrimitiveProcedure), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} 1 -)", typeof(PrimitiveProcedure), typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" -)", typeof(PrimitiveProcedure), typeof(StringDatum))]
+        [InlineData("({0} - -)", typeof(PrimitiveProcedure), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} (now) 1)", typeof(DateTimeDatum), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} 1 (now))", typeof(DateTimeDatum), typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" (now))", typeof(DateTimeDatum), typeof(StringDatum))]
+        [InlineData("({0} (now) (now))", typeof(DateTimeDatum), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} (newline) 1)", typeof(Unspecified), typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} 1 (newline))", typeof(Unspecified), typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" (newline))", typeof(Unspecified), typeof(StringDatum))]
+        [InlineData("({0} (newline) (newline))", typeof(Unspecified), typeof(NumberDatum), typeof(StringDatum))]
+        public void Evaluate_CallExpectingNumbersOrStringsWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "+" }, expression, actual, expected);
+        }
+
+        [Theory]
         [InlineData("({0} \"hi\" 1)", typeof(StringDatum))]
         [InlineData("({0} 1 \"hi\")", typeof(StringDatum))]
         [InlineData("({0} \"hi\" \"there\")", typeof(StringDatum))]
@@ -834,8 +887,7 @@ namespace RainLispTests
         [InlineData("({0} (newline) (newline))", typeof(Unspecified))]
         public void Evaluate_CallExpectingNumbersWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            // maybe we should be able to concat strings with +.
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "+", "-", "*", "/", "%" }, expression, actual, typeof(NumberDatum));
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "-", "*", "/", "%" }, expression, actual, typeof(NumberDatum));
         }
 
         [Theory]

@@ -76,7 +76,12 @@ namespace RainLisp.Evaluation
 
         #region Primitive Operations
         private static EvaluationResult Add(EvaluationResult[]? values)
-            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 + val2, values, result => new NumberDatum(result));
+            => ApplyMultivalueOperatorOnEither<NumberDatum, StringDatum, double, string>(AsDouble, AsString,
+                (val1, val2) => val1 + val2,
+                (val1, val2) => val1 + val2,
+                values,
+                result => new NumberDatum(result), 
+                result => new StringDatum(result));
 
         private static EvaluationResult Subtract(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 - val2, values, result => new NumberDatum(result));
@@ -91,23 +96,23 @@ namespace RainLisp.Evaluation
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, values, result => new NumberDatum(result));
 
         private static EvaluationResult GreaterThan(EvaluationResult[]? values)
-            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>, 
-                (val1, val2) => new BoolDatum(val1.Value > val2.Value), 
+            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
+                (val1, val2) => new BoolDatum(val1.Value > val2.Value),
                 (val1, val2) => new BoolDatum(val1.Value > val2.Value), values);
 
         private static EvaluationResult GreaterThanOrEqualTo(EvaluationResult[]? values)
-            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>, 
-                (val1, val2) => new BoolDatum(val1.Value >= val2.Value), 
+            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
+                (val1, val2) => new BoolDatum(val1.Value >= val2.Value),
                 (val1, val2) => new BoolDatum(val1.Value >= val2.Value), values);
 
         private static EvaluationResult LessThan(EvaluationResult[]? values)
-            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>, 
-                (val1, val2) => new BoolDatum(val1.Value < val2.Value), 
+            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
+                (val1, val2) => new BoolDatum(val1.Value < val2.Value),
                 (val1, val2) => new BoolDatum(val1.Value < val2.Value), values);
 
         private static EvaluationResult LessThanOrEqualTo(EvaluationResult[]? values)
-            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>, 
-                (val1, val2) => new BoolDatum(val1.Value <= val2.Value), 
+            => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
+                (val1, val2) => new BoolDatum(val1.Value <= val2.Value),
                 (val1, val2) => new BoolDatum(val1.Value <= val2.Value), values);
 
         private static EvaluationResult EqualTo(EvaluationResult[]? values)
@@ -321,15 +326,45 @@ namespace RainLisp.Evaluation
 
         private delegate EvaluationResult CalculateUnary<T>(T value);
 
-        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, EvaluationResult[]? values, TransformBack<T> resultTransform) where T : notnull
+        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, EvaluationResult[]? values, TransformBack<T> resultTransform)
         {
             RequireMoreThanZero(values, 2, true);
 
             T accumulator = transform(values[0]);
+            accumulator = AccumulateAllButFirst(transform, calculate, accumulator, values);
+
+            return resultTransform(accumulator);
+        }
+
+        private static EvaluationResult ApplyMultivalueOperatorOnEither<T1, T2, T3, T4>(Transform<T3> transform, Transform<T4> transformAlt, CalculateMultiple<T3> calculate, CalculateMultiple<T4> calculateAlt, EvaluationResult[]? values, TransformBack<T3> resultTransform, TransformBack<T4> resultTransformAlt)
+        {
+            RequireMoreThanZero(values, 2, true);
+
+            if (values[0] is T1 t1)
+            {
+                T3 accumulator = transform(values[0]);
+                accumulator = AccumulateAllButFirst(transform, calculate, accumulator, values);
+
+                return resultTransform(accumulator);
+            }
+            else if (values[0] is T2 t2)
+            {
+                T4 accumulator = transformAlt(values[0]);
+                accumulator = AccumulateAllButFirst(transformAlt, calculateAlt, accumulator, values);
+
+                return resultTransformAlt(accumulator);
+            }
+
+            throw new WrongTypeOfArgumentException(values[0].GetType(), new[] { typeof(T1), typeof(T2) });
+        }
+
+        private static T AccumulateAllButFirst<T>(Transform<T> transform, CalculateMultiple<T> calculate, T initial, EvaluationResult[] values)
+        {
+            T accumulator = initial;
             for (int i = 1; i < values.Length; i++)
                 accumulator = calculate(accumulator, transform(values[i]));
 
-            return resultTransform(accumulator);
+            return accumulator;
         }
 
         private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, CalculateBinary<T> calculate, EvaluationResult[]? values)
