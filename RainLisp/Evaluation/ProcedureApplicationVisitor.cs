@@ -80,7 +80,7 @@ namespace RainLisp.Evaluation
                 (val1, val2) => val1 + val2,
                 (val1, val2) => val1 + val2,
                 values,
-                result => new NumberDatum(result), 
+                result => new NumberDatum(result),
                 result => new StringDatum(result));
 
         private static EvaluationResult Subtract(EvaluationResult[]? values)
@@ -331,7 +331,7 @@ namespace RainLisp.Evaluation
             RequireMoreThanZero(values, 2, true);
 
             T accumulator = transform(values[0]);
-            accumulator = AccumulateAllButFirst(transform, calculate, accumulator, values);
+            accumulator = AccumulateRest(transform, calculate, accumulator, values);
 
             return resultTransform(accumulator);
         }
@@ -343,14 +343,14 @@ namespace RainLisp.Evaluation
             if (values[0] is T1 t1)
             {
                 T3 accumulator = transform(values[0]);
-                accumulator = AccumulateAllButFirst(transform, calculate, accumulator, values);
+                accumulator = AccumulateRest(transform, calculate, accumulator, values);
 
                 return resultTransform(accumulator);
             }
             else if (values[0] is T2 t2)
             {
                 T4 accumulator = transformAlt(values[0]);
-                accumulator = AccumulateAllButFirst(transformAlt, calculateAlt, accumulator, values);
+                accumulator = AccumulateRest(transformAlt, calculateAlt, accumulator, values);
 
                 return resultTransformAlt(accumulator);
             }
@@ -358,7 +358,7 @@ namespace RainLisp.Evaluation
             throw new WrongTypeOfArgumentException(values[0].GetType(), new[] { typeof(T1), typeof(T2) });
         }
 
-        private static T AccumulateAllButFirst<T>(Transform<T> transform, CalculateMultiple<T> calculate, T initial, EvaluationResult[] values)
+        private static T AccumulateRest<T>(Transform<T> transform, CalculateMultiple<T> calculate, T initial, EvaluationResult[] values)
         {
             T accumulator = initial;
             for (int i = 1; i < values.Length; i++)
