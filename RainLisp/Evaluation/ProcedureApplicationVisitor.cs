@@ -79,21 +79,21 @@ namespace RainLisp.Evaluation
             => ApplyMultivalueOperatorOnEitherPrimitive<NumberDatum, StringDatum, double, string>(AsDouble, AsString,
                 (val1, val2) => val1 + val2,
                 (val1, val2) => val1 + val2,
-                values,
                 result => new NumberDatum(result),
-                result => new StringDatum(result));
+                result => new StringDatum(result),
+                values);
 
         private static EvaluationResult Subtract(EvaluationResult[]? values)
-            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 - val2, values, result => new NumberDatum(result));
+            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 - val2, result => new NumberDatum(result), values);
 
         private static EvaluationResult Multiply(EvaluationResult[]? values)
-            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 * val2, values, result => new NumberDatum(result));
+            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 * val2, result => new NumberDatum(result), values);
 
         private static EvaluationResult Divide(EvaluationResult[]? values)
-            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 / val2, values, result => new NumberDatum(result));
+            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 / val2, result => new NumberDatum(result), values);
 
         private static EvaluationResult Modulo(EvaluationResult[]? values)
-            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, values, result => new NumberDatum(result));
+            => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, result => new NumberDatum(result), values);
 
         private static EvaluationResult GreaterThan(EvaluationResult[]? values)
             => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
@@ -119,7 +119,7 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator(AsAnyPrimitive, (object val1, object val2) => new BoolDatum(val1.Equals(val2)), values);
 
         private static EvaluationResult LogicalXor(EvaluationResult[]? values)
-            => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, values, result => new BoolDatum(result));
+            => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, result => new BoolDatum(result), values);
 
         private static EvaluationResult LogicalNot(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsBool, val => new BoolDatum(!val), values);
@@ -326,7 +326,7 @@ namespace RainLisp.Evaluation
 
         private delegate EvaluationResult CalculateUnary<T>(T value);
 
-        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, EvaluationResult[]? values, TransformBack<T> resultTransform)
+        private static EvaluationResult ApplyMultivalueOperator<T>(Transform<T> transform, CalculateMultiple<T> calculate, TransformBack<T> resultTransform, EvaluationResult[]? values)
         {
             RequireMoreThanZero(values, 2, true);
 
@@ -336,7 +336,7 @@ namespace RainLisp.Evaluation
             return resultTransform(accumulator);
         }
 
-        private static EvaluationResult ApplyMultivalueOperatorOnEitherPrimitive<T1, T2, T3, T4>(Transform<T3> transform, Transform<T4> transformAlt, CalculateMultiple<T3> calculate, CalculateMultiple<T4> calculateAlt, EvaluationResult[]? values, TransformBack<T3> resultTransform, TransformBack<T4> resultTransformAlt)
+        private static EvaluationResult ApplyMultivalueOperatorOnEitherPrimitive<T1, T2, T3, T4>(Transform<T3> transform, Transform<T4> transformAlt, CalculateMultiple<T3> calculate, CalculateMultiple<T4> calculateAlt, TransformBack<T3> resultTransform, TransformBack<T4> resultTransformAlt, EvaluationResult[]? values)
             where T1 : PrimitiveDatum<T3> where T2 : PrimitiveDatum<T4> where T3 : notnull where T4 : notnull
         {
             RequireMoreThanZero(values, 2, true);
