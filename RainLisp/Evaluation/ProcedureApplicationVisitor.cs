@@ -76,7 +76,7 @@ namespace RainLisp.Evaluation
 
         #region Primitive Operations
         private static EvaluationResult Add(EvaluationResult[]? values)
-            => ApplyMultivalueOperatorOnEitherPrimitive<NumberDatum, StringDatum, double, string>(AsDouble, AsString,
+            => ApplyMultivalueOperatorOnEitherPrimitive(AsDouble, AsString,
                 (val1, val2) => val1 + val2,
                 (val1, val2) => val1 + val2,
                 result => new NumberDatum(result),
@@ -316,6 +316,8 @@ namespace RainLisp.Evaluation
 
         private delegate EvaluationResult TransformBack<T>(T value);
 
+        private delegate TResult TransformBackTo<T, TResult>(T value) where TResult : EvaluationResult;
+
         private delegate T CalculateMultiple<T>(T value1, T value2);
 
         private delegate EvaluationResult CalculateBinary<T>(T value1, T value2);
@@ -336,7 +338,7 @@ namespace RainLisp.Evaluation
             return resultTransform(accumulator);
         }
 
-        private static EvaluationResult ApplyMultivalueOperatorOnEitherPrimitive<T1, T2, T3, T4>(Transform<T3> transform, Transform<T4> transformAlt, CalculateMultiple<T3> calculate, CalculateMultiple<T4> calculateAlt, TransformBack<T3> resultTransform, TransformBack<T4> resultTransformAlt, EvaluationResult[]? values)
+        private static EvaluationResult ApplyMultivalueOperatorOnEitherPrimitive<T1, T2, T3, T4>(Transform<T3> transform, Transform<T4> transformAlt, CalculateMultiple<T3> calculate, CalculateMultiple<T4> calculateAlt, TransformBackTo<T3, T1> resultTransform, TransformBackTo<T4, T2> resultTransformAlt, EvaluationResult[]? values)
             where T1 : PrimitiveDatum<T3> where T2 : PrimitiveDatum<T4> where T3 : notnull where T4 : notnull
         {
             RequireMoreThanZero(values, 2, true);
