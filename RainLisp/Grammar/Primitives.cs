@@ -23,6 +23,7 @@
         public const string SET_CAR = "set-car!";
         public const string SET_CDR = "set-cdr!";
         public const string STRING_LENGTH = "string-length";
+        public const string SUBSTRING = "substring";
         public const string DISPLAY = "display";
         public const string DEBUG = "debug";
         public const string TRACE = "trace";

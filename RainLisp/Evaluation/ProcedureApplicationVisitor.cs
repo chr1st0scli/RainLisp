@@ -38,6 +38,7 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.SetCar => SetCar(evaluatedArguments),
                 PrimitiveProcedureType.SetCdr => SetCdr(evaluatedArguments),
                 PrimitiveProcedureType.StringLength => StringLength(evaluatedArguments),
+                PrimitiveProcedureType.Substring => Substring(evaluatedArguments),
                 PrimitiveProcedureType.Display => Display(evaluatedArguments),
                 PrimitiveProcedureType.Debug => Debug(evaluatedArguments),
                 PrimitiveProcedureType.Trace => Trace(evaluatedArguments),
@@ -161,6 +162,16 @@ namespace RainLisp.Evaluation
 
         private static EvaluationResult StringLength(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => new NumberDatum(val.Length), values);
+
+        private static EvaluationResult Substring(EvaluationResult[]? values)
+        {
+            RequireMoreThanZero(values, 3);
+            string value = AsString(values[0]);
+            int startIndex = (int)AsDouble(values[1]);
+            int length = (int)AsDouble(values[2]);
+
+            return new StringDatum(ValueOrThrowInvalid(() => value.Substring(startIndex, length)));
+        }
 
         private static EvaluationResult Display(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>

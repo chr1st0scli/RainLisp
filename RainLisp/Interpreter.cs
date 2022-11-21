@@ -152,6 +152,7 @@ namespace RainLisp
             Install(SET_CAR, PrimitiveProcedureType.SetCar);
             Install(SET_CDR, PrimitiveProcedureType.SetCdr);
             Install(STRING_LENGTH, PrimitiveProcedureType.StringLength);
+            Install(SUBSTRING, PrimitiveProcedureType.Substring);
             Install(DISPLAY, PrimitiveProcedureType.Display);
             Install(DEBUG, PrimitiveProcedureType.Debug);
             Install(TRACE, PrimitiveProcedureType.Trace);
