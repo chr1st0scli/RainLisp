@@ -21,6 +21,7 @@
         IsNull,
         SetCar,
         SetCdr,
+        StringLength,
         Display,
         Debug,
         Trace,
