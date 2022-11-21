@@ -24,6 +24,10 @@
         public const string SET_CDR = "set-cdr!";
         public const string STRING_LENGTH = "string-length";
         public const string SUBSTRING = "substring";
+        public const string INDEX_OF_STRING = "index-of-string";
+        public const string REPLACE_STRING = "replace-string";
+        public const string TO_LOWER = "to-lower";
+        public const string TO_UPPER = "to-upper";
         public const string DISPLAY = "display";
         public const string DEBUG = "debug";
         public const string TRACE = "trace";

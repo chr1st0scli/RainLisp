@@ -39,6 +39,10 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.SetCdr => SetCdr(evaluatedArguments),
                 PrimitiveProcedureType.StringLength => StringLength(evaluatedArguments),
                 PrimitiveProcedureType.Substring => Substring(evaluatedArguments),
+                PrimitiveProcedureType.IndexOfString => IndexOfString(evaluatedArguments),
+                PrimitiveProcedureType.ReplaceString => ReplaceString(evaluatedArguments),
+                PrimitiveProcedureType.ToLower => ToLower(evaluatedArguments),
+                PrimitiveProcedureType.ToUpper => ToUpper(evaluatedArguments),
                 PrimitiveProcedureType.Display => Display(evaluatedArguments),
                 PrimitiveProcedureType.Debug => Debug(evaluatedArguments),
                 PrimitiveProcedureType.Trace => Trace(evaluatedArguments),
@@ -173,6 +177,32 @@ namespace RainLisp.Evaluation
 
             return new StringDatum(ValueOrThrowInvalid(() => value.Substring(startIndex, length)));
         }
+
+        private static EvaluationResult IndexOfString(EvaluationResult[]? values)
+        {
+            RequireMoreThanZero(values, 3);
+            string value = AsString(values[0]);
+            string searchValue = AsString(values[1]);
+            int startIndex = (int)AsDouble(values[2]);
+
+            return new NumberDatum(ValueOrThrowInvalid(() => value.IndexOf(searchValue, startIndex)));
+        }
+
+        private static EvaluationResult ReplaceString(EvaluationResult[]? values)
+        {
+            RequireMoreThanZero(values, 3);
+            string value = AsString(values[0]);
+            string oldValue = AsString(values[1]);
+            string newValue = AsString(values[2]);
+
+            return new StringDatum(ValueOrThrowInvalid(() => value.Replace(oldValue, newValue)));
+        }
+
+        private static EvaluationResult ToLower(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsString, val => new StringDatum(val.ToLowerInvariant()), values);
+
+        private static EvaluationResult ToUpper(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsString, val => new StringDatum(val.ToUpperInvariant()), values);
 
         private static EvaluationResult Display(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>

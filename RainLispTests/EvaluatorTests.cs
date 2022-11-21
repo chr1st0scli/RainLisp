@@ -239,6 +239,16 @@ namespace RainLispTests
         [InlineData("(substring \"hello\" 0 1)", "h")]
         [InlineData("(substring \"hello\" 0 2)", "he")]
         [InlineData("(substring \"hello\" 1 3)", "ell")]
+        [InlineData("(index-of-string \"hello\" \"ll\" 0)", 2d)]
+        [InlineData("(index-of-string \"hello\" \"ll\" 2)", 2d)]
+        [InlineData("(index-of-string \"hello\" \"ll\" 3)", -1d)]
+        [InlineData("(replace-string \"hello\" \"ll\" \"LL\")", "heLLo")]
+        [InlineData("(replace-string \"hello\" \"abc\" \"world\")", "hello")]
+        [InlineData("(replace-string \"hello there\" \"there\" \"world\")", "hello world")]
+        [InlineData("(to-lower \"HELLO WORLD\")", "hello world")]
+        [InlineData("(to-lower \"hello world\")", "hello world")]
+        [InlineData("(to-upper \"HELLO WORLD\")", "HELLO WORLD")]
+        [InlineData("(to-upper \"hello world\")", "HELLO WORLD")]
         [InlineData("(number-to-string 1 \"f\")", "1.00")]
         [InlineData("(number-to-string 12 \"000.000\")", "012.000")]
         [InlineData("(number-to-string 21.355 \"000.00\")", "021.36")]
@@ -740,10 +750,6 @@ namespace RainLispTests
         [InlineData("(make-datetime)", 7, false, 0)]
         [InlineData("(make-datetime 1)", 7, false, 1)]
         [InlineData("(make-datetime 1 2 3 4 5 6 7 8)", 7, false, 8)]
-        [InlineData("(substring)", 3, false, 0)]
-        [InlineData("(substring 1)", 3, false, 1)]
-        [InlineData("(substring 1 2)", 3, false, 2)]
-        [InlineData("(substring 1 2 3 4)", 3, false, 4)]
         public void Evaluate_WrongNumberOfArguments_Throws(string expression, int expected, bool orMore, int actual)
         {
             // Arrange
@@ -757,11 +763,23 @@ namespace RainLispTests
         }
 
         [Theory]
-        [InlineData("({0})", 2, 0)]
-        [InlineData("({0} 1)", 2, 1)]
-        public void Evaluate_CallExpectingTwoOrMoreWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
+        [InlineData("({0} 1)", 0, 1)]
+        [InlineData("({0} 1 2)", 0, 2)]
+        public void Evaluate_CallExpectingZeroWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
         {
-            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "+", "-", "*", "/", "%", "xor" }, expression, expected, true, actual);
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "newline", "now", "utc-now" }, expression, expected, false, actual);
+        }
+
+        [Theory]
+        [InlineData("({0})", 1, 0)]
+        [InlineData("({0} 1 2)", 1, 2)]
+        public void Evaluate_CallExpectingOneWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
+        {
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
+                {
+                    "not", "car", "cdr", "null?", "display", "debug", "trace", "error", "string-length", "to-lower", "to-upper",
+                    "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc"
+                }, expression, expected, false, actual);
         }
 
         [Theory]
@@ -779,23 +797,21 @@ namespace RainLispTests
         }
 
         [Theory]
-        [InlineData("({0})", 1, 0)]
-        [InlineData("({0} 1 2)", 1, 2)]
-        public void Evaluate_CallExpectingOneWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
+        [InlineData("({0})", 2, 0)]
+        [InlineData("({0} 1)", 2, 1)]
+        public void Evaluate_CallExpectingTwoOrMoreWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
         {
-            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
-                {
-                    "not", "car", "cdr", "null?", "display", "debug", "trace", "error", "string-length",
-                    "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc"
-                }, expression, expected, false, actual);
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "+", "-", "*", "/", "%", "xor" }, expression, expected, true, actual);
         }
 
         [Theory]
-        [InlineData("({0} 1)", 0, 1)]
-        [InlineData("({0} 1 2)", 0, 2)]
-        public void Evaluate_CallExpectingZeroWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
+        [InlineData("({0})", 3, 0)]
+        [InlineData("({0} 1)", 3, 1)]
+        [InlineData("({0} 1 2)", 3, 2)]
+        [InlineData("({0} 1 2 3 4)", 3, 4)]
+        public void Evaluate_CallExpectingThreeWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
         {
-            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "newline", "now", "utc-now" }, expression, expected, false, actual);
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "substring", "index-of-string", "replace-string" }, expression, expected, false, actual);
         }
 
         [Theory]
@@ -837,6 +853,26 @@ namespace RainLispTests
         [InlineData("(substring \"hello\" 1 \"world\")", typeof(StringDatum), typeof(NumberDatum))]
         [InlineData("(substring \"hello\" 1 +)", typeof(PrimitiveProcedure), typeof(NumberDatum))]
         [InlineData("(substring \"hello\" 1 (lambda () 1))", typeof(UserProcedure), typeof(NumberDatum))]
+        // index-of-string
+        [InlineData("(index-of-string 1 2 3)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(index-of-string true 2 3)", typeof(BoolDatum), typeof(StringDatum))]
+        [InlineData("(index-of-string (now) 2 3)", typeof(DateTimeDatum), typeof(StringDatum))]
+        [InlineData("(index-of-string \"hello\" nil 3)", typeof(Nil), typeof(StringDatum))]
+        [InlineData("(index-of-string \"hello\" (newline) 3)", typeof(Unspecified), typeof(StringDatum))]
+        [InlineData("(index-of-string \"hello\" (cons 1 2) 3)", typeof(Pair), typeof(StringDatum))]
+        [InlineData("(index-of-string \"hello\" 1 \"world\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(index-of-string \"hello\" \"el\" +)", typeof(PrimitiveProcedure), typeof(NumberDatum))]
+        [InlineData("(index-of-string \"hello\" \"el\" (lambda () 1))", typeof(UserProcedure), typeof(NumberDatum))]
+        // replace-string
+        [InlineData("(replace-string 1 2 3)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(replace-string true 2 3)", typeof(BoolDatum), typeof(StringDatum))]
+        [InlineData("(replace-string (now) 2 3)", typeof(DateTimeDatum), typeof(StringDatum))]
+        [InlineData("(replace-string \"hello\" nil 3)", typeof(Nil), typeof(StringDatum))]
+        [InlineData("(replace-string \"hello\" (newline) 3)", typeof(Unspecified), typeof(StringDatum))]
+        [InlineData("(replace-string \"hello\" (cons 1 2) 3)", typeof(Pair), typeof(StringDatum))]
+        [InlineData("(replace-string \"hello\" 1 \"world\")", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(replace-string \"hello\" \"el\" +)", typeof(PrimitiveProcedure), typeof(StringDatum))]
+        [InlineData("(replace-string \"hello\" \"el\" (lambda () 1))", typeof(UserProcedure), typeof(StringDatum))]
         public void Evaluate_WrongTypeOfArgument_Throws(string expression, Type actual, Type expected)
         {
             // Arrange
@@ -1054,7 +1090,7 @@ namespace RainLispTests
         [InlineData("({0} 1)", typeof(NumberDatum))]
         public void Evaluate_CallExpectingStringWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "string-length" }, expression, actual, typeof(StringDatum));
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "string-length", "to-lower", "to-upper" }, expression, actual, typeof(StringDatum));
         }
 
         [Theory]
@@ -1216,6 +1252,9 @@ namespace RainLispTests
         [InlineData("(substring \"hello\" 7 3)")]
         [InlineData("(substring \"hello\" 0 -1)")]
         [InlineData("(substring \"hello\" 0 7)")]
+        [InlineData("(index-of-string \"hello\" \"el\" -1)")]
+        [InlineData("(index-of-string \"hello\" \"el\" 6)")]
+        [InlineData("(replace-string \"hello\" \"\" \"world\")")]
         public void Evaluate_ExpressionWithInvalidValue_Throws(string expression)
         {
             Evaluate_WrongExpression_Throws<InvalidValueException>(expression);
