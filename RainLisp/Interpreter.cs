@@ -153,6 +153,10 @@ namespace RainLisp
             Install(SET_CDR, PrimitiveProcedureType.SetCdr);
             Install(STRING_LENGTH, PrimitiveProcedureType.StringLength);
             Install(SUBSTRING, PrimitiveProcedureType.Substring);
+            Install(INDEX_OF_STRING, PrimitiveProcedureType.IndexOfString);
+            Install(REPLACE_STRING, PrimitiveProcedureType.ReplaceString);
+            Install(TO_LOWER, PrimitiveProcedureType.ToLower);
+            Install(TO_UPPER, PrimitiveProcedureType.ToUpper);
             Install(DISPLAY, PrimitiveProcedureType.Display);
             Install(DEBUG, PrimitiveProcedureType.Debug);
             Install(TRACE, PrimitiveProcedureType.Trace);
