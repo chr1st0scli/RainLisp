@@ -169,34 +169,19 @@ namespace RainLisp.Evaluation
             => ApplyUnaryOperator(AsString, val => new NumberDatum(val.Length), values);
 
         private static EvaluationResult Substring(EvaluationResult[]? values)
-        {
-            RequireMoreThanZero(values, 3);
-            string value = AsString(values[0]);
-            int startIndex = (int)AsDouble(values[1]);
-            int length = (int)AsDouble(values[2]);
-
-            return new StringDatum(ValueOrThrowInvalid(() => value.Substring(startIndex, length)));
-        }
+            => ApplyTripleOperator(AsString, AsDouble, AsDouble,
+                (value, startIndex, length) => new StringDatum(ValueOrThrowInvalid(() => value.Substring((int)startIndex, (int)length))),
+                values);
 
         private static EvaluationResult IndexOfString(EvaluationResult[]? values)
-        {
-            RequireMoreThanZero(values, 3);
-            string value = AsString(values[0]);
-            string searchValue = AsString(values[1]);
-            int startIndex = (int)AsDouble(values[2]);
-
-            return new NumberDatum(ValueOrThrowInvalid(() => value.IndexOf(searchValue, startIndex)));
-        }
+            => ApplyTripleOperator(AsString, AsString, AsDouble,
+                (value, searchValue, startIndex) => new NumberDatum(ValueOrThrowInvalid(() => value.IndexOf(searchValue, (int)startIndex))),
+                values);
 
         private static EvaluationResult ReplaceString(EvaluationResult[]? values)
-        {
-            RequireMoreThanZero(values, 3);
-            string value = AsString(values[0]);
-            string oldValue = AsString(values[1]);
-            string newValue = AsString(values[2]);
-
-            return new StringDatum(ValueOrThrowInvalid(() => value.Replace(oldValue, newValue)));
-        }
+            => ApplyTripleOperator(AsString, AsString, AsString,
+                (value, oldValue, newValue) => new StringDatum(ValueOrThrowInvalid(() => value.Replace(oldValue, newValue))),
+                values);
 
         private static EvaluationResult ToLower(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => new StringDatum(val.ToLowerInvariant()), values);
@@ -261,14 +246,9 @@ namespace RainLisp.Evaluation
         }
 
         private static EvaluationResult MakeDate(EvaluationResult[]? values)
-        {
-            RequireMoreThanZero(values, 3);
-            int year = (int)AsDouble(values[0]);
-            int month = (int)AsDouble(values[1]);
-            int day = (int)AsDouble(values[2]);
-
-            return new DateTimeDatum(ValueOrThrowInvalid(() => new DateTime(year, month, day)));
-        }
+            => ApplyTripleOperator(AsDouble, AsDouble, AsDouble,
+                (year, month, day) => new DateTimeDatum(ValueOrThrowInvalid(() => new DateTime((int)year, (int)month, (int)day))),
+                values);
 
         private static EvaluationResult MakeDateTime(EvaluationResult[]? values)
         {
@@ -369,6 +349,8 @@ namespace RainLisp.Evaluation
 
         private delegate T CalculateMultiple<T>(T value1, T value2);
 
+        private delegate EvaluationResult CalculateTriple<T1, T2, T3>(T1 value1, T2 value2, T3 value3);
+
         private delegate EvaluationResult CalculateBinary<T>(T value1, T value2);
 
         private delegate EvaluationResult CalculateBinary<T1, T2>(T1 value1, T2 value2);
@@ -415,6 +397,17 @@ namespace RainLisp.Evaluation
                 accumulator = calculate(accumulator, transform(values[i]));
 
             return accumulator;
+        }
+
+        private static EvaluationResult ApplyTripleOperator<T1, T2, T3>(Transform<T1> transform1, Transform<T2> transform2, Transform<T3> transform3, CalculateTriple<T1, T2, T3> calculate, EvaluationResult[]? values)
+        {
+            RequireMoreThanZero(values, 3);
+
+            T1 value1 = transform1(values[0]);
+            T2 value2 = transform2(values[1]);
+            T3 value3 = transform3(values[2]);
+
+            return calculate(value1, value2, value3);
         }
 
         private static EvaluationResult ApplyBinaryOperator<T>(Transform<T> transform, CalculateBinary<T> calculate, EvaluationResult[]? values)
