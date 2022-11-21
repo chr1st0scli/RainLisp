@@ -22,6 +22,7 @@
         SetCar,
         SetCdr,
         StringLength,
+        Substring,
         Display,
         Debug,
         Trace,

@@ -235,6 +235,10 @@ namespace RainLispTests
         [InlineData("(string-length \"\")", 0d)]
         [InlineData("(string-length \"a\")", 1d)]
         [InlineData("(string-length \"abcd\")", 4d)]
+        [InlineData("(substring \"hello\" 0 0)", "")]
+        [InlineData("(substring \"hello\" 0 1)", "h")]
+        [InlineData("(substring \"hello\" 0 2)", "he")]
+        [InlineData("(substring \"hello\" 1 3)", "ell")]
         public void Evaluate_StringOperation_Correctly(string expression, object expectedResult)
         {
             // Arrange
@@ -732,6 +736,10 @@ namespace RainLispTests
         [InlineData("(make-datetime)", 7, false, 0)]
         [InlineData("(make-datetime 1)", 7, false, 1)]
         [InlineData("(make-datetime 1 2 3 4 5 6 7 8)", 7, false, 8)]
+        [InlineData("(substring)", 3, false, 0)]
+        [InlineData("(substring 1)", 3, false, 1)]
+        [InlineData("(substring 1 2)", 3, false, 2)]
+        [InlineData("(substring 1 2 3 4)", 3, false, 4)]
         public void Evaluate_WrongNumberOfArguments_Throws(string expression, int expected, bool orMore, int actual)
         {
             // Arrange
@@ -815,6 +823,16 @@ namespace RainLispTests
         [InlineData("(make-datetime 2022 1 2 3 4 2 true)", typeof(BoolDatum), typeof(NumberDatum))]
         [InlineData("(make-datetime 2022 1 2 3 \"hello\" 2 3)", typeof(StringDatum), typeof(NumberDatum))]
         [InlineData("(make-datetime 2022 1 2 3 4 (now) 3)", typeof(DateTimeDatum), typeof(NumberDatum))]
+        // substring
+        [InlineData("(substring 1 2 3)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("(substring true 2 3)", typeof(BoolDatum), typeof(StringDatum))]
+        [InlineData("(substring (now) 2 3)", typeof(DateTimeDatum), typeof(StringDatum))]
+        [InlineData("(substring \"hello\" nil 3)", typeof(Nil), typeof(NumberDatum))]
+        [InlineData("(substring \"hello\" (newline) 3)", typeof(Unspecified), typeof(NumberDatum))]
+        [InlineData("(substring \"hello\" (cons 1 2) 3)", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("(substring \"hello\" 1 \"world\")", typeof(StringDatum), typeof(NumberDatum))]
+        [InlineData("(substring \"hello\" 1 +)", typeof(PrimitiveProcedure), typeof(NumberDatum))]
+        [InlineData("(substring \"hello\" 1 (lambda () 1))", typeof(UserProcedure), typeof(NumberDatum))]
         public void Evaluate_WrongTypeOfArgument_Throws(string expression, Type actual, Type expected)
         {
             // Arrange
@@ -1165,6 +1183,10 @@ namespace RainLispTests
         [InlineData("(parse-datetime \"2022/12/31\" \"\")")]
         [InlineData("(parse-datetime \"2022/12/31\" \"yyyy-MM-dd\")")]
         [InlineData("(datetime-to-string (now) \"q\")")]
+        [InlineData("(substring \"hello\" -1 3)")]
+        [InlineData("(substring \"hello\" 7 3)")]
+        [InlineData("(substring \"hello\" 0 -1)")]
+        [InlineData("(substring \"hello\" 0 7)")]
         public void Evaluate_ExpressionWithInvalidValue_Throws(string expression)
         {
             Evaluate_WrongExpression_Throws<InvalidValueException>(expression);
