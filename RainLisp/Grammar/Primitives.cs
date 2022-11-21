@@ -57,5 +57,6 @@
         public const string MILLISECONDS_DIFF = "milliseconds-diff";
         public const string PARSE_DATETIME = "parse-datetime";
         public const string DATETIME_TO_STRING = "datetime-to-string";
+        public const string NUMBER_TO_STRING = "number-to-string";
     }
 }

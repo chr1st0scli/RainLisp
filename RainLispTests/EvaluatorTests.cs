@@ -239,6 +239,10 @@ namespace RainLispTests
         [InlineData("(substring \"hello\" 0 1)", "h")]
         [InlineData("(substring \"hello\" 0 2)", "he")]
         [InlineData("(substring \"hello\" 1 3)", "ell")]
+        [InlineData("(number-to-string 1 \"f\")", "1.00")]
+        [InlineData("(number-to-string 12 \"000.000\")", "012.000")]
+        [InlineData("(number-to-string 21.355 \"000.00\")", "021.36")]
+        [InlineData("(number-to-string 21.354 \"000.00\")", "021.35")]
         public void Evaluate_StringOperation_Correctly(string expression, object expectedResult)
         {
             // Arrange
@@ -769,7 +773,7 @@ namespace RainLispTests
             Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
                 {
                     ">", ">=", "<", "<=", "=", "cons", "set-car!", "set-cdr!",
-                    "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds",
+                    "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds", "number-to-string",
                     "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff", "parse-datetime", "datetime-to-string"
                 }, expression, expected, false, actual);
         }
@@ -1090,9 +1094,32 @@ namespace RainLispTests
         [InlineData("({0} (now) (newline))", typeof(Unspecified), typeof(StringDatum))]
         [InlineData("({0} (now) true)", typeof(BoolDatum), typeof(StringDatum))]
         [InlineData("({0} (now) 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} (now) (now))", typeof(DateTimeDatum), typeof(StringDatum))]
         public void Evaluate_CallExpectingDateTimeAndStringWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
             Evaluate_CallsWithWrongExpression_Throws(new[] { "datetime-to-string" }, expression, actual, expected);
+        }
+
+        [Theory]
+        [InlineData("({0} nil 1)", typeof(Nil), typeof(NumberDatum))]
+        [InlineData("({0} (cons 1 2) 1)", typeof(Pair), typeof(NumberDatum))]
+        [InlineData("({0} + 1)", typeof(PrimitiveProcedure), typeof(NumberDatum))]
+        [InlineData("({0} (lambda () 1) 1)", typeof(UserProcedure), typeof(NumberDatum))]
+        [InlineData("({0} (newline) 1)", typeof(Unspecified), typeof(NumberDatum))]
+        [InlineData("({0} true 1)", typeof(BoolDatum), typeof(NumberDatum))]
+        [InlineData("({0} \"hello\" 1)", typeof(StringDatum), typeof(NumberDatum))]
+        [InlineData("({0} (now) 1)", typeof(DateTimeDatum), typeof(NumberDatum))]
+        [InlineData("({0} 1 nil)", typeof(Nil), typeof(StringDatum))]
+        [InlineData("({0} 1 (cons 1 2))", typeof(Pair), typeof(StringDatum))]
+        [InlineData("({0} 1 +)", typeof(PrimitiveProcedure), typeof(StringDatum))]
+        [InlineData("({0} 1 (lambda () 1))", typeof(UserProcedure), typeof(StringDatum))]
+        [InlineData("({0} 1 (newline))", typeof(Unspecified), typeof(StringDatum))]
+        [InlineData("({0} 1 true)", typeof(BoolDatum), typeof(StringDatum))]
+        [InlineData("({0} 1 1)", typeof(NumberDatum), typeof(StringDatum))]
+        [InlineData("({0} 1 (now))", typeof(DateTimeDatum), typeof(StringDatum))]
+        public void Evaluate_CallExpectingNumberAndStringWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "number-to-string" }, expression, actual, expected);
         }
 
         [Theory]
@@ -1183,6 +1210,8 @@ namespace RainLispTests
         [InlineData("(parse-datetime \"2022/12/31\" \"\")")]
         [InlineData("(parse-datetime \"2022/12/31\" \"yyyy-MM-dd\")")]
         [InlineData("(datetime-to-string (now) \"q\")")]
+        [InlineData("(number-to-string 1 \"q\")")]
+        [InlineData("(number-to-string 1 \"i\")")]
         [InlineData("(substring \"hello\" -1 3)")]
         [InlineData("(substring \"hello\" 7 3)")]
         [InlineData("(substring \"hello\" 0 -1)")]
