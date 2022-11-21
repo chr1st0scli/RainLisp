@@ -186,6 +186,7 @@ namespace RainLisp
             Install(MILLISECONDS_DIFF, PrimitiveProcedureType.MillisecondsDiff);
             Install(PARSE_DATETIME, PrimitiveProcedureType.ParseDateTime);
             Install(DATETIME_TO_STRING, PrimitiveProcedureType.DateTimeToString);
+            Install(NUMBER_TO_STRING, PrimitiveProcedureType.NumberToString);
 
             environment.DefineIdentifier(NIL, Nil.GetNil());
 
