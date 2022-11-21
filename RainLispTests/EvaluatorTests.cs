@@ -232,14 +232,17 @@ namespace RainLispTests
         [InlineData("(+ \"hello\" \" \" \"world\")", "hello world")]
         [InlineData("(+ \"hello\" \" wonderful \" \"world\")", "hello wonderful world")]
         [InlineData("(+ \"hello\" \" magnificent\" \" wonderful\" \" world\")", "hello magnificent wonderful world")]
-        public void Evaluate_StringConcatenation_Correctly(string expression, string expectedResult)
+        [InlineData("(string-length \"\")", 0d)]
+        [InlineData("(string-length \"a\")", 1d)]
+        [InlineData("(string-length \"abcd\")", 4d)]
+        public void Evaluate_StringOperation_Correctly(string expression, object expectedResult)
         {
             // Arrange
             // Act
             var result = _interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, ((StringDatum)result).Value);
+            Assert.Equal(expectedResult, ((IPrimitiveDatum)result).GetValueAsObject());
         }
 
         [Theory]
@@ -770,7 +773,7 @@ namespace RainLispTests
         {
             Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
                 {
-                    "not", "car", "cdr", "null?", "display", "debug", "trace", "error",
+                    "not", "car", "cdr", "null?", "display", "debug", "trace", "error", "string-length",
                     "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc"
                 }, expression, expected, false, actual);
         }
@@ -1016,6 +1019,20 @@ namespace RainLispTests
         public void Evaluate_CallExpecting2DateTimesWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
             Evaluate_CallsWithWrongExpression_Throws(new[] { "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff" }, expression, actual, typeof(DateTimeDatum));
+        }
+
+        [Theory]
+        [InlineData("({0} nil)", typeof(Nil))]
+        [InlineData("({0} (cons 1 2))", typeof(Pair))]
+        [InlineData("({0} +)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} (lambda () 1))", typeof(UserProcedure))]
+        [InlineData("({0} (newline))", typeof(Unspecified))]
+        [InlineData("({0} true)", typeof(BoolDatum))]
+        [InlineData("({0} (now))", typeof(DateTimeDatum))]
+        [InlineData("({0} 1)", typeof(NumberDatum))]
+        public void Evaluate_CallExpectingStringWithWrongTypeOfArgument_Throws(string expression, Type actual)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "string-length" }, expression, actual, typeof(StringDatum));
         }
 
         [Theory]
