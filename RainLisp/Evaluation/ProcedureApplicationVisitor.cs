@@ -194,21 +194,21 @@ namespace RainLisp.Evaluation
         private static EvaluationResult Display(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
-                Console.Write(val);
+                Console.Write(ToCurrentCultureString(val));
                 return Unspecified.GetUnspecified();
             }, values);
 
         private static EvaluationResult Debug(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
-                System.Diagnostics.Debug.Write(val);
+                System.Diagnostics.Debug.Write(ToCurrentCultureString(val));
                 return Unspecified.GetUnspecified();
             }, values);
 
         private static EvaluationResult Trace(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
-                System.Diagnostics.Trace.Write(val);
+                System.Diagnostics.Trace.Write(ToCurrentCultureString(val));
                 return Unspecified.GetUnspecified();
             }, values);
 
@@ -226,11 +226,7 @@ namespace RainLisp.Evaluation
                 if (val is double doubleVal)
                     message = doubleVal.ToString(CultureInfo.InvariantCulture);
                 else
-                {
-                    message = val.ToString();
-                    if (val is bool boolVal)
-                        message = message?.ToLower();
-                }
+                    message = ToCurrentCultureString(val);
 
                 throw new UserException(message);
             }, values);
@@ -540,6 +536,15 @@ namespace RainLisp.Evaluation
             {
                 throw new InvalidValueException(ex.Message, ex);
             }
+        }
+
+        private static string? ToCurrentCultureString(object value)
+        {
+            string? message = value.ToString();
+            if (value is bool)
+                message = message?.ToLower();
+
+            return message;
         }
         #endregion
     }
