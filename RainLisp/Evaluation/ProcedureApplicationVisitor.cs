@@ -172,17 +172,17 @@ namespace RainLisp.Evaluation
 
         private static EvaluationResult Substring(EvaluationResult[]? values)
             => ApplyTripleOperator(AsString, AsDouble, AsDouble,
-                (value, startIndex, length) => new StringDatum(ValueOrThrowInvalid(() => value.Substring((int)startIndex, (int)length))),
+                (value, startIndex, length) => ValueOrThrowInvalid(() => new StringDatum(value.Substring((int)startIndex, (int)length))),
                 values);
 
         private static EvaluationResult IndexOfString(EvaluationResult[]? values)
             => ApplyTripleOperator(AsString, AsString, AsDouble,
-                (value, searchValue, startIndex) => new NumberDatum(ValueOrThrowInvalid(() => value.IndexOf(searchValue, (int)startIndex))),
+                (value, searchValue, startIndex) => ValueOrThrowInvalid(() => new NumberDatum(value.IndexOf(searchValue, (int)startIndex))),
                 values);
 
         private static EvaluationResult ReplaceString(EvaluationResult[]? values)
             => ApplyTripleOperator(AsString, AsString, AsString,
-                (value, oldValue, newValue) => new StringDatum(ValueOrThrowInvalid(() => value.Replace(oldValue, newValue))),
+                (value, oldValue, newValue) => ValueOrThrowInvalid(() => new StringDatum(value.Replace(oldValue, newValue))),
                 values);
 
         private static EvaluationResult ToLower(EvaluationResult[]? values)
@@ -249,7 +249,7 @@ namespace RainLisp.Evaluation
 
         private static EvaluationResult MakeDate(EvaluationResult[]? values)
             => ApplyTripleOperator(AsDouble, AsDouble, AsDouble,
-                (year, month, day) => new DateTimeDatum(ValueOrThrowInvalid(() => new DateTime((int)year, (int)month, (int)day))),
+                (year, month, day) => ValueOrThrowInvalid(() => new DateTimeDatum(new DateTime((int)year, (int)month, (int)day))),
                 values);
 
         private static EvaluationResult MakeDateTime(EvaluationResult[]? values)
@@ -263,7 +263,7 @@ namespace RainLisp.Evaluation
             int second = (int)AsDouble(values[5]);
             int millisecond = (int)AsDouble(values[6]);
 
-            return new DateTimeDatum(ValueOrThrowInvalid(() => new DateTime(year, month, day, hour, minute, second, millisecond)));
+            return ValueOrThrowInvalid(() => new DateTimeDatum(new DateTime(year, month, day, hour, minute, second, millisecond)));
         }
 
         private static EvaluationResult Year(EvaluationResult[]? values)
@@ -291,58 +291,58 @@ namespace RainLisp.Evaluation
             => ApplyUnaryOperator(AsDateTime, val => new BoolDatum(val.Kind == DateTimeKind.Utc), values);
 
         private static EvaluationResult ToLocal(EvaluationResult[]? values)
-            => ApplyUnaryOperator(AsDateTime, val => new DateTimeDatum(ValueOrThrowInvalid(() => TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Utc, TimeZoneInfo.Local))), values);
+            => ApplyUnaryOperator(AsDateTime, val => ValueOrThrowInvalid(() => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Utc, TimeZoneInfo.Local))), values);
 
         private static EvaluationResult ToUtc(EvaluationResult[]? values)
-            => ApplyUnaryOperator(AsDateTime, val => new DateTimeDatum(ValueOrThrowInvalid(() => TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Local, TimeZoneInfo.Utc))), values);
+            => ApplyUnaryOperator(AsDateTime, val => ValueOrThrowInvalid(() => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Local, TimeZoneInfo.Utc))), values);
 
         private static EvaluationResult AddYears(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(ValueOrThrowInvalid(() => dt.AddYears((int)value))), values);
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddYears((int)value))), values);
 
         private static EvaluationResult AddMonths(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(ValueOrThrowInvalid(() => dt.AddMonths((int)value))), values);
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddMonths((int)value))), values);
 
         private static EvaluationResult AddDays(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(ValueOrThrowInvalid(() => dt.AddDays(value))), values);
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddDays(value))), values);
 
         private static EvaluationResult AddHours(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(ValueOrThrowInvalid(() => dt.AddHours(value))), values);
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddHours(value))), values);
 
         private static EvaluationResult AddMinutes(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(ValueOrThrowInvalid(() => dt.AddMinutes(value))), values);
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddMinutes(value))), values);
 
         private static EvaluationResult AddSeconds(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(ValueOrThrowInvalid(() => dt.AddSeconds(value))), values);
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddSeconds(value))), values);
 
         private static EvaluationResult AddMilliseconds(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => new DateTimeDatum(ValueOrThrowInvalid(() => dt.AddMilliseconds(value))), values);
+            => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddMilliseconds(value))), values);
 
         private static EvaluationResult DaysDiff(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(ValueOrThrowInvalid(() => val2.Subtract(val1)).Days), values);
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Days)), values);
 
         private static EvaluationResult HoursDiff(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(ValueOrThrowInvalid(() => val2.Subtract(val1)).Hours), values);
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Hours)), values);
 
         private static EvaluationResult MinutesDiff(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(ValueOrThrowInvalid(() => val2.Subtract(val1)).Minutes), values);
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Minutes)), values);
 
         private static EvaluationResult SecondsDiff(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(ValueOrThrowInvalid(() => val2.Subtract(val1)).Seconds), values);
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Seconds)), values);
 
         private static EvaluationResult MillisecondsDiff(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, (val1, val2) => new NumberDatum(ValueOrThrowInvalid(() => val2.Subtract(val1)).Milliseconds), values);
+            => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Milliseconds)), values);
 
         private static EvaluationResult ParseDateTime(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsString, (dt, format) => new DateTimeDatum(ValueOrThrowInvalid(() => DateTime.ParseExact(dt, format, CultureInfo.InvariantCulture))), values);
+            => ApplyBinaryOperator(AsString, (dt, format) => ValueOrThrowInvalid(() => new DateTimeDatum(DateTime.ParseExact(dt, format, CultureInfo.InvariantCulture))), values);
 
         private static EvaluationResult DateTimeToString(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDateTime, AsString, (dt, format) => new StringDatum(ValueOrThrowInvalid(() => dt.ToString(format, CultureInfo.InvariantCulture))), values);
+            => ApplyBinaryOperator(AsDateTime, AsString, (dt, format) => ValueOrThrowInvalid(() => new StringDatum(dt.ToString(format, CultureInfo.InvariantCulture))), values);
 
         private static EvaluationResult NumberToString(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsDouble, AsString, (num, format) => new StringDatum(ValueOrThrowInvalid(() => num.ToString(format, CultureInfo.InvariantCulture))), values);
+            => ApplyBinaryOperator(AsDouble, AsString, (num, format) => ValueOrThrowInvalid(() => new StringDatum(num.ToString(format, CultureInfo.InvariantCulture))), values);
 
         private static EvaluationResult ParseNumber(EvaluationResult[]? values)
-            => ApplyUnaryOperator(AsString, val => new NumberDatum(ValueOrThrowInvalid(() => double.Parse(val, CultureInfo.InvariantCulture))), values);
+            => ApplyUnaryOperator(AsString, val => ValueOrThrowInvalid(() => new NumberDatum(double.Parse(val, CultureInfo.InvariantCulture))), values);
 
         private static EvaluationResult Round(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, (val, decimals) => ValueOrThrowInvalid(() => new NumberDatum((double)Math.Round((decimal)val, (int)decimals, MidpointRounding.AwayFromZero))), values);
