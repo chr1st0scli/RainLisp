@@ -191,6 +191,8 @@ namespace RainLisp
             Install(PARSE_DATETIME, PrimitiveProcedureType.ParseDateTime);
             Install(DATETIME_TO_STRING, PrimitiveProcedureType.DateTimeToString);
             Install(NUMBER_TO_STRING, PrimitiveProcedureType.NumberToString);
+            Install(PARSE_NUMBER, PrimitiveProcedureType.ParseNumber);
+            Install(ROUND, PrimitiveProcedureType.Round);
 
             environment.DefineIdentifier(NIL, Nil.GetNil());
 

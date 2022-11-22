@@ -88,6 +88,15 @@ namespace RainLispTests
         [InlineData("(define (foo a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) (foo 10 12)", 242d)]
         [InlineData("((lambda (a b) (set! a (+ a b)) (set! b (* a b)) (- b a)) 10 12)", 242d)]
         [InlineData("(let ((a 10) (b 12)) (set! a (+ a b)) (set! b (* a b)) (- b a))", 242d)]
+        [InlineData("(parse-number \"2\")", 2d)]
+        [InlineData("(parse-number \"21\")", 21d)]
+        [InlineData("(parse-number \"2.5\")", 2.5d)]
+        [InlineData("(parse-number \"21.53\")", 21.53d)]
+        [InlineData("(parse-number \"21,53\")", 2153d)]
+        [InlineData("(round 2.5 0)", 3d)]
+        [InlineData("(round 2.4 0)", 2d)]
+        [InlineData("(round 21.423 2)", 21.42d)]
+        [InlineData("(round 21.425 2)", 21.43d)]
         public void Evaluate_NumericExpression_Correctly(string expression, double expectedResult)
         {
             // Arrange
@@ -778,7 +787,7 @@ namespace RainLispTests
             Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
                 {
                     "not", "car", "cdr", "null?", "display", "debug", "trace", "error", "string-length", "to-lower", "to-upper",
-                    "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc"
+                    "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc", "parse-number"
                 }, expression, expected, false, actual);
         }
 
@@ -792,7 +801,7 @@ namespace RainLispTests
                 {
                     ">", ">=", "<", "<=", "=", "cons", "set-car!", "set-cdr!",
                     "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds", "number-to-string",
-                    "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff", "parse-datetime", "datetime-to-string"
+                    "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff", "parse-datetime", "datetime-to-string", "round"
                 }, expression, expected, false, actual);
         }
 
@@ -948,7 +957,7 @@ namespace RainLispTests
         [InlineData("({0} (newline) (newline))", typeof(Unspecified))]
         public void Evaluate_CallExpectingNumbersWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "-", "*", "/", "%" }, expression, actual, typeof(NumberDatum));
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "-", "*", "/", "%", "round" }, expression, actual, typeof(NumberDatum));
         }
 
         [Theory]
@@ -975,7 +984,7 @@ namespace RainLispTests
         [InlineData("({0} (newline) 1)", typeof(Unspecified), typeof(NumberDatum), typeof(DateTimeDatum))]
         [InlineData("({0} 1 (newline))", typeof(Unspecified), typeof(NumberDatum))]
         [InlineData("({0} (newline) (newline))", typeof(Unspecified), typeof(NumberDatum), typeof(DateTimeDatum))]
-        public void Evaluate_CallExpectingNumberOrDateTimeWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
+        public void Evaluate_CallExpectingNumbersOrDateTimesWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
             Evaluate_CallsWithWrongExpression_Throws(new[] { ">", ">=", "<", "<=" }, expression, actual, expected);
         }
@@ -1090,7 +1099,7 @@ namespace RainLispTests
         [InlineData("({0} 1)", typeof(NumberDatum))]
         public void Evaluate_CallExpectingStringWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "string-length", "to-lower", "to-upper" }, expression, actual, typeof(StringDatum));
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "string-length", "to-lower", "to-upper", "parse-number" }, expression, actual, typeof(StringDatum));
         }
 
         [Theory]
@@ -1255,6 +1264,10 @@ namespace RainLispTests
         [InlineData("(index-of-string \"hello\" \"el\" -1)")]
         [InlineData("(index-of-string \"hello\" \"el\" 6)")]
         [InlineData("(replace-string \"hello\" \"\" \"world\")")]
+        [InlineData("(parse-number \"\")")]
+        [InlineData("(parse-number \"a\")")]
+        [InlineData("(round 2.5 -1)")]
+        [InlineData("(round 2.5 29)")]
         public void Evaluate_ExpressionWithInvalidValue_Throws(string expression)
         {
             Evaluate_WrongExpression_Throws<InvalidValueException>(expression);

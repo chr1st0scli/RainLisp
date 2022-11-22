@@ -77,6 +77,8 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.ParseDateTime => ParseDateTime(evaluatedArguments),
                 PrimitiveProcedureType.DateTimeToString => DateTimeToString(evaluatedArguments),
                 PrimitiveProcedureType.NumberToString => NumberToString(evaluatedArguments),
+                PrimitiveProcedureType.ParseNumber => ParseNumber(evaluatedArguments),
+                PrimitiveProcedureType.Round => Round(evaluatedArguments),
                 _ => throw new NotImplementedException()
             };
         }
@@ -338,6 +340,12 @@ namespace RainLisp.Evaluation
 
         private static EvaluationResult NumberToString(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, AsString, (num, format) => new StringDatum(ValueOrThrowInvalid(() => num.ToString(format, CultureInfo.InvariantCulture))), values);
+
+        private static EvaluationResult ParseNumber(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsString, val => new NumberDatum(ValueOrThrowInvalid(() => double.Parse(val, CultureInfo.InvariantCulture))), values);
+
+        private static EvaluationResult Round(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsDouble, (val, decimals) => ValueOrThrowInvalid(() => new NumberDatum((double)Math.Round((decimal)val, (int)decimals, MidpointRounding.AwayFromZero))), values);
         #endregion
 
         #region Helpers

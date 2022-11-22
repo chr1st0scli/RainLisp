@@ -62,5 +62,7 @@
         public const string PARSE_DATETIME = "parse-datetime";
         public const string DATETIME_TO_STRING = "datetime-to-string";
         public const string NUMBER_TO_STRING = "number-to-string";
+        public const string PARSE_NUMBER = "parse-number";
+        public const string ROUND = "round";
     }
 }

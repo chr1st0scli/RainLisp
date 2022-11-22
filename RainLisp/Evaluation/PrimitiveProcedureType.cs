@@ -60,6 +60,8 @@
         MillisecondsDiff,
         ParseDateTime,
         DateTimeToString,
-        NumberToString
+        NumberToString,
+        ParseNumber,
+        Round
     }
 }
