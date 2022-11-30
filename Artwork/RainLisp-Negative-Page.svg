@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:sketchjs="https://sketch.io/dtd/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="RainLisp-Negative.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-101.42857"
+     inkscape:cy="560"
+     inkscape:document-units="mm"
+     inkscape:current-layer="g5009"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <g
+       id="g5009"
+       style="display:inline">
+      <flowRoot
+         transform="matrix(0.43896088,0,0,0.43896088,-8.5390619,80.451849)"
+         style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.22789985;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="flowRoot4555"
+         xml:space="preserve"><flowRegion
+           style="stroke:#000000;stroke-width:1.22789985;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none"
+           id="flowRegion4557"><rect
+             style="stroke:#000000;stroke-width:1.22789985;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none"
+             y="42.519684"
+             x="91.428574"
+             height="302.85715"
+             width="642.85712"
+             id="rect4559" /></flowRegion><flowPara
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:96px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Italic';stroke:#000000;stroke-width:1.22789985;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none"
+           id="flowPara4561"><flowSpan
+             id="flowSpan4575"
+             style="font-size:80.36656189px;stroke:#000000;stroke-width:1.22789985;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none">Rain</flowSpan><flowSpan
+             id="flowSpan4567"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:192px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Italic';stroke:#000000;stroke-width:1.22789985;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none">λ</flowSpan><flowSpan
+             id="flowSpan4577"
+             style="font-size:80.36656189px;stroke:#000000;stroke-width:1.22789985;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none">isp</flowSpan></flowPara></flowRoot>      <g
+         style="display:inline"
+         sketchjs:tool="clipart"
+         transform="matrix(0.15617926,0,0,0.04167533,45.04542,129.07126)"
+         id="g4522">
+        <path
+           inkscape:connector-curvature="0"
+           d="M 455.53,5 C 401.04,5.37 347.29,30.142 328.62,75.094 237.37,-46.086 36.67,67.639 94.91,188.914 c -138.11,-25.64 -106.39,197.57 22.47,175.81 55.32,57.59 140.17,67.01 232,26.28 h 0.06 c 111.01,40.42 207.56,10.29 251.09,-20.56 261.28,68.17 167.31,-349.25 -4.15,-240.35 C 595.04,43.367 524.69,4.534 455.53,5.004 Z"
+           sketchjs:uid="1"
+           style="display:inline;fill:#f2f2f2"
+           id="path4518" />
+        <path
+           inkscape:connector-curvature="0"
+           d="m 328.62,75.09 c 44.244,-106.55 285.63,-99.7 266.72,76.688 m 1.038,-21.692 c 171.46,-108.91 265.44,308.51 4.154,240.33 m 16.534,-14.423 c -31.756,36.108 -153.17,87.922 -292.21,24.984 m 24.506,10.003 c -91.82,40.73 -176.65,31.33 -231.98,-26.26 m 23.893,-6.545 c -148.4,55.62 -192.67,-196.43 -46.38,-169.27 m 12.562,20.78 c -99.64,-135.93 151.77,-278.65 236.96,-108.95"
+           sketchjs:uid="2"
+           style="display:inline;fill:none;stroke:#515151;stroke-width:10;stroke-linecap:round;stroke-linejoin:round"
+           id="path4520" />
+      </g>
+    </g>
+  </g>
+</svg>
