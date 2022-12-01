@@ -1,7 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using RainLisp;
+using RainLispConsole;
 
-Console.WriteLine("RainLisp Console");
+Console.WriteLine(Resources.LOGO);
 
 var interpreter = new Interpreter();
 
