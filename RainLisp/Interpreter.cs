@@ -26,7 +26,7 @@ namespace RainLisp
             _installLispLibraries = installLispLibraries;
         }
 
-        public EvaluationResult Evaluate(string expression)
+        public EvaluationResult Evaluate(string? expression)
         {
             IEvaluationEnvironment? environment = null;
             return Evaluate(expression, ref environment);
@@ -38,7 +38,7 @@ namespace RainLisp
             return Evaluate(program, ref environment);
         }
 
-        public EvaluationResult Evaluate(string expression, ref IEvaluationEnvironment? environment)
+        public EvaluationResult Evaluate(string? expression, ref IEvaluationEnvironment? environment)
         {
             var tokens = _tokenizer.Tokenize(expression);
             var programAST = _parser.Parse(tokens);
@@ -57,70 +57,79 @@ namespace RainLisp
         {
             ArgumentNullException.ThrowIfNull(read, nameof(read));
             ArgumentNullException.ThrowIfNull(print, nameof(print));
+            ArgumentNullException.ThrowIfNull(printError, nameof(printError));
 
             var environment = CreateGlobalEnvironment();
 
             while (true)
             {
-                try
-                {
-                    string? expression = read();
+                EvaluateAndPrint(read(), ref environment, print, printError);
+            }
+        }
 
-                    var tokens = _tokenizer.Tokenize(expression);
-                    var programAST = _parser.Parse(tokens);
+        public void EvaluateAndPrint(string? expression, ref IEvaluationEnvironment? environment, Action<string> print, Action<string, Exception> printError)
+        {
+            ArgumentNullException.ThrowIfNull(print, nameof(print));
+            ArgumentNullException.ThrowIfNull(printError, nameof(printError));
 
-                    var result = _evaluator.EvaluateProgram(programAST, environment);
-                    string resultToPrint = result.AcceptVisitor(_resultPrinter);
+            environment ??= CreateGlobalEnvironment();
 
-                    print(resultToPrint);
-                }
-                catch (NonTerminatedStringException ex)
-                {
-                    printError(string.Format(ErrorMessages.NON_TERMINATED_STRING, ex.Line, ex.Position), ex);
-                }
-                catch (InvalidEscapeSequenceException ex)
-                {
-                    printError(string.Format(ErrorMessages.INVALID_ESCAPE_SEQUENCE, ex.Character, ex.Line, ex.Position), ex);
-                }
-                catch (InvalidStringCharacterException ex)
-                {
-                    printError(string.Format(ErrorMessages.INVALID_STRING_CHARACTER, ex.Character, ex.Line, ex.Position), ex);
-                }
-                catch (ParsingException ex)
-                {
-                    printError(string.Format(ErrorMessages.PARSING_ERROR, ex.Line, ex.Position), ex);
-                }
-                catch (WrongNumberOfArgumentsException ex)
-                {
-                    printError(string.Format(ex.OrMore ? ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS_EXT : ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS, ex.Expected, ex.Actual), ex);
-                }
-                catch (WrongTypeOfArgumentException ex)
-                {
-                    if (ex.Expected.Length > 1) 
-                        printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT_FOR_MANY, string.Join(", ", ex.Expected.Select(t => t.Name)), ex.Actual.Name), ex);
-                    else
-                        printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, ex.Expected[0].Name, ex.Actual.Name), ex);
-                }
-                catch (UnknownIdentifierException ex)
-                {
-                    printError(string.Format(ErrorMessages.UNKNOWN_IDENTIFIER, ex.IdentifierName), ex);
-                }
-                catch (NotProcedureException ex)
-                {
-                    printError(ErrorMessages.NOT_PROCEDURE, ex);
-                }
-                catch (UserException ex)
-                {
-                    printError(string.Format(ErrorMessages.USER_ERROR, ex.Message), ex);
-                }
-                catch (InvalidValueException ex)
-                {
-                    printError(ErrorMessages.INVALID_VALUE, ex);
-                }
-                catch (Exception ex)
-                {
-                    printError(ErrorMessages.UNKNOWN_ERROR, ex);
-                }
+            try
+            {
+                var tokens = _tokenizer.Tokenize(expression);
+                var programAST = _parser.Parse(tokens);
+
+                var result = _evaluator.EvaluateProgram(programAST, environment);
+                string resultToPrint = result.AcceptVisitor(_resultPrinter);
+
+                print(resultToPrint);
+            }
+            catch (NonTerminatedStringException ex)
+            {
+                printError(string.Format(ErrorMessages.NON_TERMINATED_STRING, ex.Line, ex.Position), ex);
+            }
+            catch (InvalidEscapeSequenceException ex)
+            {
+                printError(string.Format(ErrorMessages.INVALID_ESCAPE_SEQUENCE, ex.Character, ex.Line, ex.Position), ex);
+            }
+            catch (InvalidStringCharacterException ex)
+            {
+                printError(string.Format(ErrorMessages.INVALID_STRING_CHARACTER, ex.Character, ex.Line, ex.Position), ex);
+            }
+            catch (ParsingException ex)
+            {
+                printError(string.Format(ErrorMessages.PARSING_ERROR, ex.Line, ex.Position), ex);
+            }
+            catch (WrongNumberOfArgumentsException ex)
+            {
+                printError(string.Format(ex.OrMore ? ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS_EXT : ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS, ex.Expected, ex.Actual), ex);
+            }
+            catch (WrongTypeOfArgumentException ex)
+            {
+                if (ex.Expected.Length > 1)
+                    printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT_FOR_MANY, string.Join(", ", ex.Expected.Select(t => t.Name)), ex.Actual.Name), ex);
+                else
+                    printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, ex.Expected[0].Name, ex.Actual.Name), ex);
+            }
+            catch (UnknownIdentifierException ex)
+            {
+                printError(string.Format(ErrorMessages.UNKNOWN_IDENTIFIER, ex.IdentifierName), ex);
+            }
+            catch (NotProcedureException ex)
+            {
+                printError(ErrorMessages.NOT_PROCEDURE, ex);
+            }
+            catch (UserException ex)
+            {
+                printError(string.Format(ErrorMessages.USER_ERROR, ex.Message), ex);
+            }
+            catch (InvalidValueException ex)
+            {
+                printError(ErrorMessages.INVALID_VALUE, ex);
+            }
+            catch (Exception ex)
+            {
+                printError(ErrorMessages.UNKNOWN_ERROR, ex);
             }
         }
 
