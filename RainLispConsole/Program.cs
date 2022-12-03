@@ -1,82 +1,57 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using RainLisp;
-using RainLisp.Evaluation;
 using RainLispConsole;
 using Terminal.Gui;
 
 Console.WriteLine(Resources.LOGO);
+Console.Write("Please type 0 for a quick single-line REPL, or 1 for the IDE.");
 
-Application.Run<RainLispWindow>();
-Application.Shutdown();
-
-class RainLispWindow : Window
+int mode = -1;
+do
 {
-    private readonly TextView _inputTextView;
-    private readonly TextView _outputTextView;
-    private readonly StatusBar _statusBar;
-    private readonly Interpreter _interpreter;
-    private IEvaluationEnvironment? _environment;
-
-    public RainLispWindow()
+    Console.WriteLine();
+    Console.Write("(0/1)?");
+    mode = Console.ReadKey().Key switch
     {
-        _interpreter = new();
+        ConsoleKey.D0 => 0,
+        ConsoleKey.D1 => 1,
+        _ => -1
+    };
+} while (mode == -1);
 
-        Title = "RainLisp";
+if (mode == 0)
+{
+    Console.WriteLine();
 
-        _inputTextView = new() 
-        { 
-            Width = Dim.Fill(), 
-            Height = Dim.Percent(50) 
-        };
+    var interpreter = new Interpreter();
+    interpreter.ReadEvalPrintLoop(Read, Print, PrintError);
 
-        _outputTextView = new() 
-        {
-            ReadOnly = true,
-            Y = Pos.Bottom(_inputTextView) + 1, 
-            Width = Dim.Fill(), 
-            Height = Dim.Height(_inputTextView) - 2 
-        };
-
-        StatusItem[] statusBarItems = new[]
-        {
-            new StatusItem(Key.CtrlMask | Key.Enter, "Ctrl-Enter Evaluate", Evaluate),
-            new StatusItem(Key.ShiftMask | Key.F5, "Ctrl-R Reset", Reset),
-            new StatusItem(Key.CtrlMask | Key.q, "Ctrl-Q Quit", () => Application.RequestStop()),
-        };
-        _statusBar = new StatusBar(statusBarItems);
-
-        Add(_inputTextView, _outputTextView, _statusBar);
+    string? Read()
+    {
+        Console.Write("> ");
+        return Console.ReadLine();
     }
 
-    private void Evaluate()
+    void Print(string result)
     {
-        string? expression = _inputTextView.Text.ToString();
-        _inputTextView.Text = string.Empty;
-        _interpreter.EvaluateAndPrint(expression, ref _environment, Print, PrintError);
+        Console.WriteLine(result);
     }
 
-    private void Reset()
+    void PrintError(string message, Exception ex)
     {
-        _environment = null;
-        _outputTextView.Text = "Environment has been reset.";
-    }
-
-    private void Print(string result)
-        => AppendToOutput(result);
-
-    private void PrintError(string message, Exception ex)
-    {
-        AppendToOutput(message);
+        Console.WriteLine(message);
 
         // Print the entire exception if it is unknown.
         if (message == ErrorMessages.UNKNOWN_ERROR)
-            AppendToOutput(ex.ToString());
+            Console.WriteLine(ex.ToString());
 
         // Or print the exception's message if one provided by a programmer extending the library.
         else if (!string.IsNullOrWhiteSpace(ex.Message) && !ex.Message.StartsWith("Exception of type"))
-            AppendToOutput(ex.Message);
+            Console.WriteLine(ex.Message);
     }
-
-    private void AppendToOutput(string line)
-        => _outputTextView.Text += Environment.NewLine + line;
+}
+else
+{
+    Application.Run<RainLispIDE>();
+    Application.Shutdown();
 }
