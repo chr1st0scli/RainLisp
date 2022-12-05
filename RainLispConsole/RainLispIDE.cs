@@ -7,14 +7,19 @@ namespace RainLispConsole
     class RainLispIDE : Window
     {
         private readonly TextView _inputTextView;
+        private readonly FrameView _inputFrameView;
         private readonly TextView _outputTextView;
         private readonly Interpreter _interpreter;
+        private readonly List<string> _allowedFileTypes;
+
+        private string? _fileName;
 
         public RainLispIDE()
         {
             _interpreter = new();
+            _allowedFileTypes = new List<string> { Resources.FILE_EXT };
 
-            Title = "Rainλisp";
+            Title = Resources.TITLE;
 
             var textViewColorScheme = new ColorScheme()
             {
@@ -36,67 +41,100 @@ namespace RainLispConsole
                 ColorScheme = textViewColorScheme
             };
 
-            var inputFrameView = new FrameView("Code Editor")
+            _inputFrameView = new FrameView(Resources.CODE_EDITOR)
             {
                 Y = 1,  // Leave a row for the menu.
                 Width = Dim.Fill(),
                 Height = Dim.Percent(70)
             };
 
-            var outputFrameView = new FrameView("Output")
+            var outputFrameView = new FrameView(Resources.OUTPUT)
             {
-                Y = Pos.Bottom(inputFrameView) + 1,
+                Y = Pos.Bottom(_inputFrameView) + 1,
                 Width = Dim.Fill(),
                 Height = Dim.Fill(1),   // Leave a row for the status bar.
             };
 
             StatusItem[] statusBarItems = new[]
             {
-                new StatusItem(Key.CtrlMask | Key.Enter, "Ctrl-Enter Evaluate", Evaluate),
-                new StatusItem(Key.CtrlMask | Key.q, "Ctrl-Q Quit", () => Application.RequestStop()),
+                new StatusItem(Key.CtrlMask | Key.Enter, Resources.EVALUATE, Evaluate),
+                new StatusItem(Key.CtrlMask | Key.q, Resources.QUIT, () => Application.RequestStop()),
             };
+
             var statusBar = new StatusBar(statusBarItems);
 
             MenuItem[] fileMenuItems = new[]
             {
-                new MenuItem(Key.CtrlMask | Key.n) { Title = "New", Action = New },
-                new MenuItem(Key.CtrlMask | Key.o) { Title = "Open", Action = Open },
-                new MenuItem(Key.CtrlMask | Key.s) { Title = "Save", Action = Save }
+                new MenuItem(Key.CtrlMask | Key.n) { Title = Resources.NEW, Action = New },
+                new MenuItem(Key.CtrlMask | Key.o) { Title = Resources.OPEN, Action = Open },
+                new MenuItem(Key.CtrlMask | Key.s) { Title = Resources.SAVE, Action = Save },
+                new MenuItem(Key.CtrlMask | Key.s) { Title = Resources.SAVE_AS, Action = SaveAs }
             };
 
             MenuItem[] helpMenuItems = new[]
             {
-                new MenuItem(Key.F1) { Title = "View Help", Action = ViewHelp },
-                new MenuItem() { Title = "About", Action = About }
+                new MenuItem(Key.F1) { Title = Resources.VIEW_HELP, Action = ViewHelp },
+                new MenuItem() { Title = Resources.ABOUT, Action = About }
             };
 
             MenuBarItem[] menuBarItems = new[]
             {
-                new MenuBarItem("File", fileMenuItems),
-                new MenuBarItem("Help", helpMenuItems),
+                new MenuBarItem(Resources.FILE, fileMenuItems),
+                new MenuBarItem(Resources.HELP, helpMenuItems),
             };
 
             var menuBar = new MenuBar(menuBarItems);
 
-            inputFrameView.Add(_inputTextView);
+            _inputFrameView.Add(_inputTextView);
             outputFrameView.Add(_outputTextView);
-            Add(menuBar, inputFrameView, outputFrameView, statusBar);
+            Add(menuBar, _inputFrameView, outputFrameView, statusBar);
             MenuBar = menuBar;
+            SetFileName(null);
         }
 
         private void New()
         {
-
+            _inputTextView.Text = "";
+            _fileName = null;
+            _inputFrameView.Title = Resources.CODE_EDITOR + " - *";
         }
 
         private void Open()
         {
+            var openDialog = new OpenDialog(Resources.OPEN, Resources.OPEN_FILE, _allowedFileTypes);
+            Application.Run(openDialog);
 
+            if (!openDialog.Canceled)
+            {
+                _inputTextView.Text = File.ReadAllText(openDialog.FilePath.ToString()!);
+                SetFileName(Path.GetFileName(openDialog.FilePath.ToString()));
+            }
         }
 
         private void Save()
         {
+            var saveDialog = new SaveDialog(Resources.SAVE, Resources.SAVE_FILE, _allowedFileTypes)
+            { 
+                CanCreateDirectories = true 
+            };
+            Application.Run(saveDialog);
 
+            if (!saveDialog.Canceled)
+            {
+                File.WriteAllText(saveDialog.FilePath.ToString()!, _inputTextView.Text.ToString());
+                SetFileName(saveDialog.FileName.ToString());
+            }
+        }
+
+        private void SaveAs()
+        {
+
+        }
+
+        private void SetFileName(string? fileName)
+        {
+            _fileName = fileName;
+            _inputFrameView.Title = Resources.CODE_EDITOR + " - " + (fileName ?? Resources.ASTERISK);
         }
 
         private void ViewHelp()
@@ -105,9 +143,7 @@ namespace RainLispConsole
         }
 
         private void About()
-        {
-            MessageBox.Query("About", Resources.ABOUT, "OK");
-        }
+            => MessageBox.Query(Resources.ABOUT, Resources.INFO, Resources.OK);
 
         private void Evaluate()
         {
