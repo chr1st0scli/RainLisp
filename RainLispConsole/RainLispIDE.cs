@@ -12,7 +12,8 @@ namespace RainLispConsole
         private readonly Interpreter _interpreter;
         private readonly List<string> _allowedFileTypes;
 
-        private string? _fileName;
+        private string? _filePath;
+        private bool _saved;
 
         public RainLispIDE()
         {
@@ -89,14 +90,13 @@ namespace RainLispConsole
             outputFrameView.Add(_outputTextView);
             Add(menuBar, _inputFrameView, outputFrameView, statusBar);
             MenuBar = menuBar;
-            SetFileName(null);
+            SetOpenedFile(null);
         }
 
         private void New()
         {
             _inputTextView.Text = "";
-            _fileName = null;
-            _inputFrameView.Title = Resources.CODE_EDITOR + " - *";
+            SetOpenedFile(null);
         }
 
         private void Open()
@@ -104,37 +104,54 @@ namespace RainLispConsole
             var openDialog = new OpenDialog(Resources.OPEN, Resources.OPEN_FILE, _allowedFileTypes);
             Application.Run(openDialog);
 
-            if (!openDialog.Canceled)
-            {
-                _inputTextView.Text = File.ReadAllText(openDialog.FilePath.ToString()!);
-                SetFileName(Path.GetFileName(openDialog.FilePath.ToString()));
-            }
+            if (openDialog.Canceled)
+                return;
+
+            string? filePath = openDialog.FilePath.ToString();
+            _inputTextView.Text = File.ReadAllText(filePath!);
+            SetOpenedFile(filePath);
         }
 
         private void Save()
         {
-            var saveDialog = new SaveDialog(Resources.SAVE, Resources.SAVE_FILE, _allowedFileTypes)
-            { 
-                CanCreateDirectories = true 
-            };
-            Application.Run(saveDialog);
+            string? filePath = _filePath ?? OpenSaveDialog();
+            if (filePath == null)
+                return;
 
-            if (!saveDialog.Canceled)
-            {
-                File.WriteAllText(saveDialog.FilePath.ToString()!, _inputTextView.Text.ToString());
-                SetFileName(saveDialog.FileName.ToString());
-            }
+            SaveFile(filePath);
         }
 
         private void SaveAs()
         {
+            string? filePath = OpenSaveDialog();
+            if (filePath == null)
+                return;
 
+            SaveFile(filePath);
         }
 
-        private void SetFileName(string? fileName)
+        private string? OpenSaveDialog()
         {
-            _fileName = fileName;
-            _inputFrameView.Title = Resources.CODE_EDITOR + " - " + (fileName ?? Resources.ASTERISK);
+            var saveDialog = new SaveDialog(Resources.SAVE, Resources.SAVE_FILE, _allowedFileTypes);
+            Application.Run(saveDialog);
+
+            if (saveDialog.Canceled)
+                return null;
+
+            return saveDialog.FilePath.ToString();
+        }
+
+        private void SaveFile(string filePath)
+        {
+            File.WriteAllText(filePath, _inputTextView.Text.ToString());
+            SetOpenedFile(filePath);
+        }
+
+        private void SetOpenedFile(string? filePath)
+        {
+            _filePath = filePath;
+            _saved = filePath != null ? true : false;
+            _inputFrameView.Title = Resources.CODE_EDITOR + " - " + (Path.GetFileName(filePath) ?? Resources.ASTERISK);
         }
 
         private void ViewHelp()
