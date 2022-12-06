@@ -13,6 +13,7 @@ namespace RainLispConsole
         private readonly List<string> _allowedFileTypes;
 
         private string? _filePath;
+        private string? _recentDirectory;
         private bool _saved;
 
         public RainLispIDE()
@@ -56,32 +57,32 @@ namespace RainLispConsole
                 Height = Dim.Fill(1),   // Leave a row for the status bar.
             };
 
-            StatusItem[] statusBarItems = new[]
+            var statusBarItems = new StatusItem[]
             {
-                new StatusItem(Key.CtrlMask | Key.Enter, Resources.EVALUATE, Evaluate),
-                new StatusItem(Key.CtrlMask | Key.q, Resources.QUIT, () => Application.RequestStop()),
+                new(Key.CtrlMask | Key.Enter, Resources.EVALUATE, Evaluate),
+                new(Key.CtrlMask | Key.q, Resources.QUIT, () => Application.RequestStop()),
             };
 
             var statusBar = new StatusBar(statusBarItems);
 
-            MenuItem[] fileMenuItems = new[]
+            var fileMenuItems = new MenuItem[]
             {
-                new MenuItem(Key.CtrlMask | Key.n) { Title = Resources.NEW, Action = New },
-                new MenuItem(Key.CtrlMask | Key.o) { Title = Resources.OPEN, Action = Open },
-                new MenuItem(Key.CtrlMask | Key.s) { Title = Resources.SAVE, Action = Save },
-                new MenuItem(Key.CtrlMask | Key.s) { Title = Resources.SAVE_AS, Action = SaveAs }
+                new() { Title = Resources.NEW, Action = New },
+                new() { Title = Resources.OPEN, Action = Open },
+                new() { Title = Resources.SAVE, Action = Save },
+                new() { Title = Resources.SAVE_AS, Action = SaveAs }
             };
 
-            MenuItem[] helpMenuItems = new[]
+            var helpMenuItems = new MenuItem[]
             {
-                new MenuItem(Key.F1) { Title = Resources.VIEW_HELP, Action = ViewHelp },
-                new MenuItem() { Title = Resources.ABOUT, Action = About }
+                new(Key.F1) { Title = Resources.VIEW_HELP, Action = ViewHelp },
+                new() { Title = Resources.ABOUT, Action = About }
             };
 
-            MenuBarItem[] menuBarItems = new[]
+            var menuBarItems = new MenuBarItem[]
             {
-                new MenuBarItem(Resources.FILE, fileMenuItems),
-                new MenuBarItem(Resources.HELP, helpMenuItems),
+                new(Resources.FILE, fileMenuItems),
+                new(Resources.HELP, helpMenuItems),
             };
 
             var menuBar = new MenuBar(menuBarItems);
@@ -102,11 +103,16 @@ namespace RainLispConsole
         private void Open()
         {
             var openDialog = new OpenDialog(Resources.OPEN, Resources.OPEN_FILE, _allowedFileTypes);
+
+            if (_recentDirectory != null)
+                openDialog.DirectoryPath = _recentDirectory;
+
             Application.Run(openDialog);
 
             if (openDialog.Canceled)
                 return;
 
+            _recentDirectory = openDialog.DirectoryPath.ToString();
             string? filePath = openDialog.FilePath.ToString();
             _inputTextView.Text = File.ReadAllText(filePath!);
             SetOpenedFile(filePath);
@@ -133,10 +139,16 @@ namespace RainLispConsole
         private string? OpenSaveDialog()
         {
             var saveDialog = new SaveDialog(Resources.SAVE, Resources.SAVE_FILE, _allowedFileTypes);
+
+            if (_recentDirectory != null)
+                saveDialog.DirectoryPath = _recentDirectory;
+
             Application.Run(saveDialog);
 
             if (saveDialog.Canceled)
                 return null;
+
+            _recentDirectory = saveDialog.DirectoryPath.ToString();
 
             return saveDialog.FilePath.ToString();
         }
@@ -150,14 +162,12 @@ namespace RainLispConsole
         private void SetOpenedFile(string? filePath)
         {
             _filePath = filePath;
-            _saved = filePath != null ? true : false;
+            _saved = filePath != null;
             _inputFrameView.Title = Resources.CODE_EDITOR + " - " + (Path.GetFileName(filePath) ?? Resources.ASTERISK);
         }
 
         private void ViewHelp()
-        {
-
-        }
+            => MessageBox.Query(Resources.HELP, Resources.HELP_CONTENTS, Resources.OK);
 
         private void About()
             => MessageBox.Query(Resources.ABOUT, Resources.INFO, Resources.OK);

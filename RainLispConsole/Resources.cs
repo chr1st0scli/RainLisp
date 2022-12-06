@@ -20,6 +20,7 @@
         internal const string SAVE_FILE = "Save file";
         internal const string OK = "Ok";
         internal const string ASTERISK = "*";
+        internal const string HELP_CONTENTS = "https://github.com/chr1st0scli/RainLisp";
 
         internal const string LOGO = @"
 
