@@ -150,7 +150,12 @@ namespace RainLispConsole
 
             _recentDirectory = saveDialog.DirectoryPath.ToString();
 
-            return saveDialog.FilePath.ToString();
+            string? filePath = saveDialog.FilePath.ToString();
+
+            if (File.Exists(filePath) && MessageBox.Query(Resources.SAVE, Resources.OVERWRITE_FILE, Resources.NO, Resources.YES) == 0)
+                return null;
+
+            return filePath;
         }
 
         private void SaveFile(string filePath)

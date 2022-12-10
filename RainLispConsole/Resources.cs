@@ -20,6 +20,9 @@
         internal const string SAVE_FILE = "Save file";
         internal const string OK = "Ok";
         internal const string ASTERISK = "*";
+        internal const string OVERWRITE_FILE = "The file already exists. Are you sure you want to overwrite it?";
+        internal const string YES = "Yes";
+        internal const string NO = "No";
         internal const string HELP_CONTENTS = "https://github.com/chr1st0scli/RainLisp";
 
         internal const string LOGO = @"
