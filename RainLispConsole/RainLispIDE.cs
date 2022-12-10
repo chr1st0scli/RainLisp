@@ -14,7 +14,7 @@ namespace RainLispConsole
 
         private string? _filePath;
         private string? _recentDirectory;
-        private bool _saved;
+        private byte[]? _originalWorkingFileBytes;
 
         public RainLispIDE()
         {
@@ -60,7 +60,7 @@ namespace RainLispConsole
             var statusBarItems = new StatusItem[]
             {
                 new(Key.CtrlMask | Key.Enter, Resources.EVALUATE, Evaluate),
-                new(Key.CtrlMask | Key.q, Resources.QUIT, () => Application.RequestStop()),
+                new(Key.CtrlMask | Key.F4, Resources.QUIT, Quit),
             };
 
             var statusBar = new StatusBar(statusBarItems);
@@ -91,17 +91,37 @@ namespace RainLispConsole
             outputFrameView.Add(_outputTextView);
             Add(menuBar, _inputFrameView, outputFrameView, statusBar);
             MenuBar = menuBar;
-            SetOpenedFile(null);
+            SetWorkingFile(null);
+        }
+
+        private bool ProceedAndLosePossibleChanges()
+        {
+            if (_inputTextView.Text == _originalWorkingFileBytes)
+                return true;
+
+            return MessageBox.Query(Resources.CONFIRMATION, Resources.LOSE_UNSAVED_CHANGES, Resources.NO, Resources.YES) == 1;
+        }
+
+        private void Quit()
+        {
+            if (ProceedAndLosePossibleChanges())
+                Application.RequestStop();
         }
 
         private void New()
         {
+            if (!ProceedAndLosePossibleChanges())
+                return;
+
             _inputTextView.Text = "";
-            SetOpenedFile(null);
+            SetWorkingFile(null); 
         }
 
         private void Open()
         {
+            if (!ProceedAndLosePossibleChanges())
+                return;
+
             var openDialog = new OpenDialog(Resources.OPEN, Resources.OPEN_FILE, _allowedFileTypes);
 
             if (_recentDirectory != null)
@@ -114,8 +134,9 @@ namespace RainLispConsole
 
             _recentDirectory = openDialog.DirectoryPath.ToString();
             string? filePath = openDialog.FilePath.ToString();
-            _inputTextView.Text = File.ReadAllText(filePath!);
-            SetOpenedFile(filePath);
+
+            if (_inputTextView.LoadFile(filePath))
+                SetWorkingFile(filePath);
         }
 
         private void Save()
@@ -152,7 +173,7 @@ namespace RainLispConsole
 
             string? filePath = saveDialog.FilePath.ToString();
 
-            if (File.Exists(filePath) && MessageBox.Query(Resources.SAVE, Resources.OVERWRITE_FILE, Resources.NO, Resources.YES) == 0)
+            if (File.Exists(filePath) && MessageBox.Query(Resources.CONFIRMATION, Resources.OVERWRITE_FILE, Resources.NO, Resources.YES) == 0)
                 return null;
 
             return filePath;
@@ -161,14 +182,14 @@ namespace RainLispConsole
         private void SaveFile(string filePath)
         {
             File.WriteAllText(filePath, _inputTextView.Text.ToString());
-            SetOpenedFile(filePath);
+            SetWorkingFile(filePath);
         }
 
-        private void SetOpenedFile(string? filePath)
+        private void SetWorkingFile(string? filePath)
         {
             _filePath = filePath;
-            _saved = filePath != null;
-            _inputFrameView.Title = Resources.CODE_EDITOR + " - " + (Path.GetFileName(filePath) ?? Resources.ASTERISK);
+            _originalWorkingFileBytes = _inputTextView.Text.ToByteArray();
+            _inputFrameView.Title = Resources.CODE_EDITOR + " - " + (Path.GetFileName(filePath) ?? Resources.UNTITLED);
         }
 
         private void ViewHelp()

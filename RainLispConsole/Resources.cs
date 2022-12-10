@@ -7,7 +7,7 @@
         internal const string OUTPUT = "Output";
         internal const string FILE_EXT = ".rl";
         internal const string EVALUATE = "Ctrl-Enter Evaluate";
-        internal const string QUIT = "Ctrl-Q Quit";
+        internal const string QUIT = "Ctrl-F4 Quit";
         internal const string NEW = "New";
         internal const string OPEN = "Open";
         internal const string SAVE = "Save";
@@ -19,8 +19,10 @@
         internal const string OPEN_FILE = "Open file";
         internal const string SAVE_FILE = "Save file";
         internal const string OK = "Ok";
-        internal const string ASTERISK = "*";
+        internal const string UNTITLED = "Untitled";
         internal const string OVERWRITE_FILE = "The file already exists. Are you sure you want to overwrite it?";
+        internal const string LOSE_UNSAVED_CHANGES = "There are unsaved changes. Are you sure you want to continue and lose them?";
+        internal const string CONFIRMATION = "Confirmation";
         internal const string YES = "Yes";
         internal const string NO = "No";
         internal const string HELP_CONTENTS = "https://github.com/chr1st0scli/RainLisp";
