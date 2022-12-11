@@ -52,6 +52,6 @@ if (mode == 0)
 }
 else
 {
-    Application.Run<RainLispIDE>();
-    Application.Shutdown();
+    var ide = new RainLispIDE();
+    RainLispIDE.Run();
 }

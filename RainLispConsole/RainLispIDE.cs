@@ -4,11 +4,14 @@ using Terminal.Gui;
 
 namespace RainLispConsole
 {
-    class RainLispIDE : Window
+    class RainLispIDE
     {
+        private readonly Window _mainWindow;
         private readonly TextView _inputTextView;
         private readonly FrameView _inputFrameView;
         private readonly TextView _outputTextView;
+        private readonly StatusItem _cursorPosStatusItem;
+
         private readonly Interpreter _interpreter;
         private readonly List<string> _allowedFileTypes;
 
@@ -21,7 +24,9 @@ namespace RainLispConsole
             _interpreter = new();
             _allowedFileTypes = new List<string> { Resources.FILE_EXT };
 
-            Title = Resources.TITLE;
+            Application.Init();
+
+            _mainWindow = new() { Title = Resources.TITLE };
 
             var textViewColorScheme = new ColorScheme()
             {
@@ -32,8 +37,10 @@ namespace RainLispConsole
             {
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),
-                ColorScheme = textViewColorScheme
+                ColorScheme = textViewColorScheme,
+                DesiredCursorVisibility = CursorVisibility.Box,
             };
+            _inputTextView.UnwrappedCursorPosition += InputTextViewCursorPositionChanged;
 
             _outputTextView = new()
             {
@@ -45,7 +52,6 @@ namespace RainLispConsole
 
             _inputFrameView = new FrameView(Resources.CODE_EDITOR)
             {
-                Y = 1,  // Leave a row for the menu.
                 Width = Dim.Fill(),
                 Height = Dim.Percent(70)
             };
@@ -54,11 +60,13 @@ namespace RainLispConsole
             {
                 Y = Pos.Bottom(_inputFrameView) + 1,
                 Width = Dim.Fill(),
-                Height = Dim.Fill(1),   // Leave a row for the status bar.
+                Height = Dim.Fill(),
             };
 
+            _cursorPosStatusItem = new(Key.Null, "", null);
             var statusBarItems = new StatusItem[]
             {
+                _cursorPosStatusItem,
                 new(Key.CtrlMask | Key.Enter, Resources.EVALUATE, Evaluate),
                 new(Key.CtrlMask | Key.F4, Resources.QUIT, Quit),
             };
@@ -89,10 +97,23 @@ namespace RainLispConsole
 
             _inputFrameView.Add(_inputTextView);
             outputFrameView.Add(_outputTextView);
-            Add(menuBar, _inputFrameView, outputFrameView, statusBar);
-            MenuBar = menuBar;
+            _mainWindow.Add(_inputFrameView, outputFrameView);
+            _mainWindow.MenuBar = menuBar;
             SetWorkingFile(null);
+
+            Application.Top.Add(menuBar);
+            Application.Top.Add(_mainWindow);
+            Application.Top.Add(statusBar);
         }
+
+        public static void Run()
+        {
+            Application.Run();
+            Application.Shutdown();
+        }
+
+        private void InputTextViewCursorPositionChanged(Point point)
+            => _cursorPosStatusItem.Title = string.Format(Resources.CURSOR_POS_FORMAT, point.Y + 1, point.X +1);
 
         private bool ProceedAndLosePossibleChanges()
         {
