@@ -101,9 +101,7 @@ namespace RainLispConsole
             _mainWindow.MenuBar = menuBar;
             SetWorkingFile(null);
 
-            Application.Top.Add(menuBar);
-            Application.Top.Add(_mainWindow);
-            Application.Top.Add(statusBar);
+            Application.Top.Add(menuBar, _mainWindow, statusBar);
         }
 
         public static void Run()
