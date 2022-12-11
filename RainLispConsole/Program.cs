@@ -1,16 +1,15 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using RainLisp;
 using RainLispConsole;
-using Terminal.Gui;
 
 Console.WriteLine(Resources.LOGO);
-Console.Write("Please type 0 for a quick single-line REPL, or 1 for the IDE.");
+Console.Write(Resources.WELCOME_PROMPT);
 
 int mode = -1;
 do
 {
     Console.WriteLine();
-    Console.Write("(0/1)?");
+    Console.Write(Resources.ZERO_OR_ONE);
     mode = Console.ReadKey().Key switch
     {
         ConsoleKey.D0 => 0,
@@ -28,7 +27,7 @@ if (mode == 0)
 
     string? Read()
     {
-        Console.Write("> ");
+        Console.Write(Resources.REPL_PROMPT);
         return Console.ReadLine();
     }
 
@@ -52,6 +51,6 @@ if (mode == 0)
 }
 else
 {
-    var ide = new RainLispIDE();
-    RainLispIDE.Run();
+    _ = new CodeEditor();
+    CodeEditor.Run();
 }

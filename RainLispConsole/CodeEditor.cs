@@ -4,7 +4,7 @@ using Terminal.Gui;
 
 namespace RainLispConsole
 {
-    class RainLispIDE
+    class CodeEditor
     {
         private readonly Window _mainWindow;
         private readonly TextView _inputTextView;
@@ -19,7 +19,7 @@ namespace RainLispConsole
         private string? _recentDirectory;
         private byte[]? _originalWorkingFileBytes;
 
-        public RainLispIDE()
+        public CodeEditor()
         {
             _interpreter = new();
             _allowedFileTypes = new List<string> { Resources.FILE_EXT };
@@ -58,7 +58,7 @@ namespace RainLispConsole
 
             var outputFrameView = new FrameView(Resources.OUTPUT)
             {
-                Y = Pos.Bottom(_inputFrameView) + 1,
+                Y = Pos.Bottom(_inputFrameView),
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),
             };
