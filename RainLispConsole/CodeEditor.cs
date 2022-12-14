@@ -14,6 +14,7 @@ namespace RainLispConsole
 
         private readonly Interpreter _interpreter;
         private readonly List<string> _allowedFileTypes;
+        private readonly TextWriter _outputWriter;
 
         private string? _filePath;
         private string? _recentDirectory;
@@ -102,6 +103,10 @@ namespace RainLispConsole
             SetWorkingFile(null);
 
             Application.Top.Add(menuBar, _mainWindow, statusBar);
+
+            // Redirect the standard output to the output text view.
+            _outputWriter = new TextViewTextWriter(_outputTextView);
+            Console.SetOut(_outputWriter);
         }
 
         public static void Run()
@@ -111,7 +116,7 @@ namespace RainLispConsole
         }
 
         private void InputTextViewCursorPositionChanged(Point point)
-            => _cursorPosStatusItem.Title = string.Format(Resources.CURSOR_POS_FORMAT, point.Y + 1, point.X +1);
+            => _cursorPosStatusItem.Title = string.Format(Resources.CURSOR_POS_FORMAT, point.Y + 1, point.X + 1);
 
         private bool ProceedAndLosePossibleChanges()
         {
@@ -133,7 +138,7 @@ namespace RainLispConsole
                 return;
 
             _inputTextView.Text = "";
-            SetWorkingFile(null); 
+            SetWorkingFile(null);
         }
 
         private void Open()
@@ -219,24 +224,25 @@ namespace RainLispConsole
 
         private void Evaluate()
         {
+            _outputTextView.Text = "";
             IEvaluationEnvironment? environment = null;
             _interpreter.EvaluateAndPrint(_inputTextView.Text.ToString(), ref environment, Print, PrintError);
         }
 
         private void Print(string result)
-            => _outputTextView.Text = result;
+            => Console.WriteLine(result);
 
         private void PrintError(string message, Exception ex)
         {
-            _outputTextView.Text = message;
+            Console.WriteLine(message);
 
             // Print the entire exception if it is unknown.
             if (message == ErrorMessages.UNKNOWN_ERROR)
-                _outputTextView.Text = ex.ToString();
+                Console.WriteLine(ex.ToString());
 
             // Or print the exception's message if one provided by a programmer extending the library.
             else if (!string.IsNullOrWhiteSpace(ex.Message) && !ex.Message.StartsWith("Exception of type"))
-                _outputTextView.Text = ex.Message;
+                Console.WriteLine(ex.Message);
         }
     }
 }
