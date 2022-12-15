@@ -9,12 +9,13 @@ namespace RainLispConsole
         private readonly Window _mainWindow;
         private readonly TextView _inputTextView;
         private readonly FrameView _inputFrameView;
-        private readonly TextView _outputTextView;
+        private readonly OutputTextView _outputTextView;
         private readonly StatusItem _cursorPosStatusItem;
 
         private readonly Interpreter _interpreter;
         private readonly List<string> _allowedFileTypes;
         private readonly TextWriter _outputWriter;
+        private readonly TextWriter _errorWriter;
 
         private string? _filePath;
         private string? _recentDirectory;
@@ -45,7 +46,6 @@ namespace RainLispConsole
 
             _outputTextView = new()
             {
-                ReadOnly = true,
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),
                 ColorScheme = textViewColorScheme
@@ -104,9 +104,11 @@ namespace RainLispConsole
 
             Application.Top.Add(menuBar, _mainWindow, statusBar);
 
-            // Redirect the standard output to the output text view.
-            _outputWriter = new TextViewTextWriter(_outputTextView);
+            // Redirect the standard output and error to the same output text view.
+            _outputWriter = new OutputTextViewWriter(_outputTextView, false);
+            _errorWriter = new OutputTextViewWriter(_outputTextView, true);
             Console.SetOut(_outputWriter);
+            Console.SetError(_errorWriter);
         }
 
         public static void Run()
@@ -234,15 +236,15 @@ namespace RainLispConsole
 
         private void PrintError(string message, Exception ex)
         {
-            Console.WriteLine(message);
+            Console.Error.WriteLine(message);
 
             // Print the entire exception if it is unknown.
             if (message == ErrorMessages.UNKNOWN_ERROR)
-                Console.WriteLine(ex.ToString());
+                Console.Error.WriteLine(ex.ToString());
 
             // Or print the exception's message if one provided by a programmer extending the library.
             else if (!string.IsNullOrWhiteSpace(ex.Message) && !ex.Message.StartsWith("Exception of type"))
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
         }
     }
 }
