@@ -26,6 +26,7 @@
         internal const string OVERWRITE_FILE = "The file already exists. Are you sure you want to overwrite it?";
         internal const string LOSE_UNSAVED_CHANGES = "There are unsaved changes. Are you sure you want to continue and lose them?";
         internal const string CONFIRMATION = "Confirmation";
+        internal const string ERROR = "Error";
         internal const string YES = "Yes";
         internal const string NO = "No";
         internal const string CURSOR_POS_FORMAT = "Ln: {0}, Col: {1}";

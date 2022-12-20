@@ -159,10 +159,9 @@ namespace RainLispConsole
                 return;
 
             _recentDirectory = openDialog.DirectoryPath.ToString();
-            string? filePath = openDialog.FilePath.ToString();
+            string filePath = openDialog.FilePath.ToString()!;
 
-            if (_inputTextView.LoadFile(filePath))
-                SetWorkingFile(filePath);
+            OpenFile(filePath);
         }
 
         private void Save()
@@ -206,9 +205,22 @@ namespace RainLispConsole
         }
 
         private void SaveFile(string filePath)
+            => SetWorkingFile(filePath, () => File.WriteAllText(filePath, _inputTextView.Text.ToString()));
+
+        private void OpenFile(string filePath)
+            => SetWorkingFile(filePath, () => _inputTextView.Text = File.ReadAllText(filePath));
+
+        private void SetWorkingFile(string filePath, Action operation)
         {
-            File.WriteAllText(filePath, _inputTextView.Text.ToString());
-            SetWorkingFile(filePath);
+            try
+            {
+                operation();
+                SetWorkingFile(filePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.ErrorQuery(Resources.ERROR, ex.Message, Resources.OK);
+            }
         }
 
         private void SetWorkingFile(string? filePath)
