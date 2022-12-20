@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Terminal.Gui" Version="1.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RainLisp\RainLisp.csproj" />
   </ItemGroup>
 
