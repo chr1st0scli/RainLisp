@@ -1,5 +1,7 @@
 ﻿using RainLisp;
 using RainLisp.Evaluation;
+using RainLisp.Grammar;
+using RainLispConsole.CodeTextView;
 using Terminal.Gui;
 
 namespace RainLispConsole
@@ -7,7 +9,7 @@ namespace RainLispConsole
     class CodeEditor
     {
         private readonly Window _mainWindow;
-        private readonly TextView _inputTextView;
+        private readonly InputTextView _inputTextView;
         private readonly FrameView _inputFrameView;
         private readonly OutputTextView _outputTextView;
         private readonly StatusItem _cursorPosStatusItem;
@@ -35,7 +37,7 @@ namespace RainLispConsole
                 Focus = new Terminal.Gui.Attribute(Color.White, Color.Black),
             };
 
-            _inputTextView = new()
+            _inputTextView = new(new[] { Keywords.DEFINE, Keywords.SET, Keywords.IF })
             {
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),
