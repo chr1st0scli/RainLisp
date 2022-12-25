@@ -12,12 +12,14 @@ namespace RainLispConsole.CodeTextView
         private readonly HashSet<string> _keywords;
         private readonly Dictionary<List<Rune>, LineInfo?> _linesAnalysis;
 
-        public InputTextView(string[] keywords)
+        public InputTextView(List<string> suggestions)
         {
             _white = Driver.MakeAttribute(Color.White, Color.Black);
             _green = Driver.MakeAttribute(Color.Green, Color.Black);
-            _keywords = new(keywords);
+            _keywords = new(suggestions);
             _linesAnalysis = new();
+
+            Autocomplete.AllSuggestions = suggestions;
         }
 
         protected override void SetNormalColor(List<System.Rune> line, int idx)

@@ -1,6 +1,5 @@
 ﻿using RainLisp;
 using RainLisp.Evaluation;
-using RainLisp.Grammar;
 using RainLispConsole.CodeTextView;
 using Terminal.Gui;
 
@@ -37,7 +36,7 @@ namespace RainLispConsole
                 Focus = new Terminal.Gui.Attribute(Color.White, Color.Black),
             };
 
-            _inputTextView = new(new[] { Keywords.DEFINE, Keywords.SET, Keywords.IF })
+            _inputTextView = new(CodeSuggestionsProvider.GetRainLispSuggestions())
             {
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),
