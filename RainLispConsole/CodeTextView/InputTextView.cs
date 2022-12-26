@@ -30,11 +30,14 @@ namespace RainLispConsole.CodeTextView
             // If the line has not been analyzed or the line text has changed, perform the analysis and cache it.
             if (lineInfo == null || lineInfo.Value.Text != lineText)
             {
+                int startIndex = 0;
+                
                 var words = Regex.Split(lineText, $"[\\s{Delimiters.LPAREN}{Delimiters.RPAREN}]")
                     .Select(word =>
                     {
-                        int start = lineText.IndexOf(word);
+                        int start = lineText.IndexOf(word, startIndex);
                         int end = start + word.Length - 1;
+                        startIndex = end + 1;
 
                         return new WordInfo { Word = word, Start = lineText.IndexOf(word), End = start + word.Length - 1 };
                     }).ToArray();
