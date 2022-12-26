@@ -10,14 +10,18 @@ namespace RainLispConsole.CodeTextView
         private readonly Attribute _white;
         private readonly Attribute _green;
         private readonly Attribute _magenta;
+        private readonly Attribute _gray;
         private readonly HashSet<string> _keywords;
         private readonly Dictionary<List<Rune>, LineInfo> _linesAnalysis;
 
-        public InputTextView(List<string> suggestions)
+        public InputTextView()
         {
             _white = Driver.MakeAttribute(Color.White, Color.Black);
             _green = Driver.MakeAttribute(Color.Green, Color.Black);
             _magenta = Driver.MakeAttribute(Color.Magenta, Color.Black);
+            _gray = Driver.MakeAttribute(Color.BrightBlue, Color.Black);
+
+            var suggestions = CodeSuggestionsProvider.GetRainLispSuggestions();
             _keywords = new(suggestions);
             _linesAnalysis = new();
 
@@ -37,6 +41,8 @@ namespace RainLispConsole.CodeTextView
 
             if (IsInString(idx, lineInfo))
                 Driver.SetAttribute(_magenta);
+            else if (IsInComment(idx, lineInfo))
+                Driver.SetAttribute(_gray);
             else if (IsInKeyword(idx, lineInfo))
                 Driver.SetAttribute(_green);
             else
@@ -46,11 +52,17 @@ namespace RainLispConsole.CodeTextView
         private static LineInfo AnalyzeLine(string lineText)
         {
             var strings = Regex.Matches(lineText, "\"(\\\\.|[^\"\\\\])*\"")
-                                .Select(m => new StringInfo() { Start = m.Index, End = m.Index + m.Length - 1 }).ToArray();
+                                .Select(m => new StringInfo() { Start = m.Index, End = m.Index + m.Length - 1 })
+                                .ToArray();
+
+            // Search for a comment start character outside of a string.
+            var commentMatch = Regex.Matches(lineText, Delimiters.COMMENT.ToString())
+                .Where(m => !strings.Any(si => si.Start <= m.Index && si.End >= m.Index))
+                .FirstOrDefault();
 
             int startIndex = 0;
 
-            var words = Regex.Split(lineText, $"[\\s{Delimiters.LPAREN}{Delimiters.RPAREN}]")
+            var words = Regex.Split(lineText, $"[\\s{Delimiters.LPAREN}{Delimiters.RPAREN}{Delimiters.COMMENT}]")
                 .Select(word =>
                 {
                     int start = lineText.IndexOf(word, startIndex);
@@ -60,9 +72,7 @@ namespace RainLispConsole.CodeTextView
                     return new WordInfo { Word = word, Start = lineText.IndexOf(word), End = start + word.Length - 1 };
                 }).ToArray();
 
-            var lineInfo = new LineInfo() { Text = lineText, Words = words, Strings = strings };
-
-            return lineInfo;
+            return new LineInfo() { Text = lineText, CommentStart = commentMatch?.Index ?? -1, Words = words, Strings = strings };
         }
 
         private static bool IsInString(int idx, LineInfo lineInfo)
@@ -75,6 +85,9 @@ namespace RainLispConsole.CodeTextView
 
             return false;
         }
+
+        private static bool IsInComment(int idx, LineInfo lineInfo)
+            => lineInfo.CommentStart > -1 && idx >= lineInfo.CommentStart;
 
         private bool IsInKeyword(int idx, LineInfo lineInfo)
         {

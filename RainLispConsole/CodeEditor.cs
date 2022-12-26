@@ -36,7 +36,7 @@ namespace RainLispConsole
                 Focus = new Terminal.Gui.Attribute(Color.White, Color.Black),
             };
 
-            _inputTextView = new(CodeSuggestionsProvider.GetRainLispSuggestions())
+            _inputTextView = new()
             {
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),

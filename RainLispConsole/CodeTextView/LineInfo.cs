@@ -4,6 +4,8 @@
     {
         public string Text { get; init; }
 
+        public int CommentStart { get; init; }
+
         public WordInfo[] Words { get; init; }
 
         public StringInfo[] Strings { get; init; }
