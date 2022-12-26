@@ -5,5 +5,7 @@
         public string Text { get; init; }
 
         public WordInfo[] Words { get; init; }
+
+        public StringInfo[] Strings { get; init; }
     }
 }

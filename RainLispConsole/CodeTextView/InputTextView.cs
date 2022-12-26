@@ -9,58 +9,82 @@ namespace RainLispConsole.CodeTextView
     {
         private readonly Attribute _white;
         private readonly Attribute _green;
+        private readonly Attribute _magenta;
         private readonly HashSet<string> _keywords;
-        private readonly Dictionary<List<Rune>, LineInfo?> _linesAnalysis;
+        private readonly Dictionary<List<Rune>, LineInfo> _linesAnalysis;
 
         public InputTextView(List<string> suggestions)
         {
             _white = Driver.MakeAttribute(Color.White, Color.Black);
             _green = Driver.MakeAttribute(Color.Green, Color.Black);
+            _magenta = Driver.MakeAttribute(Color.Magenta, Color.Black);
             _keywords = new(suggestions);
             _linesAnalysis = new();
 
             Autocomplete.AllSuggestions = suggestions;
         }
 
-        protected override void SetNormalColor(List<System.Rune> line, int idx)
+        protected override void SetNormalColor(List<Rune> line, int idx)
         {
             string lineText = new(line.Select(r => (char)r).ToArray());
 
-            _linesAnalysis.TryGetValue(line, out LineInfo? lineInfo);
             // If the line has not been analyzed or the line text has changed, perform the analysis and cache it.
-            if (lineInfo == null || lineInfo.Value.Text != lineText)
+            if (!_linesAnalysis.TryGetValue(line, out LineInfo lineInfo) || lineInfo.Text != lineText)
             {
-                int startIndex = 0;
-                
-                var words = Regex.Split(lineText, $"[\\s{Delimiters.LPAREN}{Delimiters.RPAREN}]")
-                    .Select(word =>
-                    {
-                        int start = lineText.IndexOf(word, startIndex);
-                        int end = start + word.Length - 1;
-                        startIndex = end + 1;
-
-                        return new WordInfo { Word = word, Start = lineText.IndexOf(word), End = start + word.Length - 1 };
-                    }).ToArray();
-
-                lineInfo = new() { Text = lineText, Words = words };
+                lineInfo = AnalyzeLine(lineText);
                 _linesAnalysis[line] = lineInfo;
             }
 
-            // Identify if the current index is on a word that could be a keyword.
-            string? candidateKeyword = null;
-            foreach (var wordInfo in lineInfo.Value.Words)
-            {
-                if (idx >= wordInfo.Start && idx <= wordInfo.End)
-                {
-                    candidateKeyword = wordInfo.Word;
-                    break;
-                }
-            }
-
-            if (candidateKeyword != null && _keywords.Contains(candidateKeyword))
+            if (IsInString(idx, lineInfo))
+                Driver.SetAttribute(_magenta);
+            else if (IsInKeyword(idx, lineInfo))
                 Driver.SetAttribute(_green);
             else
                 Driver.SetAttribute(_white);
+        }
+
+        private static LineInfo AnalyzeLine(string lineText)
+        {
+            var strings = Regex.Matches(lineText, "\"(\\\\.|[^\"\\\\])*\"")
+                                .Select(m => new StringInfo() { Start = m.Index, End = m.Index + m.Length - 1 }).ToArray();
+
+            int startIndex = 0;
+
+            var words = Regex.Split(lineText, $"[\\s{Delimiters.LPAREN}{Delimiters.RPAREN}]")
+                .Select(word =>
+                {
+                    int start = lineText.IndexOf(word, startIndex);
+                    int end = start + word.Length - 1;
+                    startIndex = end + 1;
+
+                    return new WordInfo { Word = word, Start = lineText.IndexOf(word), End = start + word.Length - 1 };
+                }).ToArray();
+
+            var lineInfo = new LineInfo() { Text = lineText, Words = words, Strings = strings };
+
+            return lineInfo;
+        }
+
+        private static bool IsInString(int idx, LineInfo lineInfo)
+        {
+            foreach (var stringInfo in lineInfo.Strings)
+            {
+                if (idx >= stringInfo.Start && idx <= stringInfo.End)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool IsInKeyword(int idx, LineInfo lineInfo)
+        {
+            foreach (var wordInfo in lineInfo.Words)
+            {
+                if (idx >= wordInfo.Start && idx <= wordInfo.End)
+                    return _keywords.Contains(wordInfo.Word);
+            }
+
+            return false;
         }
     }
 }
