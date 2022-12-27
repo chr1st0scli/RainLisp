@@ -11,5 +11,7 @@ namespace RainLisp.Evaluation
         void SetIdentifierValue(string identifierName, Func<EvaluationResult> valueProvider);
 
         EvaluationResult LookupIdentifierValue(string identifierName);
+
+        string[] GetIdentifierNames();
     }
 }

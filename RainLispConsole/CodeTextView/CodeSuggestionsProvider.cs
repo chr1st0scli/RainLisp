@@ -1,4 +1,7 @@
-﻿using RainLisp.Grammar;
+﻿using RainLisp;
+using RainLisp.Evaluation;
+using RainLisp.Grammar;
+using System.Reflection;
 
 namespace RainLispConsole.CodeTextView
 {
@@ -9,22 +12,28 @@ namespace RainLispConsole.CodeTextView
             List<string> list = new();
 
             LoadRainLispKeywords(list);
-            LoadRainLispPrimitives(list);
+            LoadRainLispProcedureNames(list);
 
             return list;
         }
 
-        public static void LoadRainLispKeywords(List<string> list)
-            => list.AddRange(GetFields(typeof(Keywords)));
-
-        public static void LoadRainLispPrimitives(List<string> list)
-            => list.AddRange(GetFields(typeof(Primitives)));
-
-        private static string[] GetFields(Type type)
+        private static void LoadRainLispKeywords(List<string> list)
         {
-            var fieldsInfo = type.GetFields();
+            var fieldsInfo = typeof(Keywords).GetFields(BindingFlags.Public | BindingFlags.Static);
 
-            return fieldsInfo.Select(fi => fi.GetValue(null)?.ToString()).Where(s => s != null).ToArray()!;
+            IEnumerable<string> keywords = fieldsInfo.Select(fi => fi.GetValue(null)?.ToString()).Where(s => s != null)!;
+
+            list.AddRange(keywords);
+        }
+
+        private static void LoadRainLispProcedureNames(List<string> list)
+        {
+            var interpreter = new Interpreter();
+            IEvaluationEnvironment? environment = null;
+            interpreter.Evaluate(new RainLisp.AbstractSyntaxTree.Program(), ref environment);
+
+            if (environment != null)
+                list.AddRange(environment.GetIdentifierNames());
         }
     }
 }
