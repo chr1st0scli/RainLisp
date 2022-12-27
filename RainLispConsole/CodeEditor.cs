@@ -140,6 +140,7 @@ namespace RainLispConsole
             if (!ProceedAndLosePossibleChanges())
                 return;
 
+            _inputTextView.ClearCodeAnalysisCache();
             _inputTextView.Text = "";
             SetWorkingFile(null);
         }
@@ -209,7 +210,11 @@ namespace RainLispConsole
             => SetWorkingFile(filePath, () => File.WriteAllText(filePath, _inputTextView.Text.ToString()));
 
         private void OpenFile(string filePath)
-            => SetWorkingFile(filePath, () => _inputTextView.Text = File.ReadAllText(filePath));
+            => SetWorkingFile(filePath, () => 
+            {
+                _inputTextView.ClearCodeAnalysisCache();
+                _inputTextView.Text = File.ReadAllText(filePath);
+            });
 
         private void SetWorkingFile(string filePath, Action operation)
         {

@@ -28,6 +28,9 @@ namespace RainLispConsole.CodeTextView
             Autocomplete.AllSuggestions = suggestions;
         }
 
+        public void ClearCodeAnalysisCache()
+            => _linesAnalysis.Clear();
+
         protected override void SetNormalColor(List<Rune> line, int idx)
         {
             string lineText = new(line.Select(r => (char)r).ToArray());
