@@ -8,18 +8,18 @@ namespace RainLispConsole.CodeTextView
     internal class InputTextView : TextView
     {
         private readonly Attribute _white;
-        private readonly Attribute _green;
-        private readonly Attribute _magenta;
-        private readonly Attribute _gray;
+        private readonly Attribute _keywordColor;
+        private readonly Attribute _stringColor;
+        private readonly Attribute _commentColor;
         private readonly HashSet<string> _keywords;
         private readonly Dictionary<List<Rune>, LineInfo> _linesAnalysis;
 
         public InputTextView()
         {
             _white = Driver.MakeAttribute(Color.White, Color.Black);
-            _green = Driver.MakeAttribute(Color.Green, Color.Black);
-            _magenta = Driver.MakeAttribute(Color.Magenta, Color.Black);
-            _gray = Driver.MakeAttribute(Color.BrightBlue, Color.Black);
+            _keywordColor = Driver.MakeAttribute(Color.Magenta, Color.Black);
+            _stringColor = Driver.MakeAttribute(Color.Brown, Color.Black);
+            _commentColor = Driver.MakeAttribute(Color.Green, Color.Black);
 
             var suggestions = CodeSuggestionsProvider.GetRainLispSuggestions();
             _keywords = new(suggestions);
@@ -40,11 +40,14 @@ namespace RainLispConsole.CodeTextView
             }
 
             if (IsInComment(idx, lineInfo))
-                Driver.SetAttribute(_gray);
+                Driver.SetAttribute(_commentColor);
+
             else if (IsInString(idx, lineInfo))
-                Driver.SetAttribute(_magenta);
+                Driver.SetAttribute(_stringColor);
+
             else if (IsInKeyword(idx, lineInfo))
-                Driver.SetAttribute(_green);
+                Driver.SetAttribute(_keywordColor);
+
             else
                 Driver.SetAttribute(_white);
         }
