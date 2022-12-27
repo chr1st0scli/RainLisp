@@ -39,10 +39,10 @@ namespace RainLispConsole.CodeTextView
                 _linesAnalysis[line] = lineInfo;
             }
 
-            if (IsInString(idx, lineInfo))
-                Driver.SetAttribute(_magenta);
-            else if (IsInComment(idx, lineInfo))
+            if (IsInComment(idx, lineInfo))
                 Driver.SetAttribute(_gray);
+            else if (IsInString(idx, lineInfo))
+                Driver.SetAttribute(_magenta);
             else if (IsInKeyword(idx, lineInfo))
                 Driver.SetAttribute(_green);
             else
@@ -51,25 +51,28 @@ namespace RainLispConsole.CodeTextView
 
         private static LineInfo AnalyzeLine(string lineText)
         {
+            // A string starts with a " followed by any escaped character or (i.e. if not escaped) anything but a " or \ and terminated with a ".
             var strings = Regex.Matches(lineText, "\"(\\\\.|[^\"\\\\])*\"")
                                 .Select(m => new StringInfo() { Start = m.Index, End = m.Index + m.Length - 1 })
                                 .ToArray();
 
-            // Search for a comment start character outside of a string.
+            // Search for the first comment start character outside of a string.
             var commentMatch = Regex.Matches(lineText, Delimiters.COMMENT.ToString())
                 .Where(m => !strings.Any(si => si.Start <= m.Index && si.End >= m.Index))
                 .FirstOrDefault();
 
             int startIndex = 0;
+            string textForWordAnalysis = commentMatch?.Index > 0 ? lineText.Substring(0, commentMatch.Index) : lineText;
 
-            var words = Regex.Split(lineText, $"[\\s{Delimiters.LPAREN}{Delimiters.RPAREN}{Delimiters.COMMENT}]")
+            // Identify words separated by white space characters or delimeters.
+            var words = Regex.Split(textForWordAnalysis, $"[\\s{Delimiters.LPAREN}{Delimiters.RPAREN}{Delimiters.COMMENT}]")
                 .Select(word =>
                 {
-                    int start = lineText.IndexOf(word, startIndex);
+                    int start = textForWordAnalysis.IndexOf(word, startIndex);
                     int end = start + word.Length - 1;
                     startIndex = end + 1;
 
-                    return new WordInfo { Word = word, Start = lineText.IndexOf(word), End = start + word.Length - 1 };
+                    return new WordInfo { Word = word, Start = textForWordAnalysis.IndexOf(word), End = start + word.Length - 1 };
                 }).ToArray();
 
             return new LineInfo() { Text = lineText, CommentStart = commentMatch?.Index ?? -1, Words = words, Strings = strings };
