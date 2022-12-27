@@ -1,5 +1,6 @@
 ﻿using RainLisp;
 using RainLisp.Evaluation;
+using RainLispConsole.CodeTextView;
 using Terminal.Gui;
 
 namespace RainLispConsole
@@ -7,7 +8,7 @@ namespace RainLispConsole
     class CodeEditor
     {
         private readonly Window _mainWindow;
-        private readonly TextView _inputTextView;
+        private readonly InputTextView _inputTextView;
         private readonly FrameView _inputFrameView;
         private readonly OutputTextView _outputTextView;
         private readonly StatusItem _cursorPosStatusItem;
@@ -139,6 +140,7 @@ namespace RainLispConsole
             if (!ProceedAndLosePossibleChanges())
                 return;
 
+            _inputTextView.ClearCodeAnalysisCache();
             _inputTextView.Text = "";
             SetWorkingFile(null);
         }
@@ -208,7 +210,11 @@ namespace RainLispConsole
             => SetWorkingFile(filePath, () => File.WriteAllText(filePath, _inputTextView.Text.ToString()));
 
         private void OpenFile(string filePath)
-            => SetWorkingFile(filePath, () => _inputTextView.Text = File.ReadAllText(filePath));
+            => SetWorkingFile(filePath, () => 
+            {
+                _inputTextView.ClearCodeAnalysisCache();
+                _inputTextView.Text = File.ReadAllText(filePath);
+            });
 
         private void SetWorkingFile(string filePath, Action operation)
         {

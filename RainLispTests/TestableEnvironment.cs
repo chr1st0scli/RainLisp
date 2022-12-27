@@ -38,5 +38,8 @@ namespace RainLispTests
 
         public void SetIdentifierValue(string identifierName, Func<EvaluationResult> valueProvider)
             => actualEnvironment.SetIdentifierValue(identifierName, valueProvider);
+
+        public string[] GetIdentifierNames()
+            => actualEnvironment.GetIdentifierNames();
     }
 }

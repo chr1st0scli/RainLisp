@@ -40,6 +40,9 @@ namespace RainLisp.Evaluation
         public EvaluationResult LookupIdentifierValue(string identifierName)
             => LookupIdentifierValue(identifierName, out EvaluationEnvironment _);
 
+        public string[] GetIdentifierNames()
+            => _definitions.Keys.ToArray();
+
         private EvaluationResult LookupIdentifierValue(string identifierName, out EvaluationEnvironment environment)
         {
             for (var env = this; env != null; env = env._previousEnvironment)
