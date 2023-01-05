@@ -1,5 +1,6 @@
 ﻿using static RainLisp.Grammar.Delimiters;
 using static RainLisp.Grammar.Keywords;
+using static RainLisp.Grammar.NumberSpecialChars;
 using System.Text;
 
 namespace RainLisp.Tokenization
@@ -17,9 +18,10 @@ namespace RainLisp.Tokenization
                 return tokens;
             }
 
-            bool charInstring = false, charInComment = false;
+            bool charInstring = false, charInComment = false, charInNumber = false;
             var lexemeStringBuilder = new StringBuilder();
             StringTokenizer? stringTokenizer = null;
+            NumberTokenizer? numberTokenizer = null;
 
             #region Local Helper Methods.
             void RegisterToken(string value, TokenType tokenType, uint position)
@@ -49,7 +51,14 @@ namespace RainLisp.Tokenization
                 if (string.IsNullOrWhiteSpace(value))
                     return;
 
-                RegisterToken(value, GetTokenType(value), charPosition - (uint)value.Length);
+                if (numberTokenizer != null)
+                {
+                    charInNumber = false;
+                    RegisterToken(value, TokenType.Number, charPosition - (uint)value.Length);
+                    numberTokenizer = null;
+                }
+                else
+                    RegisterToken(value, GetTokenType(value), charPosition - (uint)value.Length);
             }
 
             void ChangeLine()
@@ -61,8 +70,27 @@ namespace RainLisp.Tokenization
             void PlatformBounceNextNewLine(ref int i)
             {
                 // Skip the next \n character, so that \r\n is treated as a single new line if the platform dictates it.
-                if (i < expression.Length - 1 && expression[i + 1] == NEW_LINE && System.Environment.NewLine == $"{CARRIAGE_RETURN}{NEW_LINE}")
+                if (i < expression.Length - 1 && expression[i + 1] == NEW_LINE && Environment.NewLine == $"{CARRIAGE_RETURN}{NEW_LINE}")
                     i++;
+            }
+
+            bool NumberStartsAt(int i)
+            {
+                // If a lexeme is already being built, we are not dealing with the start.
+                if (lexemeStringBuilder.Length > 0)
+                    return false;
+
+                char c = expression[i];
+
+                // If it starts with a digit, then a number is being started.
+                if (char.IsDigit(c))
+                    return true;
+
+                // If it starts with a decimal point or a number sign followed by a digit, then a number is being started.
+                if ((c == DOT || c == PLUS || c == MINUS) && i < expression.Length - 1 && char.IsDigit(expression[i + 1]))
+                    return true;
+
+                return false;
             }
 
             // The string token's position relates to the actual number of characters typed in the string and not the resulting string value's length.
@@ -133,6 +161,18 @@ namespace RainLisp.Tokenization
                 else if (c == SPACE || c == TAB)
                     RegisterUnknownToken();
                 
+                else if (charInNumber)
+                {
+                    numberTokenizer!.AddToNumber(c, line, charPosition);
+                    lexemeStringBuilder.Append(c);
+                }
+                else if (NumberStartsAt(i))
+                {
+                    charInNumber = true;
+                    numberTokenizer = new NumberTokenizer();
+                    numberTokenizer.AddToNumber(c, line, charPosition);
+                    lexemeStringBuilder.Append(c);
+                }
                 else
                     lexemeStringBuilder.Append(c);
 
@@ -150,15 +190,6 @@ namespace RainLisp.Tokenization
 
         private static TokenType GetTokenType(string value)
         {
-            TokenType GetOtherType()
-            {
-                if (double.TryParse(value, out double _))
-                    return TokenType.Number;
-
-                else
-                    return TokenType.Identifier;
-            }
-
             return value switch
             {
                 TRUE or FALSE => TokenType.Boolean,
@@ -173,7 +204,7 @@ namespace RainLisp.Tokenization
                 LET => TokenType.Let,
                 AND => TokenType.And,
                 OR => TokenType.Or,
-                _ => GetOtherType()
+                _ => TokenType.Identifier
             };
         }
     }
