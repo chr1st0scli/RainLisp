@@ -25,6 +25,26 @@
         public uint Position { get; init; }
     }
 
+    public class InvalidCharacterException : TokenizationException
+    {
+        public InvalidCharacterException(uint line, uint position, char character) : base(line, position)
+        {
+            Character = character;
+        }
+
+        public InvalidCharacterException(uint line, uint position, char character, string? message) : base(line, position, message)
+        {
+            Character = character;
+        }
+
+        public InvalidCharacterException(uint line, uint position, char character, string? message, Exception? innerException) : base(line, position, message, innerException)
+        {
+            Character = character;
+        }
+
+        public char Character { get; init; }
+    }
+
     public class NonTerminatedStringException : TokenizationException
     {
         public NonTerminatedStringException(uint line, uint position) : base(line, position)
@@ -40,27 +60,7 @@
         }
     }
 
-    public class StringCharacterException : TokenizationException
-    {
-        public StringCharacterException(uint line, uint position, char character) : base(line, position)
-        {
-            Character = character;
-        }
-
-        public StringCharacterException(uint line, uint position, char character, string? message) : base(line, position, message)
-        {
-            Character = character;
-        }
-
-        public StringCharacterException(uint line, uint position, char character, string? message, Exception? innerException) : base(line, position, message, innerException)
-        {
-            Character = character;
-        }
-
-        public char Character { get; init; }
-    }
-
-    public class InvalidEscapeSequenceException : StringCharacterException
+    public class InvalidEscapeSequenceException : InvalidCharacterException
     {
         public InvalidEscapeSequenceException(uint line, uint position, char character) : base(line, position, character)
         {
@@ -75,7 +75,7 @@
         }
     }
 
-    public class InvalidStringCharacterException : StringCharacterException
+    public class InvalidStringCharacterException : InvalidCharacterException
     {
         public InvalidStringCharacterException(uint line, uint position, char character) : base(line, position, character)
         {
@@ -90,23 +90,18 @@
         }
     }
 
-    public class InvalidNumberCharacterException : TokenizationException
+    public class InvalidNumberCharacterException : InvalidCharacterException
     {
-        public InvalidNumberCharacterException(uint line, uint position, char character) : base(line, position)
+        public InvalidNumberCharacterException(uint line, uint position, char character) : base(line, position, character)
         {
-            Character = character;
         }
 
-        public InvalidNumberCharacterException(uint line, uint position, char character, string? message) : base(line, position, message)
+        public InvalidNumberCharacterException(uint line, uint position, char character, string? message) : base(line, position, character, message)
         {
-            Character = character;
         }
 
-        public InvalidNumberCharacterException(uint line, uint position, char character, string? message, Exception? innerException) : base(line, position, message, innerException)
+        public InvalidNumberCharacterException(uint line, uint position, char character, string? message, Exception? innerException) : base(line, position, character, message, innerException)
         {
-            Character = character;
         }
-
-        public char Character { get; init; }
     }
 }
