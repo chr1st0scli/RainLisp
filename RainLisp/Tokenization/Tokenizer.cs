@@ -24,19 +24,19 @@ namespace RainLisp.Tokenization
             NumberTokenizer? numberTokenizer = null;
 
             #region Local Helper Methods.
-            void RegisterToken(string value, TokenType tokenType, uint position, double numberValue = 0)
-            {
-                var token = new Token { Value = value, Type = tokenType, Line = line, Position = position, NumberValue = numberValue };
-                tokens.Add(token);
-            }
+            void RegisterToken(Token token)
+                => tokens.Add(token);
+
+            void RegisterSpecificToken(string value, TokenType tokenType, uint position, double numberValue = 0, bool booleanValue = false)
+                => RegisterToken(new() { Value = value, Type = tokenType, Line = line, Position = position, NumberValue = numberValue, BooleanValue = booleanValue });
 
             void RegisterEOF()
-                => RegisterToken(string.Empty, TokenType.EOF, charPosition);
+                => RegisterSpecificToken(string.Empty, TokenType.EOF, charPosition);
 
             void RegisterStringLiteralToken()
             {
                 charInstring = false;
-                RegisterToken(stringTokenizer!.GetString(), TokenType.String, GetLastStringStartPosition());
+                RegisterSpecificToken(stringTokenizer!.GetString(), TokenType.String, GetLastStringStartPosition());
                 stringTokenizer.Clear();
             }
 
@@ -54,11 +54,11 @@ namespace RainLisp.Tokenization
                 if (charInNumber)
                 {
                     charInNumber = false;
-                    RegisterToken(value, TokenType.Number, charPosition - (uint)value.Length, numberTokenizer!.GetNumber());
+                    RegisterSpecificToken(value, TokenType.Number, charPosition - (uint)value.Length, numberTokenizer!.GetNumber());
                     numberTokenizer.Clear();
                 }
                 else
-                    RegisterToken(value, GetTokenType(value), charPosition - (uint)value.Length);
+                    RegisterToken(InferToken(value, line, charPosition - (uint)value.Length));
             }
 
             void ChangeLine()
@@ -138,12 +138,12 @@ namespace RainLisp.Tokenization
                 else if (c == LPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterToken(c.ToString(), TokenType.LParen, charPosition);
+                    RegisterSpecificToken(c.ToString(), TokenType.LParen, charPosition);
                 }
                 else if (c == RPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterToken(c.ToString(), TokenType.RParen, charPosition);
+                    RegisterSpecificToken(c.ToString(), TokenType.RParen, charPosition);
                 }
                 else if (c == CARRIAGE_RETURN)
                 {
@@ -188,24 +188,39 @@ namespace RainLisp.Tokenization
             return tokens;
         }
 
-        private static TokenType GetTokenType(string value)
+        private static Token InferToken(string value, uint line, uint position)
         {
-            return value switch
+            TokenType tokenType;
+            bool booleanValue = false;
+
+            if (value == TRUE)
             {
-                TRUE or FALSE => TokenType.Boolean,
-                QUOTE => TokenType.Quote,
-                SET => TokenType.Assignment,
-                DEFINE => TokenType.Definition,
-                IF => TokenType.If,
-                COND => TokenType.Cond,
-                ELSE => TokenType.Else,
-                BEGIN => TokenType.Begin,
-                LAMBDA => TokenType.Lambda,
-                LET => TokenType.Let,
-                AND => TokenType.And,
-                OR => TokenType.Or,
-                _ => TokenType.Identifier
-            };
+                tokenType = TokenType.Boolean;
+                booleanValue = true;
+            }
+            else if (value == FALSE)
+            {
+                tokenType = TokenType.Boolean;
+                booleanValue = false;
+            }
+            else
+                tokenType = value switch
+                {
+                    QUOTE => TokenType.Quote,
+                    SET => TokenType.Assignment,
+                    DEFINE => TokenType.Definition,
+                    IF => TokenType.If,
+                    COND => TokenType.Cond,
+                    ELSE => TokenType.Else,
+                    BEGIN => TokenType.Begin,
+                    LAMBDA => TokenType.Lambda,
+                    LET => TokenType.Let,
+                    AND => TokenType.And,
+                    OR => TokenType.Or,
+                    _ => TokenType.Identifier
+                };
+
+            return new() { Value = value, Type = tokenType, Line = line, Position = position, BooleanValue = booleanValue };
         }
     }
 }

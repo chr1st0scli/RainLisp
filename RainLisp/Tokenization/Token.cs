@@ -8,6 +8,8 @@
 
         public double NumberValue { get; set; }
 
+        public bool BooleanValue { get; set; }
+
         public uint Line { get; set; }
 
         public uint Position { get; set; }

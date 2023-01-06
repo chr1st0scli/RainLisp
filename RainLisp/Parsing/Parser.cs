@@ -112,7 +112,7 @@ namespace RainLisp.Parsing
                 return new StringLiteral(tokenValue);
 
             else if (Match(TokenType.Boolean))
-                return new BooleanLiteral(bool.Parse(tokenValue));
+                return new BooleanLiteral(currentToken.BooleanValue);
 
             else if (Match(TokenType.Identifier))
                 return new Identifier(tokenValue);
