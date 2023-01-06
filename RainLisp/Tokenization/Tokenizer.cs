@@ -24,9 +24,9 @@ namespace RainLisp.Tokenization
             NumberTokenizer? numberTokenizer = null;
 
             #region Local Helper Methods.
-            void RegisterToken(string value, TokenType tokenType, uint position)
+            void RegisterToken(string value, TokenType tokenType, uint position, double numberValue = 0)
             {
-                var token = new Token { Value = value, Type = tokenType, Line = line, Position = position };
+                var token = new Token { Value = value, Type = tokenType, Line = line, Position = position, NumberValue = numberValue };
                 tokens.Add(token);
             }
 
@@ -54,8 +54,8 @@ namespace RainLisp.Tokenization
                 if (charInNumber)
                 {
                     charInNumber = false;
-                    RegisterToken(value, TokenType.Number, charPosition - (uint)value.Length);
-                    numberTokenizer?.Clear();
+                    RegisterToken(value, TokenType.Number, charPosition - (uint)value.Length, numberTokenizer!.GetNumber());
+                    numberTokenizer.Clear();
                 }
                 else
                     RegisterToken(value, GetTokenType(value), charPosition - (uint)value.Length);

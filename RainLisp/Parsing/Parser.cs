@@ -1,7 +1,6 @@
 ﻿using RainLisp.AbstractSyntaxTree;
 using RainLisp.DerivedExpressions;
 using RainLisp.Tokenization;
-using System.Globalization;
 
 namespace RainLisp.Parsing
 {
@@ -107,7 +106,7 @@ namespace RainLisp.Parsing
             string tokenValue = currentToken.Value;
 
             if (Match(TokenType.Number))
-                return new NumberLiteral(double.Parse(tokenValue, CultureInfo.InvariantCulture));
+                return new NumberLiteral(currentToken.NumberValue);
 
             else if (Match(TokenType.String))
                 return new StringLiteral(tokenValue);

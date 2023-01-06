@@ -58,6 +58,7 @@ namespace RainLisp.Tokenization
 
             // The current digit is determined by its distance from the zero character.
             int currentDigit = c - '0';
+            // It is faster to progressively accumulate the number like this than using double.Parse.
             _number = _number * 10 + currentDigit;
         }
 
