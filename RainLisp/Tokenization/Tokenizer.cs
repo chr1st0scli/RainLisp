@@ -86,8 +86,8 @@ namespace RainLisp.Tokenization
                 if (char.IsDigit(c))
                     return true;
 
-                // If it starts with a decimal point or a number sign followed by a digit, then a number is being started.
-                if ((c == DOT || c == PLUS || c == MINUS) && i < expression.Length - 1 && char.IsDigit(expression[i + 1]))
+                // If it starts with a number sign followed by a digit, then a number is considered to being started.
+                if ((c == PLUS || c == MINUS) && i < expression.Length - 1 && char.IsDigit(expression[i + 1]))
                     return true;
 
                 return false;

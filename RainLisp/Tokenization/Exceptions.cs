@@ -89,4 +89,24 @@
         {
         }
     }
+
+    public class InvalidNumberCharacterException : TokenizationException
+    {
+        public InvalidNumberCharacterException(uint line, uint position, char character) : base(line, position)
+        {
+            Character = character;
+        }
+
+        public InvalidNumberCharacterException(uint line, uint position, char character, string? message) : base(line, position, message)
+        {
+            Character = character;
+        }
+
+        public InvalidNumberCharacterException(uint line, uint position, char character, string? message, Exception? innerException) : base(line, position, message, innerException)
+        {
+            Character = character;
+        }
+
+        public char Character { get; init; }
+    }
 }

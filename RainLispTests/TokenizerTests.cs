@@ -527,7 +527,7 @@ namespace RainLispTests
         [InlineData("\"hi\"\na\nd \"world", 3, 3)]
         public void Tokenize_NonTerminatedString_Throws(string expression, uint expectedLine, uint expectedPosition)
         {
-            Tokenize_InvalidString_Throws<NonTerminatedStringException>(expression, expectedLine, expectedPosition);
+            Tokenize_InvalidExpression_Throws<NonTerminatedStringException>(expression, expectedLine, expectedPosition);
         }
 
         [Theory]
@@ -546,7 +546,7 @@ namespace RainLispTests
 world.""", 1, 13, '\r')] // Note that if this test is ran on a unix platform, the expected character might not be \r.
         public void Tokenize_MultilineString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
         {
-            var exception = Tokenize_InvalidString_Throws<InvalidStringCharacterException>(expression, expectedLine, expectedPosition);
+            var exception = Tokenize_InvalidExpression_Throws<InvalidStringCharacterException>(expression, expectedLine, expectedPosition);
             Assert.Equal(expectedCharacter, exception.Character);
         }
 
@@ -562,11 +562,48 @@ world.""", 1, 13, '\r')] // Note that if this test is ran on a unix platform, th
         [InlineData(@"""hello \9 world""", 1, 9, '9')]
         public void Tokenize_InvalidEscapeSequenceInString_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
         {
-            var exception = Tokenize_InvalidString_Throws<InvalidEscapeSequenceException>(expression, expectedLine, expectedPosition);
+            var exception = Tokenize_InvalidExpression_Throws<InvalidEscapeSequenceException>(expression, expectedLine, expectedPosition);
             Assert.Equal(expectedCharacter, exception.Character);
         }
 
-        private TException Tokenize_InvalidString_Throws<TException>(string expression, uint expectedLine, uint expectedPosition) where TException : TokenizationException
+        [Theory]
+        [InlineData("1a", 1, 2, 'a')]
+        [InlineData("+1a", 1, 3, 'a')]
+        [InlineData("-1a", 1, 3, 'a')]
+        [InlineData("10a2", 1, 3, 'a')]
+        [InlineData("+10a2", 1, 4, 'a')]
+        [InlineData("-10a2", 1, 4, 'a')]
+        [InlineData("0.123b", 1, 6, 'b')]
+        [InlineData("+0.123b", 1, 7, 'b')]
+        [InlineData("-0.123b", 1, 7, 'b')]
+        [InlineData("0.12b4", 1, 5, 'b')]
+        [InlineData("+0.12b4", 1, 6, 'b')]
+        [InlineData("-0.12b4", 1, 6, 'b')]
+        [InlineData("12b.123", 1, 3, 'b')]
+        [InlineData("+12b.123", 1, 4, 'b')]
+        [InlineData("-12b.123", 1, 4, 'b')]
+        [InlineData("123b5.123", 1, 4, 'b')]
+        [InlineData("+123b5.123", 1, 5, 'b')]
+        [InlineData("-123b5.123", 1, 5, 'b')]
+        [InlineData("12..12", 1, 4, '.')]
+        [InlineData("+12..12", 1, 5, '.')]
+        [InlineData("-12..12", 1, 5, '.')]
+        [InlineData("12.345.7", 1, 7, '.')]
+        [InlineData("+12.345.7", 1, 8, '.')]
+        [InlineData("-12.345.7", 1, 8, '.')]
+        [InlineData("12..", 1, 4, '.')]
+        [InlineData("+12..", 1, 5, '.')]
+        [InlineData("-12..", 1, 5, '.')]
+        [InlineData("12.34.", 1, 6, '.')]
+        [InlineData("+12.34.", 1, 7, '.')]
+        [InlineData("-12.34.", 1, 7, '.')]
+        public void Tokenize_InvalidNumberCharacter_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
+        {
+            var exception = Tokenize_InvalidExpression_Throws<InvalidNumberCharacterException>(expression, expectedLine, expectedPosition);
+            Assert.Equal(expectedCharacter, exception.Character);
+        }
+
+        private TException Tokenize_InvalidExpression_Throws<TException>(string expression, uint expectedLine, uint expectedPosition) where TException : TokenizationException
         {
             // Arrange
             TException? exception = null;

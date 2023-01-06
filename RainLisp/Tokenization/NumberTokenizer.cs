@@ -27,12 +27,7 @@ namespace RainLisp.Tokenization
             {
                 _cleared = false;
 
-                if (c == DOT)
-                {
-                    _inFraction = true;
-                    return;
-                }
-                else if (c == MINUS)
+                if (c == MINUS)
                 {
                     _negative = true;
                     return;
@@ -41,7 +36,7 @@ namespace RainLisp.Tokenization
                     return;
 
                 else if (!char.IsDigit(c))
-                    throw new InvalidOperationException($"Invalid character {c}.");
+                    throw new InvalidNumberCharacterException(line, position, c);
             }
             else
             {
@@ -49,13 +44,13 @@ namespace RainLisp.Tokenization
                 {
                     // A second decimal point is not a valid character.
                     if (_inFraction)
-                        throw new InvalidOperationException($"Invalid character {c}.");
+                        throw new InvalidNumberCharacterException(line, position, c);
 
                     _inFraction = true;
                     return;
                 }
                 else if (!char.IsDigit(c))
-                    throw new InvalidOperationException($"Invalid character {c}.");
+                    throw new InvalidNumberCharacterException(line, position, c);
             }
 
             if (_inFraction)
