@@ -37,7 +37,7 @@ namespace RainLisp.Tokenization
             {
                 charInstring = false;
                 RegisterToken(stringTokenizer!.GetString(), TokenType.String, GetLastStringStartPosition());
-                stringTokenizer = null;
+                stringTokenizer.Clear();
             }
 
             void RegisterUnknownToken()
@@ -51,11 +51,11 @@ namespace RainLisp.Tokenization
                 if (string.IsNullOrWhiteSpace(value))
                     return;
 
-                if (numberTokenizer != null)
+                if (charInNumber)
                 {
                     charInNumber = false;
                     RegisterToken(value, TokenType.Number, charPosition - (uint)value.Length);
-                    numberTokenizer = null;
+                    numberTokenizer?.Clear();
                 }
                 else
                     RegisterToken(value, GetTokenType(value), charPosition - (uint)value.Length);
@@ -133,7 +133,7 @@ namespace RainLisp.Tokenization
                 {
                     RegisterUnknownToken();
                     charInstring = true;
-                    stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
+                    stringTokenizer ??= new StringTokenizer(RegisterStringLiteralToken);
                 }
                 else if (c == LPAREN)
                 {
@@ -169,7 +169,7 @@ namespace RainLisp.Tokenization
                 else if (NumberStartsAt(i))
                 {
                     charInNumber = true;
-                    numberTokenizer = new NumberTokenizer();
+                    numberTokenizer ??= new NumberTokenizer();
                     numberTokenizer.AddToNumber(c, line, charPosition);
                     lexemeStringBuilder.Append(c);
                 }

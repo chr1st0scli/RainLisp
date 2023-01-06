@@ -18,6 +18,13 @@ namespace RainLisp.Tokenization
             CharactersProcessed = 0;
         }
 
+        public void Clear()
+        {
+            _stringBuilder.Clear();
+            _escaping = false;
+            CharactersProcessed = 0;
+        }
+
         public void AddToString(char c, uint line, uint position)
         {
             if (_escaping)

@@ -4,25 +4,28 @@ namespace RainLisp.Tokenization
 {
     public class NumberTokenizer
     {
+        private bool _cleared;
         private double _number;
         private bool _inFraction;
-        private bool _start;
         private bool _negative;
         private int _fractionDenominator;
 
-        public NumberTokenizer()
+        public NumberTokenizer() => Clear();
+
+        public void Clear()
         {
+            _cleared = true;
+            _number = 0;
             _inFraction = false;
-            _start = true;
             _negative = false;
             _fractionDenominator = 1;
         }
 
         public void AddToNumber(char c, uint line = 0, uint position = 0)
         {
-            if (_start)
+            if (_cleared)
             {
-                _start = false;
+                _cleared = false;
 
                 if (c == DOT)
                 {
@@ -37,15 +40,17 @@ namespace RainLisp.Tokenization
                 else if (c == PLUS)
                     return;
 
-                else if (c != PLUS && !char.IsDigit(c))
+                else if (!char.IsDigit(c))
                     throw new InvalidOperationException($"Invalid character {c}.");
             }
             else
             {
                 if (c == DOT)
                 {
+                    // A second decimal point is not a valid character.
                     if (_inFraction)
                         throw new InvalidOperationException($"Invalid character {c}.");
+
                     _inFraction = true;
                     return;
                 }
