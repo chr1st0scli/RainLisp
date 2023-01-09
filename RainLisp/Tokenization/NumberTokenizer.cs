@@ -8,7 +8,7 @@ namespace RainLisp.Tokenization
         private double _number;
         private bool _inFraction;
         private bool _negative;
-        private int _fractionDenominator;
+        private double _fractionDenominator;
 
         public NumberTokenizer() => Clear();
 
