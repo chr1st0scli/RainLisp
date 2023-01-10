@@ -27,18 +27,25 @@ namespace RainLispTests
                 { "\n", new[] { Expect(EOF, "", 1, 2) } },
 
                 { "1", new[] { Expect(Number, "1", 1, numberValue: 1d), Expect(EOF, "", 2) } },
+                { "01", new[] { Expect(Number, "01", 1, numberValue: 1d), Expect(EOF, "", 3) } },
                 { "+1", new[] { Expect(Number, "+1", 1, numberValue: 1d), Expect(EOF, "", 3) } },
                 { "-1", new[] { Expect(Number, "-1", 1, numberValue: -1d), Expect(EOF, "", 3) } },
                 { "12.3456", new[] { Expect(Number, "12.3456", 1, numberValue: 12.3456), Expect(EOF, "", 8) } }, 
                 { "-12.3456", new[] { Expect(Number, "-12.3456", 1, numberValue: -12.3456), Expect(EOF, "", 9) } }, 
                 { "+12.3456", new[] { Expect(Number, "+12.3456", 1, numberValue: 12.3456), Expect(EOF, "", 9) } }, 
+                { "+012.3456", new[] { Expect(Number, "+012.3456", 1, numberValue: 12.3456), Expect(EOF, "", 10) } }, 
                 { "12.10000000001", new[] { Expect(Number, "12.10000000001", 1, numberValue: 12.10000000001), Expect(EOF, "", 15) } }, 
                 { "12.1234567890123", new[] { Expect(Number, "12.1234567890123", 1, numberValue: 12.1234567890123), Expect(EOF, "", 17) } }, 
                 { "+12.1234567890123", new[] { Expect(Number, "+12.1234567890123", 1, numberValue: 12.1234567890123), Expect(EOF, "", 18) } }, 
                 { "-12.1234567890123", new[] { Expect(Number, "-12.1234567890123", 1, numberValue: -12.1234567890123), Expect(EOF, "", 18) } }, 
                 { "1234567.12345678", new[] { Expect(Number, "1234567.12345678", 1, numberValue: 1234567.12345678), Expect(EOF, "", 17) } }, 
                 { "+1234567.12345678", new[] { Expect(Number, "+1234567.12345678", 1, numberValue: 1234567.12345678), Expect(EOF, "", 18) } }, 
-                { "-1234567.12345678", new[] { Expect(Number, "-1234567.12345678", 1, numberValue: -1234567.12345678), Expect(EOF, "", 18) } }, 
+                { "-1234567.12345678", new[] { Expect(Number, "-1234567.12345678", 1, numberValue: -1234567.12345678), Expect(EOF, "", 18) } },
+                { "34.", new[] { Expect(Number, "34.", 1, numberValue: 34d), Expect(EOF, "", 4) } },
+                { "+34.", new[] { Expect(Number, "+34.", 1, numberValue: 34d), Expect(EOF, "", 5) } },
+                { "-34.", new[] { Expect(Number, "-34.", 1, numberValue: -34d), Expect(EOF, "", 5) } },
+                // It doesn't start with a digit or a number sign, so according to the lexical grammar it is an identifier.
+                { ".34", new[] { Expect(Identifier, ".34", 1), Expect(EOF, "", 4) } },
 
                 #region String literals.
                 { "\"\"", new[] { Expect(TokenType.String, "", 1), Expect(EOF, "", 3) } },
