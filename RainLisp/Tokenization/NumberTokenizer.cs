@@ -35,7 +35,7 @@ namespace RainLisp.Tokenization
                 else if (c == PLUS)
                     return;
 
-                else if (!char.IsDigit(c))
+                else if (!IsDigit(c))
                     throw new InvalidNumberCharacterException(line, position, c);
             }
             else
@@ -49,7 +49,7 @@ namespace RainLisp.Tokenization
                     _inFraction = true;
                     return;
                 }
-                else if (!char.IsDigit(c))
+                else if (!IsDigit(c))
                     throw new InvalidNumberCharacterException(line, position, c);
             }
 
@@ -61,6 +61,9 @@ namespace RainLisp.Tokenization
             // It is faster to progressively accumulate the number like this than using double.Parse.
             _number = _number * 10 + currentDigit;
         }
+
+        private static bool IsDigit(char c)
+            => c >= '0' && c <= '9';    // Do not use char.IsDigit.
 
         public double GetNumber()
         {

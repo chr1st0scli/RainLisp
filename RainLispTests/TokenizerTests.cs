@@ -12,12 +12,12 @@ namespace RainLispTests
             _tokenizer = new Tokenizer();
         }
 
-        public record ExpectedToken(TokenType TokenType, string Value, uint Position, uint Line = 1, double NumberValue = 0);
+        public record ExpectedToken(TokenType TokenType, string Value, uint Position, uint Line = 1, double NumberValue = 0, bool BooleanValue = false);
 
         public static TheoryData<string, ExpectedToken[]> GetTokens()
         {
             static uint PickLine(uint winOS, uint otherOS) => Environment.NewLine == "\r\n" ? winOS : otherOS;
-            static ExpectedToken Expect(TokenType tokenType, string value, uint position, uint line = 1, double numberValue = 0) => new(tokenType, value, position, line, numberValue);
+            static ExpectedToken Expect(TokenType tokenType, string value, uint position, uint line = 1, double numberValue = 0, bool booleanValue = false) => new(tokenType, value, position, line, numberValue, booleanValue);
 
             var data = new TheoryData<string, ExpectedToken[]>
             {
@@ -74,8 +74,10 @@ namespace RainLispTests
                 { "\"hello\" \"world\"", new[] { Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 9), Expect(EOF, "", 16) } }, 
                 #endregion
 
-                { "true", new[] { Expect(TokenType.Boolean, "true", 1), Expect(EOF, "", 5) } },
-                { "false", new[] { Expect(TokenType.Boolean, "false", 1), Expect(EOF, "", 6) } },
+                { "true", new[] { Expect(TokenType.Boolean, "true", 1, booleanValue: true), Expect(EOF, "", 5) } },
+                { "false", new[] { Expect(TokenType.Boolean, "false", 1, booleanValue: false), Expect(EOF, "", 6) } },
+                { "True", new[] { Expect(Identifier, "True", 1), Expect(EOF, "", 5) } },
+                { "False", new[] { Expect(Identifier, "False", 1), Expect(EOF, "", 6) } },
                 { "a", new[] { Expect(Identifier, "a", 1), Expect(EOF, "", 2) } },
                 { "abc", new[] { Expect(Identifier, "abc", 1), Expect(EOF, "", 4) } },
                 { "+", new[] { Expect(Identifier, "+", 1), Expect(EOF, "", 2) } },
@@ -292,6 +294,15 @@ namespace RainLispTests
 
             data.Add("(let((a 1)(b 2)(c 3))(+ a b c))", letExpectedTokens2);
 
+            data.Add("(+ 1234.5678 23456.7891)", new[] {
+                Expect(LParen, "(", 1),
+                Expect(Identifier, "+", 2),
+                Expect(Number, "1234.5678", 4, numberValue: 1234.5678),
+                Expect(Number, "23456.7891", 14, numberValue: 23456.7891),
+                Expect(RParen, ")", 24),
+                Expect(EOF, "", 25)
+            });
+
             data.Add("(+ 1 2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
@@ -414,8 +425,8 @@ namespace RainLispTests
             data.Add("(and true false)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(And, "and", 2),
-                Expect(TokenType.Boolean, "true", 6),
-                Expect(TokenType.Boolean, "false", 11),
+                Expect(TokenType.Boolean, "true", 6, booleanValue: true),
+                Expect(TokenType.Boolean, "false", 11, booleanValue: false),
                 Expect(RParen, ")", 16),
                 Expect(EOF, "", 17)
             });
@@ -423,8 +434,8 @@ namespace RainLispTests
             data.Add("(or false true)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Or, "or", 2),
-                Expect(TokenType.Boolean, "false", 5),
-                Expect(TokenType.Boolean, "true", 11),
+                Expect(TokenType.Boolean, "false", 5, booleanValue : false),
+                Expect(TokenType.Boolean, "true", 11, booleanValue : true),
                 Expect(RParen, ")", 15),
                 Expect(EOF, "", 16)
             });
@@ -432,8 +443,8 @@ namespace RainLispTests
             data.Add("(xor false true)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "xor", 2),
-                Expect(TokenType.Boolean, "false", 6),
-                Expect(TokenType.Boolean, "true", 12),
+                Expect(TokenType.Boolean, "false", 6, booleanValue : false),
+                Expect(TokenType.Boolean, "true", 12, booleanValue : true),
                 Expect(RParen, ")", 16),
                 Expect(EOF, "", 17)
             });
@@ -512,6 +523,8 @@ namespace RainLispTests
 
                 if (expectedToken.TokenType == Number)
                     Assert.Equal(expectedToken.NumberValue, tokens[i].NumberValue);
+                else if (expectedToken.TokenType == TokenType.Boolean)
+                    Assert.Equal(expectedToken.BooleanValue, tokens[i].BooleanValue);
 
                 Assert.Equal(expectedToken.Line, tokens[i].Line);
                 Assert.Equal(expectedToken.Position, tokens[i].Position);
@@ -610,6 +623,17 @@ world.""", 1, 13, '\r')] // Note that if this test is ran on a unix platform, th
         [InlineData("12.34.", 1, 6, '.')]
         [InlineData("+12.34.", 1, 7, '.')]
         [InlineData("-12.34.", 1, 7, '.')]
+        // Scientific notation is also not supported for numeric literals.
+        [InlineData("12.34e+2", 1, 6, 'e')]
+        [InlineData("12.34e2", 1, 6, 'e')]
+        [InlineData("12.34E2", 1, 6, 'E')]
+        [InlineData("12.34e-2", 1, 6, 'e')]
+        [InlineData("12.34E-2", 1, 6, 'E')]
+        // .NET numeric type notation is also not supported for numeric literals.
+        [InlineData("21u", 1, 3, 'u')]
+        [InlineData("21d", 1, 3, 'd')]
+        [InlineData("21f", 1, 3, 'f')]
+        [InlineData("21m", 1, 3, 'm')]
         public void Tokenize_InvalidNumberCharacter_Throws(string expression, uint expectedLine, uint expectedPosition, char expectedCharacter)
         {
             var exception = Tokenize_InvalidExpression_Throws<InvalidNumberCharacterException>(expression, expectedLine, expectedPosition);
