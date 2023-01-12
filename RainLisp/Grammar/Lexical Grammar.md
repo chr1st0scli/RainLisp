@@ -30,7 +30,7 @@ A valid escape sequence in a string literal starts with a backslash character fo
 Examples of strings with valid escape sequences are `"This is a double quote \" and a backslash \\"`, `"hello \n world"`
 
 ## Identifiers
-A symbol is qualified to be an identifier as long as it is none of the above literals (boolean, number or string) and it can comprise of one or more of any characters except delimiters (see below).
+A symbol is qualified for an identifier as long as it is none of the above literals (boolean, number or string) and special forms or derived expressions of the language (see below). If it does not fall into the above categories, it can comprise of one or more of any characters except delimiters (see below).
 ```
 [^;"()\s]+
 ```
@@ -45,4 +45,10 @@ Numbers, boolean literals, identifiers and special keywords can be delimited wit
 A comment starts with a semicolon character, as long as it is not inside a string literal, followed by zero or more characters up to the next line break. Block comment is not supported.
 ```
 ;.*
+```
+
+## Special Forms/Derived Expressions
+Special forms and derived expressions are words with special meaning in the language that cannot be changed by the user.
+```
+true|false|quote|set!|define|if|cond|else|begin|lambda|and|or|let
 ```
