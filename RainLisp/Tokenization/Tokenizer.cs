@@ -1,5 +1,6 @@
 ﻿using static RainLisp.Grammar.Delimiters;
 using static RainLisp.Grammar.Keywords;
+using static RainLisp.Grammar.NumberSpecialChars;
 using System.Text;
 
 namespace RainLisp.Tokenization
@@ -17,25 +18,26 @@ namespace RainLisp.Tokenization
                 return tokens;
             }
 
-            bool charInstring = false, charInComment = false;
+            bool charInstring = false, charInComment = false, charInNumber = false;
             var lexemeStringBuilder = new StringBuilder();
             StringTokenizer? stringTokenizer = null;
+            NumberTokenizer? numberTokenizer = null;
 
             #region Local Helper Methods.
-            void RegisterToken(string value, TokenType tokenType, uint position)
-            {
-                var token = new Token { Value = value, Type = tokenType, Line = line, Position = position };
-                tokens.Add(token);
-            }
+            void RegisterToken(Token token)
+                => tokens.Add(token);
+
+            void RegisterSpecificToken(string value, TokenType tokenType, uint position, double numberValue = 0, bool booleanValue = false)
+                => RegisterToken(new() { Value = value, Type = tokenType, Line = line, Position = position, NumberValue = numberValue, BooleanValue = booleanValue });
 
             void RegisterEOF()
-                => RegisterToken(string.Empty, TokenType.EOF, charPosition);
+                => RegisterSpecificToken(string.Empty, TokenType.EOF, charPosition);
 
             void RegisterStringLiteralToken()
             {
                 charInstring = false;
-                RegisterToken(stringTokenizer!.GetString(), TokenType.String, GetLastStringStartPosition());
-                stringTokenizer = null;
+                RegisterSpecificToken(stringTokenizer!.GetString(), TokenType.String, GetLastStringStartPosition());
+                stringTokenizer.Clear();
             }
 
             void RegisterUnknownToken()
@@ -49,7 +51,14 @@ namespace RainLisp.Tokenization
                 if (string.IsNullOrWhiteSpace(value))
                     return;
 
-                RegisterToken(value, GetTokenType(value), charPosition - (uint)value.Length);
+                if (charInNumber)
+                {
+                    charInNumber = false;
+                    RegisterSpecificToken(value, TokenType.Number, charPosition - (uint)value.Length, numberTokenizer!.GetNumber());
+                    numberTokenizer.Clear();
+                }
+                else
+                    RegisterToken(InferToken(value, line, charPosition - (uint)value.Length));
             }
 
             void ChangeLine()
@@ -61,8 +70,27 @@ namespace RainLisp.Tokenization
             void PlatformBounceNextNewLine(ref int i)
             {
                 // Skip the next \n character, so that \r\n is treated as a single new line if the platform dictates it.
-                if (i < expression.Length - 1 && expression[i + 1] == NEW_LINE && System.Environment.NewLine == $"{CARRIAGE_RETURN}{NEW_LINE}")
+                if (i < expression.Length - 1 && expression[i + 1] == NEW_LINE && Environment.NewLine == $"{CARRIAGE_RETURN}{NEW_LINE}")
                     i++;
+            }
+
+            bool NumberStartsAt(int i)
+            {
+                // If a lexeme is already being built, we are not dealing with the start.
+                if (lexemeStringBuilder.Length > 0)
+                    return false;
+
+                char c = expression[i];
+
+                // If it starts with a digit, then a number is being started.
+                if (char.IsDigit(c))
+                    return true;
+
+                // If it starts with a number sign followed by a digit, then a number is considered to being started.
+                if ((c == PLUS || c == MINUS) && i < expression.Length - 1 && char.IsDigit(expression[i + 1]))
+                    return true;
+
+                return false;
             }
 
             // The string token's position relates to the actual number of characters typed in the string and not the resulting string value's length.
@@ -105,17 +133,17 @@ namespace RainLisp.Tokenization
                 {
                     RegisterUnknownToken();
                     charInstring = true;
-                    stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
+                    stringTokenizer ??= new StringTokenizer(RegisterStringLiteralToken);
                 }
                 else if (c == LPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterToken(c.ToString(), TokenType.LParen, charPosition);
+                    RegisterSpecificToken(c.ToString(), TokenType.LParen, charPosition);
                 }
                 else if (c == RPAREN)
                 {
                     RegisterUnknownToken();
-                    RegisterToken(c.ToString(), TokenType.RParen, charPosition);
+                    RegisterSpecificToken(c.ToString(), TokenType.RParen, charPosition);
                 }
                 else if (c == CARRIAGE_RETURN)
                 {
@@ -133,6 +161,18 @@ namespace RainLisp.Tokenization
                 else if (c == SPACE || c == TAB)
                     RegisterUnknownToken();
                 
+                else if (charInNumber)
+                {
+                    numberTokenizer!.AddToNumber(c, line, charPosition);
+                    lexemeStringBuilder.Append(c);
+                }
+                else if (NumberStartsAt(i))
+                {
+                    charInNumber = true;
+                    numberTokenizer ??= new NumberTokenizer();
+                    numberTokenizer.AddToNumber(c, line, charPosition);
+                    lexemeStringBuilder.Append(c);
+                }
                 else
                     lexemeStringBuilder.Append(c);
 
@@ -148,33 +188,39 @@ namespace RainLisp.Tokenization
             return tokens;
         }
 
-        private static TokenType GetTokenType(string value)
+        private static Token InferToken(string value, uint line, uint position)
         {
-            TokenType GetOtherType()
-            {
-                if (double.TryParse(value, out double _))
-                    return TokenType.Number;
+            TokenType tokenType;
+            bool booleanValue = false;
 
-                else
-                    return TokenType.Identifier;
+            if (value == TRUE)
+            {
+                tokenType = TokenType.Boolean;
+                booleanValue = true;
             }
-
-            return value switch
+            else if (value == FALSE)
             {
-                TRUE or FALSE => TokenType.Boolean,
-                QUOTE => TokenType.Quote,
-                SET => TokenType.Assignment,
-                DEFINE => TokenType.Definition,
-                IF => TokenType.If,
-                COND => TokenType.Cond,
-                ELSE => TokenType.Else,
-                BEGIN => TokenType.Begin,
-                LAMBDA => TokenType.Lambda,
-                LET => TokenType.Let,
-                AND => TokenType.And,
-                OR => TokenType.Or,
-                _ => GetOtherType()
-            };
+                tokenType = TokenType.Boolean;
+                booleanValue = false;
+            }
+            else
+                tokenType = value switch
+                {
+                    QUOTE => TokenType.Quote,
+                    SET => TokenType.Assignment,
+                    DEFINE => TokenType.Definition,
+                    IF => TokenType.If,
+                    COND => TokenType.Cond,
+                    ELSE => TokenType.Else,
+                    BEGIN => TokenType.Begin,
+                    LAMBDA => TokenType.Lambda,
+                    LET => TokenType.Let,
+                    AND => TokenType.And,
+                    OR => TokenType.Or,
+                    _ => TokenType.Identifier
+                };
+
+            return new() { Value = value, Type = tokenType, Line = line, Position = position, BooleanValue = booleanValue };
         }
     }
 }

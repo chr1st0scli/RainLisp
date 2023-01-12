@@ -11,8 +11,12 @@ namespace RainLispTests
         [Theory]
         [InlineData("1", 1d)]
         [InlineData("10.54", 10.54)]
+        [InlineData("-10.54", -10.54)]
         [InlineData("-0.5", -0.5)]
         [InlineData("+0.5", 0.5)]
+        [InlineData("12.1234567890123", 12.1234567890123)]
+        [InlineData("+12.1234567890123", 12.1234567890123)]
+        [InlineData("-12.1234567890123", -12.1234567890123)]
         public void Evaluate_NumberLiteral_Correctly(string expression, double expectedResult)
         {
             // Arrange
@@ -129,14 +133,15 @@ namespace RainLispTests
         [InlineData("(% 15 6 2)", 1d)]
         [InlineData("(+ 1 (* 2 3))", 7d)]
         [InlineData("(+ 6 (- 7 (* (+ 8 (/ 3 (+ 2 (- 1 (+ (- 5 (* 3 6)) 3)))) 4) 9)))", -97.08)]
-        public void Evaluate_NumericPrimitiveExpression_Correctly(string expression, double expectedResult)
+        [InlineData("(+ 1234.5678 3456.7891)", 4691.3569, false)]
+        public void Evaluate_NumericPrimitiveExpression_Correctly(string expression, double expectedResult, bool roundToTwoDecimalPoints = true)
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = (NumberDatum)_interpreter.Evaluate(expression);
 
             // Assert
-            Assert.Equal(expectedResult, Math.Round(((NumberDatum)result).Value, 2, MidpointRounding.AwayFromZero));
+            Assert.Equal(expectedResult, roundToTwoDecimalPoints ? Math.Round(result.Value, 2, MidpointRounding.AwayFromZero) : result.Value);
         }
 
         [Theory]

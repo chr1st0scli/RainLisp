@@ -96,6 +96,10 @@ namespace RainLisp
             {
                 printError(string.Format(ErrorMessages.INVALID_STRING_CHARACTER, ex.Character, ex.Line, ex.Position), ex);
             }
+            catch (InvalidNumberCharacterException ex)
+            {
+                printError(string.Format(ErrorMessages.INVALID_NUMBER_CHARACTER, ex.Character, ex.Line, ex.Position), ex);
+            }
             catch (ParsingException ex)
             {
                 printError(string.Format(ErrorMessages.PARSING_ERROR, ex.Line, ex.Position), ex);
