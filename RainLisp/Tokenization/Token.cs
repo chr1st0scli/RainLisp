@@ -2,16 +2,16 @@
 {
     public class Token
     {
-        public TokenType Type { get; set; }
+        public TokenType Type { get; init; }
 
-        public string Value { get; set; } = string.Empty;
+        public string Value { get; init; } = string.Empty;
 
-        public double NumberValue { get; set; }
+        public double NumberValue { get; init; }
 
-        public bool BooleanValue { get; set; }
+        public bool BooleanValue { get; init; }
 
-        public uint Line { get; set; }
+        public uint Line { get; init; }
 
-        public uint Position { get; set; }
+        public uint Position { get; init; }
     }
 }
