@@ -110,17 +110,5 @@ namespace RainLisp.Evaluation
 
             return sb.ToString();
         }
-
-        public string VisitProgramResult(ProgramResult programResult)
-        {
-            if (programResult.Results == null || programResult.Results.Count == 0)
-                return string.Empty;
-
-            var sb = new StringBuilder();
-            foreach (var result in programResult.Results)
-                sb.AppendLine(result.AcceptVisitor(this));
-
-            return sb.ToString();
-        }
     }
 }

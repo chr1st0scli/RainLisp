@@ -10,6 +10,13 @@ namespace RainLisp.AbstractSyntaxTree
         public IList<Expression>? Expressions { get; set; }
 
         public override EvaluationResult AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
-            => visitor.EvaluateProgram(this, environment);
+        {
+            EvaluationResult? lastResult = null;
+            foreach (var result in visitor.EvaluateProgram(this, environment))
+                lastResult = result;
+
+            // Practically, this is never null.
+            return lastResult!;
+        }
     }
 }

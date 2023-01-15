@@ -26,19 +26,19 @@ namespace RainLisp
             _installLispLibraries = installLispLibraries;
         }
 
-        public EvaluationResult Evaluate(string? expression)
+        public IEnumerable<EvaluationResult> Evaluate(string? expression)
         {
             IEvaluationEnvironment? environment = null;
             return Evaluate(expression, ref environment);
         }
 
-        public EvaluationResult Evaluate(Program program)
+        public IEnumerable<EvaluationResult> Evaluate(Program program)
         {
             IEvaluationEnvironment? environment = null;
             return Evaluate(program, ref environment);
         }
 
-        public EvaluationResult Evaluate(string? expression, ref IEvaluationEnvironment? environment)
+        public IEnumerable<EvaluationResult> Evaluate(string? expression, ref IEvaluationEnvironment? environment)
         {
             var tokens = _tokenizer.Tokenize(expression);
             var programAST = _parser.Parse(tokens);
@@ -46,7 +46,7 @@ namespace RainLisp
             return Evaluate(programAST, ref environment);
         }
 
-        public EvaluationResult Evaluate(Program program, ref IEvaluationEnvironment? environment)
+        public IEnumerable<EvaluationResult> Evaluate(Program program, ref IEvaluationEnvironment? environment)
         {
             environment ??= CreateGlobalEnvironment();
 
@@ -79,10 +79,12 @@ namespace RainLisp
                 var tokens = _tokenizer.Tokenize(expression);
                 var programAST = _parser.Parse(tokens);
 
-                var result = _evaluator.EvaluateProgram(programAST, environment);
-                string resultToPrint = result.AcceptVisitor(_resultPrinter);
-
-                print(resultToPrint);
+                var results = _evaluator.EvaluateProgram(programAST, environment);
+                foreach (var result in results )
+                {
+                    string resultToPrint = result.AcceptVisitor(_resultPrinter);
+                    print(resultToPrint);
+                }
             }
             catch (NonTerminatedStringException ex)
             {
@@ -213,7 +215,8 @@ namespace RainLisp
             {
                 // Install common libraries in the environment.
                 IEvaluationEnvironment? env = environment;
-                Evaluate(CommonLibraries.LIBS, ref env);
+                // Force enumeration, so that all definitions are installed.
+                _ = Evaluate(CommonLibraries.LIBS, ref env).LastOrDefault();
             }
 
             return environment;
