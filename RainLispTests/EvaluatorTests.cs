@@ -21,7 +21,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -34,7 +34,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((BoolDatum)result).Value);
@@ -49,7 +49,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((StringDatum)result).Value);
@@ -105,8 +105,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
-            result = GetLastResult(result);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -138,7 +137,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = (NumberDatum)_interpreter.Evaluate(expression);
+            var result = (NumberDatum)_interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, roundToTwoDecimalPoints ? Math.Round(result.Value, 2, MidpointRounding.AwayFromZero) : result.Value);
@@ -233,7 +232,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((BoolDatum)result).Value);
@@ -271,7 +270,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((IPrimitiveDatum)result).GetValueAsObject());
@@ -310,7 +309,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((IPrimitiveDatum)result).GetValueAsObject());
@@ -334,8 +333,7 @@ namespace RainLispTests
 {expression}";
 
             // Act
-            var result = _interpreter.Evaluate(program);
-            result = GetLastResult(result);
+            var result = _interpreter.Evaluate(program).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -358,7 +356,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.IsType<Unspecified>(result);
@@ -371,7 +369,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.IsType<Nil>(result);
@@ -400,7 +398,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -428,7 +426,7 @@ namespace RainLispTests
 {lambdaCall}";
 
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -458,7 +456,7 @@ namespace RainLispTests
 (f)";
 
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -484,7 +482,7 @@ namespace RainLispTests
   (f 10))";
 
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(16d, ((NumberDatum)result).Value);
@@ -515,8 +513,8 @@ namespace RainLispTests
             IEvaluationEnvironment? environment = null;
 
             // Act
-            var result = _interpreter.Evaluate(expression, ref environment);
-            var callCountResult = _interpreter.Evaluate("callCount", ref environment);
+            var result = _interpreter.Evaluate(expression, ref environment).Last();
+            var callCountResult = _interpreter.Evaluate("callCount", ref environment).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((BoolDatum)result).Value);
@@ -548,8 +546,8 @@ namespace RainLispTests
             IEvaluationEnvironment? environment = null;
 
             // Act
-            var result = _interpreter.Evaluate(expression, ref environment);
-            var callCountResult = _interpreter.Evaluate("callCount", ref environment);
+            var result = _interpreter.Evaluate(expression, ref environment).Last();
+            var callCountResult = _interpreter.Evaluate("callCount", ref environment).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((BoolDatum)result).Value);
@@ -573,7 +571,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -597,7 +595,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((BoolDatum)result).Value);
@@ -639,8 +637,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
-            result = GetLastResult(result);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -662,7 +659,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((BoolDatum)result).Value);
@@ -675,7 +672,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((StringDatum)result).Value);
@@ -744,7 +741,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
@@ -1319,7 +1316,8 @@ namespace RainLispTests
             // Act
             try
             {
-                _interpreter.Evaluate(expression);
+                // Force enumeration to evaluate everything.
+                _ = _interpreter.Evaluate(expression).Last();
             }
             catch (TException ex)
             {
@@ -1331,13 +1329,6 @@ namespace RainLispTests
             Assert.IsType<TException>(exception);
 
             return exception!;
-        }
-
-        private static EvaluationResult GetLastResult(EvaluationResult result)
-        {
-            if (result is ProgramResult programResult && programResult.Results?.Count > 1)
-                return programResult.Results.Last();
-            return result;
         }
     }
 }

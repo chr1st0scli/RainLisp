@@ -37,7 +37,8 @@ namespace RainLispTests
             IEvaluationEnvironment? environment = null;
 
             // Act
-            interpreter.Evaluate(expression, ref environment);
+            // Force enumeration to evaluate everything.
+            _ = interpreter.Evaluate(expression, ref environment).Last();
             // Check the effect of the evaluation on the global environment.
             var environmentJObject = JObject.FromObject(environment, jsonSerializer);
 

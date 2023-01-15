@@ -29,6 +29,6 @@ namespace RainLisp.Evaluation
 
         EvaluationResult EvaluateBody(Body body, IEvaluationEnvironment environment);
 
-        EvaluationResult EvaluateProgram(Program program, IEvaluationEnvironment environment);
+        IEnumerable<EvaluationResult> EvaluateProgram(Program program, IEvaluationEnvironment environment);
     }
 }

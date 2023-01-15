@@ -29,7 +29,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
@@ -61,7 +61,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
@@ -79,7 +79,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
@@ -92,7 +92,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate("(define a 1)");
+            var result = _interpreter.Evaluate("(define a 1)").Last();
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
@@ -107,7 +107,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
@@ -143,7 +143,7 @@ namespace RainLispTests
         {
             // Arrange
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
@@ -171,7 +171,7 @@ namespace RainLispTests
 (numbers {count})";
 
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
@@ -199,7 +199,7 @@ namespace RainLispTests
 (numbers {count})";
 
             // Act
-            var result = _interpreter.Evaluate(expression);
+            var result = _interpreter.Evaluate(expression).Last();
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert

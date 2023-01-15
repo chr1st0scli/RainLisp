@@ -21,7 +21,5 @@ namespace RainLisp.Evaluation
         T VisitNil(Nil ni);
 
         T VisitPair(Pair pair);
-
-        T VisitProgramResult(ProgramResult programResult);
     }
 }
