@@ -1,6 +1,7 @@
 ﻿using RainLisp;
 using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
+using System.Text;
 
 namespace RainLispTests
 {
@@ -377,11 +378,31 @@ namespace RainLispTests
         }
 
         [Theory]
+        // Linear recursive processes, growing the stack.
         [InlineData(@"
 (define (factorial n)
     (if (= n 1)
         1
         (* n (factorial (- n 1)))))
+
+(factorial 5)", 120d)]
+
+        [InlineData(@"
+(define (factorial n)
+    (if (= n 1)
+        1
+        (* n (factorial (- n 1)))))
+
+(factorial 6)", 720d)]
+
+        // Linear iterative processes, maintaining the stack size to one.
+        [InlineData(@"
+(define (factorial n)
+    (define (iter i acc)
+        (if (> i n)
+            acc
+            (iter (+ i 1) (* i acc))))
+    (iter 1 1))
 
 (factorial 5)", 120d)]
 
@@ -402,6 +423,107 @@ namespace RainLispTests
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
+        }
+
+        [Theory]
+        [InlineData("(fibonacci 1)", 0d)]
+        [InlineData("(fibonacci 2)", 1d)]
+        [InlineData("(fibonacci 3)", 1d)]
+        [InlineData("(fibonacci 4)", 2d)]
+        [InlineData("(fibonacci 5)", 3d)]
+        [InlineData("(fibonacci 6)", 5d)]
+        [InlineData("(fibonacci 7)", 8d)]
+        [InlineData("(fibonacci 8)", 13d)]
+        [InlineData("(fibonacci 9)", 21d)]
+        [InlineData("(fibonacci 10)", 34d)]
+        [InlineData("(fibonacci 11)", 55d)]
+        [InlineData("(fibonacci 12)", 89d)]
+        public void Evaluate_FibonacciAsTreeRecursiveProcess_Correctly(string call, double expectedResult)
+        {
+            // Arrange
+            string expression = $@"
+(define (fibonacci n)
+(cond ((<= n 1) 0)
+      ((= n 2) 1)
+      (else (+ (fibonacci (- n 1))
+	           (fibonacci (- n 2))))))
+{call}";
+
+            // Act
+            var result = _interpreter.Evaluate(expression).Last();
+
+            // Assert
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
+        }
+
+        [Theory]
+        [InlineData("(fibonacci 1)", 0d)]
+        [InlineData("(fibonacci 2)", 1d)]
+        [InlineData("(fibonacci 3)", 1d)]
+        [InlineData("(fibonacci 4)", 2d)]
+        [InlineData("(fibonacci 5)", 3d)]
+        [InlineData("(fibonacci 6)", 5d)]
+        [InlineData("(fibonacci 7)", 8d)]
+        [InlineData("(fibonacci 8)", 13d)]
+        [InlineData("(fibonacci 9)", 21d)]
+        [InlineData("(fibonacci 10)", 34d)]
+        [InlineData("(fibonacci 11)", 55d)]
+        [InlineData("(fibonacci 12)", 89d)]
+        public void Evaluate_FibonacciAsIterativeProcess_Correctly(string call, double expectedResult)
+        {
+            // Arrange
+            string expression = $@"
+(define (fibonacci n)
+    (define (iter a b count)
+        (if (= count n)
+            b
+            (iter b (+ a b) (+ count 1))))
+
+    (cond ((<= n 1) 0)
+          ((= n 2) 1)
+          (else (iter 0 1 2))))
+{call}";
+
+            // Act
+            var result = _interpreter.Evaluate(expression).Last();
+
+            // Assert
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
+        }
+
+        [Fact]
+        public void Print_ProgramResults_InTheRightOrder()
+        {
+            // Arrange
+            string expression = @"
+(define (foo)
+	1
+	2
+	(display ""Should be 1st"") ; display writes the string value to the standard output.
+	(newline)
+	""Should be 2nd"")  ; whereas a string result is printed in its string representation.
+	
+(foo)
+""Should be 3rd""
+""Should be 4th""
+(display ""Should be 5th"")";
+
+            string expectedOutput = @"Should be 1st
+""Should be 2nd""
+""Should be 3rd""
+""Should be 4th""
+Should be 5th";
+
+            var sb = new StringBuilder();
+            var stringWriter = new StringWriter(sb);
+            Console.SetOut(stringWriter);
+
+            // Act
+            IEvaluationEnvironment? environment = null;
+            _interpreter.EvaluateAndPrint(expression, ref environment, value => stringWriter.WriteLine(value), (value, ex) => stringWriter.WriteLine(ex.Message));
+
+            // Assert
+            Assert.Equal(expectedOutput, sb.ToString().TrimEnd());
         }
 
         [Theory]
