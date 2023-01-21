@@ -1,6 +1,6 @@
-﻿namespace RainLisp.AbstractSyntaxTree
+﻿namespace RainLisp
 {
-    public abstract class Expression : Node, IDebugInfo
+    public interface IDebugInfo
     {
         public uint Line { get; set; }
 

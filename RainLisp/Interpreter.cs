@@ -108,30 +108,36 @@ namespace RainLisp
             }
             catch (WrongNumberOfArgumentsException ex)
             {
-                printError(string.Format(ex.OrMore ? ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS_EXT : ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS, ex.Expected, ex.Actual), ex);
+                string message = string.Format(ex.OrMore ? ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS_EXT : ErrorMessages.WRONG_NUMBER_OF_ARGUMENTS, ex.Expected, ex.Actual);
+                printError(AppendDebugInfo(message, ex), ex);
             }
             catch (WrongTypeOfArgumentException ex)
             {
+                string message;
                 if (ex.Expected.Length > 1)
-                    printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT_FOR_MANY, string.Join(", ", ex.Expected.Select(t => t.Name)), ex.Actual.Name), ex);
+                    message = string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT_FOR_MANY, string.Join(", ", ex.Expected.Select(t => t.Name)), ex.Actual.Name);
                 else
-                    printError(string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, ex.Expected[0].Name, ex.Actual.Name), ex);
+                    message = string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, ex.Expected[0].Name, ex.Actual.Name);
+
+                printError(AppendDebugInfo(message, ex), ex);
             }
             catch (UnknownIdentifierException ex)
             {
-                printError(string.Format(ErrorMessages.UNKNOWN_IDENTIFIER, ex.IdentifierName), ex);
+                string message = string.Format(ErrorMessages.UNKNOWN_IDENTIFIER, ex.IdentifierName);
+                printError(AppendDebugInfo(message, ex), ex);
             }
             catch (NotProcedureException ex)
             {
-                printError(ErrorMessages.NOT_PROCEDURE, ex);
+                printError(AppendDebugInfo(ErrorMessages.NOT_PROCEDURE, ex), ex);
             }
             catch (UserException ex)
             {
-                printError(string.Format(ErrorMessages.USER_ERROR, ex.Message), ex);
+                string message = string.Format(ErrorMessages.USER_ERROR, ex.Message);
+                printError(AppendDebugInfo(message, ex), ex);
             }
             catch (InvalidValueException ex)
             {
-                printError(ErrorMessages.INVALID_VALUE, ex);
+                printError(AppendDebugInfo(ErrorMessages.INVALID_VALUE, ex), ex);
             }
             catch (Exception ex)
             {
@@ -220,6 +226,15 @@ namespace RainLisp
             }
 
             return environment;
+        }
+
+        private static string AppendDebugInfo(string message, IDebugInfo debugInfo)
+        {
+            if (!debugInfo.HasDebugInfo)
+                return message;
+
+            string debugInfoText = string.Format(ErrorMessages.DEBUG_INFO, debugInfo.Line, debugInfo.Position);
+            return $"{message} {debugInfoText}";
         }
     }
 }

@@ -103,19 +103,19 @@ namespace RainLisp.Parsing
         private Expression Expression()
         {
             var currentToken = CurrentToken();
-            string tokenValue = currentToken.Value;
+            Expression expression;
 
             if (Match(TokenType.Number))
-                return new NumberLiteral(currentToken.NumberValue);
+                expression = new NumberLiteral(currentToken.NumberValue);
 
             else if (Match(TokenType.String))
-                return new StringLiteral(tokenValue);
+                expression = new StringLiteral(currentToken.Value);
 
             else if (Match(TokenType.Boolean))
-                return new BooleanLiteral(currentToken.BooleanValue);
+                expression = new BooleanLiteral(currentToken.BooleanValue);
 
             else if (Match(TokenType.Identifier))
-                return new Identifier(tokenValue);
+                expression = new Identifier(currentToken.Value);
 
             else
             {
@@ -123,40 +123,44 @@ namespace RainLisp.Parsing
                 if (!Match(TokenType.LParen))
                     throw new ParsingException(currentToken.Line, currentToken.Position, new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen });
 
+                currentToken = CurrentToken();
+
                 if (Match(TokenType.Quote))
-                    return QuoteExpr();
+                    expression = QuoteExpr();
 
                 else if (Match(TokenType.Assignment))
-                    return AssignmentExpr();
+                    expression = AssignmentExpr();
 
                 else if (Match(TokenType.If))
-                    return IfExpr();
+                    expression = IfExpr();
 
                 // cond is a derived expression, so it gets converted to an equivalent if.
                 else if (Match(TokenType.Cond))
-                    return ConditionExpr().ToIf();
+                    expression = ConditionExpr().ToIf();
 
                 else if (Match(TokenType.Begin))
-                    return new Begin(OneOrMoreExpressionsUntilRightParen());
+                    expression = new Begin(OneOrMoreExpressionsUntilRightParen());
 
                 else if (Match(TokenType.Lambda))
-                    return LambdaExpr();
+                    expression = LambdaExpr();
 
                 // let is a derived expression, so it gets converted to an equivalent lambda application.
                 else if (Match(TokenType.Let))
-                    return LetExpr().ToLambdaApplication();
+                    expression = LetExpr().ToLambdaApplication();
 
                 // and & or are derived expressions, so that they get converted to equivalent ifs.
                 else if (Match(TokenType.And))
-                    return new And(OneOrMoreExpressionsUntilRightParen()).ToIf();
+                    expression = new And(OneOrMoreExpressionsUntilRightParen()).ToIf();
 
                 else if (Match(TokenType.Or))
-                    return new Or(OneOrMoreExpressionsUntilRightParen()).ToIf();
+                    expression = new Or(OneOrMoreExpressionsUntilRightParen()).ToIf();
 
                 // If it is none of the above, then it can only be a function application.
                 else
-                    return ApplicationExpr();
+                    expression = ApplicationExpr();
             }
+
+            return expression.AddDebugInfo(currentToken);
         }
 
         private ConditionClause ConditionClause()

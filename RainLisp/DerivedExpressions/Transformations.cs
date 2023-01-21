@@ -11,8 +11,6 @@ namespace RainLisp.DerivedExpressions
     {
         public static If ToIf(this Condition condition)
         {
-            ArgumentNullException.ThrowIfNull(condition, nameof(condition));
-
             Expression ToSingleExpression(IList<Expression> expressions)
                 => expressions.Count == 1 ? expressions[0] : new Begin(expressions);
 
@@ -46,8 +44,6 @@ namespace RainLisp.DerivedExpressions
         public static Application ToLambdaApplication(this Let let)
         {
             // Transform a let expression to an application of a lambda.
-            ArgumentNullException.ThrowIfNull(let, nameof(let));
-
             var parameters = new List<string>();
             var operands = new List<Expression>();
 
