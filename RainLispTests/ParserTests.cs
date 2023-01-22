@@ -70,6 +70,12 @@ namespace RainLispTests
         [InlineData(49, "(or 1 2 3 4)")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
+            static void RemoveProperty(JObject jObj, string propertyName)
+            {
+                foreach (var token in jObj.SelectTokens($"$..{propertyName}").ToList())
+                    token.Parent.Remove();
+            }
+
             // Arrange
             var tokens = _tokenizer.Tokenize(expression);
             string expectedAst = File.ReadAllText($"AbstractSyntaxTrees\\{astIndex:00}.json");
@@ -78,14 +84,9 @@ namespace RainLispTests
             var programJObj = JObject.FromObject(_parser.Parse(tokens));
 
             // Remove debug info data. We are only interested in testing the correctness of the AST structure in this context.
-            foreach (var lineToken in programJObj.SelectTokens($"$..{nameof(IDebugInfo.Line)}").ToList())
-                lineToken.Parent.Remove();
-
-            foreach (var positionToken in programJObj.SelectTokens($"$..{nameof(IDebugInfo.Position)}").ToList())
-                positionToken.Parent.Remove();
-
-            foreach (var hasInfoToken in programJObj.SelectTokens($"$..{nameof(IDebugInfo.HasDebugInfo)}").ToList())
-                hasInfoToken.Parent.Remove();
+            RemoveProperty(programJObj, nameof(IDebugInfo.Line));
+            RemoveProperty(programJObj, nameof(IDebugInfo.Position));
+            RemoveProperty(programJObj, nameof(IDebugInfo.HasDebugInfo));
 
             string ast = programJObj.ToString(Formatting.Indented);
 
