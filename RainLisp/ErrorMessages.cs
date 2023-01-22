@@ -3,7 +3,7 @@
     public static class ErrorMessages
     {
         public const string CALL_STACK = "Call Stack";
-        public const string DEBUG_INFO = "Line {0}, position {1}.";
+        public const string DEBUG_INFO = "[{0}] Line {1}, position {2}.";
 
         public const string NON_TERMINATED_STRING = "The string is not terminated. Line {0}, position {1}.";
         public const string INVALID_ESCAPE_SEQUENCE = "Invalid escape sequence \\{0}. Line {1}, position {2}.";

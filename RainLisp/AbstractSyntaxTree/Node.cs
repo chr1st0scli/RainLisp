@@ -8,5 +8,7 @@ namespace RainLisp.AbstractSyntaxTree
         public string TypeName => GetType().Name;
 
         public abstract EvaluationResult AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment);
+
+        public override string? ToString() => TypeName;
     }
 }

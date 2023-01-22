@@ -12,5 +12,7 @@ namespace RainLisp.AbstractSyntaxTree
 
         public override EvaluationResult AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
             => visitor.EvaluateQuote(this);
+
+        public override string? ToString() => $"{TypeName} {Text}";
     }
 }

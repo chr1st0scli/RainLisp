@@ -233,7 +233,7 @@ namespace RainLisp
             if (exception.CallStack == null || exception.CallStack.Count == 0)
                 return message;
 
-            var callStackLines = exception.CallStack.Select(dbg => string.Format(ErrorMessages.DEBUG_INFO, dbg.Line, dbg.Position));
+            var callStackLines = exception.CallStack.Select(dbg => string.Format(ErrorMessages.DEBUG_INFO, dbg, dbg.Line, dbg.Position));
             string debugInfoText = string.Join(Environment.NewLine, callStackLines);
 
             return $"{message}{Environment.NewLine}{ErrorMessages.CALL_STACK}{Environment.NewLine}{debugInfoText}";

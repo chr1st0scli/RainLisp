@@ -17,5 +17,7 @@ namespace RainLisp.AbstractSyntaxTree
 
         public override EvaluationResult AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
             => visitor.EvaluateDefinition(this, environment);
+
+        public override string? ToString() => $"{TypeName} {IdentifierName}";
     }
 }
