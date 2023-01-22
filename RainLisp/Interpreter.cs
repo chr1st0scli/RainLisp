@@ -228,13 +228,15 @@ namespace RainLisp
             return environment;
         }
 
-        private static string AppendDebugInfo(string message, IDebugInfo debugInfo)
+        private static string AppendDebugInfo(string message, EvaluationException exception)
         {
-            if (!debugInfo.HasDebugInfo)
+            if (exception.CallStack == null || exception.CallStack.Count == 0)
                 return message;
 
-            string debugInfoText = string.Format(ErrorMessages.DEBUG_INFO, debugInfo.Line, debugInfo.Position);
-            return $"{message} {debugInfoText}";
+            var callStackLines = exception.CallStack.Select(dbg => string.Format(ErrorMessages.DEBUG_INFO, dbg.Line, dbg.Position));
+            string debugInfoText = string.Join(Environment.NewLine, callStackLines);
+
+            return $"{message}{Environment.NewLine}{ErrorMessages.CALL_STACK}{Environment.NewLine}{debugInfoText}";
         }
     }
 }

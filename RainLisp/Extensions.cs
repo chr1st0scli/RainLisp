@@ -13,15 +13,5 @@ namespace RainLisp
 
             return expression;
         }
-
-        public static void CopyDebugInfoFrom(this IDebugInfo target, IDebugInfo source)
-        {
-            if (!source.HasDebugInfo)
-                return;
-
-            target.Line = source.Line;
-            target.Position = source.Position;
-            target.HasDebugInfo = true;
-        }
     }
 }

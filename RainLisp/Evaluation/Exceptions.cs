@@ -1,6 +1,6 @@
 ﻿namespace RainLisp.Evaluation
 {
-    public class EvaluationException : Exception, IDebugInfo
+    public class EvaluationException : Exception
     {
         protected EvaluationException()
         {
@@ -14,11 +14,16 @@
         {
         }
 
-        public uint Line { get; set; }
+        public IList<IDebugInfo>? CallStack { get; private set; }
 
-        public uint Position { get; set; }
+        public void AddToCallStack(IDebugInfo debugInfo)
+        {
+            if (!debugInfo.HasDebugInfo)
+                return;
 
-        public bool HasDebugInfo { get; set; }
+            CallStack ??= new List<IDebugInfo>();
+            CallStack.Add(debugInfo);
+        }
     }
 
     public class WrongNumberOfArgumentsException : EvaluationException

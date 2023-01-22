@@ -152,7 +152,7 @@ namespace RainLisp.Evaluation
             }
             catch (EvaluationException ex)
             {
-                ex.CopyDebugInfoFrom(debugInfoSource);
+                ex.AddToCallStack(debugInfoSource);
                 throw;
             }
         }
