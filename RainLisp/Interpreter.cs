@@ -222,7 +222,7 @@ namespace RainLisp
                 // Install common libraries in the environment.
                 IEvaluationEnvironment? env = environment;
                 // Force enumeration, so that all definitions are installed.
-                _ = Evaluate(CommonLibraries.LIBS, ref env).LastOrDefault();
+                _ = Evaluate(LispLibraries.LIBS, ref env).LastOrDefault();
             }
 
             return environment;

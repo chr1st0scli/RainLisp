@@ -1,6 +1,6 @@
 ﻿namespace RainLisp
 {
-    public static class CommonLibraries
+    public static class LispLibraries
     {
         public const string LIBS = @"
 (define (cadr sequence)
