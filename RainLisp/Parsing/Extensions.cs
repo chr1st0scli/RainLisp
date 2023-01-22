@@ -1,7 +1,7 @@
 ﻿using RainLisp.AbstractSyntaxTree;
 using RainLisp.Tokenization;
 
-namespace RainLisp
+namespace RainLisp.Parsing
 {
     public static class Extensions
     {
