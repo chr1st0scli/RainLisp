@@ -20,19 +20,24 @@ namespace RainLisp.Evaluation
             => new BoolDatum(boolLiteral.Value);
 
         public EvaluationResult EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment)
-            => environment.LookupIdentifierValue(identifier.Name);
+            => EvaluateWithDebugInfo(() => environment.LookupIdentifierValue(identifier.Name), identifier);
 
         public EvaluationResult EvaluateQuote(Quote quote)
             => throw new NotImplementedException();
 
         public EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment)
         {
-            // Defer the evaluation of the expression to get the value to assign to the identifier, until it is certain that the definition exists.
-            var valueProvider = () => assignment.Value.AcceptVisitor(this, environment);
+            EvaluationResult Evaluate()
+            {
+                // Defer the evaluation of the expression to get the value to assign to the identifier, until it is certain that the definition exists.
+                var valueProvider = () => assignment.Value.AcceptVisitor(this, environment);
 
-            environment.SetIdentifierValue(assignment.IdentifierName, valueProvider);
+                environment.SetIdentifierValue(assignment.IdentifierName, valueProvider);
 
-            return Unspecified.GetUnspecified();
+                return Unspecified.GetUnspecified();
+            }
+
+            return EvaluateWithDebugInfo(Evaluate, assignment);
         }
 
         public EvaluationResult EvaluateDefinition(Definition definition, IEvaluationEnvironment environment)
@@ -71,17 +76,22 @@ namespace RainLisp.Evaluation
 
         public EvaluationResult EvaluateApplication(Application application, IEvaluationEnvironment environment)
         {
-            // Operator is either a lambda that is evaluated to a user procedure, or another application that returns a user procedure, 
-            // or an identifier that evaluates to an already defined procedure (either user or primitive).
-            var procedure = application.Operator
-                .AcceptVisitor(this, environment);
+            EvaluationResult Evaluate()
+            {
+                // Operator is either a lambda that is evaluated to a user procedure, or another application that returns a user procedure, 
+                // or an identifier that evaluates to an already defined procedure (either user or primitive).
+                var procedure = application.Operator
+                    .AcceptVisitor(this, environment);
 
-            // Evaluate arguments from left to right.
-            var evaluatedArguments = application.Operands
-                ?.Select(expr => expr.AcceptVisitor(this, environment))
-                .ToArray();
+                // Evaluate arguments from left to right.
+                var evaluatedArguments = application.Operands
+                    ?.Select(expr => expr.AcceptVisitor(this, environment))
+                    .ToArray();
 
-            return procedure.AcceptVisitor(_procedureApplicationVisitor, evaluatedArguments, this);
+                return procedure.AcceptVisitor(_procedureApplicationVisitor, evaluatedArguments, this);
+            }
+
+            return EvaluateWithDebugInfo(Evaluate, application);
         }
 
         public EvaluationResult EvaluateBody(Body body, IEvaluationEnvironment environment)
@@ -132,6 +142,19 @@ namespace RainLisp.Evaluation
 
             // result is not null because the syntax grammar specifies there is at least one expression in both a body and begin.
             return result!;
+        }
+
+        private static EvaluationResult EvaluateWithDebugInfo(Func<EvaluationResult> evaluateCallback, IDebugInfo debugInfoSource)
+        {
+            try
+            {
+                return evaluateCallback();
+            }
+            catch (EvaluationException ex)
+            {
+                ex.AddToCallStack(debugInfoSource);
+                throw;
+            }
         }
     }
 }

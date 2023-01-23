@@ -1,14 +1,32 @@
 ﻿namespace RainLisp.Evaluation
 {
-    //public class ProcedureCallException : Exception
-    //{
-    //    public ProcedureCallException(string procedureName)
-    //        => ProcedureName = procedureName;
+    public class EvaluationException : Exception
+    {
+        protected EvaluationException()
+        {
+        }
 
-    //    public string ProcedureName { get; init; }
-    //}
+        protected EvaluationException(string? message) : base(message)
+        {
+        }
 
-    public class WrongNumberOfArgumentsException : Exception
+        protected EvaluationException(string? message, Exception? innerException) : base(message, innerException)
+        {
+        }
+
+        public IList<IDebugInfo>? CallStack { get; private set; }
+
+        public void AddToCallStack(IDebugInfo debugInfo)
+        {
+            if (!debugInfo.HasDebugInfo)
+                return;
+
+            CallStack ??= new List<IDebugInfo>();
+            CallStack.Add(debugInfo);
+        }
+    }
+
+    public class WrongNumberOfArgumentsException : EvaluationException
     {
         public WrongNumberOfArgumentsException(int actual, int expected, bool orMore = false)
         {
@@ -38,7 +56,7 @@
         public bool OrMore { get; init; }
     }
 
-    public class WrongTypeOfArgumentException : Exception
+    public class WrongTypeOfArgumentException : EvaluationException
     {
         public WrongTypeOfArgumentException(Type actual, Type[] expected)
         {
@@ -63,7 +81,7 @@
         public Type[] Expected { get; init; }
     }
 
-    public class UnknownIdentifierException : Exception
+    public class UnknownIdentifierException : EvaluationException
     {
         public UnknownIdentifierException(string identifierName)
             => IdentifierName = identifierName;
@@ -77,7 +95,7 @@
         public string IdentifierName { get; init; }
     }
 
-    public class NotProcedureException : Exception
+    public class NotProcedureException : EvaluationException
     {
         public NotProcedureException()
         {
@@ -92,7 +110,7 @@
         }
     }
 
-    public class UserException : Exception
+    public class UserException : EvaluationException
     {
         public UserException()
         {
@@ -107,7 +125,7 @@
         }
     }
 
-    public class InvalidValueException : Exception
+    public class InvalidValueException : EvaluationException
     {
         public InvalidValueException()
         {

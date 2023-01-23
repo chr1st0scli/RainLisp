@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RainLisp;
 using RainLisp.Parsing;
 using RainLisp.Tokenization;
 
@@ -68,13 +70,25 @@ namespace RainLispTests
         [InlineData(49, "(or 1 2 3 4)")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
+            static void RemoveProperty(JObject jObj, string propertyName)
+            {
+                foreach (var token in jObj.SelectTokens($"$..{propertyName}").ToList())
+                    token.Parent.Remove();
+            }
+
             // Arrange
             var tokens = _tokenizer.Tokenize(expression);
+            string expectedAst = File.ReadAllText($"AbstractSyntaxTrees\\{astIndex:00}.json");
 
             // Act
-            var program = _parser.Parse(tokens);
-            string ast = JsonConvert.SerializeObject(program, Formatting.Indented);
-            string expectedAst = File.ReadAllText($"AbstractSyntaxTrees\\{astIndex:00}.json");
+            var programJObj = JObject.FromObject(_parser.Parse(tokens));
+
+            // Remove debug info data. We are only interested in testing the correctness of the AST structure in this context.
+            RemoveProperty(programJObj, nameof(IDebugInfo.Line));
+            RemoveProperty(programJObj, nameof(IDebugInfo.Position));
+            RemoveProperty(programJObj, nameof(IDebugInfo.HasDebugInfo));
+
+            string ast = programJObj.ToString(Formatting.Indented);
 
             // Assert
             Assert.Equal(expectedAst, ast);
@@ -161,7 +175,7 @@ namespace RainLispTests
         [InlineData("(set! set! 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! define 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! if 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
-        [InlineData("(set! cond 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier) ]
+        [InlineData("(set! cond 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! else 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! begin 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! lambda 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
