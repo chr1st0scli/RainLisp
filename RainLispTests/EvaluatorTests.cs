@@ -1397,6 +1397,34 @@ Should be 5th";
             Evaluate_WrongExpression_Throws<InvalidValueException>(expression);
         }
 
+        [Theory]
+        [MemberData(nameof(GetCallStackData))]
+        public void Evaluate_ExpressionWithError_ErrorWithCorrectCallStack(string expression, IDebugInfo[] expectedCallStack)
+        {
+            // Arrange
+            EvaluationException? exception = null;
+
+            // Act
+            try
+            {
+                // Force enumeration to evaluate everything.
+                _ = _interpreter.Evaluate(expression).Last();
+            }
+            catch (EvaluationException ex)
+            {
+                exception = ex;
+            }
+            var actualCallStack = exception!.CallStack;
+
+            // Assert
+            Assert.Equal(expectedCallStack.Length, exception.CallStack!.Count);
+            for (int i = 0; i < expectedCallStack.Length; i++)
+            {
+                Assert.Equal(expectedCallStack[i].Line, actualCallStack![i].Line);
+                Assert.Equal(expectedCallStack[i].Position, actualCallStack[i].Position);
+            }
+        }
+
         private void Evaluate_CallsWithWrongNumberOfArguments_Throws(string[] procedureNames, string expression, int expected, bool orMore, int actual)
         {
             // Arrange
@@ -1451,6 +1479,88 @@ Should be 5th";
             Assert.IsType<TException>(exception);
 
             return exception!;
+        }
+
+        private static TheoryData<string, IDebugInfo[]> GetCallStackData()
+        {
+            var data = new TheoryData<string, IDebugInfo[]>
+            {
+                { "(+ 12)", new[] { new TestDebugInfo(1, 2) } },    // WrongNumberOfArgumentsException
+                { "(round \"hello\" 2)", new[] { new TestDebugInfo(1, 2) } },   // WrongTypeOfArgumentException
+                { "a", new[] { new TestDebugInfo(1, 1) } },   // UnknownIdentifierException
+                { "(set! a 3)", new[] { new TestDebugInfo(1, 2) } },   // UnknownIdentifierException
+                { "(1)", new[] { new TestDebugInfo(1, 2) } },   // NotProcedureException
+                { "(error \"user error\")", new[] { new TestDebugInfo(1, 2) } },   // UserException
+                { "(index-of-string \"hello world\" \"lo wo\" -1)", new[] { new TestDebugInfo(1, 2) } },   // InvalidValueException
+            };
+
+            string code = @"
+(begin 1
+    2
+    3
+    (+))";
+            data.Add(code, new[] { new TestDebugInfo(5, 6) });
+
+            code = @"
+(if true
+    (+)
+    (-))";
+            data.Add(code, new[] { new TestDebugInfo(3, 6) });
+
+            code = @"
+(if false
+    (+)
+    (-))";
+            data.Add(code, new[] { new TestDebugInfo(4, 6) });
+
+            code = @"
+(let ((a 1) 
+      (b (+ 1))) 
+     (+ a))";
+            data.Add(code, new[] { new TestDebugInfo(3, 11), new TestDebugInfo(2, 2) });
+
+            code = @"
+(let ((a 1) 
+      (b (+ 1 2))) 
+     (+ a))";
+            data.Add(code, new[] { new TestDebugInfo(4, 7), new TestDebugInfo(2, 2) });
+
+            code = @"
+(define (get-lambda)
+    (lambda ()
+        (+)))
+
+((get-lambda))";
+            data.Add(code, new[] { new TestDebugInfo(4, 10), new TestDebugInfo(6, 2) });
+
+            code = @"
+((lambda () 
+    (+ 3)) 43)";
+            data.Add(code, new[] { new TestDebugInfo(2, 2) });
+
+            code = @"
+((lambda () 
+    (+ 3)))";
+            data.Add(code, new[] { new TestDebugInfo(3, 6), new TestDebugInfo(2, 2) });
+
+            // Application of an identifier is two calls in the evaluation stack, identifier evaluation and then application.
+            code = "(a)";
+            data.Add(code, new[] { new TestDebugInfo(1, 2), new TestDebugInfo(1, 2) });
+
+            code = @"
+(define (foo)
+    (boo))
+
+(define (boo)
+    (foo-bar))
+
+(define (foo-bar)
+    (+))
+
+(foo)";
+            data.Add(code, new[] { new TestDebugInfo(9, 6), new TestDebugInfo(6, 6), new TestDebugInfo(3, 6), new TestDebugInfo(11, 2) });
+
+            return data;
         }
     }
 }
