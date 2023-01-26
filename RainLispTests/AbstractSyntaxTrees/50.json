@@ -1,0 +1,118 @@
+{
+  "Definitions": [
+    {
+      "IdentifierName": "foo",
+      "Value": {
+        "Parameters": [
+          "x",
+          "y"
+        ],
+        "Body": {
+          "Definitions": [
+            {
+              "IdentifierName": "bar",
+              "Value": {
+                "Value": 3.0,
+                "TypeName": "NumberLiteral"
+              },
+              "TypeName": "Definition"
+            }
+          ],
+          "Expressions": [
+            {
+              "Operator": {
+                "Name": "+",
+                "TypeName": "Identifier"
+              },
+              "Operands": [
+                {
+                  "Name": "x",
+                  "TypeName": "Identifier"
+                },
+                {
+                  "Name": "y",
+                  "TypeName": "Identifier"
+                },
+                {
+                  "Name": "bar",
+                  "TypeName": "Identifier"
+                }
+              ],
+              "TypeName": "Application"
+            }
+          ],
+          "TypeName": "Body"
+        },
+        "TypeName": "Lambda"
+      },
+      "TypeName": "Definition"
+    }
+  ],
+  "Expressions": [
+    {
+      "Operator": {
+        "Parameters": [
+          "a",
+          "b"
+        ],
+        "Body": {
+          "Definitions": [
+            {
+              "IdentifierName": "c",
+              "Value": {
+                "Value": 4.0,
+                "TypeName": "NumberLiteral"
+              },
+              "TypeName": "Definition"
+            }
+          ],
+          "Expressions": [
+            {
+              "Operator": {
+                "Name": "+",
+                "TypeName": "Identifier"
+              },
+              "Operands": [
+                {
+                  "Operator": {
+                    "Name": "foo",
+                    "TypeName": "Identifier"
+                  },
+                  "Operands": [
+                    {
+                      "Name": "a",
+                      "TypeName": "Identifier"
+                    },
+                    {
+                      "Name": "b",
+                      "TypeName": "Identifier"
+                    }
+                  ],
+                  "TypeName": "Application"
+                },
+                {
+                  "Name": "c",
+                  "TypeName": "Identifier"
+                }
+              ],
+              "TypeName": "Application"
+            }
+          ],
+          "TypeName": "Body"
+        },
+        "TypeName": "Lambda"
+      },
+      "Operands": [
+        {
+          "Value": 1.0,
+          "TypeName": "NumberLiteral"
+        },
+        {
+          "Value": 2.0,
+          "TypeName": "NumberLiteral"
+        }
+      ],
+      "TypeName": "Application"
+    }
+  ]
+}
