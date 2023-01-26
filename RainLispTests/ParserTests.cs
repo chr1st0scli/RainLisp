@@ -68,6 +68,7 @@ namespace RainLispTests
         [InlineData(47, "(let ((a 1) (b 2)) (define c 4) (define d 5) 1 a b c d (+ a b c d))")]
         [InlineData(48, "(and 1 2 3 4)")]
         [InlineData(49, "(or 1 2 3 4)")]
+        [InlineData(50, "(define (foo x y) (define bar 3) (+ x y bar)) (let ((a 1) (b 2)) (define c 4) (+ (foo a b) c))")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             static void RemoveProperty(JObject jObj, string propertyName)
