@@ -2,7 +2,7 @@
 {
     internal static class Resources
     {
-        internal const string WELCOME_PROMPT = "Please type 0 for a quick single-line REPL, or 1 for the code editor.";
+        internal const string WELCOME_PROMPT = "[0: Single-line Read-Eval-Print-Loop, 1: Code Editor]";
         internal const string ZERO_OR_ONE = "(0/1)?";
         internal const string REPL_PROMPT = "> ";
         internal const string TITLE = "Rainλisp";

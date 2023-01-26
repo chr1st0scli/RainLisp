@@ -38,6 +38,9 @@ if (mode == 0)
 
     void PrintError(string message, Exception ex)
     {
+        var originalColor = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.Red;
+
         Console.WriteLine(message);
 
         // Print the entire exception if it is unknown.
@@ -47,6 +50,8 @@ if (mode == 0)
         // Or print the exception's message if one provided by a programmer extending the library.
         else if (!string.IsNullOrWhiteSpace(ex.Message) && !ex.Message.StartsWith("Exception of type"))
             Console.WriteLine(ex.Message);
+
+        Console.ForegroundColor = originalColor;
     }
 }
 else
