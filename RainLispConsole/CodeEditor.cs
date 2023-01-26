@@ -152,6 +152,8 @@ namespace RainLispConsole
 
             if (_recentDirectory != null)
                 openDialog.DirectoryPath = _recentDirectory;
+            else
+                openDialog.DirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             Application.Run(openDialog);
 
@@ -188,6 +190,8 @@ namespace RainLispConsole
 
             if (_recentDirectory != null)
                 saveDialog.DirectoryPath = _recentDirectory;
+            else
+                saveDialog.DirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             Application.Run(saveDialog);
 
