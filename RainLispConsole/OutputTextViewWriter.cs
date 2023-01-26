@@ -17,7 +17,9 @@ namespace RainLispConsole
 
         public override void Write(string? value)
         {
-            _textView.ErrorMode = _errorMode;
+            if (_errorMode)
+                _textView.RegisterError(value);
+
             _textView.Text += value;
         }
 
@@ -28,7 +30,9 @@ namespace RainLispConsole
 
         public override void WriteLine(string? value)
         {
-            _textView.ErrorMode = _errorMode;
+            if (_errorMode)
+                _textView.RegisterError(value);
+
             _textView.Text += value + Environment.NewLine;
         }
     }

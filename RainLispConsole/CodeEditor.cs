@@ -15,8 +15,6 @@ namespace RainLispConsole
 
         private readonly Interpreter _interpreter;
         private readonly List<string> _allowedFileTypes;
-        private readonly TextWriter _outputWriter;
-        private readonly TextWriter _errorWriter;
 
         private string? _filePath;
         private string? _recentDirectory;
@@ -106,10 +104,10 @@ namespace RainLispConsole
             Application.Top.Add(menuBar, _mainWindow, statusBar);
 
             // Redirect the standard output and error to the same output text view.
-            _outputWriter = new OutputTextViewWriter(_outputTextView, false);
-            _errorWriter = new OutputTextViewWriter(_outputTextView, true);
-            Console.SetOut(_outputWriter);
-            Console.SetError(_errorWriter);
+            var outputWriter = new OutputTextViewWriter(_outputTextView, false);
+            var errorWriter = new OutputTextViewWriter(_outputTextView, true);
+            Console.SetOut(outputWriter);
+            Console.SetError(errorWriter);
         }
 
         public static void Run()
@@ -154,6 +152,8 @@ namespace RainLispConsole
 
             if (_recentDirectory != null)
                 openDialog.DirectoryPath = _recentDirectory;
+            else
+                openDialog.DirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             Application.Run(openDialog);
 
@@ -190,6 +190,8 @@ namespace RainLispConsole
 
             if (_recentDirectory != null)
                 saveDialog.DirectoryPath = _recentDirectory;
+            else
+                saveDialog.DirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             Application.Run(saveDialog);
 
@@ -245,6 +247,7 @@ namespace RainLispConsole
         private void Evaluate()
         {
             _outputTextView.Text = "";
+            _outputTextView.ClearErrors();
             IEvaluationEnvironment? environment = null;
             _interpreter.EvaluateAndPrint(_inputTextView.Text.ToString(), ref environment, Print, PrintError);
         }
