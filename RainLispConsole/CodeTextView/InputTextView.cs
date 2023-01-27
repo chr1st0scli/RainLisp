@@ -72,13 +72,14 @@ namespace RainLispConsole.CodeTextView
 
             // Identify words separated by white space characters or delimeters.
             var words = Regex.Split(textForWordAnalysis, $"[\\s{Delimiters.LPAREN}{Delimiters.RPAREN}{Delimiters.COMMENT}]")
+                .Where(word => !string.IsNullOrEmpty(word))
                 .Select(word =>
                 {
                     int start = textForWordAnalysis.IndexOf(word, startIndex);
                     int end = start + word.Length - 1;
                     startIndex = end + 1;
 
-                    return new WordInfo { Word = word, Start = textForWordAnalysis.IndexOf(word), End = start + word.Length - 1 };
+                    return new WordInfo { Word = word, Start = start, End = end };
                 }).ToArray();
 
             return new LineInfo() { Text = lineText, CommentStart = commentMatch?.Index ?? -1, Words = words, Strings = strings };

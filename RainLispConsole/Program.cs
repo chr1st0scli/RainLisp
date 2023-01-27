@@ -12,8 +12,8 @@ do
     Console.Write(Resources.ZERO_OR_ONE);
     mode = Console.ReadKey().Key switch
     {
-        ConsoleKey.D0 => 0,
-        ConsoleKey.D1 => 1,
+        ConsoleKey.D0 or ConsoleKey.NumPad0 => 0,
+        ConsoleKey.D1 or ConsoleKey.NumPad1 => 1,
         _ => -1
     };
 } while (mode == -1);
