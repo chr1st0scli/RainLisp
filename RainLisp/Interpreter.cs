@@ -104,7 +104,10 @@ namespace RainLisp
             }
             catch (ParsingException ex)
             {
-                printError(string.Format(ErrorMessages.PARSING_ERROR, ex.Line, ex.Position), ex);
+                string expectedSymbols = string.Join(ErrorMessages.SYMBOL_SEPARATOR, ex.MissingSymbols.Select(t => t.ToWord()));
+                string message = string.Format(ErrorMessages.PARSING_ERROR, ex.Line, ex.Position, expectedSymbols);
+
+                printError(message, ex);
             }
             catch (WrongNumberOfArgumentsException ex)
             {
