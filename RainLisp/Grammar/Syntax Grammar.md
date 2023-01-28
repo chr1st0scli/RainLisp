@@ -11,7 +11,7 @@ program = {definition|expression} EOF
 Definition is a special form for defining variables and functions. A variable is defined by its identifier followed by an expression. A function is defined by its name followed by zero or more arguments and a body. The latter form (function) is syntactic sugar for `(define ID (lambda ({ID}) body)`.
 ```
 definition = "(" "define" ID expression ")"
-			| "(" "define" "(" ID {ID} ")" body ")"
+           | "(" "define" "(" ID {ID} ")" body ")"
 ```
 ## Body
 A body consists of zero or more definitions followed by at least one expression.

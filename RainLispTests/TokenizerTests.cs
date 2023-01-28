@@ -517,8 +517,7 @@ namespace RainLispTests
     (if (<= num1 num2) 
         num1 ; return num1
         num2)) ; return num2
-(min 7 4)", new[]
-            {
+(min 7 4)", new[] {
                 Expect(LParen, "(", 1, PickLine(2, 3)),
                 Expect(Definition, "define", 2, PickLine(2, 3)),
                 Expect(LParen, "(", 9, PickLine(2, 3)),
