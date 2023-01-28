@@ -25,21 +25,24 @@ namespace RainLispTests
                 { "", new[] { Expect(EOF, "", 1) } },
                 { " ", new[] { Expect(EOF, "", 2) } },
                 { "\n", new[] { Expect(EOF, "", 1, 2) } },
+                // Last comment should be excluded from EOF's position.
+                { "; a comment", new[] { Expect(EOF, "", 1) } },
+                { " ; a comment", new[] { Expect(EOF, "", 2) } },
 
                 { "1", new[] { Expect(Number, "1", 1, numberValue: 1d), Expect(EOF, "", 2) } },
                 { "01", new[] { Expect(Number, "01", 1, numberValue: 1d), Expect(EOF, "", 3) } },
                 { "+1", new[] { Expect(Number, "+1", 1, numberValue: 1d), Expect(EOF, "", 3) } },
                 { "-1", new[] { Expect(Number, "-1", 1, numberValue: -1d), Expect(EOF, "", 3) } },
-                { "12.3456", new[] { Expect(Number, "12.3456", 1, numberValue: 12.3456), Expect(EOF, "", 8) } }, 
-                { "-12.3456", new[] { Expect(Number, "-12.3456", 1, numberValue: -12.3456), Expect(EOF, "", 9) } }, 
-                { "+12.3456", new[] { Expect(Number, "+12.3456", 1, numberValue: 12.3456), Expect(EOF, "", 9) } }, 
-                { "+012.3456", new[] { Expect(Number, "+012.3456", 1, numberValue: 12.3456), Expect(EOF, "", 10) } }, 
-                { "12.10000000001", new[] { Expect(Number, "12.10000000001", 1, numberValue: 12.10000000001), Expect(EOF, "", 15) } }, 
-                { "12.1234567890123", new[] { Expect(Number, "12.1234567890123", 1, numberValue: 12.1234567890123), Expect(EOF, "", 17) } }, 
-                { "+12.1234567890123", new[] { Expect(Number, "+12.1234567890123", 1, numberValue: 12.1234567890123), Expect(EOF, "", 18) } }, 
-                { "-12.1234567890123", new[] { Expect(Number, "-12.1234567890123", 1, numberValue: -12.1234567890123), Expect(EOF, "", 18) } }, 
-                { "1234567.12345678", new[] { Expect(Number, "1234567.12345678", 1, numberValue: 1234567.12345678), Expect(EOF, "", 17) } }, 
-                { "+1234567.12345678", new[] { Expect(Number, "+1234567.12345678", 1, numberValue: 1234567.12345678), Expect(EOF, "", 18) } }, 
+                { "12.3456", new[] { Expect(Number, "12.3456", 1, numberValue: 12.3456), Expect(EOF, "", 8) } },
+                { "-12.3456", new[] { Expect(Number, "-12.3456", 1, numberValue: -12.3456), Expect(EOF, "", 9) } },
+                { "+12.3456", new[] { Expect(Number, "+12.3456", 1, numberValue: 12.3456), Expect(EOF, "", 9) } },
+                { "+012.3456", new[] { Expect(Number, "+012.3456", 1, numberValue: 12.3456), Expect(EOF, "", 10) } },
+                { "12.10000000001", new[] { Expect(Number, "12.10000000001", 1, numberValue: 12.10000000001), Expect(EOF, "", 15) } },
+                { "12.1234567890123", new[] { Expect(Number, "12.1234567890123", 1, numberValue: 12.1234567890123), Expect(EOF, "", 17) } },
+                { "+12.1234567890123", new[] { Expect(Number, "+12.1234567890123", 1, numberValue: 12.1234567890123), Expect(EOF, "", 18) } },
+                { "-12.1234567890123", new[] { Expect(Number, "-12.1234567890123", 1, numberValue: -12.1234567890123), Expect(EOF, "", 18) } },
+                { "1234567.12345678", new[] { Expect(Number, "1234567.12345678", 1, numberValue: 1234567.12345678), Expect(EOF, "", 17) } },
+                { "+1234567.12345678", new[] { Expect(Number, "+1234567.12345678", 1, numberValue: 1234567.12345678), Expect(EOF, "", 18) } },
                 { "-1234567.12345678", new[] { Expect(Number, "-1234567.12345678", 1, numberValue: -1234567.12345678), Expect(EOF, "", 18) } },
                 { "34.", new[] { Expect(Number, "34.", 1, numberValue: 34d), Expect(EOF, "", 4) } },
                 { "+34.", new[] { Expect(Number, "+34.", 1, numberValue: 34d), Expect(EOF, "", 5) } },
@@ -473,7 +476,7 @@ namespace RainLispTests
                 Expect(Number, "10", 4, numberValue: 10d),
                 Expect(Number, "15", 7, numberValue: 15d),
                 Expect(RParen, ")", 9),
-                Expect(EOF, "", 36),
+                Expect(EOF, "", 10),
             });
 
             data.Add(@"; A function for returning the max of two numbers.
@@ -506,7 +509,39 @@ namespace RainLispTests
                 Expect(Number, "55", 6, PickLine(7, 13), numberValue: 55d),
                 Expect(Number, "21", 9, PickLine(7, 13), numberValue: 21d),
                 Expect(RParen, ")", 11, PickLine(7, 13)),
-                Expect(EOF, "", 27, PickLine(7, 13)),
+                Expect(EOF, "", 12, PickLine(7, 13)),
+            });
+
+            data.Add(@"; Return the smallest of two numbers.
+(define (min num1 num2)
+    (if (<= num1 num2) 
+        num1 ; return num1
+        num2)) ; return num2
+(min 7 4)", new[] {
+                Expect(LParen, "(", 1, PickLine(2, 3)),
+                Expect(Definition, "define", 2, PickLine(2, 3)),
+                Expect(LParen, "(", 9, PickLine(2, 3)),
+                Expect(Identifier, "min", 10, PickLine(2, 3)),
+                Expect(Identifier, "num1", 14, PickLine(2, 3)),
+                Expect(Identifier, "num2", 19, PickLine(2, 3)),
+                Expect(RParen, ")", 23, PickLine(2, 3)),
+                Expect(LParen, "(", 5, PickLine(3, 5)),
+                Expect(If, "if", 6, PickLine(3, 5)),
+                Expect(LParen, "(", 9, PickLine(3, 5)),
+                Expect(Identifier, "<=", 10, PickLine(3, 5)),
+                Expect(Identifier, "num1", 13, PickLine(3, 5)),
+                Expect(Identifier, "num2", 18, PickLine(3, 5)),
+                Expect(RParen, ")", 22, PickLine(3, 5)),
+                Expect(Identifier, "num1", 9, PickLine(4, 7)),
+                Expect(Identifier, "num2", 9, PickLine(5, 9)),
+                Expect(RParen, ")", 13, PickLine(5, 9)),
+                Expect(RParen, ")", 14, PickLine(5, 9)),
+                Expect(LParen, "(", 1, PickLine(6, 11)),
+                Expect(Identifier, "min", 2, PickLine(6, 11)),
+                Expect(Number, "7", 6, PickLine(6, 11), numberValue: 7d),
+                Expect(Number, "4", 8, PickLine(6, 11), numberValue: 4d),
+                Expect(RParen, ")", 9, PickLine(6, 11)),
+                Expect(EOF, "", 10, PickLine(6, 11)),
             });
 
             return data;

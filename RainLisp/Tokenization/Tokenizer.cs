@@ -1,7 +1,7 @@
-﻿using static RainLisp.Grammar.Delimiters;
+﻿using System.Text;
+using static RainLisp.Grammar.Delimiters;
 using static RainLisp.Grammar.Keywords;
 using static RainLisp.Grammar.NumberSpecialChars;
-using System.Text;
 
 namespace RainLisp.Tokenization
 {
@@ -95,7 +95,7 @@ namespace RainLisp.Tokenization
 
             // The string token's position relates to the actual number of characters typed in the string and not the resulting string value's length.
             uint GetLastStringStartPosition()
-                => charPosition - stringTokenizer!.CharactersProcessed - 1; 
+                => charPosition - stringTokenizer!.CharactersProcessed - 1;
             #endregion
 
             for (int i = 0; i < expression.Length; i++)
@@ -113,20 +113,20 @@ namespace RainLisp.Tokenization
                         charInComment = false;
                         ChangeLine();
                         PlatformBounceNextNewLine(ref i);
-                        continue; // Skip advancing character position.
                     }
                     else if (c == NEW_LINE)
                     {
                         charInComment = false;
                         ChangeLine();
-                        continue; // Skip advancing character position.
                     }
+                    continue; // Skip advancing character position.
                 }
                 // Start of a comment.
                 else if (c == COMMENT)
                 {
                     RegisterUnknownToken();
                     charInComment = true;
+                    continue; // Skip advancing character position.
                 }
                 // Start of a string.
                 else if (c == DOUBLE_QUOTE)
@@ -160,7 +160,7 @@ namespace RainLisp.Tokenization
                 }
                 else if (c == SPACE || c == TAB)
                     RegisterUnknownToken();
-                
+
                 else if (charInNumber)
                 {
                     numberTokenizer!.AddToNumber(c, line, charPosition);
@@ -204,21 +204,7 @@ namespace RainLisp.Tokenization
                 booleanValue = false;
             }
             else
-                tokenType = value switch
-                {
-                    QUOTE => TokenType.Quote,
-                    SET => TokenType.Assignment,
-                    DEFINE => TokenType.Definition,
-                    IF => TokenType.If,
-                    COND => TokenType.Cond,
-                    ELSE => TokenType.Else,
-                    BEGIN => TokenType.Begin,
-                    LAMBDA => TokenType.Lambda,
-                    LET => TokenType.Let,
-                    AND => TokenType.And,
-                    OR => TokenType.Or,
-                    _ => TokenType.Identifier
-                };
+                tokenType = value.ToTokenType();
 
             return new() { Value = value, Type = tokenType, Line = line, Position = position, BooleanValue = booleanValue };
         }

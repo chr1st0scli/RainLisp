@@ -10,7 +10,8 @@
         public const string INVALID_STRING_CHARACTER = "Invalid string character {0}. Line {1}, position {2}.";
         public const string INVALID_NUMBER_CHARACTER = "Invalid number character {0}. Line {1}, position {2}.";
 
-        public const string PARSING_ERROR = "Wrong syntax. Line {0}, position {1}.";
+        public const string PARSING_ERROR = "Wrong syntax. Line {0}, position {1}. Expecting {2}.";
+        public const string SYMBOL_SEPARATOR = " or ";
 
         public const string WRONG_NUMBER_OF_ARGUMENTS = "Wrong number of arguments, expecting {0} but got {1}.";
         public const string WRONG_NUMBER_OF_ARGUMENTS_EXT = "Wrong number of arguments, expecting {0} or more but got {1}.";
