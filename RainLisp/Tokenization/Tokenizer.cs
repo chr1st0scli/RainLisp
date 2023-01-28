@@ -113,20 +113,20 @@ namespace RainLisp.Tokenization
                         charInComment = false;
                         ChangeLine();
                         PlatformBounceNextNewLine(ref i);
-                        continue; // Skip advancing character position.
                     }
                     else if (c == NEW_LINE)
                     {
                         charInComment = false;
                         ChangeLine();
-                        continue; // Skip advancing character position.
                     }
+                    continue; // Skip advancing character position.
                 }
                 // Start of a comment.
                 else if (c == COMMENT)
                 {
                     RegisterUnknownToken();
                     charInComment = true;
+                    continue; // Skip advancing character position.
                 }
                 // Start of a string.
                 else if (c == DOUBLE_QUOTE)
