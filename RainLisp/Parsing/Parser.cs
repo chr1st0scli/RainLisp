@@ -6,15 +6,11 @@ namespace RainLisp.Parsing
 {
     public class Parser : IParser
     {
-        private IList<Token> _tokens = null!;
-        private int _currPosition;
+        private TokenStore _tokenStore = null!;
 
         public Program Parse(IList<Token> tokens)
         {
-            ArgumentNullException.ThrowIfNull(tokens, nameof(tokens));
-
-            _tokens = tokens;
-            _currPosition = 0;
+            _tokenStore = new TokenStore(tokens);
 
             return Program();
         }
@@ -24,9 +20,9 @@ namespace RainLisp.Parsing
         {
             var program = new Program();
 
-            while (!Check(TokenType.EOF))
+            while (!_tokenStore.Check(TokenType.EOF))
             {
-                if (CheckNext(TokenType.Definition))
+                if (_tokenStore.CheckNext(TokenType.Definition))
                 {
                     program.Definitions ??= new List<Definition>();
                     program.Definitions.Add(Definition());
@@ -43,30 +39,30 @@ namespace RainLisp.Parsing
 
         private Definition Definition()
         {
-            Require(TokenType.LParen);
-            Require(TokenType.Definition);
+            _tokenStore.Require(TokenType.LParen);
+            _tokenStore.Require(TokenType.Definition);
 
-            var currentToken = CurrentToken();
+            var currentToken = _tokenStore.CurrentToken();
             string identifierName = currentToken.Value;
             Definition definition;
 
-            if (Match(TokenType.Identifier))
+            if (_tokenStore.Match(TokenType.Identifier, currentToken))
                 definition = new Definition(identifierName, Expression());
 
-            else if (Match(TokenType.LParen))
+            else if (_tokenStore.Match(TokenType.LParen, currentToken))
             {
                 // Function name
-                identifierName = RequireValueForIdentifier();
+                identifierName = _tokenStore.RequireValueForIdentifier();
 
                 List<string>? parameters = null;
 
                 // Function parameters
-                if (!Match(TokenType.RParen))
+                if (!_tokenStore.Match(TokenType.RParen))
                 {
-                    parameters = new() { RequireValueForIdentifier() };
+                    parameters = new() { _tokenStore.RequireValueForIdentifier() };
 
-                    while (!Match(TokenType.RParen))
-                        parameters.Add(RequireValueForIdentifier());
+                    while (!_tokenStore.Match(TokenType.RParen))
+                        parameters.Add(_tokenStore.RequireValueForIdentifier());
                 }
 
                 // Defining a function like (define (foo a) a) is just syntactic sugar for (define foo (lambda (a) a))
@@ -78,7 +74,7 @@ namespace RainLisp.Parsing
             else
                 throw new ParsingException(currentToken.Line, currentToken.Position, new[] { TokenType.Identifier, TokenType.LParen });
 
-            Require(TokenType.RParen);
+            _tokenStore.Require(TokenType.RParen);
 
             return definition;
         }
@@ -87,11 +83,11 @@ namespace RainLisp.Parsing
         {
             List<Definition>? definitions = null;
 
-            if (CheckNext(TokenType.Definition))
+            if (_tokenStore.CheckNext(TokenType.Definition))
             {
                 definitions = new() { Definition() };
 
-                while (CheckNext(TokenType.Definition))
+                while (_tokenStore.CheckNext(TokenType.Definition))
                     definitions.Add(Definition());
             }
 
@@ -102,57 +98,57 @@ namespace RainLisp.Parsing
 
         private Expression Expression()
         {
-            var currentToken = CurrentToken();
+            var currentToken = _tokenStore.CurrentToken();
             Expression expression;
 
-            if (Match(TokenType.Number))
+            if (_tokenStore.Match(TokenType.Number, currentToken))
                 expression = new NumberLiteral(currentToken.NumberValue);
 
-            else if (Match(TokenType.String))
+            else if (_tokenStore.Match(TokenType.String, currentToken))
                 expression = new StringLiteral(currentToken.Value);
 
-            else if (Match(TokenType.Boolean))
+            else if (_tokenStore.Match(TokenType.Boolean, currentToken))
                 expression = new BooleanLiteral(currentToken.BooleanValue);
 
-            else if (Match(TokenType.Identifier))
+            else if (_tokenStore.Match(TokenType.Identifier, currentToken))
                 expression = new Identifier(currentToken.Value);
 
             else
             {
                 // Missing expression, one of the expected tokens was not encountered.
-                if (!Match(TokenType.LParen))
+                if (!_tokenStore.Match(TokenType.LParen, currentToken))
                     throw new ParsingException(currentToken.Line, currentToken.Position, new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen });
 
-                currentToken = CurrentToken();
+                currentToken = _tokenStore.CurrentToken();
 
-                if (Match(TokenType.Quote))
+                if (_tokenStore.Match(TokenType.Quote, currentToken))
                     expression = QuoteExpr();
 
-                else if (Match(TokenType.Assignment))
+                else if (_tokenStore.Match(TokenType.Assignment, currentToken))
                     expression = AssignmentExpr();
 
-                else if (Match(TokenType.If))
+                else if (_tokenStore.Match(TokenType.If, currentToken))
                     expression = IfExpr();
 
                 // cond is a derived expression, so it gets converted to an equivalent if.
-                else if (Match(TokenType.Cond))
+                else if (_tokenStore.Match(TokenType.Cond, currentToken))
                     expression = ConditionExpr().ToIf();
 
-                else if (Match(TokenType.Begin))
+                else if (_tokenStore.Match(TokenType.Begin, currentToken))
                     expression = new Begin(OneOrMoreExpressionsUntilRightParen());
 
-                else if (Match(TokenType.Lambda))
+                else if (_tokenStore.Match(TokenType.Lambda, currentToken))
                     expression = LambdaExpr();
 
                 // let is a derived expression, so it gets converted to an equivalent lambda application.
-                else if (Match(TokenType.Let))
+                else if (_tokenStore.Match(TokenType.Let, currentToken))
                     expression = LetExpr().ToLambdaApplication();
 
                 // and & or are derived expressions, so that they get converted to equivalent ifs.
-                else if (Match(TokenType.And))
+                else if (_tokenStore.Match(TokenType.And, currentToken))
                     expression = new And(OneOrMoreExpressionsUntilRightParen()).ToIf();
 
-                else if (Match(TokenType.Or))
+                else if (_tokenStore.Match(TokenType.Or, currentToken))
                     expression = new Or(OneOrMoreExpressionsUntilRightParen()).ToIf();
 
                 // If it is none of the above, then it can only be a function application.
@@ -165,7 +161,7 @@ namespace RainLisp.Parsing
 
         private ConditionClause ConditionClause()
         {
-            Require(TokenType.LParen);
+            _tokenStore.Require(TokenType.LParen);
 
             var predicate = Expression();
             var expressions = OneOrMoreExpressionsUntilRightParen();
@@ -175,8 +171,8 @@ namespace RainLisp.Parsing
 
         private ConditionElseClause ConditionElseClause()
         {
-            Require(TokenType.LParen);
-            Require(TokenType.Else);
+            _tokenStore.Require(TokenType.LParen);
+            _tokenStore.Require(TokenType.Else);
 
             var expressions = OneOrMoreExpressionsUntilRightParen();
 
@@ -185,12 +181,12 @@ namespace RainLisp.Parsing
 
         private LetClause LetClause()
         {
-            Require(TokenType.LParen);
+            _tokenStore.Require(TokenType.LParen);
 
-            string identifierName = RequireValueForIdentifier();
+            string identifierName = _tokenStore.RequireValueForIdentifier();
             var expression = Expression();
 
-            Require(TokenType.RParen);
+            _tokenStore.Require(TokenType.RParen);
 
             return new LetClause(identifierName, expression);
         }
@@ -199,21 +195,22 @@ namespace RainLisp.Parsing
         #region Helper methods that are part of expression. They do not correspond to nonterminals in the grammar themselves.
         private Quote QuoteExpr()
         {
-            var quoteExpression = new Quote(CurrentToken().Value);
+            var currentToken = _tokenStore.CurrentToken();
+            var quoteExpression = new Quote(currentToken.Value);
 
             // Can there be more than one?
             // Support the 'a syntax or not
-            Require(TokenType.Identifier);
-            Require(TokenType.RParen);
+            _tokenStore.Require(TokenType.Identifier, currentToken);
+            _tokenStore.Require(TokenType.RParen);
 
             return quoteExpression;
         }
 
         private Assignment AssignmentExpr()
         {
-            string identifierName = RequireValueForIdentifier();
+            string identifierName = _tokenStore.RequireValueForIdentifier();
             var value = Expression();
-            Require(TokenType.RParen);
+            _tokenStore.Require(TokenType.RParen);
 
             return new Assignment(identifierName, value);
         }
@@ -226,10 +223,10 @@ namespace RainLisp.Parsing
             // Optional alternative.
             Expression? alternative = null;
 
-            if (!Match(TokenType.RParen))
+            if (!_tokenStore.Match(TokenType.RParen))
             {
                 alternative = Expression();
-                Require(TokenType.RParen);
+                _tokenStore.Require(TokenType.RParen);
             }
 
             return new If(predicate, consequent, alternative);
@@ -247,52 +244,52 @@ namespace RainLisp.Parsing
             {
                 clauses.Add(ConditionClause());
 
-                if (CheckNext(TokenType.Else))
+                if (_tokenStore.CheckNext(TokenType.Else))
                 {
                     elseClause = ConditionElseClause();
-                    Require(TokenType.RParen);
+                    _tokenStore.Require(TokenType.RParen);
                     break;
                 }
 
-            } while (!Match(TokenType.RParen));
+            } while (!_tokenStore.Match(TokenType.RParen));
 
             return new Condition(clauses, elseClause);
         }
 
         private Lambda LambdaExpr()
         {
-            Require(TokenType.LParen);
+            _tokenStore.Require(TokenType.LParen);
 
             List<string>? parameters = null;
 
             // Optional lambda parameters
-            if (!Match(TokenType.RParen))
+            if (!_tokenStore.Match(TokenType.RParen))
             {
-                parameters = new() { RequireValueForIdentifier() };
+                parameters = new() { _tokenStore.RequireValueForIdentifier() };
 
-                while (!Match(TokenType.RParen))
-                    parameters.Add(RequireValueForIdentifier());
+                while (!_tokenStore.Match(TokenType.RParen))
+                    parameters.Add(_tokenStore.RequireValueForIdentifier());
             }
 
             var body = Body();
-            Require(TokenType.RParen);
+            _tokenStore.Require(TokenType.RParen);
 
             return new Lambda(parameters, body);
         }
 
         private Let LetExpr()
         {
-            Require(TokenType.LParen);
+            _tokenStore.Require(TokenType.LParen);
 
             var letClauses = new List<LetClause>();
 
             do
             {
                 letClauses.Add(LetClause());
-            } while (!Match(TokenType.RParen));
+            } while (!_tokenStore.Match(TokenType.RParen));
 
             var body = Body();
-            Require(TokenType.RParen);
+            _tokenStore.Require(TokenType.RParen);
 
             return new Let(letClauses, body);
         }
@@ -305,11 +302,11 @@ namespace RainLisp.Parsing
             // Parameter values
             List<Expression>? operands = null;
 
-            if (!Match(TokenType.RParen))
+            if (!_tokenStore.Match(TokenType.RParen))
             {
                 operands = new() { Expression() };
 
-                while (!Match(TokenType.RParen))
+                while (!_tokenStore.Match(TokenType.RParen))
                     operands.Add(Expression());
             }
 
@@ -319,7 +316,7 @@ namespace RainLisp.Parsing
 
         private List<Expression> OneOrMoreExpressionsUntilRightParen(bool includeRightParen = true)
         {
-            Func<TokenType, bool> checkBound = includeRightParen ? Match : Check;
+            Func<TokenType, bool> checkBound = includeRightParen ? _tokenStore.Match : _tokenStore.Check;
             var expressions = new List<Expression>();
 
             do
@@ -329,45 +326,5 @@ namespace RainLisp.Parsing
 
             return expressions;
         }
-
-        #region Methods for consuming and checking tokens.
-        private Token CurrentToken() => _tokens[_currPosition];
-
-        private bool Check(TokenType tokenType)
-            => _currPosition < _tokens.Count && _tokens[_currPosition].Type == tokenType;
-
-        private bool CheckNext(TokenType tokenType)
-        {
-            int pos = _currPosition + 1;
-
-            return pos < _tokens.Count && _tokens[pos].Type == tokenType;
-        }
-
-        private bool Match(TokenType tokenType)
-        {
-            if (!Check(tokenType))
-                return false;
-
-            _currPosition++;
-            return true;
-        }
-
-        private void Require(TokenType tokenType)
-        {
-            if (!Match(tokenType))
-            {
-                var currentToken = CurrentToken();
-                throw new ParsingException(currentToken.Line, currentToken.Position, new[] { tokenType });
-            }
-        }
-
-        private string RequireValueForIdentifier()
-        {
-            var currentToken = CurrentToken();
-            Require(TokenType.Identifier);
-
-            return currentToken.Value;
-        }
-        #endregion
     }
 }
