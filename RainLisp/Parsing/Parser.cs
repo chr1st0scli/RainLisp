@@ -52,17 +52,17 @@ namespace RainLisp.Parsing
             else if (_tokenStore.Match(TokenType.LParen, currentToken))
             {
                 // Function name
-                identifierName = _tokenStore.RequireValueForIdentifier();
+                identifierName = _tokenStore.RequireIdentifierName();
 
                 List<string>? parameters = null;
 
                 // Function parameters
                 if (!_tokenStore.Match(TokenType.RParen))
                 {
-                    parameters = new() { _tokenStore.RequireValueForIdentifier() };
+                    parameters = new() { _tokenStore.RequireIdentifierName() };
 
                     while (!_tokenStore.Match(TokenType.RParen))
-                        parameters.Add(_tokenStore.RequireValueForIdentifier());
+                        parameters.Add(_tokenStore.RequireIdentifierName());
                 }
 
                 // Defining a function like (define (foo a) a) is just syntactic sugar for (define foo (lambda (a) a))
@@ -183,7 +183,7 @@ namespace RainLisp.Parsing
         {
             _tokenStore.Require(TokenType.LParen);
 
-            string identifierName = _tokenStore.RequireValueForIdentifier();
+            string identifierName = _tokenStore.RequireIdentifierName();
             var expression = Expression();
 
             _tokenStore.Require(TokenType.RParen);
@@ -208,7 +208,7 @@ namespace RainLisp.Parsing
 
         private Assignment AssignmentExpr()
         {
-            string identifierName = _tokenStore.RequireValueForIdentifier();
+            string identifierName = _tokenStore.RequireIdentifierName();
             var value = Expression();
             _tokenStore.Require(TokenType.RParen);
 
@@ -265,10 +265,10 @@ namespace RainLisp.Parsing
             // Optional lambda parameters
             if (!_tokenStore.Match(TokenType.RParen))
             {
-                parameters = new() { _tokenStore.RequireValueForIdentifier() };
+                parameters = new() { _tokenStore.RequireIdentifierName() };
 
                 while (!_tokenStore.Match(TokenType.RParen))
-                    parameters.Add(_tokenStore.RequireValueForIdentifier());
+                    parameters.Add(_tokenStore.RequireIdentifierName());
             }
 
             var body = Body();

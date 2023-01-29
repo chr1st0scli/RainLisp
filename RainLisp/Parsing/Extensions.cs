@@ -14,7 +14,7 @@ namespace RainLisp.Parsing
             return expression;
         }
 
-        public static string RequireValueForIdentifier(this TokenStore tokenStore)
+        public static string RequireIdentifierName(this TokenStore tokenStore)
         {
             var currentToken = tokenStore.CurrentToken();
             tokenStore.Require(TokenType.Identifier, currentToken);
