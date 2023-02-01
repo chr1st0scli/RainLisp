@@ -141,6 +141,12 @@ namespace RainLispTests
         [InlineData("(set! a)", 1, 8, ParsingError.Expression)]
         [InlineData("(and)", 1, 5, ParsingError.Expression)]    // In traditional Lisp this would return true.
         [InlineData("(or)", 1, 4, ParsingError.Expression)]     // In traditional Lisp this would return false.
+        // Missing expressions. According to the syntax grammar, there can be no definition where an expression is expected.
+        [InlineData("(if true (define a 1) 2)", 1, 11, ParsingError.Expression)]
+        [InlineData("(if true 1 (define b 2))", 1, 13, ParsingError.Expression)]
+        [InlineData("(cond (true (define a 1)) (else 2))", 1, 14, ParsingError.Expression)]
+        [InlineData("(cond (true 1) (else (define b 2)))", 1, 23, ParsingError.Expression)]
+        [InlineData("(begin 1 2 3 (define a 1) 4)", 1, 15, ParsingError.Expression)]
         // Missing specific symbols.
         [InlineData("(quote)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(quote 21)", 1, 8, ParsingError.MissingSymbol, TokenType.Identifier)]
@@ -170,11 +176,7 @@ namespace RainLispTests
         [InlineData("(lambda (a1 2", 1, 13, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(cond 1", 1, 7, ParsingError.MissingSymbol, TokenType.LParen)]
         [InlineData("(cond 1)", 1, 7, ParsingError.MissingSymbol, TokenType.LParen)]
-        [InlineData("(cond (true 1)", 1, 15, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
-        [InlineData("(cond (true 1) a", 1, 16, ParsingError.MissingSymbol, TokenType.LParen)]
-        [InlineData("(cond (true 1) a else", 1, 16, ParsingError.MissingSymbol, TokenType.LParen)]
-        [InlineData("(cond (true 1) (false 2)", 1, 25, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
-        [InlineData("(cond (true 1)\n(false 2)", 2, 10, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
+        [InlineData("(cond (true 1) a else", 1, 16, ParsingError.MissingSymbol, TokenType.LParen)]  // There is an else, so a should be (.
         [InlineData("(cond (true 1) (false 2) (else 3)", 1, 34, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(cond (true 1) (false 2) (else 3); comment position should not count.", 1, 34, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(cond (true 1)\n(false 2)\n(else 3)", 3, 9, ParsingError.MissingSymbol, TokenType.RParen)]
@@ -186,9 +188,14 @@ namespace RainLispTests
         [InlineData("(let ((2", 1, 8, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(let ((a 1", 1, 11, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(let ((a 1 b", 1, 12, ParsingError.MissingSymbol, TokenType.RParen)]
-        [InlineData("(let ((a 1)", 1, 12, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
-        [InlineData("(let ((a 1) (b 21)", 1, 19, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
-        [InlineData("(let ((a 1)\n(b 21)", 2, 7, ParsingError.MissingSymbol, TokenType.LParen)] // Since there is no ), looking for (.
+        // Missing specific symbols. Since there is no ), looking for (.
+        [InlineData("(cond (true 1)", 1, 15, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(cond (true 1) a", 1, 16, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(cond (true 1) (false 2)", 1, 25, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(cond (true 1)\n(false 2)", 2, 10, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(let ((a 1)", 1, 12, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(let ((a 1) (b 21)", 1, 19, ParsingError.MissingSymbol, TokenType.LParen)]
+        [InlineData("(let ((a 1)\n(b 21)", 2, 7, ParsingError.MissingSymbol, TokenType.LParen)]
         // User cannot redefine or set special forms of the language.
         [InlineData("(define true 0)", 1, 9, ParsingError.Definition)]
         [InlineData("(define false 0)", 1, 9, ParsingError.Definition)]
