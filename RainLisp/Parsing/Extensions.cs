@@ -14,10 +14,10 @@ namespace RainLisp.Parsing
             return expression;
         }
 
-        public static string RequireIdentifierName(this TokenStore tokenStore)
+        public static string RequireIdentifierName(this TokenConsumer tokenConsumer)
         {
-            var currentToken = tokenStore.CurrentToken();
-            tokenStore.Require(TokenType.Identifier, currentToken);
+            var currentToken = tokenConsumer.CurrentToken();
+            tokenConsumer.Require(TokenType.Identifier, currentToken);
 
             return currentToken.Value;
         }

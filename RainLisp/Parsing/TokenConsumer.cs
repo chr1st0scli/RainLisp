@@ -2,12 +2,12 @@
 
 namespace RainLisp.Parsing
 {
-    public class TokenStore
+    public class TokenConsumer
     {
         private readonly IList<Token> _tokens;
         private int _currPosition;
 
-        public TokenStore(IList<Token> tokens)
+        public TokenConsumer(IList<Token> tokens)
         {
             ArgumentNullException.ThrowIfNull(tokens, nameof(tokens));
 
