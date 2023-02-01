@@ -122,27 +122,27 @@ namespace RainLisp.Parsing
                 currentToken = _tokenStore.CurrentToken();
 
                 if (_tokenStore.Match(TokenType.Quote, currentToken))
-                    expression = QuoteExpr();
+                    expression = CompleteQuote();
 
                 else if (_tokenStore.Match(TokenType.Assignment, currentToken))
-                    expression = AssignmentExpr();
+                    expression = CompleteAssignment();
 
                 else if (_tokenStore.Match(TokenType.If, currentToken))
-                    expression = IfExpr();
+                    expression = CompleteIf();
 
                 // cond is a derived expression, so it gets converted to an equivalent if.
                 else if (_tokenStore.Match(TokenType.Cond, currentToken))
-                    expression = ConditionExpr().ToIf();
+                    expression = CompleteCondition().ToIf();
 
                 else if (_tokenStore.Match(TokenType.Begin, currentToken))
                     expression = new Begin(OneOrMoreExpressionsUntilRightParen());
 
                 else if (_tokenStore.Match(TokenType.Lambda, currentToken))
-                    expression = LambdaExpr();
+                    expression = CompleteLambda();
 
                 // let is a derived expression, so it gets converted to an equivalent lambda application.
                 else if (_tokenStore.Match(TokenType.Let, currentToken))
-                    expression = LetExpr().ToLambdaApplication();
+                    expression = CompleteLet().ToLambdaApplication();
 
                 // and & or are derived expressions, so that they get converted to equivalent ifs.
                 else if (_tokenStore.Match(TokenType.And, currentToken))
@@ -153,7 +153,7 @@ namespace RainLisp.Parsing
 
                 // If it is none of the above, then it can only be a function application.
                 else
-                    expression = ApplicationExpr();
+                    expression = CompleteApplication();
             }
 
             return expression.AddDebugInfo(currentToken);
@@ -193,7 +193,7 @@ namespace RainLisp.Parsing
         #endregion
 
         #region Helper methods that are part of expression. They do not correspond to nonterminals in the grammar themselves.
-        private Quote QuoteExpr()
+        private Quote CompleteQuote()
         {
             var currentToken = _tokenStore.CurrentToken();
             var quoteExpression = new Quote(currentToken.Value);
@@ -206,7 +206,7 @@ namespace RainLisp.Parsing
             return quoteExpression;
         }
 
-        private Assignment AssignmentExpr()
+        private Assignment CompleteAssignment()
         {
             string identifierName = _tokenStore.RequireIdentifierName();
             var value = Expression();
@@ -215,7 +215,7 @@ namespace RainLisp.Parsing
             return new Assignment(identifierName, value);
         }
 
-        private If IfExpr()
+        private If CompleteIf()
         {
             var predicate = Expression();
             var consequent = Expression();
@@ -232,7 +232,7 @@ namespace RainLisp.Parsing
             return new If(predicate, consequent, alternative);
         }
 
-        private Condition ConditionExpr()
+        private Condition CompleteCondition()
         {
             var clauses = new List<ConditionClause>();
 
@@ -256,7 +256,7 @@ namespace RainLisp.Parsing
             return new Condition(clauses, elseClause);
         }
 
-        private Lambda LambdaExpr()
+        private Lambda CompleteLambda()
         {
             _tokenStore.Require(TokenType.LParen);
 
@@ -277,7 +277,7 @@ namespace RainLisp.Parsing
             return new Lambda(parameters, body);
         }
 
-        private Let LetExpr()
+        private Let CompleteLet()
         {
             _tokenStore.Require(TokenType.LParen);
 
@@ -294,7 +294,7 @@ namespace RainLisp.Parsing
             return new Let(letClauses, body);
         }
 
-        private Application ApplicationExpr()
+        private Application CompleteApplication()
         {
             // Operator is an identifier for a function, a lambda, or a call that returns a function itself.
             var operatorToApply = Expression();
