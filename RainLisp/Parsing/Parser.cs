@@ -295,9 +295,9 @@ namespace RainLisp.Parsing
         }
         #endregion
 
-        private List<Expression> OneOrMoreExpressionsUntilRightParen(bool includeRightParen = true)
+        private List<Expression> OneOrMoreExpressionsUntilRightParen(bool consumeLastRightParen = true)
         {
-            Func<TokenType, bool> checkBound = includeRightParen ? _tokenStore.Match : _tokenStore.Check;
+            Func<TokenType, bool> checkBound = consumeLastRightParen ? _tokenStore.Match : _tokenStore.Check;
             var expressions = new List<Expression>();
 
             do
