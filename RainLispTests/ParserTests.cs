@@ -141,6 +141,12 @@ namespace RainLispTests
         [InlineData("(set! a)", 1, 8, ParsingError.Expression)]
         [InlineData("(and)", 1, 5, ParsingError.Expression)]    // In traditional Lisp this would return true.
         [InlineData("(or)", 1, 4, ParsingError.Expression)]     // In traditional Lisp this would return false.
+        // Missing expressions. According to the syntax grammar, there can be no definition where an expression is expected.
+        [InlineData("(if true (define a 1) 2)", 1, 11, ParsingError.Expression)]
+        [InlineData("(if true 1 (define b 2))", 1, 13, ParsingError.Expression)]
+        [InlineData("(cond (true (define a 1)) (else 2))", 1, 14, ParsingError.Expression)]
+        [InlineData("(cond (true 1) (else (define b 2)))", 1, 23, ParsingError.Expression)]
+        [InlineData("(begin 1 2 3 (define a 1) 4)", 1, 15, ParsingError.Expression)]
         // Missing specific symbols.
         [InlineData("(quote)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(quote 21)", 1, 8, ParsingError.MissingSymbol, TokenType.Identifier)]
