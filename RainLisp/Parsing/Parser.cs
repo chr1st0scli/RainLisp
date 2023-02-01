@@ -53,17 +53,7 @@ namespace RainLisp.Parsing
             {
                 // Function name
                 identifierName = _tokenStore.RequireIdentifierName();
-
-                List<string>? parameters = null;
-
-                // Function parameters
-                if (!_tokenStore.Match(TokenType.RParen))
-                {
-                    parameters = new() { _tokenStore.RequireIdentifierName() };
-
-                    while (!_tokenStore.Match(TokenType.RParen))
-                        parameters.Add(_tokenStore.RequireIdentifierName());
-                }
+                List<string>? parameters = OptionalFunctionParameters();
 
                 // Defining a function like (define (foo a) a) is just syntactic sugar for (define foo (lambda (a) a))
                 var lambda = new Lambda(parameters, Body());
@@ -260,18 +250,9 @@ namespace RainLisp.Parsing
         {
             _tokenStore.Require(TokenType.LParen);
 
-            List<string>? parameters = null;
-
-            // Optional lambda parameters
-            if (!_tokenStore.Match(TokenType.RParen))
-            {
-                parameters = new() { _tokenStore.RequireIdentifierName() };
-
-                while (!_tokenStore.Match(TokenType.RParen))
-                    parameters.Add(_tokenStore.RequireIdentifierName());
-            }
-
+            List<string>? parameters = OptionalFunctionParameters();
             var body = Body();
+
             _tokenStore.Require(TokenType.RParen);
 
             return new Lambda(parameters, body);
@@ -325,6 +306,22 @@ namespace RainLisp.Parsing
             } while (!checkBound(TokenType.RParen));
 
             return expressions;
+        }
+
+        private List<string>? OptionalFunctionParameters()
+        {
+            List<string>? parameters = null;
+
+            // Optional parameters
+            if (!_tokenStore.Match(TokenType.RParen))
+            {
+                parameters = new() { _tokenStore.RequireIdentifierName() };
+
+                while (!_tokenStore.Match(TokenType.RParen))
+                    parameters.Add(_tokenStore.RequireIdentifierName());
+            }
+
+            return parameters;
         }
     }
 }
