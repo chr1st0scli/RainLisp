@@ -48,9 +48,11 @@ namespace RainLisp.Parsing
 
             if (_tokens.Match(TokenType.Identifier, currentToken))
                 definition = new Definition(identifierName, Expression());
-
-            else if (_tokens.Match(TokenType.LParen, currentToken))
+            else
             {
+                // Invalid definition, if none of the two expected tokens is encountered.
+                _tokens.Require(TokenType.LParen, currentToken, true, TokenType.Identifier, TokenType.LParen);
+
                 // Function name
                 identifierName = _tokens.RequireIdentifierName();
                 List<string>? parameters = OptionalFunctionParameters();
@@ -60,9 +62,6 @@ namespace RainLisp.Parsing
 
                 definition = new Definition(identifierName, lambda);
             }
-            // Invalid definition, one of the two expected tokens was not encountered.
-            else
-                throw new ParsingException(currentToken.Line, currentToken.Position, new[] { TokenType.Identifier, TokenType.LParen });
 
             _tokens.Require(TokenType.RParen);
 
@@ -106,8 +105,7 @@ namespace RainLisp.Parsing
             else
             {
                 // Missing expression, one of the expected tokens was not encountered.
-                if (!_tokens.Match(TokenType.LParen, currentToken))
-                    throw new ParsingException(currentToken.Line, currentToken.Position, new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen });
+                _tokens.Require(TokenType.LParen, currentToken, true, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
 
                 currentToken = _tokens.CurrentToken();
 
@@ -147,38 +145,6 @@ namespace RainLisp.Parsing
             }
 
             return expression.AddDebugInfo(currentToken);
-        }
-
-        private ConditionClause ConditionClause()
-        {
-            _tokens.Require(TokenType.LParen);
-
-            var predicate = Expression();
-            var expressions = OneOrMoreExpressionsUntilRightParen();
-
-            return new ConditionClause(predicate, expressions);
-        }
-
-        private ConditionElseClause ConditionElseClause()
-        {
-            _tokens.Require(TokenType.LParen);
-            _tokens.Require(TokenType.Else);
-
-            var expressions = OneOrMoreExpressionsUntilRightParen();
-
-            return new ConditionElseClause(expressions);
-        }
-
-        private LetClause LetClause()
-        {
-            _tokens.Require(TokenType.LParen);
-
-            string identifierName = _tokens.RequireIdentifierName();
-            var expression = Expression();
-
-            _tokens.Require(TokenType.RParen);
-
-            return new LetClause(identifierName, expression);
         }
         #endregion
 
@@ -230,13 +196,28 @@ namespace RainLisp.Parsing
             ConditionElseClause? elseClause = null;
 
             // We deal with conditional clauses until a conditional else or a closing parenthesis is reached.
+            bool isFirstConditionClause = true;
             do
             {
-                clauses.Add(ConditionClause());
+                // Condition clause.
+                // The first failure means a missing left parenthesis, consecutive ones mean missing right or left parenthesis.
+                _tokens.Require(TokenType.LParen, !isFirstConditionClause, TokenType.RParen, TokenType.LParen);
 
+                var predicate = Expression();
+                var expressions = OneOrMoreExpressionsUntilRightParen();
+
+                clauses.Add(new(predicate, expressions));
+                isFirstConditionClause = false;
+
+                // Optional else clause in the end.
                 if (_tokens.CheckNext(TokenType.Else))
                 {
-                    elseClause = ConditionElseClause();
+                    _tokens.Require(TokenType.LParen);
+                    _tokens.Require(TokenType.Else);
+
+                    expressions = OneOrMoreExpressionsUntilRightParen();
+                    elseClause = new(expressions);
+
                     _tokens.Require(TokenType.RParen);
                     break;
                 }
@@ -264,9 +245,21 @@ namespace RainLisp.Parsing
 
             var letClauses = new List<LetClause>();
 
+            bool isFirstLetClause = true;
             do
             {
-                letClauses.Add(LetClause());
+                // Let clause.
+                // The first failure means a missing left parenthesis, consecutive ones mean missing right or left parenthesis.
+                _tokens.Require(TokenType.LParen, !isFirstLetClause, TokenType.RParen, TokenType.LParen);
+
+                string identifierName = _tokens.RequireIdentifierName();
+                var expression = Expression();
+
+                _tokens.Require(TokenType.RParen);
+
+                letClauses.Add(new(identifierName, expression));
+                isFirstLetClause = false;
+
             } while (!_tokens.Match(TokenType.RParen));
 
             var body = Body();
@@ -295,6 +288,7 @@ namespace RainLisp.Parsing
         }
         #endregion
 
+        #region General Helpers
         private List<Expression> OneOrMoreExpressionsUntilRightParen(bool consumeLastRightParen = true)
         {
             Func<TokenType, bool> checkBound = consumeLastRightParen ? _tokens.Match : _tokens.Check;
@@ -322,6 +316,7 @@ namespace RainLisp.Parsing
             }
 
             return parameters;
-        }
+        } 
+        #endregion
     }
 }
