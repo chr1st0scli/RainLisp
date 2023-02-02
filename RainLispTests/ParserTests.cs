@@ -95,7 +95,7 @@ namespace RainLispTests
             Assert.Equal(expectedAst, ast);
         }
 
-        public enum ParsingError { Definition, Expression, MissingSymbol }
+        public enum ParsingError { Definition, Expression, MissingSymbol, MissingRightOrLeftParen }
 
         [Theory]
         // Invalid definitions.
@@ -188,14 +188,14 @@ namespace RainLispTests
         [InlineData("(let ((2", 1, 8, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(let ((a 1", 1, 11, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(let ((a 1 b", 1, 12, ParsingError.MissingSymbol, TokenType.RParen)]
-        // Missing specific symbols. Since there is no ), looking for (.
-        [InlineData("(cond (true 1)", 1, 15, ParsingError.MissingSymbol, TokenType.LParen)]
-        [InlineData("(cond (true 1) a", 1, 16, ParsingError.MissingSymbol, TokenType.LParen)]
-        [InlineData("(cond (true 1) (false 2)", 1, 25, ParsingError.MissingSymbol, TokenType.LParen)]
-        [InlineData("(cond (true 1)\n(false 2)", 2, 10, ParsingError.MissingSymbol, TokenType.LParen)]
-        [InlineData("(let ((a 1)", 1, 12, ParsingError.MissingSymbol, TokenType.LParen)]
-        [InlineData("(let ((a 1) (b 21)", 1, 19, ParsingError.MissingSymbol, TokenType.LParen)]
-        [InlineData("(let ((a 1)\n(b 21)", 2, 7, ParsingError.MissingSymbol, TokenType.LParen)]
+        // Missing either ) or (.
+        [InlineData("(cond (true 1)", 1, 15, ParsingError.MissingRightOrLeftParen)]
+        [InlineData("(cond (true 1) a", 1, 16, ParsingError.MissingRightOrLeftParen)]
+        [InlineData("(cond (true 1) (false 2)", 1, 25, ParsingError.MissingRightOrLeftParen)]
+        [InlineData("(cond (true 1)\n(false 2)", 2, 10, ParsingError.MissingRightOrLeftParen)]
+        [InlineData("(let ((a 1)", 1, 12, ParsingError.MissingRightOrLeftParen)]
+        [InlineData("(let ((a 1) (b 21)", 1, 19, ParsingError.MissingRightOrLeftParen)]
+        [InlineData("(let ((a 1)\n(b 21)", 2, 7, ParsingError.MissingRightOrLeftParen)]
         // User cannot redefine or set special forms of the language.
         [InlineData("(define true 0)", 1, 9, ParsingError.Definition)]
         [InlineData("(define false 0)", 1, 9, ParsingError.Definition)]
@@ -245,6 +245,7 @@ namespace RainLispTests
                 ParsingError.Definition => new[] { TokenType.Identifier, TokenType.LParen },
                 ParsingError.Expression => new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen },
                 ParsingError.MissingSymbol => new[] { expectedMissingToken!.Value },
+                ParsingError.MissingRightOrLeftParen => new[] { TokenType.RParen, TokenType.LParen },
                 _ => throw new NotImplementedException()
             };
 
