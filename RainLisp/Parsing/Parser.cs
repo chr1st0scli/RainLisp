@@ -144,7 +144,7 @@ namespace RainLisp.Parsing
                     expression = CompleteApplication();
             }
 
-            return expression.AddDebugInfo(currentToken);
+            return expression.WithDebugInfo(currentToken);
         }
         #endregion
 

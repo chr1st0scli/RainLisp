@@ -5,7 +5,7 @@ namespace RainLisp.Parsing
 {
     public static class Extensions
     {
-        public static Expression AddDebugInfo(this Expression expression, Token token)
+        public static Expression WithDebugInfo(this Expression expression, Token token)
         {
             expression.Line = token.Line;
             expression.Position = token.Position;
