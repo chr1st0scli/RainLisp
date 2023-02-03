@@ -3,6 +3,7 @@ using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
 using RainLisp.Parsing;
 using RainLisp.Tokenization;
+using System.Reflection;
 using static RainLisp.Grammar.Primitives;
 
 namespace RainLisp
@@ -16,6 +17,8 @@ namespace RainLisp
         private readonly IEnvironmentFactory? _environmentFactory;
         private readonly bool _installLispLibraries;
 
+        private static Type[]? _primitiveTypes;
+
         public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null, IEnvironmentFactory? environmentFactory = null, IEvaluationResultVisitor<string>? resultPrinter = null, bool installLispLibraries = true)
         {
             _tokenizer = tokenizer ?? new Tokenizer();
@@ -24,6 +27,7 @@ namespace RainLisp
             _environmentFactory = environmentFactory;
             _resultPrinter = resultPrinter ?? new EvaluationResultPrintVisitor();
             _installLispLibraries = installLispLibraries;
+            LoadPrimitiveTypes();
         }
 
         public IEnumerable<EvaluationResult> Evaluate(string? expression)
@@ -117,10 +121,16 @@ namespace RainLisp
             catch (WrongTypeOfArgumentException ex)
             {
                 string message;
-                if (ex.Expected.Length > 1)
-                    message = string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT_FOR_MANY, string.Join(", ", ex.Expected.Select(t => t.Name)), ex.Actual.Name);
+
+                // It does not help the user if IPrimitiveDatum is reported. Report its concrete classes instead.
+                var expectedTypes = ex.Expected;
+                if (_primitiveTypes != null && _primitiveTypes.Length > 0)
+                    expectedTypes = expectedTypes.SelectMany(t => t == typeof(IPrimitiveDatum) ? _primitiveTypes : Enumerable.Repeat(t, 1)).ToArray();
+
+                if (expectedTypes.Length > 1)
+                    message = string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT_FOR_MANY, string.Join(", ", expectedTypes.Select(t => t.Name)), ex.Actual.Name);
                 else
-                    message = string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, ex.Expected[0].Name, ex.Actual.Name);
+                    message = string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT, expectedTypes[0].Name, ex.Actual.Name);
 
                 printError(AppendDebugInfo(message, ex), ex);
             }
@@ -240,6 +250,19 @@ namespace RainLisp
             string debugInfoText = string.Join(Environment.NewLine, callStackLines);
 
             return $"{message}{Environment.NewLine}{ErrorMessages.CALL_STACK}{Environment.NewLine}{debugInfoText}";
+        }
+
+        private static void LoadPrimitiveTypes()
+        {
+            // Load this information just once using reflection to avoid future maintenance.
+            if (_primitiveTypes != null)
+                return;
+
+            Type primitiveBaseType = typeof(IPrimitiveDatum);
+            _primitiveTypes = Assembly.GetAssembly(primitiveBaseType)
+                ?.GetTypes()
+                .Where(t => primitiveBaseType.IsAssignableFrom(t) && !t.IsAbstract)
+                .ToArray();
         }
     }
 }
