@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Terminal.Gui;
 
 namespace RainLispConsole
 {
@@ -21,11 +22,13 @@ namespace RainLispConsole
                 _textView.RegisterError(value);
 
             _textView.Text += value;
+            ScrollToBottom();
         }
 
         public override void WriteLine()
         {
             _textView.Text += Environment.NewLine;
+            ScrollToBottom();
         }
 
         public override void WriteLine(string? value)
@@ -34,6 +37,9 @@ namespace RainLispConsole
                 _textView.RegisterError(value);
 
             _textView.Text += value + Environment.NewLine;
+            ScrollToBottom();
         }
+
+        private void ScrollToBottom() => _textView.CursorPosition = new Point(0, _textView.Lines - 1);
     }
 }
