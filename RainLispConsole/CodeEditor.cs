@@ -31,7 +31,7 @@ namespace RainLispConsole
 
             var textViewColorScheme = new ColorScheme()
             {
-                Focus = new Terminal.Gui.Attribute(Color.White, Color.Black),
+                Focus = new(Color.White, Color.Black),
             };
 
             _inputTextView = new()
@@ -42,6 +42,11 @@ namespace RainLispConsole
                 DesiredCursorVisibility = CursorVisibility.Box,
             };
             _inputTextView.UnwrappedCursorPosition += InputTextViewCursorPositionChanged;
+            _inputTextView.Autocomplete.ColorScheme = new()
+            {
+                Focus = new(Color.Cyan, Color.Gray),
+                Normal = new(Color.White, Color.DarkGray)
+            };
 
             _outputTextView = new()
             {
