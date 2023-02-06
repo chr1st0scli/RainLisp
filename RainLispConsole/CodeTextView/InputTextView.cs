@@ -26,6 +26,7 @@ namespace RainLispConsole.CodeTextView
             _linesAnalysis = new();
 
             Autocomplete.AllSuggestions = suggestions;
+            Autocomplete.MaxWidth = suggestions.Max(s => s.Length);
         }
 
         public void ClearCodeAnalysisCache()
