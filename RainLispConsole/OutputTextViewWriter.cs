@@ -8,6 +8,8 @@ namespace RainLispConsole
         private readonly OutputTextView _textView;
         private readonly bool _errorMode;
 
+        private const string COMPONENT_STDOUT_BEACON = "\u001b[3J";
+
         public OutputTextViewWriter(OutputTextView textView, bool errorMode)
         {
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
@@ -18,6 +20,11 @@ namespace RainLispConsole
 
         public override void Write(string? value)
         {
+            // Terminal.Gui writes this string to the standard output for some reason, whenever the window resizes.
+            // Prevent it from being displayed.
+            if (value == COMPONENT_STDOUT_BEACON)
+                return;
+
             if (_errorMode)
                 _textView.RegisterError(value);
 
