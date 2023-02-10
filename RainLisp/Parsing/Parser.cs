@@ -163,7 +163,7 @@ namespace RainLisp.Parsing
             }
             else
             {
-                _tokens.Require(TokenType.LParen);
+                _tokens.Require(TokenType.LParen, true, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
 
                 quotes = new List<Quotable>();
 

@@ -69,6 +69,7 @@ namespace RainLispTests
         [InlineData(48, "(and 1 2 3 4)")]
         [InlineData(49, "(or 1 2 3 4)")]
         [InlineData(50, "(define (foo x y) (define bar 3) (+ x y bar)) (let ((a 1) (b 2)) (define c 4) (+ (foo a b) c))")]
+        [InlineData(51, "(quote 21)")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             static void RemoveProperty(JObject jObj, string propertyName)
@@ -117,6 +118,7 @@ namespace RainLispTests
         [InlineData("let", 1, 1, ParsingError.MissingExpression)]
         [InlineData("and", 1, 1, ParsingError.MissingExpression)]
         [InlineData("or", 1, 1, ParsingError.MissingExpression)]
+        [InlineData("(quote)", 1, 7, ParsingError.MissingExpression)]
         [InlineData("(begin 1", 1, 9, ParsingError.MissingExpression)]
         [InlineData("(begin)", 1, 7, ParsingError.MissingExpression)]
         [InlineData("(cond (true 1) (false 2) (else)", 1, 31, ParsingError.MissingExpression)]
@@ -148,8 +150,6 @@ namespace RainLispTests
         [InlineData("(cond (true 1) (else (define b 2)))", 1, 23, ParsingError.MissingExpression)]
         [InlineData("(begin 1 2 3 (define a 1) 4)", 1, 15, ParsingError.MissingExpression)]
         // Missing specific symbols.
-        [InlineData("(quote)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
-        [InlineData("(quote 21)", 1, 8, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(quote a", 1, 9, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(quote a b", 1, 10, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(set!)", 1, 6, ParsingError.MissingSymbol, TokenType.Identifier)]
