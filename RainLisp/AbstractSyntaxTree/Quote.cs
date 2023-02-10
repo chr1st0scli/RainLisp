@@ -5,14 +5,12 @@ namespace RainLisp.AbstractSyntaxTree
 {
     public class Quote : Expression
     {
-        public Quote(string text)
-            => Text = text;
+        public Quote(Quotable quotable)
+            => Quotable = quotable;
 
-        public string Text { get; init; }
+        public Quotable Quotable { get; init; }
 
         public override EvaluationResult AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
             => visitor.EvaluateQuote(this);
-
-        public override string? ToString() => $"{TypeName} {Text}";
     }
 }

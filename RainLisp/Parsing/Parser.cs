@@ -146,20 +146,44 @@ namespace RainLisp.Parsing
 
             return expression.WithDebugInfo(currentToken);
         }
+
+        private Quotable Quotable()
+        {
+            var currentToken = _tokens.CurrentToken();
+
+            string? quoteText = null;
+            List<Quotable>? quotes = null;
+
+            if (_tokens.Match(TokenType.Number, currentToken) ||
+                _tokens.Match(TokenType.String, currentToken) ||
+                _tokens.Match(TokenType.Boolean, currentToken) ||
+                _tokens.Match(TokenType.Identifier, currentToken))
+            {
+                quoteText = currentToken.Value;
+            }
+            else
+            {
+                _tokens.Require(TokenType.LParen);
+
+                quotes = new List<Quotable>();
+
+                while (!_tokens.Match(TokenType.RParen))
+                {
+                    quotes.Add(Quotable());
+                }
+            }
+
+            return new Quotable(quoteText, quotes);
+        }
         #endregion
 
         #region Helper methods that are part of expression. They do not correspond to nonterminals in the grammar themselves.
         private Quote CompleteQuote()
         {
-            var currentToken = _tokens.CurrentToken();
-            var quoteExpression = new Quote(currentToken.Value);
-
-            // Can there be more than one?
-            // Support the 'a syntax or not
-            _tokens.Require(TokenType.Identifier, currentToken);
+            var quotable = Quotable();
             _tokens.Require(TokenType.RParen);
 
-            return quoteExpression;
+            return new Quote(quotable);
         }
 
         private Assignment CompleteAssignment()

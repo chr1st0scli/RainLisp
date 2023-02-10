@@ -22,7 +22,7 @@ body = {definition} expression {expression}
 An expression can be a number, string or boolean literal, an identifier (e.g. variable name) or one of the special forms `quote`, `set!`, `if`, `begin`, `lambda`, or one of the derived expressions `cond`, `let`, `and`, `or`. If it is none of the above, then it is a function application (call).
 ```
 expression = NUM | STRING | BOOL | ID 
-		| "(" "quote" CHAR {CHAR} ")"
+		| "(" "quote" quotable ")"
 		| "(" "set!" ID expression ")"
 		| "(" "if" expression expression [expression] ")"
 		| "(" "cond" condition_clause {condition_clause} [condition_else_clause] ")"
@@ -44,4 +44,10 @@ condition_else_clause = "(" "else" expression {expression} ")"
 
 ```
 let_clause = "(" ID expression ")"
+```
+
+## Quotable
+A quotable can be a number, string or boolean literal, an identifier (e.g. variable name) or a list of zero or more quotables.
+```
+quotable = NUM | STRING | BOOL | ID | "(" {quotable} ")"
 ```
