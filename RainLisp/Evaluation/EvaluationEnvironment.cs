@@ -1,4 +1,5 @@
 ﻿using RainLisp.Evaluation.Results;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RainLisp.Evaluation
 {
@@ -6,6 +7,9 @@ namespace RainLisp.Evaluation
     {
         private readonly IDictionary<string, EvaluationResult> _definitions;
         private EvaluationEnvironment? _previousEnvironment;
+
+        // Quote symbols are unique accross the entire system.
+        private static Dictionary<string, QuoteSymbol>? _quoteSymbols;
 
         public EvaluationEnvironment()
             => _definitions = new Dictionary<string, EvaluationResult>();
@@ -42,6 +46,21 @@ namespace RainLisp.Evaluation
 
         public string[] GetIdentifierNames()
             => _definitions.Keys.ToArray();
+
+        public static void RegisterQuoteSymbol(QuoteSymbol symbol)
+        {
+            _quoteSymbols ??= new();
+            _quoteSymbols.TryAdd(symbol.SymbolText, symbol);
+        }
+
+        public static bool TryGetQuoteSymbol(string symbolText, [MaybeNullWhen(false)] out QuoteSymbol quoteSymbol)
+        {
+            quoteSymbol = null;
+            if (_quoteSymbols == null)
+                return false;
+
+            return _quoteSymbols.TryGetValue(symbolText, out quoteSymbol);
+        }
 
         private EvaluationResult LookupIdentifierValue(string identifierName, out EvaluationEnvironment environment)
         {
