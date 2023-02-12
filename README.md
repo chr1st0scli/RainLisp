@@ -4,7 +4,7 @@
 
 ## Work in progress.
 
-This is in working state but still incomplete. There are a few pending alterations, missing XML comments, and further tests that will be present in the next phases of the project.
+This is in working state but still incomplete. There are a few pending alterations, missing XML comments, further tests and documentation that will be present in the next phases of the project.
 
 ## Introduction
 RainLisp is a LISP dialect with many similarities to Scheme. It is implemented entirely in C# and therefore brought to the .NET ecosystem.
