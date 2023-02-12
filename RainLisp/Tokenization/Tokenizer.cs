@@ -27,8 +27,8 @@ namespace RainLisp.Tokenization
             void RegisterToken(Token token)
                 => tokens.Add(token);
 
-            void RegisterSpecificToken(string value, TokenType tokenType, uint position, double numberValue = 0, bool booleanValue = false)
-                => RegisterToken(new() { Value = value, Type = tokenType, Line = line, Position = position, NumberValue = numberValue, BooleanValue = booleanValue });
+            void RegisterSpecificToken(string value, TokenType tokenType, uint position, double numberValue = 0, bool booleanValue = false, string stringValue = "")
+                => RegisterToken(new() { Value = value, Type = tokenType, Line = line, Position = position, NumberValue = numberValue, BooleanValue = booleanValue, StringValue = stringValue });
 
             void RegisterEOF()
                 => RegisterSpecificToken(string.Empty, TokenType.EOF, charPosition);
@@ -36,7 +36,7 @@ namespace RainLisp.Tokenization
             void RegisterStringLiteralToken()
             {
                 charInstring = false;
-                RegisterSpecificToken(stringTokenizer!.GetString(), TokenType.String, GetLastStringStartPosition());
+                RegisterSpecificToken(stringTokenizer!.GetStringLiteral(), TokenType.String, GetLastStringStartPosition(), stringValue: stringTokenizer.GetStringValue());
                 stringTokenizer.Clear();
             }
 

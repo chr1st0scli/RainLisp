@@ -12,12 +12,15 @@ namespace RainLispTests
             _tokenizer = new Tokenizer();
         }
 
-        public record ExpectedToken(TokenType TokenType, string Value, uint Position, uint Line = 1, double NumberValue = 0, bool BooleanValue = false);
+        public record ExpectedToken(TokenType TokenType, string Value, uint Position, uint Line = 1, double NumberValue = 0, bool BooleanValue = false, string StringValue = "");
 
         public static TheoryData<string, ExpectedToken[]> GetTokens()
         {
-            static uint PickLine(uint winOS, uint otherOS) => Environment.NewLine == "\r\n" ? winOS : otherOS;
-            static ExpectedToken Expect(TokenType tokenType, string value, uint position, uint line = 1, double numberValue = 0, bool booleanValue = false) => new(tokenType, value, position, line, numberValue, booleanValue);
+            static uint PickLine(uint winOS, uint otherOS)
+                => Environment.NewLine == "\r\n" ? winOS : otherOS;
+
+            static ExpectedToken Expect(TokenType tokenType, string value, uint position, uint line = 1, double numberValue = 0, bool booleanValue = false, string stringValue = "")
+                => new(tokenType, value, position, line, numberValue, booleanValue, stringValue);
 
             var data = new TheoryData<string, ExpectedToken[]>
             {
@@ -51,37 +54,37 @@ namespace RainLispTests
                 { ".34", new[] { Expect(Identifier, ".34", 1), Expect(EOF, "", 4) } },
 
                 #region String literals.
-                { "\"\"", new[] { Expect(TokenType.String, "", 1), Expect(EOF, "", 3) } },
-                { "\" \"", new[] { Expect(TokenType.String, " ", 1), Expect(EOF, "", 4) } },
-                { "\"helloworld\"", new[] { Expect(TokenType.String, "helloworld", 1), Expect(EOF, "", 13) } },
-                { "\"hello world\"", new[] { Expect(TokenType.String, "hello world", 1), Expect(EOF, "", 14) } },
-                { "\"hello  world\"", new[] { Expect(TokenType.String, "hello  world", 1), Expect(EOF, "", 15) } },
-                { "\"hello\tworld\"", new[] { Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 14) } }, 
+                { "\"\"", new[] { Expect(TokenType.String, "\"\"", 1, stringValue: ""), Expect(EOF, "", 3) } },
+                { "\" \"", new[] { Expect(TokenType.String, "\" \"", 1, stringValue: " "), Expect(EOF, "", 4) } },
+                { "\"helloworld\"", new[] { Expect(TokenType.String, "\"helloworld\"", 1, stringValue: "helloworld"), Expect(EOF, "", 13) } },
+                { "\"hello world\"", new[] { Expect(TokenType.String, "\"hello world\"", 1, stringValue: "hello world"), Expect(EOF, "", 14) } },
+                { "\"hello  world\"", new[] { Expect(TokenType.String, "\"hello  world\"", 1, stringValue: "hello  world"), Expect(EOF, "", 15) } },
+                { "\"hello\tworld\"", new[] { Expect(TokenType.String, "\"hello\tworld\"", 1, stringValue: "hello\tworld"), Expect(EOF, "", 14) } }, 
 
                 // Valid escape sequences.
-                { "\"\\n\\n\"", new[] { Expect(TokenType.String, "\n\n", 1), Expect(EOF, "", 7) } },
-                { @"""hello \""wonderful\"" world""", new[] { Expect(TokenType.String, "hello \"wonderful\" world", 1), Expect(EOF, "", 28) } },
-                { @"""hello \\ wonderful \\ world""", new[] { Expect(TokenType.String, "hello \\ wonderful \\ world", 1), Expect(EOF, "", 30) } },
-                { @"""\\""", new[] { Expect(TokenType.String, @"\", 1), Expect(EOF, "", 5) } },
-                { @"""\\hi""", new[] { Expect(TokenType.String, @"\hi", 1), Expect(EOF, "", 7) } },
-                { @"""\\\""""", new[] { Expect(TokenType.String, @"\""", 1), Expect(EOF, "", 7) } },
-                { @"""hello\""world""", new[] { Expect(TokenType.String, @"hello""world", 1), Expect(EOF, "", 15) } },
-                { @"""hello\\world""", new[] { Expect(TokenType.String, @"hello\world", 1), Expect(EOF, "", 15) } },
-                { @"""hello\nworld""", new[] { Expect(TokenType.String, "hello\nworld", 1), Expect(EOF, "", 15) } },
-                { @"""hello\rworld""", new[] { Expect(TokenType.String, "hello\rworld", 1), Expect(EOF, "", 15) } },
-                { @"""hello\tworld""", new[] { Expect(TokenType.String, "hello\tworld", 1), Expect(EOF, "", 15) } }, 
+                { "\"\\n\\n\"", new[] { Expect(TokenType.String, "\"\\n\\n\"", 1, stringValue: "\n\n"), Expect(EOF, "", 7) } },
+                { @"""hello \""wonderful\"" world""", new[] { Expect(TokenType.String, @"""hello \""wonderful\"" world""", 1, stringValue: "hello \"wonderful\" world"), Expect(EOF, "", 28) } },
+                { @"""hello \\ wonderful \\ world""", new[] { Expect(TokenType.String, @"""hello \\ wonderful \\ world""", 1, stringValue: "hello \\ wonderful \\ world"), Expect(EOF, "", 30) } },
+                { @"""\\""", new[] { Expect(TokenType.String, @"""\\""", 1, stringValue: @"\"), Expect(EOF, "", 5) } },
+                { @"""\\hi""", new[] { Expect(TokenType.String, @"""\\hi""", 1, stringValue: @"\hi"), Expect(EOF, "", 7) } },
+                { @"""\\\""""", new[] { Expect(TokenType.String, @"""\\\""""", 1, stringValue: @"\"""), Expect(EOF, "", 7) } },
+                { @"""hello\""world""", new[] { Expect(TokenType.String, @"""hello\""world""", 1, stringValue: @"hello""world"), Expect(EOF, "", 15) } },
+                { @"""hello\\world""", new[] { Expect(TokenType.String, @"""hello\\world""", 1, stringValue: @"hello\world"), Expect(EOF, "", 15) } },
+                { @"""hello\nworld""", new[] { Expect(TokenType.String, @"""hello\nworld""", 1, stringValue: "hello\nworld"), Expect(EOF, "", 15) } },
+                { @"""hello\rworld""", new[] { Expect(TokenType.String, @"""hello\rworld""", 1, stringValue: "hello\rworld"), Expect(EOF, "", 15) } },
+                { @"""hello\tworld""", new[] { Expect(TokenType.String, @"""hello\tworld""", 1, stringValue: "hello\tworld"), Expect(EOF, "", 15) } }, 
 
                 // Strings adjacent to other tokens.
-                { "12\"hi\"", new[] { Expect(Number, "12", 1, numberValue: 12d), Expect(TokenType.String, "hi", 3), Expect(EOF, "", 7) } },
-                { "12 \"hi\"", new[] { Expect(Number, "12", 1, numberValue: 12d), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) } },
-                { "abc\"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 4), Expect(EOF, "", 8) } },
-                { "abc \"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "hi", 5), Expect(EOF, "", 9) } },
-                { "\"hi\"12", new[] { Expect(TokenType.String, "hi", 1), Expect(Number, "12", 5, numberValue: 12d), Expect(EOF, "", 7) } },
-                { "\"hi\" 12", new[] { Expect(TokenType.String, "hi", 1), Expect(Number, "12", 6, numberValue: 12d), Expect(EOF, "", 8) } },
-                { "\"hi\"abc", new[] { Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 5), Expect(EOF, "", 8) } },
-                { "\"hi\" abc", new[] { Expect(TokenType.String, "hi", 1), Expect(Identifier, "abc", 6), Expect(EOF, "", 9) } },
-                { "\"hello\"\"world\"", new[] { Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 8), Expect(EOF, "", 15) } },
-                { "\"hello\" \"world\"", new[] { Expect(TokenType.String, "hello", 1), Expect(TokenType.String, "world", 9), Expect(EOF, "", 16) } }, 
+                { "12\"hi\"", new[] { Expect(Number, "12", 1, numberValue: 12d), Expect(TokenType.String, "\"hi\"", 3, stringValue: "hi"), Expect(EOF, "", 7) } },
+                { "12 \"hi\"", new[] { Expect(Number, "12", 1, numberValue: 12d), Expect(TokenType.String, "\"hi\"", 4, stringValue: "hi"), Expect(EOF, "", 8) } },
+                { "abc\"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "\"hi\"", 4, stringValue: "hi"), Expect(EOF, "", 8) } },
+                { "abc \"hi\"", new[] { Expect(Identifier, "abc", 1), Expect(TokenType.String, "\"hi\"", 5, stringValue: "hi"), Expect(EOF, "", 9) } },
+                { "\"hi\"12", new[] { Expect(TokenType.String, "\"hi\"", 1, stringValue: "hi"), Expect(Number, "12", 5, numberValue: 12d), Expect(EOF, "", 7) } },
+                { "\"hi\" 12", new[] { Expect(TokenType.String, "\"hi\"", 1, stringValue: "hi"), Expect(Number, "12", 6, numberValue: 12d), Expect(EOF, "", 8) } },
+                { "\"hi\"abc", new[] { Expect(TokenType.String, "\"hi\"", 1, stringValue: "hi"), Expect(Identifier, "abc", 5), Expect(EOF, "", 8) } },
+                { "\"hi\" abc", new[] { Expect(TokenType.String, "\"hi\"", 1, stringValue: "hi"), Expect(Identifier, "abc", 6), Expect(EOF, "", 9) } },
+                { "\"hello\"\"world\"", new[] { Expect(TokenType.String, "\"hello\"", 1, stringValue: "hello"), Expect(TokenType.String, "\"world\"", 8, stringValue: "world"), Expect(EOF, "", 15) } },
+                { "\"hello\" \"world\"", new[] { Expect(TokenType.String, "\"hello\"", 1, stringValue: "hello"), Expect(TokenType.String, "\"world\"", 9, stringValue: "world"), Expect(EOF, "", 16) } }, 
                 #endregion
 
                 { "true", new[] { Expect(TokenType.Boolean, "true", 1, booleanValue: true), Expect(EOF, "", 5) } },
@@ -565,8 +568,12 @@ namespace RainLispTests
 
                 if (expectedToken.TokenType == Number)
                     Assert.Equal(expectedToken.NumberValue, tokens[i].NumberValue);
+
                 else if (expectedToken.TokenType == TokenType.Boolean)
                     Assert.Equal(expectedToken.BooleanValue, tokens[i].BooleanValue);
+
+                else if (expectedToken.TokenType == TokenType.String)
+                    Assert.Equal(expectedToken.StringValue, tokens[i].StringValue);
 
                 Assert.Equal(expectedToken.Line, tokens[i].Line);
                 Assert.Equal(expectedToken.Position, tokens[i].Position);

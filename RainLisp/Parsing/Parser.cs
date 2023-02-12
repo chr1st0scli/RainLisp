@@ -94,7 +94,7 @@ namespace RainLisp.Parsing
                 expression = new NumberLiteral(currentToken.NumberValue);
 
             else if (_tokens.Match(TokenType.String, currentToken))
-                expression = new StringLiteral(currentToken.Value);
+                expression = new StringLiteral(currentToken.StringValue);
 
             else if (_tokens.Match(TokenType.Boolean, currentToken))
                 expression = new BooleanLiteral(currentToken.BooleanValue);

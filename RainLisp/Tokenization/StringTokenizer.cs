@@ -7,39 +7,44 @@ namespace RainLisp.Tokenization
     public class StringTokenizer
     {
         private bool _escaping;
-        private readonly StringBuilder _stringBuilder;
+        private readonly StringBuilder _valueStringBuilder;
+        private readonly StringBuilder _literalStringBuilder;
         private readonly Action _stringCompletedAction;
 
         public StringTokenizer(Action stringCompletedAction)
         {
             _stringCompletedAction = stringCompletedAction ?? throw new ArgumentNullException(nameof(stringCompletedAction));
-            _stringBuilder = new StringBuilder();
+            _valueStringBuilder = new StringBuilder();
+            _literalStringBuilder = new StringBuilder();
             _escaping = false;
             CharactersProcessed = 0;
         }
 
         public void Clear()
         {
-            _stringBuilder.Clear();
+            _valueStringBuilder.Clear();
+            _literalStringBuilder.Clear();
             _escaping = false;
             CharactersProcessed = 0;
         }
 
         public void AddToString(char c, uint line, uint position)
         {
+            _literalStringBuilder.Append(c);
+
             if (_escaping)
             {
                 if (c == ESCAPABLE_DOUBLE_QUOTE || c == ESCAPE)
-                    _stringBuilder.Append(c);
+                    _valueStringBuilder.Append(c);
 
                 else if (c == ESCAPABLE_NEW_LINE)
-                    _stringBuilder.Append(NEW_LINE);
+                    _valueStringBuilder.Append(NEW_LINE);
 
                 else if (c == ESCAPABLE_CARRIAGE_RETURN)
-                    _stringBuilder.Append(CARRIAGE_RETURN);
+                    _valueStringBuilder.Append(CARRIAGE_RETURN);
 
                 else if (c == ESCAPABLE_TAB)
-                    _stringBuilder.Append(TAB);
+                    _valueStringBuilder.Append(TAB);
 
                 else
                     throw new InvalidEscapeSequenceException(line, position, c);
@@ -64,13 +69,15 @@ namespace RainLisp.Tokenization
                     throw new InvalidStringCharacterException(line, position, c);
 
                 else
-                    _stringBuilder.Append(c);
+                    _valueStringBuilder.Append(c);
             }
 
             CharactersProcessed++;
         }
 
-        public string GetString() => _stringBuilder.ToString();
+        public string GetStringValue() => _valueStringBuilder.ToString();
+
+        public string GetStringLiteral() => _literalStringBuilder.Insert(0, DOUBLE_QUOTE).ToString();
 
         public uint CharactersProcessed { get; private set; }
     }

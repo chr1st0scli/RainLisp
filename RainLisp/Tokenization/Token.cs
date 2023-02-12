@@ -10,6 +10,8 @@
 
         public bool BooleanValue { get; init; }
 
+        public string StringValue { get; init; } = string.Empty;
+
         public uint Line { get; init; }
 
         public uint Position { get; init; }
