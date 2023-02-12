@@ -1,0 +1,12 @@
+{
+  "Definitions": null,
+  "Expressions": [
+    {
+      "Quotable": {
+        "Text": "hello world",
+        "Quotables": null
+      },
+      "TypeName": "Quote"
+    }
+  ]
+}

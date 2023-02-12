@@ -70,6 +70,7 @@ namespace RainLispTests
         [InlineData(49, "(or 1 2 3 4)")]
         [InlineData(50, "(define (foo x y) (define bar 3) (+ x y bar)) (let ((a 1) (b 2)) (define c 4) (+ (foo a b) c))")]
         [InlineData(51, "(quote 21)")]
+        [InlineData(52, "(quote \"hello world\")")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             static void RemoveProperty(JObject jObj, string propertyName)
@@ -119,6 +120,11 @@ namespace RainLispTests
         [InlineData("and", 1, 1, ParsingError.MissingExpression)]
         [InlineData("or", 1, 1, ParsingError.MissingExpression)]
         [InlineData("(quote)", 1, 7, ParsingError.MissingExpression)]
+        [InlineData("(quote (", 1, 9, ParsingError.MissingExpression)]
+        [InlineData("(quote (ab", 1, 11, ParsingError.MissingExpression)]
+        [InlineData("(quote (ab cd", 1, 14, ParsingError.MissingExpression)]
+        [InlineData("(quote (ab cd (ef gh", 1, 21, ParsingError.MissingExpression)]
+        [InlineData("(quote (ab cd (ef gh)", 1, 22, ParsingError.MissingExpression)]
         [InlineData("(begin 1", 1, 9, ParsingError.MissingExpression)]
         [InlineData("(begin)", 1, 7, ParsingError.MissingExpression)]
         [InlineData("(cond (true 1) (false 2) (else)", 1, 31, ParsingError.MissingExpression)]
@@ -152,6 +158,9 @@ namespace RainLispTests
         // Missing specific symbols.
         [InlineData("(quote a", 1, 9, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(quote a b", 1, 10, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(quote ()", 1, 10, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(quote (a b c)", 1, 15, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(quote (ab cd (ef gh))", 1, 23, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(set!)", 1, 6, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! 4", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! a 1", 1, 10, ParsingError.MissingSymbol, TokenType.RParen)]
