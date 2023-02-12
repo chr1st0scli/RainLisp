@@ -2,7 +2,7 @@
 
 ![Cloudy RainLisp Logo](Artwork/RainLisp.svg)
 
-## This is work in progress. It is still a prototype!!!
+## Work in progress.
 
 This is in working state but still incomplete. There are a few pending alterations, missing XML comments, and further tests that will be present in the next phases of the project.
 
