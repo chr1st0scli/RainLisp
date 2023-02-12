@@ -3,7 +3,7 @@
   "Expressions": [
     {
       "Quotable": {
-        "Text": "a",
+        "Text": "\"hello \\n \\t \\\\ \\\" world\"",
         "Quotables": null
       },
       "TypeName": "Quote"

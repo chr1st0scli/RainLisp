@@ -12,6 +12,8 @@ namespace RainLisp.Evaluation
 
         T VisitDateTimeDatum(DateTimeDatum dateTimeDatum);
 
+        T VisitQuoteSymbol(QuoteSymbol quoteSymbol);
+
         T VisitPrimitiveProcedure(PrimitiveProcedure primitiveProcedure);
 
         T VisitUserProcedure(UserProcedure userProcedure);

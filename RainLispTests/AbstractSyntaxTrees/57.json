@@ -1,0 +1,21 @@
+{
+  "Definitions": null,
+  "Expressions": [
+    {
+      "Quotable": {
+        "Text": null,
+        "Quotables": [
+          {
+            "Text": "ab",
+            "Quotables": null
+          },
+          {
+            "Text": "cd",
+            "Quotables": null
+          }
+        ]
+      },
+      "TypeName": "Quote"
+    }
+  ]
+}

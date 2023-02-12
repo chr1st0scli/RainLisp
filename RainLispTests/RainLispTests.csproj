@@ -26,6 +26,30 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="AbstractSyntaxTrees\58.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\57.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\56.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\55.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\54.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\53.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\52.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AbstractSyntaxTrees\51.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AbstractSyntaxTrees\50.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

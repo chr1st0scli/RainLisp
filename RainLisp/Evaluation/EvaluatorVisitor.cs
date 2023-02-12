@@ -23,7 +23,7 @@ namespace RainLisp.Evaluation
             => EvaluateWithDebugInfo(() => environment.LookupIdentifierValue(identifier.Name), identifier);
 
         public EvaluationResult EvaluateQuote(Quote quote)
-            => throw new NotImplementedException();
+            => EvaluateQuotable(quote.Quotable);
 
         public EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment)
         {
@@ -142,6 +142,39 @@ namespace RainLisp.Evaluation
 
             // result is not null because the syntax grammar specifies there is at least one expression in both a body and begin.
             return result!;
+        }
+
+        private static EvaluationResult EvaluateQuotable(Quotable quotable)
+        {
+            static EvaluationResult MakeQuoteSymbolsList(IList<Quotable> quotables, int currentIndex)
+            {
+                var quoteSymbol = EvaluateQuotable(quotables[currentIndex]);
+
+                if (currentIndex == quotables.Count - 1)
+                    return new Pair(quoteSymbol, Nil.GetNil());
+
+                return new Pair(quoteSymbol, MakeQuoteSymbolsList(quotables, ++currentIndex));
+            }
+
+            if (quotable.Text != null)
+            {
+                if (EvaluationEnvironment.TryGetQuoteSymbol(quotable.Text, out var quoteSymbol))
+                    return quoteSymbol;
+                else
+                {
+                    quoteSymbol = new QuoteSymbol(quotable.Text);
+                    EvaluationEnvironment.RegisterQuoteSymbol(quoteSymbol);
+
+                    return quoteSymbol;
+                }
+            }
+            else
+            {
+                if (quotable.Quotables == null || quotable.Quotables.Count == 0)
+                    return Nil.GetNil();
+
+                return MakeQuoteSymbolsList(quotable.Quotables, 0);
+            }
         }
 
         private static EvaluationResult EvaluateWithDebugInfo(Func<EvaluationResult> evaluateCallback, IDebugInfo debugInfoSource)

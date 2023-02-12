@@ -1,0 +1,42 @@
+{
+  "Definitions": null,
+  "Expressions": [
+    {
+      "Quotable": {
+        "Text": null,
+        "Quotables": [
+          {
+            "Text": "ab",
+            "Quotables": null
+          },
+          {
+            "Text": "cd",
+            "Quotables": null
+          },
+          {
+            "Text": null,
+            "Quotables": [
+              {
+                "Text": "e",
+                "Quotables": null
+              },
+              {
+                "Text": "f",
+                "Quotables": null
+              },
+              {
+                "Text": "g",
+                "Quotables": null
+              }
+            ]
+          },
+          {
+            "Text": "hi",
+            "Quotables": null
+          }
+        ]
+      },
+      "TypeName": "Quote"
+    }
+  ]
+}
