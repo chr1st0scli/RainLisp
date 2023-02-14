@@ -365,7 +365,8 @@ namespace RainLispTests
         }
 
         [Theory]
-        [InlineData("(list)")]  // TODO, add quote alternatives.
+        [InlineData("(list)")]
+        [InlineData("(quote ())")]
         public void Evaluate_EmptyList_ReturnsNil(string expression)
         {
             // Arrange
@@ -798,6 +799,55 @@ Should be 5th";
 
             // Assert
             Assert.Equal(expectedResult, ((StringDatum)result).Value);
+        }
+
+        [Theory]
+        [InlineData("(quote 1)", "1")]
+        [InlineData("(quote 1234.5678)", "1234.5678")]
+        [InlineData("(quote +1234.5678)", "+1234.5678")]
+        [InlineData("(quote -1234.5678)", "-1234.5678")]
+        [InlineData("(quote true)", "true")]
+        [InlineData("(quote false)", "false")]
+        [InlineData("(quote \"hello world\")", "\"hello world\"")]
+        [InlineData("(quote \"hello \\n \\r \\t \\\" \\\\ world\")", "\"hello \\n \\r \\t \\\" \\\\ world\"")]
+        [InlineData("(quote a)", "a")]
+        [InlineData("(quote abc)", "abc")]
+        [InlineData("(quote abc!@#$)", "abc!@#$")]
+        [InlineData("(quote ())", "()")]
+        [InlineData("(quote (a bc def))", "(a bc def)")]
+        [InlineData("(quote (foo ab 12.34 true \"hi\"))", "(foo ab 12.34 true \"hi\")")]
+        [InlineData("(car (quote (foo ab 12.34 true \"hi\")))", "foo")]
+        [InlineData("(cadr (quote (foo ab 12.34 true \"hi\")))", "ab")]
+        [InlineData("(caddr (quote (foo ab 12.34 true \"hi\")))", "12.34")]
+        [InlineData("(cadddr (quote (foo ab 12.34 true \"hi\")))", "true")]
+        [InlineData("(cadr (cdddr (quote (foo ab 12.34 true \"hi\"))))", "\"hi\"")]
+        [InlineData("(car (quote (a bc def)))", "a")]
+        [InlineData("(cadr (quote (a bc def)))", "bc")]
+        [InlineData("(caddr (quote (a bc def)))", "def")]
+        [InlineData("(quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))", "(ab (c (c1 c2) (d)) ef (gh ik) lm no)")]
+        [InlineData("(car (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "ab")]
+        [InlineData("(cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "(c (c1 c2) (d))")]
+        [InlineData("(car (cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "c")]
+        [InlineData("(car (cadr (cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))))", "c1")]
+        [InlineData("(cadr (cadr (cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))))", "c2")]
+        [InlineData("(car (caddr (cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))))", "d")]
+        [InlineData("(caddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "ef")]
+        [InlineData("(cadddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "(gh ik)")]
+        [InlineData("(cadr (cdddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "lm")]
+        [InlineData("(caddr (cdddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "no")]
+        public void Evaluate_Quote_Correctly(string expression, string expectedResult)
+        {
+            // Arrange
+            IEvaluationEnvironment? environment = null;
+            string? actualResult = null;
+            string? error = null;
+
+            // Act
+            _interpreter.EvaluateAndPrint(expression, ref environment, str => actualResult = str, (str, ex) => error = str);
+
+            // Assert
+            Assert.Null(error);
+            Assert.Equal(expectedResult, actualResult);
         }
 
         [Theory]
