@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using RainLisp;
 using RainLisp.Evaluation;
+using RainLisp.Evaluation.Results;
 using RainLisp.Grammar;
 using System.Reflection;
 
@@ -16,7 +17,8 @@ namespace RainLispTests
         [InlineData(1, "(define a 0) (define b 1)")]
         [InlineData(2, "(define a 0) (define b 1) (define ab 10.32)")]
         [InlineData(3, "(define a 2) (define ab 4) (set! a (+ a ab))")]
-        [InlineData(4, "(define a 2) ((lambda () (set! a 4))) a")] // the fact that body can have a single expression does not allow this to be evaluated "(define a 2) ((lambda () (set! a 4) a))"
+        [InlineData(4, "(define a 2) ((lambda () (set! a 4))) a")]
+        [InlineData(4, "(define a 2) ((lambda () (set! a 4) a))")]
         [InlineData(5, "(define a 2) ((lambda () (define b 7) (+ a b)))")]
         [InlineData(6, "(define a 2) ((lambda () (define b 7) (begin (set! a 3) (set! b 9) (+ a b))))")]
         [InlineData(7, "(define a 2) ((lambda () (define b 7) (set! a (+ a b)))) a")]
@@ -72,6 +74,36 @@ namespace RainLispTests
 
             // Assert
             Assert.Equal(expectedEnvironment, actualEnvironment);
+        }
+
+        [Theory]
+        [InlineData("(quote (123 true \"hi\" abc))", "123")]
+        [InlineData("(quote (123 true \"hi\" abc))", "true")]
+        [InlineData("(quote (123 true \"hi\" abc))", "\"hi\"")]
+        [InlineData("(quote (123 true \"hi\" abc))", "abc")]
+        [InlineData("(quote (ab cd (ef gh) ik))", "ab")]
+        [InlineData("(quote (ab cd (ef gh) ik))", "cd")]
+        [InlineData("(quote (ab cd (ef gh) ik))", "ef")]
+        [InlineData("(quote (ab cd (ef gh) ik))", "gh")]
+        [InlineData("(quote (ab cd (ef gh) ik))", "ik")]
+        public void Evalute_QuoteExpression_GivesUniqueQuoteSymbols(string quoteInstall, string quoteToQuery)
+        {
+            // Test the fact that quote symbols are unique throughout the entire application's life time.
+
+            // Arrange
+            string foo = $"(define (foo) {quoteInstall}) (foo) (quote {quoteToQuery})";
+            string bar = $"(define (bar) {quoteInstall}) (bar) (quote {quoteToQuery})";
+            IEvaluationEnvironment? environment = null;
+
+            // Act
+            var fooResult = interpreter.Evaluate(foo, ref environment).Last() as QuoteSymbol;
+            var barResult = interpreter.Evaluate(bar, ref environment).Last() as QuoteSymbol;
+
+            EvaluationEnvironment.TryGetQuoteSymbol(quoteToQuery, out var storedQuoteSymbol);
+
+            // Assert
+            Assert.True(ReferenceEquals(fooResult, barResult));
+            Assert.True(ReferenceEquals(storedQuoteSymbol, barResult));
         }
     }
 }
