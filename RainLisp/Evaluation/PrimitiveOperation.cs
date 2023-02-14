@@ -47,7 +47,7 @@ namespace RainLisp.Evaluation
                 (val1, val2) => new BoolDatum(val1.Value <= val2.Value), values);
 
         public static EvaluationResult EqualTo(EvaluationResult[]? values)
-            => ApplyBinaryOperator(AsAnyPrimitive, (object val1, object val2) => new BoolDatum(val1.Equals(val2)), values);
+            => ApplyBinaryOperator((val1, val2) => new BoolDatum(val1.Equals(val2)), values);
 
         public static EvaluationResult LogicalXor(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, result => new BoolDatum(result), values);
