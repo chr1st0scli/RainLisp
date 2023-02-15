@@ -171,10 +171,33 @@ namespace RainLispTests
         [InlineData("(= \"abc\" \"abcd\")", false)]
         [InlineData("(= \"abcd\" \"abcd\")", true)]
         [InlineData("(= \"abcd\" 1)", false)]
+        [InlineData("(= 12 \"abcd\")", false)]
         [InlineData("(= true 1)", false)]
         [InlineData("(define dt (now)) (= dt dt)", true)]
         [InlineData("(= (make-date 2022 11 19) (make-date 2022 11 19))", true)]
         [InlineData("(= (make-date 2022 11 19) (make-date 2022 11 20))", false)]
+        [InlineData("(= 12 true)", false)]
+        [InlineData("(= false 12)", false)]
+        [InlineData("(= 12 (now))", false)]
+        [InlineData("(= (now) 23)", false)]
+        [InlineData("(= nil 12)", false)]
+        [InlineData("(= 12 (cons 1 2))", false)]
+        [InlineData("(= 12 +)", false)]
+        [InlineData("(= + 12)", false)]
+        [InlineData("(= 12 (quote a))", false)]
+        [InlineData("(= (quote a) 12)", false)]
+        [InlineData("(= 12 (lambda() 0))", false)]
+        [InlineData("(= (lambda() 0) 12)", false)]
+        [InlineData("(= false (now))", false)]
+        [InlineData("(= (now) true)", false)]
+        [InlineData("(= nil true)", false)]
+        [InlineData("(= false (cons 1 2))", false)]
+        [InlineData("(= true +)", false)]
+        [InlineData("(= + true)", false)]
+        [InlineData("(= false (quote a))", false)]
+        [InlineData("(= (quote a) false)", false)]
+        [InlineData("(= true (lambda() 0))", false)]
+        [InlineData("(= (lambda() 0) true)", false)]
         // Quotes are unique, therefore their references are equal.
         [InlineData("(= (quote a) (quote a))", true)]
         [InlineData("(= (quote ab) (quote ab))", true)]
@@ -1233,7 +1256,6 @@ Should be 5th";
         [InlineData("({0} -)", typeof(PrimitiveProcedure))]
         public void Evaluate_CallExpectingPairWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            // maybe we should be able to concat strings with +.
             Evaluate_CallsWithWrongExpression_Throws(new[] { "car", "cdr" }, expression, actual, typeof(Pair));
         }
 
@@ -1248,7 +1270,6 @@ Should be 5th";
         [InlineData("({0} - 1)", typeof(PrimitiveProcedure))]
         public void Evaluate_CallExpectingPairAndAnythingWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            // maybe we should be able to concat strings with +.
             Evaluate_CallsWithWrongExpression_Throws(new[] { "set-car!", "set-cdr!" }, expression, actual, typeof(Pair));
         }
 
@@ -1260,7 +1281,6 @@ Should be 5th";
         [InlineData("({0} (lambda () 1))", typeof(UserProcedure))]
         public void Evaluate_CallExpectingPrimitiveWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            // maybe we should be able to concat strings with +.
             Evaluate_CallsWithWrongExpression_Throws(new[] { "display", "debug", "trace", "error" }, expression, actual, typeof(IPrimitiveDatum));
         }
 

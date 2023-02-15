@@ -10,11 +10,29 @@
         public object GetValueAsObject() => Value;
 
         public override bool Equals(EvaluationResult? other)
-        {
-            if (other is PrimitiveDatum<T> datum)
-                return Value.Equals(datum.Value);
+            => this == other;
 
-            return base.Equals(other);
+        public override bool Equals(object? obj)
+            => this == obj as EvaluationResult;
+
+        public override int GetHashCode()
+            => Value.GetHashCode();
+
+        public static bool operator ==(PrimitiveDatum<T>? left, EvaluationResult? right)
+        {
+            if (left is null || right is null)
+                return ReferenceEquals(left, right);
+
+            if (ReferenceEquals(left, right))
+                return true;
+
+            if (right is PrimitiveDatum<T> rightAsPrimitive)
+                return left.Value.Equals(rightAsPrimitive.Value);
+
+            return false;
         }
+
+        public static bool operator !=(PrimitiveDatum<T>? left, EvaluationResult? right)
+            => !(left == right);
     }
 }

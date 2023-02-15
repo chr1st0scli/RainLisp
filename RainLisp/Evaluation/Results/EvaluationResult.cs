@@ -9,5 +9,13 @@
 
         public virtual bool Equals(EvaluationResult? other)
             => base.Equals(other);
+
+        #region Some needless overrides to make messages and warnings disappear.
+        public override bool Equals(object? obj)
+            => base.Equals(obj);
+
+        public override int GetHashCode()
+            => base.GetHashCode();
+        #endregion
     }
 }
