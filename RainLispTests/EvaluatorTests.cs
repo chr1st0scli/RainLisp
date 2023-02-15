@@ -530,6 +530,38 @@ namespace RainLispTests
         }
 
         [Fact]
+        public void Evaluate_MessagePassingStyle_Correctly()
+        {
+            // Arrange
+            string code = @"
+(define (math-op op x y)
+  (define (add-numbers) (+ x y))
+  (define (subtract-numbers) (- x y))
+  (define (multiply-numbers) (* x y))
+  (define (divide-numbers) (/ x y))
+
+  (cond ((= op (quote add)) add-numbers)
+        ((= op (quote subtract)) subtract-numbers)
+        ((= op (quote multiply)) multiply-numbers)
+        ((= op (quote divide)) divide-numbers)
+        (else (error ""unknown operation""))))
+
+((math-op (quote add) 4 2))
+((math-op (quote subtract) 4 2))
+((math-op (quote multiply) 4 2))
+((math-op (quote divide) 4 2))";
+
+            // Act
+            var results = _interpreter.Evaluate(code).ToArray();
+
+            // Assert
+            Assert.Equal(6, ((NumberDatum)results[0]).Value);
+            Assert.Equal(2, ((NumberDatum)results[1]).Value);
+            Assert.Equal(8, ((NumberDatum)results[2]).Value);
+            Assert.Equal(2, ((NumberDatum)results[3]).Value);
+        }
+
+        [Fact]
         public void Print_ProgramResults_InTheRightOrder()
         {
             // Arrange
