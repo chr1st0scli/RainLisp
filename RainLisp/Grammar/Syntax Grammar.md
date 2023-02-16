@@ -52,5 +52,5 @@ A quotable can be a number, string or boolean literal, an identifier (e.g. varia
 ```
 quotable = NUM | STRING | BOOL | ID
 		| "quote" | "set!" | "define" | "if" | "cond" | "else" | "begin" | "lambda" | "let" | "and" | "or"
-		| "(" {quotable} ")"
+		| "'" quotable | "(" {quotable} ")"
 ```
