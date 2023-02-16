@@ -51,7 +51,7 @@ namespace RainLisp.Parsing
             else
             {
                 // Invalid definition, if none of the two expected tokens is encountered.
-                _tokens.Require(TokenType.LParen, currentToken, true, TokenType.Identifier, TokenType.LParen);
+                _tokens.Require(TokenType.LParen, currentToken, TokenType.Identifier, TokenType.LParen);
 
                 // Function name
                 identifierName = _tokens.RequireIdentifierName();
@@ -105,7 +105,7 @@ namespace RainLisp.Parsing
             else
             {
                 // Missing expression, one of the expected tokens was not encountered.
-                _tokens.Require(TokenType.LParen, currentToken, true, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
+                _tokens.Require(TokenType.LParen, currentToken, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
 
                 currentToken = _tokens.CurrentToken();
 
@@ -161,7 +161,8 @@ namespace RainLisp.Parsing
             }
             else
             {
-                _tokens.Require(TokenType.LParen, true, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
+                // Only tokens that can start an expression are reported. Other keywords, such as special forms and derived expressions, don't need to.
+                _tokens.Require(TokenType.LParen, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
 
                 quotes = new List<Quotable>();
 
@@ -222,8 +223,12 @@ namespace RainLisp.Parsing
             do
             {
                 // Condition clause.
-                // The first failure means a missing left parenthesis, consecutive ones mean missing right or left parenthesis.
-                _tokens.Require(TokenType.LParen, !isFirstConditionClause, TokenType.RParen, TokenType.LParen);
+                // The first failure means a missing left parenthesis.
+                if (isFirstConditionClause)
+                    _tokens.Require(TokenType.LParen);
+                // Consecutive ones mean a missing right or left parenthesis.
+                else
+                    _tokens.Require(TokenType.LParen, TokenType.RParen, TokenType.LParen);
 
                 var predicate = Expression();
                 var expressions = OneOrMoreExpressionsUntilRightParen();
@@ -271,8 +276,12 @@ namespace RainLisp.Parsing
             do
             {
                 // Let clause.
-                // The first failure means a missing left parenthesis, consecutive ones mean missing right or left parenthesis.
-                _tokens.Require(TokenType.LParen, !isFirstLetClause, TokenType.RParen, TokenType.LParen);
+                // The first failure means a missing left parenthesis.
+                if (isFirstLetClause)
+                    _tokens.Require(TokenType.LParen);
+                // Consecutive ones mean a missing right or left parenthesis.
+                else
+                    _tokens.Require(TokenType.LParen, TokenType.RParen, TokenType.LParen);
 
                 string identifierName = _tokens.RequireIdentifierName();
                 var expression = Expression();

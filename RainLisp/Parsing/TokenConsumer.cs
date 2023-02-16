@@ -59,14 +59,14 @@ namespace RainLisp.Parsing
                 throw new ParsingException(token.Line, token.Position, new[] { tokenType });
         }
 
-        public void Require(TokenType tokenType, bool reportAlternatives, params TokenType[] alternatives)
-            => Require(tokenType, CurrentToken(), reportAlternatives, alternatives);
+        public void Require(TokenType tokenType, params TokenType[] alternatives)
+            => Require(tokenType, CurrentToken(), alternatives);
 
-        public void Require(TokenType tokenType, Token token, bool reportAlternatives, params TokenType[] alternatives)
+        public void Require(TokenType tokenType, Token token, params TokenType[] alternatives)
         {
             // It's the caller's resposibility to ensure that the given token is the current one.
             if (!Match(tokenType, token))
-                throw new ParsingException(token.Line, token.Position, reportAlternatives ? alternatives : new[] { tokenType });
+                throw new ParsingException(token.Line, token.Position, alternatives);
         }
 
         private bool Check(TokenType tokenType, int position)
