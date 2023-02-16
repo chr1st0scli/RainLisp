@@ -47,7 +47,9 @@ let_clause = "(" ID expression ")"
 ```
 
 ## Quotable
-A quotable can be a number, string or boolean literal, an identifier (e.g. variable name) or a list of zero or more quotables.
+A quotable can be a number, string or boolean literal, an identifier (e.g. variable name), a keyword (quote, set!, define, if, cond, else, begin, lambda, let, and, or) or a list of zero or more quotables.
 ```
-quotable = NUM | STRING | BOOL | ID | "(" {quotable} ")"
+quotable = NUM | STRING | BOOL | ID
+		| "quote" | "set!" | "define" | "if" | "cond" | "else" | "begin" | "lambda" | "let" | "and" | "or"
+		| "(" {quotable} ")"
 ```

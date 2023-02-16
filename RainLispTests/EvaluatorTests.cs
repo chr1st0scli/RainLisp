@@ -927,6 +927,19 @@ Should be 5th";
         [InlineData("(cadddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "(gh ik)")]
         [InlineData("(cadr (cdddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "lm")]
         [InlineData("(caddr (cdddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "no")]
+        [InlineData("(quote quote)", "quote")]
+        [InlineData("(quote set!)", "set!")]
+        [InlineData("(quote define)", "define")]
+        [InlineData("(quote if)", "if")]
+        [InlineData("(quote cond)", "cond")]
+        [InlineData("(quote else)", "else")]
+        [InlineData("(quote begin)", "begin")]
+        [InlineData("(quote lambda)", "lambda")]
+        [InlineData("(quote let)", "let")]
+        [InlineData("(quote and)", "and")]
+        [InlineData("(quote or)", "or")]
+        [InlineData("(quote (if true 1 0))", "(if true 1 0)")]
+        [InlineData("(quote (cond ((< a 0) -1) ((> a 5) 6) (else 1)))", "(cond ((< a 0) -1) ((> a 5) 6) (else 1))")]
         public void Evaluate_Quote_Correctly(string expression, string expectedResult)
         {
             // Arrange
