@@ -36,6 +36,19 @@ namespace RainLisp.Parsing
             return true;
         }
 
+        public bool MatchAnyBut(TokenType[] tokenTypes, Token token)
+        {
+            // It's the caller's resposibility to ensure that the given token is the current one.
+            foreach (var tokenType in tokenTypes)
+            {
+                if (tokenType == token.Type)
+                    return false;
+            }
+
+            _currPosition++;
+            return true;
+        }
+
         public void Require(TokenType tokenType)
             => Require(tokenType, CurrentToken());
 

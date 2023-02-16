@@ -154,10 +154,8 @@ namespace RainLisp.Parsing
             string? quoteText = null;
             List<Quotable>? quotes = null;
 
-            if (_tokens.Match(TokenType.Number, currentToken) ||
-                _tokens.Match(TokenType.String, currentToken) ||
-                _tokens.Match(TokenType.Boolean, currentToken) ||
-                _tokens.Match(TokenType.Identifier, currentToken))
+            // All other tokens are valid for a singular (i.e. non list) quotable.
+            if (_tokens.MatchAnyBut(new[] { TokenType.LParen, TokenType.RParen, TokenType.EOF }, currentToken))
             {
                 quoteText = currentToken.Value;
             }
