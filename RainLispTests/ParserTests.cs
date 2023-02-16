@@ -258,7 +258,7 @@ namespace RainLispTests
             var expectedMissingSymbols = expectedError switch
             {
                 ParsingError.MissingDefinition => new[] { TokenType.Identifier, TokenType.LParen },
-                ParsingError.MissingExpression => new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen },
+                ParsingError.MissingExpression => new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen },
                 ParsingError.MissingSymbol => new[] { expectedMissingToken!.Value },
                 ParsingError.MissingRightOrLeftParen => new[] { TokenType.RParen, TokenType.LParen },
                 _ => throw new NotImplementedException()

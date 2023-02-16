@@ -19,9 +19,10 @@ A body consists of zero or more definitions followed by at least one expression.
 body = {definition} expression {expression}
 ```
 ## Expression
-An expression can be a number, string or boolean literal, an identifier (e.g. variable name) or one of the special forms `quote`, `set!`, `if`, `begin`, `lambda`, or one of the derived expressions `cond`, `let`, `and`, `or`. If it is none of the above, then it is a function application (call).
+An expression can be a number, string or boolean literal, an identifier (e.g. variable name) or one of the special forms `'`, `quote`, `set!`, `if`, `begin`, `lambda`, or one of the derived expressions `cond`, `let`, `and`, `or`. If it is none of the above, then it is a function application (call).
 ```
 expression = NUM | STRING | BOOL | ID 
+		| "'" quotable
 		| "(" "quote" quotable ")"
 		| "(" "set!" ID expression ")"
 		| "(" "if" expression expression [expression] ")"

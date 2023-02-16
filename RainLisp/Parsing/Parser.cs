@@ -102,10 +102,13 @@ namespace RainLisp.Parsing
             else if (_tokens.Match(TokenType.Identifier, currentToken))
                 expression = new Identifier(currentToken.Value);
 
+            else if (_tokens.Match(TokenType.QuoteAlt, currentToken))
+                expression = new Quote(Quotable());
+
             else
             {
                 // Missing expression, one of the expected tokens was not encountered.
-                _tokens.Require(TokenType.LParen, currentToken, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
+                _tokens.Require(TokenType.LParen, currentToken, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen);
 
                 currentToken = _tokens.CurrentToken();
 
@@ -162,7 +165,7 @@ namespace RainLisp.Parsing
             else
             {
                 // Only tokens that can start an expression are reported. Other keywords, such as special forms and derived expressions, don't need to.
-                _tokens.Require(TokenType.LParen, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
+                _tokens.Require(TokenType.LParen, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen);
 
                 quotes = new List<Quotable>();
 
