@@ -145,6 +145,11 @@ namespace RainLisp.Tokenization
                     RegisterUnknownToken();
                     RegisterSpecificToken(c.ToString(), TokenType.RParen, charPosition);
                 }
+                else if (c == SINGLE_QUOTE)
+                {
+                    RegisterUnknownToken();
+                    RegisterSpecificToken(c.ToString(), TokenType.QuoteAlt, charPosition);
+                }
                 else if (c == CARRIAGE_RETURN)
                 {
                     RegisterUnknownToken();

@@ -9,6 +9,7 @@
         LParen,
         RParen,
         Quote,
+        QuoteAlt,
         Assignment,
         Definition,
         If,

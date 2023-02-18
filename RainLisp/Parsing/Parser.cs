@@ -1,5 +1,6 @@
 ﻿using RainLisp.AbstractSyntaxTree;
 using RainLisp.DerivedExpressions;
+using RainLisp.Grammar;
 using RainLisp.Tokenization;
 
 namespace RainLisp.Parsing
@@ -102,10 +103,13 @@ namespace RainLisp.Parsing
             else if (_tokens.Match(TokenType.Identifier, currentToken))
                 expression = new Identifier(currentToken.Value);
 
+            else if (_tokens.Match(TokenType.QuoteAlt, currentToken))
+                expression = new Quote(Quotable());
+
             else
             {
                 // Missing expression, one of the expected tokens was not encountered.
-                _tokens.Require(TokenType.LParen, currentToken, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
+                _tokens.Require(TokenType.LParen, currentToken, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen);
 
                 currentToken = _tokens.CurrentToken();
 
@@ -154,22 +158,23 @@ namespace RainLisp.Parsing
             string? quoteText = null;
             List<Quotable>? quotes = null;
 
+            // If the quotable itself is of the form '<quotable>, it gets converted to the equivalent list of quotables (quote <quotable>).
+            if (_tokens.Match(TokenType.QuoteAlt, currentToken))
+                quotes = new List<Quotable> { new Quotable(Keywords.QUOTE), Quotable() };
+
             // All other tokens are valid for a singular (i.e. non list) quotable.
-            if (_tokens.MatchAnyBut(new[] { TokenType.LParen, TokenType.RParen, TokenType.EOF }, currentToken))
-            {
+            else if (_tokens.MatchAnyBut(new[] { TokenType.LParen, TokenType.RParen, TokenType.EOF }, currentToken))
                 quoteText = currentToken.Value;
-            }
+
             else
             {
                 // Only tokens that can start an expression are reported. Other keywords, such as special forms and derived expressions, don't need to.
-                _tokens.Require(TokenType.LParen, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.LParen);
+                _tokens.Require(TokenType.LParen, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen);
 
                 quotes = new List<Quotable>();
 
                 while (!_tokens.Match(TokenType.RParen))
-                {
                     quotes.Add(Quotable());
-                }
             }
 
             return new Quotable(quoteText, quotes);

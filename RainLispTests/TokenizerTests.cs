@@ -94,6 +94,15 @@ namespace RainLispTests
                 { "a", new[] { Expect(Identifier, "a", 1), Expect(EOF, "", 2) } },
                 { "abc", new[] { Expect(Identifier, "abc", 1), Expect(EOF, "", 4) } },
                 { "+", new[] { Expect(Identifier, "+", 1), Expect(EOF, "", 2) } },
+
+                { "'12.34", new[] { Expect(QuoteAlt, "'", 1), Expect(Number, "12.34", 2, numberValue: 12.34), Expect(EOF, "", 7) } },
+                { "' 12.34", new[] { Expect(QuoteAlt, "'", 1), Expect(Number, "12.34", 3, numberValue: 12.34), Expect(EOF, "", 8) } },
+                { "'abcd", new[] { Expect(QuoteAlt, "'", 1), Expect(Identifier, "abcd", 2), Expect(EOF, "", 6) } },
+                { "' abcd", new[] { Expect(QuoteAlt, "'", 1), Expect(Identifier, "abcd", 3), Expect(EOF, "", 7) } },
+                { "1'abcd2", new[] { Expect(Number, "1", 1, numberValue: 1), Expect(QuoteAlt, "'", 2), Expect(Identifier, "abcd2", 3), Expect(EOF, "", 8) } },
+                { "1'abcd2\"hello\"", new[] { Expect(Number, "1", 1, numberValue: 1), Expect(QuoteAlt, "'", 2), Expect(Identifier, "abcd2", 3), Expect(TokenType.String, "\"hello\"", 8, stringValue: "hello"), Expect(EOF, "", 15) } },
+                { "a'abcd2\"hello\"", new[] { Expect(Identifier, "a", 1), Expect(QuoteAlt, "'", 2), Expect(Identifier, "abcd2", 3), Expect(TokenType.String, "\"hello\"", 8, stringValue: "hello"), Expect(EOF, "", 15) } },
+                { "'(ab cd)", new[] { Expect(QuoteAlt, "'", 1), Expect(LParen, "(", 2), Expect(Identifier, "ab", 3), Expect(Identifier, "cd", 6), Expect(RParen, ")", 8), Expect(EOF, "", 9) } },
             };
 
             data.Add("(quote abcd)", new[] {

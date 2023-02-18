@@ -10,6 +10,7 @@ namespace RainLisp.Tokenization
             {
                 TokenType.LParen => Delimiters.LPAREN.ToString(),
                 TokenType.RParen => Delimiters.RPAREN.ToString(),
+                TokenType.QuoteAlt => Delimiters.SINGLE_QUOTE.ToString(),
                 TokenType.Quote => Keywords.QUOTE,
                 TokenType.Assignment => Keywords.SET,
                 TokenType.Definition => Keywords.DEFINE,
