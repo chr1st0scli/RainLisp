@@ -23,7 +23,7 @@ namespace RainLisp.Parsing
 
             while (!_tokens.Check(TokenType.EOF))
             {
-                if (_tokens.CheckNext(TokenType.Definition))
+                if (DefinitionFollows())
                 {
                     program.Definitions ??= new List<Definition>();
                     program.Definitions.Add(Definition());
@@ -73,11 +73,11 @@ namespace RainLisp.Parsing
         {
             List<Definition>? definitions = null;
 
-            if (_tokens.CheckNext(TokenType.Definition))
+            if (DefinitionFollows())
             {
                 definitions = new() { Definition() };
 
-                while (_tokens.CheckNext(TokenType.Definition))
+                while (DefinitionFollows())
                     definitions.Add(Definition());
             }
 
@@ -325,6 +325,9 @@ namespace RainLisp.Parsing
         #endregion
 
         #region General Helpers
+        private bool DefinitionFollows() 
+            => _tokens.Check(TokenType.LParen) && _tokens.CheckNext(TokenType.Definition);
+
         private List<Expression> OneOrMoreExpressionsUntilRightParen(bool consumeLastRightParen = true)
         {
             Func<TokenType, bool> checkBound = consumeLastRightParen ? _tokens.Match : _tokens.Check;
