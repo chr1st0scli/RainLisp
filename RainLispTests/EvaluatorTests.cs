@@ -185,7 +185,9 @@ namespace RainLispTests
         [InlineData("(= 12 +)", false)]
         [InlineData("(= + 12)", false)]
         [InlineData("(= 12 (quote a))", false)]
+        [InlineData("(= 12 'a)", false)]
         [InlineData("(= (quote a) 12)", false)]
+        [InlineData("(= 'a 12)", false)]
         [InlineData("(= 12 (lambda() 0))", false)]
         [InlineData("(= (lambda() 0) 12)", false)]
         [InlineData("(= false (now))", false)]
@@ -195,20 +197,32 @@ namespace RainLispTests
         [InlineData("(= true +)", false)]
         [InlineData("(= + true)", false)]
         [InlineData("(= false (quote a))", false)]
+        [InlineData("(= false 'a)", false)]
         [InlineData("(= (quote a) false)", false)]
+        [InlineData("(= 'a false)", false)]
         [InlineData("(= true (lambda() 0))", false)]
         [InlineData("(= (lambda() 0) true)", false)]
         // Quotes are unique, therefore their references are equal.
         [InlineData("(= (quote a) (quote a))", true)]
+        [InlineData("(= 'a 'a)", true)]
+        [InlineData("(= (quote a) 'a)", true)]
+        [InlineData("(= 'a (quote a))", true)]
         [InlineData("(= (quote ab) (quote ab))", true)]
+        [InlineData("(= 'ab 'ab)", true)]
         [InlineData("(= (quote 12.34) (quote 12.34))", true)]
+        [InlineData("(= '12.34 '12.34)", true)]
         [InlineData("(= (quote true) (quote true))", true)]
+        [InlineData("(= 'true 'true)", true)]
         [InlineData("(= (quote false) (quote false))", true)]
+        [InlineData("(= 'false 'false)", true)]
         [InlineData("(= (quote \"hello\") (quote \"hello\"))", true)]
+        [InlineData("(= '\"hello\" '\"hello\")", true)]
         [InlineData("(= (quote a) (quote b))", false)]
-        [InlineData("(= (quote true) (quote false))", false)]
-        [InlineData("(= (quote 12.34) (quote 12.3))", false)]
+        [InlineData("(= 'a 'b)", false)]
+        [InlineData("(= 'true 'false)", false)]
+        [InlineData("(= '12.34 '12.3)", false)]
         [InlineData("(= (quote \"hello\") (quote \"world\"))", false)]
+        [InlineData("(= '\"hello\" '\"world\")", false)]
         // Nil is also unique.
         [InlineData("(= nil nil)", true)]
         [InlineData("(= 12 nil)", false)]
@@ -427,6 +441,7 @@ namespace RainLispTests
         [Theory]
         [InlineData("(list)")]
         [InlineData("(quote ())")]
+        [InlineData("'()")]
         public void Evaluate_EmptyList_ReturnsNil(string expression)
         {
             // Arrange
@@ -563,16 +578,16 @@ namespace RainLispTests
   (define (multiply-numbers) (* x y))
   (define (divide-numbers) (/ x y))
 
-  (cond ((= op (quote add)) add-numbers)
-        ((= op (quote subtract)) subtract-numbers)
-        ((= op (quote multiply)) multiply-numbers)
-        ((= op (quote divide)) divide-numbers)
+  (cond ((= op 'add) add-numbers)
+        ((= op 'subtract) subtract-numbers)
+        ((= op 'multiply) multiply-numbers)
+        ((= op 'divide) divide-numbers)
         (else (error ""unknown operation""))))
 
-((math-op (quote add) 4 2))
-((math-op (quote subtract) 4 2))
-((math-op (quote multiply) 4 2))
-((math-op (quote divide) 4 2))";
+((math-op 'add 4 2))
+((math-op 'subtract 4 2))
+((math-op 'multiply 4 2))
+((math-op 'divide 4 2))";
 
             // Act
             var results = _interpreter.Evaluate(code).ToArray();
@@ -895,51 +910,102 @@ Should be 5th";
 
         [Theory]
         [InlineData("(quote 1)", "1")]
+        [InlineData("'1", "1")]
         [InlineData("(quote 1234.5678)", "1234.5678")]
+        [InlineData("'1234.5678", "1234.5678")]
         [InlineData("(quote +1234.5678)", "+1234.5678")]
+        [InlineData("'+1234.5678", "+1234.5678")]
         [InlineData("(quote -1234.5678)", "-1234.5678")]
+        [InlineData("'-1234.5678", "-1234.5678")]
         [InlineData("(quote true)", "true")]
+        [InlineData("'true", "true")]
         [InlineData("(quote false)", "false")]
+        [InlineData("'false", "false")]
         [InlineData("(quote \"hello world\")", "\"hello world\"")]
+        [InlineData("'\"hello world\"", "\"hello world\"")]
         [InlineData("(quote \"hello \\n \\r \\t \\\" \\\\ world\")", "\"hello \\n \\r \\t \\\" \\\\ world\"")]
+        [InlineData("'\"hello \\n \\r \\t \\\" \\\\ world\"", "\"hello \\n \\r \\t \\\" \\\\ world\"")]
         [InlineData("(quote a)", "a")]
+        [InlineData("'a", "a")]
+        [InlineData("' a", "a")]
         [InlineData("(quote abc)", "abc")]
+        [InlineData("'abc", "abc")]
         [InlineData("(quote abc!@#$)", "abc!@#$")]
+        [InlineData("'abc!@#$", "abc!@#$")]
         [InlineData("(quote ())", "()")]
+        [InlineData("'()", "()")]
         [InlineData("(quote (a bc def))", "(a bc def)")]
+        [InlineData("'(a bc def)", "(a bc def)")]
+        [InlineData("'  (a bc def)", "(a bc def)")]
         [InlineData("(quote (foo ab 12.34 true \"hi\"))", "(foo ab 12.34 true \"hi\")")]
+        [InlineData("'(foo ab 12.34 true \"hi\")", "(foo ab 12.34 true \"hi\")")]
         [InlineData("(car (quote (foo ab 12.34 true \"hi\")))", "foo")]
+        [InlineData("(car '(foo ab 12.34 true \"hi\"))", "foo")]
         [InlineData("(cadr (quote (foo ab 12.34 true \"hi\")))", "ab")]
+        [InlineData("(cadr '(foo ab 12.34 true \"hi\"))", "ab")]
         [InlineData("(caddr (quote (foo ab 12.34 true \"hi\")))", "12.34")]
+        [InlineData("(caddr '(foo ab 12.34 true \"hi\"))", "12.34")]
         [InlineData("(cadddr (quote (foo ab 12.34 true \"hi\")))", "true")]
+        [InlineData("(cadddr '(foo ab 12.34 true \"hi\"))", "true")]
         [InlineData("(cadr (cdddr (quote (foo ab 12.34 true \"hi\"))))", "\"hi\"")]
+        [InlineData("(cadr (cdddr '(foo ab 12.34 true \"hi\")))", "\"hi\"")]
         [InlineData("(car (quote (a bc def)))", "a")]
+        [InlineData("(car '(a bc def))", "a")]
         [InlineData("(cadr (quote (a bc def)))", "bc")]
+        [InlineData("(cadr '(a bc def))", "bc")]
         [InlineData("(caddr (quote (a bc def)))", "def")]
+        [InlineData("(caddr '(a bc def))", "def")]
         [InlineData("(quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))", "(ab (c (c1 c2) (d)) ef (gh ik) lm no)")]
+        [InlineData("'(ab (c (c1 c2) (d)) ef (gh ik) lm no)", "(ab (c (c1 c2) (d)) ef (gh ik) lm no)")]
         [InlineData("(car (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "ab")]
+        [InlineData("(car '(ab (c (c1 c2) (d)) ef (gh ik) lm no))", "ab")]
         [InlineData("(cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "(c (c1 c2) (d))")]
+        [InlineData("(cadr '(ab (c (c1 c2) (d)) ef (gh ik) lm no))", "(c (c1 c2) (d))")]
         [InlineData("(car (cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "c")]
+        [InlineData("(car (cadr '(ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "c")]
         [InlineData("(car (cadr (cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))))", "c1")]
+        [InlineData("(car (cadr (cadr '(ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "c1")]
         [InlineData("(cadr (cadr (cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))))", "c2")]
+        [InlineData("(cadr (cadr (cadr '(ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "c2")]
         [InlineData("(car (caddr (cadr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))))", "d")]
+        [InlineData("(car (caddr (cadr '(ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "d")]
         [InlineData("(caddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "ef")]
+        [InlineData("(caddr '(ab (c (c1 c2) (d)) ef (gh ik) lm no))", "ef")]
         [InlineData("(cadddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "(gh ik)")]
+        [InlineData("(cadddr '(ab (c (c1 c2) (d)) ef (gh ik) lm no))", "(gh ik)")]
         [InlineData("(cadr (cdddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "lm")]
+        [InlineData("(cadr (cdddr '(ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "lm")]
         [InlineData("(caddr (cdddr (quote (ab (c (c1 c2) (d)) ef (gh ik) lm no))))", "no")]
+        [InlineData("(caddr (cdddr '(ab (c (c1 c2) (d)) ef (gh ik) lm no)))", "no")]
         [InlineData("(quote quote)", "quote")]
+        [InlineData("'quote", "quote")]
         [InlineData("(quote set!)", "set!")]
+        [InlineData("'set!", "set!")]
         [InlineData("(quote define)", "define")]
+        //[InlineData("'define", "define")]
         [InlineData("(quote if)", "if")]
+        [InlineData("'if", "if")]
         [InlineData("(quote cond)", "cond")]
+        [InlineData("'cond", "cond")]
         [InlineData("(quote else)", "else")]
+        [InlineData("'else", "else")]
         [InlineData("(quote begin)", "begin")]
+        [InlineData("'begin", "begin")]
         [InlineData("(quote lambda)", "lambda")]
+        [InlineData("'lambda", "lambda")]
         [InlineData("(quote let)", "let")]
+        [InlineData("'let", "let")]
         [InlineData("(quote and)", "and")]
+        [InlineData("'and", "and")]
         [InlineData("(quote or)", "or")]
+        [InlineData("'or", "or")]
         [InlineData("(quote (if true 1 0))", "(if true 1 0)")]
+        [InlineData("'(if true 1 0)", "(if true 1 0)")]
         [InlineData("(quote (cond ((< a 0) -1) ((> a 5) 6) (else 1)))", "(cond ((< a 0) -1) ((> a 5) 6) (else 1))")]
+        [InlineData("'(cond ((< a 0) -1) ((> a 5) 6) (else 1))", "(cond ((< a 0) -1) ((> a 5) 6) (else 1))")]
+        [InlineData("(quote (quote abc))", "(quote abc)")]
+        [InlineData("'(quote abc)", "(quote abc)")]
+        [InlineData("''abc", "(quote abc)")]
         public void Evaluate_Quote_Correctly(string expression, string expectedResult)
         {
             // Arrange
