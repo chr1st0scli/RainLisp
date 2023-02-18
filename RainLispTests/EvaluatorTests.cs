@@ -982,7 +982,7 @@ Should be 5th";
         [InlineData("(quote set!)", "set!")]
         [InlineData("'set!", "set!")]
         [InlineData("(quote define)", "define")]
-        //[InlineData("'define", "define")]
+        [InlineData("'define", "define")]
         [InlineData("(quote if)", "if")]
         [InlineData("'if", "if")]
         [InlineData("(quote cond)", "cond")]
@@ -1006,6 +1006,13 @@ Should be 5th";
         [InlineData("(quote (quote abc))", "(quote abc)")]
         [InlineData("'(quote abc)", "(quote abc)")]
         [InlineData("''abc", "(quote abc)")]
+        [InlineData("(let ((a 1) (b 2)) (+ a b) 'define)", "define")]
+        [InlineData("((lambda () 'define))", "define")]
+        [InlineData("((lambda () (define a 1) 'define))", "define")]
+        [InlineData("(define (foo) 'define) (foo)", "define")]
+        [InlineData("(define (foo) (define a 1) 'define) (foo)", "define")]
+        [InlineData("(let ((a 1) (b 2)) 'define)", "define")]
+        [InlineData("(let ((a 1) (b 2)) (define c 3) 'define)", "define")]
         public void Evaluate_Quote_Correctly(string expression, string expectedResult)
         {
             // Arrange
