@@ -487,7 +487,9 @@ namespace RainLisp.Evaluation
 
         private static void RequireListOf<T>(Pair pair)
         {
-            if (pair.First is Pair firstInnerPair)
+            if (pair.First is Nil)
+                return;
+            else if (pair.First is Pair firstInnerPair)
                 RequireListOf<T>(firstInnerPair);
             else
                 As<T>(pair.First);

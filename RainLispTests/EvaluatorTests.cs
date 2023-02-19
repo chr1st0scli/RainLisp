@@ -600,6 +600,39 @@ namespace RainLispTests
         }
 
         [Fact]
+        public void Evaluate_Metaprogramming_Correctly()
+        {
+            // Arrange
+            string code = @"
+; Procedure that builds code that counts.
+(define (build-counting-code count)
+  (define (iter quote-list cnt)
+    (if (= cnt count)
+        (append quote-list '(a)) ; Return a.
+        (iter (append quote-list '((set! a (+ a 1)))) (+ cnt 1)))) ; Append successive assignments to a.
+
+  ; Start with a lambda that defines variable a that is set to 0.
+  (iter '(lambda () (define a 0)) 0))
+
+; code is a list of quote symbols.
+(define code (build-counting-code 4))
+; eval gives a user procedure.
+(define proc (eval code))
+
+code
+(proc)";
+            string expectedCodeBuilt = "(lambda () (define a 0) (set! a (+ a 1)) (set! a (+ a 1)) (set! a (+ a 1)) (set! a (+ a 1)) a)";
+
+            // Act
+            var results = _interpreter.Evaluate(code).ToArray();
+            string actualCodeBuilt = results[0].AcceptVisitor(new EvaluationResultPrintVisitor());
+
+            // Assert
+            Assert.Equal(expectedCodeBuilt, actualCodeBuilt);
+            Assert.Equal(4, ((NumberDatum)results[1]).Value);
+        }
+
+        [Fact]
         public void Print_ProgramResults_InTheRightOrder()
         {
             // Arrange
