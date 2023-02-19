@@ -1029,6 +1029,29 @@ Should be 5th";
         }
 
         [Theory]
+        [InlineData("'12.35", 12.35)]
+        [InlineData("'true", true)]
+        [InlineData("'(+ 1 2 3 4)", 10d)]
+        [InlineData("(list 'car (list 'list '1 'true '\"hi\"))", 1d)]
+        [InlineData("'(car (list 1 true \"hi\"))", 1d)]
+        [InlineData("(list 'cadr (list 'list '1 'true '\"hi\"))", true)]
+        [InlineData("'(cadr (list 1 true \"hi\"))", true)]
+        [InlineData("(list 'caddr (list 'list '1 'true '\"hi\"))", "hi")]
+        [InlineData("'(caddr (list 1 true \"hi\"))", "hi")]
+        [InlineData("'(car (car (cadddr (list 1 2 (list 3 4) (list (list 5 6) 7)))))", 5d)]
+        [InlineData("'(cadr (car (cadddr (list 1 2 (list 3 4) (list (list 5 6) 7)))))", 6d)]
+        [InlineData("'(let ((a 2) (b 3)) (define c 4) (set! c (+ c 1)) (+ a b c))", 10d)]
+        public void Evaluate_EvalQuoteSymbols_Correctly(string quotedExpression, object expectedResult)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate($"(eval {quotedExpression})").Last();
+
+            // Assert
+            Assert.Equal(expectedResult, ((IPrimitiveDatum)result).GetValueAsObject());
+        }
+
+        [Theory]
         [InlineData(@"
 (fold-left + 0
            (filter (lambda (x) (<= x 14)) 
@@ -1139,7 +1162,8 @@ Should be 5th";
             Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
                 {
                     "not", "car", "cdr", "null?", "display", "debug", "trace", "error", "string-length", "to-lower", "to-upper",
-                    "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc", "parse-number"
+                    "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc", "parse-number",
+                    "eval"
                 }, expression, expected, false, actual);
         }
 
@@ -1504,6 +1528,27 @@ Should be 5th";
         public void Evaluate_CallExpectingNumberAndStringWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
             Evaluate_CallsWithWrongExpression_Throws(new[] { "number-to-string" }, expression, actual, expected);
+        }
+
+        [Theory]
+        [InlineData("({0} 1)", typeof(NumberDatum), typeof(QuoteSymbol), typeof(Pair))]
+        [InlineData("({0} true)", typeof(BoolDatum), typeof(QuoteSymbol), typeof(Pair))]
+        [InlineData("({0} \"\")", typeof(StringDatum), typeof(QuoteSymbol), typeof(Pair))]
+        [InlineData("({0} (now))", typeof(DateTimeDatum), typeof(QuoteSymbol), typeof(Pair))]
+        [InlineData("({0} nil)", typeof(Nil), typeof(QuoteSymbol), typeof(Pair))]   // Empty list is not acceptable.
+        [InlineData("({0} '())", typeof(Nil), typeof(QuoteSymbol), typeof(Pair))]   // Empty list is not acceptable.
+        [InlineData("({0} (cons 10 'b))", typeof(NumberDatum), typeof(QuoteSymbol))]
+        [InlineData("({0} (cons 'a 'b))", typeof(QuoteSymbol), typeof(Pair), typeof(Nil))] // 'b should be a pair or nil so that we are dealing with a list.
+        [InlineData("({0} (list 'a 'b (cons 'c true)))", typeof(BoolDatum), typeof(Pair), typeof(Nil))] // true should be a pair or nil so that we are dealing with a list.
+        [InlineData("({0} (list 'ab 10))", typeof(NumberDatum), typeof(QuoteSymbol))]
+        [InlineData("({0} (list 'ab true 'cd))", typeof(BoolDatum), typeof(QuoteSymbol))]
+        [InlineData("({0} (list 'ab (list 12 'ef) 'gh))", typeof(NumberDatum), typeof(QuoteSymbol))]
+        [InlineData("({0} (list 'ab (list 'cd 12) 'gh))", typeof(NumberDatum), typeof(QuoteSymbol))]
+        [InlineData("({0} (list false (list 'cd 12) 'gh))", typeof(BoolDatum), typeof(QuoteSymbol))]
+        [InlineData("({0} (list 'ab (list 'cd 'ef) (list (list 'gh \"\")) 'ik))", typeof(StringDatum), typeof(QuoteSymbol))]
+        public void Evaluate_EvalPrimitiveWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "eval" }, expression, actual, expected);
         }
 
         [Theory]
