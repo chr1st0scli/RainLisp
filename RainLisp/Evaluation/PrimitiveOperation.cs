@@ -265,6 +265,23 @@ namespace RainLisp.Evaluation
         public static EvaluationResult Round(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, (val, decimals) => ValueOrThrowInvalid(() => new NumberDatum((double)Math.Round((decimal)val, (int)decimals, MidpointRounding.AwayFromZero))), values);
 
+        public static EvaluationResult Eval(EvaluationResult[]? values, Func<EvaluationResult, EvaluationResult> EvalCallback)
+        {
+            RequireMoreThanZero(values, 1);
+            var value = values[0];
+
+            // Ensure that value is either a quote symbol or a non-empty list of quote symbols.
+            if (value is QuoteSymbol)
+                return EvalCallback(value);
+            else if (value is Pair pair)
+            {
+                RequireListOf<QuoteSymbol>(pair);
+                return EvalCallback(pair);
+            }
+            else
+                throw new WrongTypeOfArgumentException(value.GetType(), new[] { typeof(QuoteSymbol), typeof(Pair) });
+        }
+
         #region Helpers
         private delegate T Transform<T>(EvaluationResult value);
 
@@ -466,6 +483,24 @@ namespace RainLisp.Evaluation
                 message = message?.ToLower();
 
             return message;
+        }
+
+        private static void RequireListOf<T>(Pair pair)
+        {
+            if (pair.First is Nil)
+                return;
+            else if (pair.First is Pair firstInnerPair)
+                RequireListOf<T>(firstInnerPair);
+            else
+                As<T>(pair.First);
+
+            if (pair.Second is Nil)
+                return;
+            else if (pair.Second is Pair secondInnerPair)
+                RequireListOf<T>(secondInnerPair);
+            // Ensure we are dealing with a list and not any pair.
+            else
+                throw new WrongTypeOfArgumentException(pair.Second.GetType(), new[] { typeof(Pair), typeof(Nil) });
         }
         #endregion
     }

@@ -64,5 +64,6 @@
         public const string NUMBER_TO_STRING = "number-to-string";
         public const string PARSE_NUMBER = "parse-number";
         public const string ROUND = "round";
+        public const string EVAL = "eval";
     }
 }
