@@ -265,6 +265,9 @@ namespace RainLisp.Evaluation
         public static EvaluationResult Round(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, (val, decimals) => ValueOrThrowInvalid(() => new NumberDatum((double)Math.Round((decimal)val, (int)decimals, MidpointRounding.AwayFromZero))), values);
 
+        public static EvaluationResult Eval(EvaluationResult[]? values, Func<EvaluationResult, EvaluationResult> EvalCallback)
+            => ApplyUnaryOperator(val => EvalCallback(val), values);
+
         #region Helpers
         private delegate T Transform<T>(EvaluationResult value);
 

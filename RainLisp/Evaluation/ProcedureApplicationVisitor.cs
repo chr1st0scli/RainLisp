@@ -5,6 +5,11 @@ namespace RainLisp.Evaluation
 {
     public class ProcedureApplicationVisitor : IProcedureApplicationVisitor
     {
+        private readonly Func<EvaluationResult, EvaluationResult> _evalPrimitiveCallback;
+
+        public ProcedureApplicationVisitor(Func<EvaluationResult, EvaluationResult> evalPrimitiveCallback)
+            => _evalPrimitiveCallback = evalPrimitiveCallback ?? throw new ArgumentNullException(nameof(evalPrimitiveCallback));
+
         public EvaluationResult ApplyUserProcedure(UserProcedure procedure, EvaluationResult[]? evaluatedArguments, IEvaluatorVisitor evaluatorVisitor)
         {
             var extendedEnvironment = procedure.Environment.ExtendEnvironment(procedure.Parameters, evaluatedArguments);
@@ -78,6 +83,7 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.NumberToString => NumberToString(evaluatedArguments),
                 PrimitiveProcedureType.ParseNumber => ParseNumber(evaluatedArguments),
                 PrimitiveProcedureType.Round => Round(evaluatedArguments),
+                PrimitiveProcedureType.Eval => Eval(evaluatedArguments, _evalPrimitiveCallback),
                 _ => throw new NotImplementedException()
             };
         }

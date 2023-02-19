@@ -62,6 +62,7 @@
         DateTimeToString,
         NumberToString,
         ParseNumber,
-        Round
+        Round,
+        Eval
     }
 }

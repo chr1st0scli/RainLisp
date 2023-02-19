@@ -17,13 +17,15 @@ namespace RainLisp
         private readonly IEnvironmentFactory? _environmentFactory;
         private readonly bool _installLispLibraries;
 
+        private IEvaluationEnvironment? _mostRecentGlobalEnvironment;
+
         private static Type[]? _primitiveTypes;
 
         public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null, IEnvironmentFactory? environmentFactory = null, IEvaluationResultVisitor<string>? resultPrinter = null, bool installLispLibraries = true)
         {
             _tokenizer = tokenizer ?? new Tokenizer();
             _parser = parser ?? new Parser();
-            _evaluator = evaluator ?? new EvaluatorVisitor(new ProcedureApplicationVisitor());
+            _evaluator = evaluator ?? new EvaluatorVisitor(new ProcedureApplicationVisitor(EvalPrimitiveCallback));
             _environmentFactory = environmentFactory;
             _resultPrinter = resultPrinter ?? new EvaluationResultPrintVisitor();
             _installLispLibraries = installLispLibraries;
@@ -84,7 +86,7 @@ namespace RainLisp
                 var programAST = _parser.Parse(tokens);
 
                 var results = _evaluator.EvaluateProgram(programAST, environment);
-                foreach (var result in results )
+                foreach (var result in results)
                 {
                     string resultToPrint = result.AcceptVisitor(_resultPrinter);
                     print(resultToPrint);
@@ -160,10 +162,10 @@ namespace RainLisp
 
         private IEvaluationEnvironment CreateGlobalEnvironment()
         {
-            var environment = _environmentFactory?.CreateEnvironment() ?? new EvaluationEnvironment();
+            _mostRecentGlobalEnvironment = _environmentFactory?.CreateEnvironment() ?? new EvaluationEnvironment();
 
             void Install(string procedureName, PrimitiveProcedureType procedureType)
-                => environment.DefineIdentifier(procedureName, new PrimitiveProcedure(procedureType));
+                => _mostRecentGlobalEnvironment.DefineIdentifier(procedureName, new PrimitiveProcedure(procedureType));
 
             // Define primitive procedures.
             Install(PLUS, PrimitiveProcedureType.Add);
@@ -227,18 +229,25 @@ namespace RainLisp
             Install(NUMBER_TO_STRING, PrimitiveProcedureType.NumberToString);
             Install(PARSE_NUMBER, PrimitiveProcedureType.ParseNumber);
             Install(ROUND, PrimitiveProcedureType.Round);
+            Install(EVAL, PrimitiveProcedureType.Eval);
 
-            environment.DefineIdentifier(NIL, Nil.GetNil());
+            _mostRecentGlobalEnvironment.DefineIdentifier(NIL, Nil.GetNil());
 
+            // Install common libraries in the environment.
             if (_installLispLibraries)
             {
-                // Install common libraries in the environment.
-                IEvaluationEnvironment? env = environment;
+                IEvaluationEnvironment? env = _mostRecentGlobalEnvironment;
                 // Force enumeration, so that all definitions are installed.
                 _ = Evaluate(LispLibraries.LIBS, ref env).LastOrDefault();
             }
 
-            return environment;
+            return _mostRecentGlobalEnvironment;
+        }
+
+        private EvaluationResult EvalPrimitiveCallback(EvaluationResult result)
+        {
+            string code = result.AcceptVisitor(_resultPrinter);
+            return Evaluate(code, ref _mostRecentGlobalEnvironment).Last();
         }
 
         private static string AppendDebugInfo(string message, EvaluationException exception)
