@@ -3,20 +3,6 @@
     public static class LispLibraries
     {
         public const string LIBS = @"
-(define (cadr sequence)
-  (car (cdr sequence)))
-
-(define (cddr sequence)
-  (cdr (cdr sequence)))
-
-(define (caddr sequence)
-  (car (cdr (cdr sequence))))
-
-(define (cdddr sequence)
-  (cdr (cdr (cdr sequence))))
-
-(define (cadddr sequence)
-  (car (cdr (cdr (cdr sequence)))))
 
 (define (map proc sequence)
   (if (null? sequence)
@@ -61,6 +47,94 @@
         count
         (length-iter (cdr seq) (+ 1 count))))
   (length-iter sequence 0))
+
+; car and cdr flavors.
+; 2 levels.
+(define (cddr sequence)
+  (cdr (cdr sequence)))
+
+(define (cadr sequence)
+  (car (cdr sequence)))
+
+(define (caar sequence)
+  (car (car sequence)))
+
+(define (cdar sequence)
+  (cdr (car sequence)))
+
+; 3 levels.
+(define (cdddr sequence)
+  (cdr (cddr sequence)))
+
+(define (caddr sequence)
+  (car (cddr sequence)))
+
+(define (caadr sequence)
+  (car (cadr sequence)))
+
+(define (caaar sequence)
+  (car (caar sequence)))
+
+(define (cdaar sequence)
+  (cdr (caar sequence)))
+
+(define (cddar sequence)
+  (cdr (cdar sequence)))
+
+(define (cdadr sequence)
+  (cdr (cadr sequence)))
+
+(define (cadar sequence)
+  (car (cdar sequence)))
+
+; 4 levels.
+(define (cddddr sequence)
+  (cdr (cdddr sequence)))
+
+(define (cadddr sequence)
+  (car (cdddr sequence)))
+
+(define (caaddr sequence)
+  (car (caddr sequence)))
+
+(define (caaadr sequence)
+  (car (caadr sequence)))
+
+(define (caaaar sequence)
+  (car (caaar sequence)))
+
+(define (cdaaar sequence)
+  (cdr (caaar sequence)))
+
+(define (cddaar sequence)
+  (cdr (cdaar sequence)))
+
+(define (cdddar sequence)
+  (cdr (cddar sequence)))
+
+(define (cdadar sequence)
+  (cdr (cadar sequence)))
+
+(define (cadadr sequence)
+  (car (cdadr sequence)))
+
+(define (cdaddr sequence)
+  (cdr (caddr sequence)))
+
+(define (cddadr sequence)
+  (cdr (cdadr sequence)))
+
+(define (cadaar sequence)
+  (car (cdaar sequence)))
+
+(define (caadar sequence)
+  (car (cadar sequence)))
+
+(define (cdaadr sequence)
+  (cdr (caadr sequence)))
+
+(define (caddar sequence)
+  (car (cddar sequence)))
 ";
     }
 }
