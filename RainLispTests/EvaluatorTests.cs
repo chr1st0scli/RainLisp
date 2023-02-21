@@ -1154,6 +1154,57 @@ Should be 5th";
         }
 
         [Theory]
+        // 2 levels.
+        [InlineData("(caar sequence)", 2, 1)]
+        [InlineData("(cdar sequence)", 2, 2)]
+        [InlineData("(cadr sequence)", 2, 3)]
+        [InlineData("(cddr sequence)", 2, 4)]
+        // 3 levels.
+        [InlineData("(caaar sequence)", 3, 1)]
+        [InlineData("(cdaar sequence)", 3, 2)]
+        [InlineData("(cadar sequence)", 3, 3)]
+        [InlineData("(cddar sequence)", 3, 4)]
+        [InlineData("(caadr sequence)", 3, 5)]
+        [InlineData("(cdadr sequence)", 3, 6)]
+        [InlineData("(caddr sequence)", 3, 7)]
+        [InlineData("(cdddr sequence)", 3, 8)]
+        // 4 levels.
+        [InlineData("(caaaar sequence)", 4, 1)]
+        [InlineData("(cdaaar sequence)", 4, 2)]
+        [InlineData("(cadaar sequence)", 4, 3)]
+        [InlineData("(cddaar sequence)", 4, 4)]
+        [InlineData("(caadar sequence)", 4, 5)]
+        [InlineData("(cdadar sequence)", 4, 6)]
+        [InlineData("(caddar sequence)", 4, 7)]
+        [InlineData("(cdddar sequence)", 4, 8)]
+        [InlineData("(caaadr sequence)", 4, 9)]
+        [InlineData("(cdaadr sequence)", 4, 10)]
+        [InlineData("(cadadr sequence)", 4, 11)]
+        [InlineData("(cddadr sequence)", 4, 12)]
+        [InlineData("(caaddr sequence)", 4, 13)]
+        [InlineData("(cdaddr sequence)", 4, 14)]
+        [InlineData("(cadddr sequence)", 4, 15)]
+        [InlineData("(cddddr sequence)", 4, 16)]
+        public void Evaluate_CarCdrFlavors_Correctly(string expression, int levels, double expectedResult)
+        {
+            // Arrange
+            string code = levels switch
+            {
+                2 => "(define sequence (cons (cons 1 2) (cons 3 4)))",
+                3 => "(define sequence (cons (cons (cons 1 2) (cons 3 4)) (cons (cons 5 6) (cons 7 8))))",
+                4 => "(define sequence (cons (cons (cons (cons 1 2) (cons 3 4)) (cons (cons 5 6) (cons 7 8))) (cons (cons (cons 9 10) (cons 11 12)) (cons (cons 13 14) (cons 15 16)))))",
+                _ => throw new ArgumentOutOfRangeException(nameof(levels)),
+            };
+            code += expression;
+
+            // Act
+            var result = _interpreter.Evaluate(code).Last();
+
+            // Assert
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
+        }
+
+        [Theory]
         [InlineData("(define (foo) 1) (foo 1)", 0, false, 1)]
         [InlineData("(define (foo) 1) (foo 1 2)", 0, false, 2)]
         [InlineData("(define (foo x) x) (foo)", 1, false, 0)]
