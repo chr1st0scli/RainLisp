@@ -633,6 +633,174 @@ code
         }
 
         [Fact]
+        public void Evaluate_DataDirectedProgram_DispatchesOnType()
+        {
+            // Arrange
+            string code = @"
+(define (make-table)
+  (list '*table*))
+
+; 1D table.
+(define (lookup key table)
+  (let ((record (assoc key (cdr table))))
+    (if record
+        (cdr record)
+        false)))
+
+(define (assoc key records)
+  (cond ((null? records) false)
+        ((= key (caar records)) (car records))
+        (else (assoc key (cdr records)))))
+
+(define (insert! key value table)
+  (let ((record (assoc key (cdr table))))
+    (if record
+        (set-cdr! record value)
+        (set-cdr! table 
+                  (cons (cons key value) (cdr table))))))
+
+; 2D table.
+(define (lookup-2d key1 key2 table)
+  (let ((subtable (assoc key1 (cdr table))))
+    (if subtable
+        (lookup key2 subtable)
+        false)))
+
+(define (insert-2d! key1 key2 value table)
+  (let ((subtable (assoc key1 (cdr table))))
+    (if subtable
+        (insert! key2 value subtable)
+
+        (set-cdr! table
+                  (cons (list key1 (cons key2 value))
+                        (cdr table))))))
+
+(define dispatch-table (make-table))
+
+(define (put key1 key2 value)
+  (insert-2d! key1 key2 value dispatch-table))
+
+(define (get key1 key2)
+  (lookup-2d key1 key2 dispatch-table))
+
+; Tagging helpers.
+(define (set-tag tag object)
+  (cons tag object))
+
+(define (get-tag object)
+  (car object))
+
+(define (contents object)
+  (cdr object))
+
+; User modules.
+; Cat type.
+(define (install-cat-package)
+  (define type 'cat)
+  ; constructor and getters.
+  (define (make name age) (cons name age))
+  (define (get-name cat) (car cat))
+  (define (get-age cat) (cdr cat))
+  ; cat specific operations.
+  (define (sound) ""meow"")
+  (define (likes) ""fish"")
+  (define (kind) ""cat"")
+
+  ; Install the procedure-type bindings in the table.
+  (put 'sound type sound)
+  (put 'likes type likes)
+  (put 'kind type kind)
+  (put 'get-name type get-name)
+  (put 'get-age type get-age)
+  ; Registers a user procedure that creates a cat and attaches the appropriate tag to it.
+  (put 'make type (lambda (name age) (set-tag type (make name age))))
+  'ok)
+
+; Dog type.
+(define (install-dog-package)
+  (define type 'dog)
+  ; constructor and getters.
+  (define (make name age) (cons name age))
+  (define (get-name dog) (car dog))
+  (define (get-age dog) (cdr dog))
+  ; dog specific operations.
+  (define (sound) ""woof"")
+  (define (likes) ""bone"")
+  (define (kind) ""dog"")
+
+  ; Install the procedure-type bindings in the table.
+  (put 'sound type sound)
+  (put 'likes type likes)
+  (put 'kind type kind)
+  (put 'get-name type get-name)
+  (put 'get-age type get-age)
+  ; Registers a user procedure that creates a dog and attaches the appropriate tag to it.
+  (put 'make type (lambda (name age) (set-tag type (make name age))))
+  'ok)
+
+(install-cat-package)
+(install-dog-package)
+
+; Code that does not need to change no matter how many user packages are installed.
+(define (apply-to-pet operation pet supply-pet-as-arg)
+  ; Retrieve the right procedure based on the pet's type.
+  (let ((proc (get operation (get-tag pet))))
+    (if proc
+        (if supply-pet-as-arg
+            (proc (contents pet))
+            (proc))
+        (error ""Unknown operation.""))))
+
+(define (sound pet)
+  (apply-to-pet 'sound pet false))
+
+(define (likes pet)
+  (apply-to-pet 'likes pet false))
+
+(define (kind pet)
+  (apply-to-pet 'kind pet false))
+
+(define (get-name pet)
+  (apply-to-pet 'get-name pet true))
+
+(define (get-age pet)
+  (apply-to-pet 'get-age pet true))
+
+(define (present pet)
+  (+ ""My pet's name is "" (get-name pet) "". ""
+     ""It's a "" (kind pet) "", ""
+     ""it's "" (number-to-string (get-age pet) """") "" years old, ""
+     ""it says "" (sound pet) "" ""
+     ""and it likes "" (likes pet) "".""))
+
+; Helper constructors.
+(define (make-cat name age)
+  ((get 'make 'cat) name age))
+
+(define (make-dog name age)
+  ((get 'make 'dog) name age))
+
+; Present two different pets.
+(define my-cat (make-cat ""Ruby"" 8))
+(define my-dog (make-dog ""August"" 16))
+
+(present my-cat)
+(present my-dog)";
+
+            // Act
+            string[] results = _interpreter.Evaluate(code)
+                .Where(res => res is StringDatum)
+                .Cast<StringDatum>()
+                .Select(str => str.Value)
+                .ToArray();
+
+            // Assert
+            Assert.Equal(2, results.Length);
+            Assert.Equal("My pet's name is Ruby. It's a cat, it's 8 years old, it says meow and it likes fish.", results[0]);
+            Assert.Equal("My pet's name is August. It's a dog, it's 16 years old, it says woof and it likes bone.", results[1]);
+        }
+
+        [Fact]
         public void Print_ProgramResults_InTheRightOrder()
         {
             // Arrange
