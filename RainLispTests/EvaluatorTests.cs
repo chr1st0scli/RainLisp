@@ -633,6 +633,54 @@ code
         }
 
         [Fact]
+        public void Evaluate_EncapsulatedProgram_Correctly()
+        {
+            // Arrange
+            string code = @"
+(define (make-account amount)
+  (define total amount)
+
+  (define (deposit amount)
+    (set! total (+ total amount)))
+
+  (define (withdraw amount)
+    (if (>= total amount)
+        (set! total (- total amount))
+        (error ""Insufficient funds."")))
+
+  (define (balance) total)
+
+  (lambda (operation)
+    (cond ((= operation 'deposit) deposit)
+          ((= operation 'withdraw) withdraw)
+          ((= operation 'balance) balance)
+          (else (error ""Invalid operation."")))))
+
+(define account (make-account 225))
+(define balance (account 'balance))
+(define deposit (account 'deposit))
+(define withdraw (account 'withdraw))
+
+(balance)
+(deposit 50)
+(balance)
+(withdraw 200)
+(balance)";
+
+            // Act
+            var results = _interpreter.Evaluate(code)
+                .Where(res => res is NumberDatum)
+                .Cast<NumberDatum>()
+                .Select(num => num.Value)
+                .ToArray();
+
+            // Assert
+            Assert.Equal(225, results[0]);
+            Assert.Equal(275, results[1]);
+            Assert.Equal(75, results[2]);
+        }
+
+        [Fact]
         public void Evaluate_DataDirectedProgram_DispatchesOnType()
         {
             // Arrange
