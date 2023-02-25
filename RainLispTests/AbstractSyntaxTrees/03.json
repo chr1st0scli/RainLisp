@@ -1,6 +1,5 @@
 {
-  "Definitions": null,
-  "Expressions": [
+  "DefinitionsAndExpressions": [
     {
       "Value": false,
       "TypeName": "BooleanLiteral"

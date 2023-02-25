@@ -1,6 +1,5 @@
 {
-  "Definitions": null,
-  "Expressions": [
+  "DefinitionsAndExpressions": [
     {
       "Value": 1.0,
       "TypeName": "NumberLiteral"

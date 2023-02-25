@@ -108,29 +108,14 @@ namespace RainLisp.Evaluation
 
         public IEnumerable<EvaluationResult> EvaluateProgram(Program program, IEvaluationEnvironment environment)
         {
-            // Establish all definitions in the environment.
-            if (program.Definitions?.Count > 0)
-            {
-                foreach (var definition in program.Definitions)
-                    EvaluateDefinition(definition, environment);
-            }
-
-            if (program.Expressions == null || program.Expressions.Count == 0)
+            if (program.DefinitionsAndExpressions == null || program.DefinitionsAndExpressions.Count == 0)
             {
                 yield return Unspecified.GetUnspecified();
                 yield break;
             }
 
-            // If there is a single expression, evaluate it and return the result.
-            if (program.Expressions.Count == 1)
-            {
-                yield return program.Expressions[0].AcceptVisitor(this, environment);
-                yield break;
-            }
-
-            // Evaluate all program expressions.
-            foreach (var expression in program.Expressions)
-                yield return expression.AcceptVisitor(this, environment);
+            foreach (var node in program.DefinitionsAndExpressions)
+                yield return node.AcceptVisitor(this, environment);
         }
 
         private EvaluationResult EvaluateSequence(IList<Expression> expressions, IEvaluationEnvironment environment)

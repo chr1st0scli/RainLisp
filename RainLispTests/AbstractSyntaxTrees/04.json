@@ -1,6 +1,5 @@
 {
-  "Definitions": null,
-  "Expressions": [
+  "DefinitionsAndExpressions": [
     {
       "Name": "foo",
       "TypeName": "Identifier"

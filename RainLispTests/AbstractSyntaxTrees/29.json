@@ -1,6 +1,5 @@
 {
-  "Definitions": null,
-  "Expressions": [
+  "DefinitionsAndExpressions": [
     {
       "Predicate": {
         "Value": true,

@@ -1,5 +1,5 @@
 {
-  "Definitions": [
+  "DefinitionsAndExpressions": [
     {
       "IdentifierName": "foo",
       "Value": {
@@ -46,9 +46,7 @@
         "TypeName": "Lambda"
       },
       "TypeName": "Definition"
-    }
-  ],
-  "Expressions": [
+    },
     {
       "Operator": {
         "Parameters": [

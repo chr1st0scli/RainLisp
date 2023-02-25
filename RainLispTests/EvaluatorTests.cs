@@ -593,10 +593,10 @@ namespace RainLispTests
             var results = _interpreter.Evaluate(code).ToArray();
 
             // Assert
-            Assert.Equal(6, ((NumberDatum)results[0]).Value);
-            Assert.Equal(2, ((NumberDatum)results[1]).Value);
-            Assert.Equal(8, ((NumberDatum)results[2]).Value);
-            Assert.Equal(2, ((NumberDatum)results[3]).Value);
+            Assert.Equal(6, ((NumberDatum)results[1]).Value);
+            Assert.Equal(2, ((NumberDatum)results[2]).Value);
+            Assert.Equal(8, ((NumberDatum)results[3]).Value);
+            Assert.Equal(2, ((NumberDatum)results[4]).Value);
         }
 
         [Fact]
@@ -625,11 +625,11 @@ code
 
             // Act
             var results = _interpreter.Evaluate(code).ToArray();
-            string actualCodeBuilt = results[0].AcceptVisitor(new EvaluationResultPrintVisitor());
+            string actualCodeBuilt = results[3].AcceptVisitor(new EvaluationResultPrintVisitor());
 
             // Assert
             Assert.Equal(expectedCodeBuilt, actualCodeBuilt);
-            Assert.Equal(4, ((NumberDatum)results[1]).Value);
+            Assert.Equal(4, ((NumberDatum)results[4]).Value);
         }
 
         [Fact]
@@ -649,7 +649,8 @@ code
 ""Should be 4th""
 (display ""Should be 5th"")";
 
-            string expectedOutput = @"Should be 1st
+            string expectedOutput = @"
+Should be 1st
 ""Should be 2nd""
 ""Should be 3rd""
 ""Should be 4th""
@@ -665,6 +666,24 @@ Should be 5th";
 
             // Assert
             Assert.Equal(expectedOutput, sb.ToString().TrimEnd());
+        }
+
+        [Fact]
+        public void Evaluate_ProgramDefinitionsAndExpressions_InTheRightOrder()
+        {
+            // Arrange
+            string program = @"
+(define a 1)
+(set! a (+ a 1))
+(define b a)
+a
+b";
+            // Act
+            var results = _interpreter.Evaluate(program).ToArray();
+
+            // Assert
+            Assert.Equal(2, ((NumberDatum)results[3]).Value);
+            Assert.Equal(2, ((NumberDatum)results[4]).Value);
         }
 
         [Theory]
