@@ -86,6 +86,7 @@ namespace RainLispTests
         [InlineData(57, "'(ab cd)")]
         [InlineData(58, "(quote (ab cd (e f g) hi))")]
         [InlineData(58, "'(ab cd (e f g) hi)")]
+        [InlineData(59, "(define a 1) (set! a 2) (define b a)")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             static void RemoveProperty(JObject jObj, string propertyName)

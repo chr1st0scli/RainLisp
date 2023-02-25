@@ -2,8 +2,6 @@
 {
     public class Program
     {
-        public IList<Definition>? Definitions { get; set; }
-
-        public IList<Expression>? Expressions { get; set; }
+        public IList<Node>? DefinitionsAndExpressions { get; set; }
     }
 }

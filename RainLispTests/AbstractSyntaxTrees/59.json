@@ -1,0 +1,28 @@
+{
+  "DefinitionsAndExpressions": [
+    {
+      "IdentifierName": "a",
+      "Value": {
+        "Value": 1.0,
+        "TypeName": "NumberLiteral"
+      },
+      "TypeName": "Definition"
+    },
+    {
+      "IdentifierName": "a",
+      "Value": {
+        "Value": 2.0,
+        "TypeName": "NumberLiteral"
+      },
+      "TypeName": "Assignment"
+    },
+    {
+      "IdentifierName": "b",
+      "Value": {
+        "Name": "a",
+        "TypeName": "Identifier"
+      },
+      "TypeName": "Definition"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "Definitions": [
+  "DefinitionsAndExpressions": [
     {
       "IdentifierName": "foo",
       "Value": {
@@ -71,6 +71,5 @@
       },
       "TypeName": "Definition"
     }
-  ],
-  "Expressions": null
+  ]
 }
