@@ -33,7 +33,8 @@ if (mode == 0)
 
     void Print(string result)
     {
-        Console.WriteLine(result);
+        if (!string.IsNullOrEmpty(result))
+            Console.WriteLine(result);
     }
 
     void PrintError(string message, Exception ex)

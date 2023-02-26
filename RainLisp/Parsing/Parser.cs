@@ -16,20 +16,22 @@ namespace RainLisp.Parsing
             return Program();
         }
 
-        #region Nonterminals in the syntax grammar
+        #region Nonterminals in the syntax grammar.
         private Program Program()
         {
             var program = new Program();
 
-            while (!_tokens.Check(TokenType.EOF))
-            {
-                program.DefinitionsAndExpressions ??= new List<Node>();
+            if (_tokens.Check(TokenType.EOF))
+                return program;
 
-                if (DefinitionFollows())
-                    program.DefinitionsAndExpressions.Add(Definition());
-                else
-                    program.DefinitionsAndExpressions.Add(Expression());
-            }
+            program.DefinitionsAndExpressions = new List<Node>();
+
+            do
+            {
+                Node node = DefinitionFollows() ? Definition() : Expression();
+                program.DefinitionsAndExpressions.Add(node);
+
+            } while (!_tokens.Check(TokenType.EOF));
 
             return program;
         }
