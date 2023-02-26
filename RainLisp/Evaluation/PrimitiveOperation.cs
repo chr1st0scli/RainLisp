@@ -64,6 +64,9 @@ namespace RainLisp.Evaluation
         public static EvaluationResult Cdr(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsPair, val => val.Second, values);
 
+        public static EvaluationResult IsPair(EvaluationResult[]? values)
+            => ApplyUnaryOperator(val => new BoolDatum(val is Pair), values);
+
         public static EvaluationResult List(EvaluationResult[]? values)
         {
             if (values == null || values.Length == 0)

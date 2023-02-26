@@ -1149,10 +1149,22 @@ b";
         [InlineData("(null? true)", false)]
         [InlineData("(null? \"hello\")", false)]
         [InlineData("(null? (cons 1 2))", false)]
-        [InlineData("(null? (list))", true)] // TODO support test other forms of empty list such as '()
+        [InlineData("(null? (list))", true)]
+        [InlineData("(null? '())", true)]
         [InlineData("(null? (list 1))", false)]
         [InlineData("(null? (cdr (list 1)))", true)]
         [InlineData("(null? nil)", true)]
+        [InlineData("(pair? 1)", false)]
+        [InlineData("(pair? true)", false)]
+        [InlineData("(pair? \"hello\")", false)]
+        [InlineData("(pair? (cons 1 2))", true)]
+        [InlineData("(pair? (cons 1 nil))", true)]
+        [InlineData("(pair? (cons nil 1))", true)]
+        [InlineData("(pair? (list))", false)]
+        [InlineData("(pair? '())", false)]
+        [InlineData("(pair? (list 1))", true)]
+        [InlineData("(pair? (cdr (list 1)))", false)]
+        [InlineData("(pair? nil)", false)]
         public void Evaluate_ListReturningBoolean_Correctly(string expression, bool expectedResult)
         {
             // Arrange
@@ -1482,7 +1494,7 @@ b";
                 {
                     "not", "car", "cdr", "null?", "display", "debug", "trace", "error", "string-length", "to-lower", "to-upper",
                     "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc", "parse-number",
-                    "eval"
+                    "eval", "pair?"
                 }, expression, expected, false, actual);
         }
 

@@ -183,6 +183,7 @@ namespace RainLisp
             Install(CONS, PrimitiveProcedureType.Cons);
             Install(CAR, PrimitiveProcedureType.Car);
             Install(CDR, PrimitiveProcedureType.Cdr);
+            Install(IS_PAIR, PrimitiveProcedureType.IsPair);
             Install(LIST, PrimitiveProcedureType.List);
             Install(IS_NULL, PrimitiveProcedureType.IsNull);
             Install(SET_CAR, PrimitiveProcedureType.SetCar);
