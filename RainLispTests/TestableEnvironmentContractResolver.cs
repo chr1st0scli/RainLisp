@@ -9,6 +9,10 @@ namespace RainLispTests
     {
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
+            // Do not serialize the internal structure of primitive procedures.
+            if (type == typeof(PrimitiveProcedure))
+                return new List<JsonProperty>();
+
             string valuePropName = nameof(PrimitiveDatum<bool>.Value);
             var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 

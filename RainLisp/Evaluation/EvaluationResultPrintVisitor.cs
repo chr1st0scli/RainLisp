@@ -53,7 +53,7 @@ namespace RainLisp.Evaluation
             => quoteSymbol.SymbolText;
 
         public string VisitPrimitiveProcedure(PrimitiveProcedure primitiveProcedure)
-            => $"[{nameof(PrimitiveProcedure)}] {primitiveProcedure.ProcedureType}";
+            => $"[{nameof(PrimitiveProcedure)}] {primitiveProcedure.Name}";
 
         public string VisitUserProcedure(UserProcedure userProcedure)
         {
