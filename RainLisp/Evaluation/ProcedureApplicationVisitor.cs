@@ -37,6 +37,7 @@ namespace RainLisp.Evaluation
                 PrimitiveProcedureType.Cons => Cons(evaluatedArguments),
                 PrimitiveProcedureType.Car => Car(evaluatedArguments),
                 PrimitiveProcedureType.Cdr => Cdr(evaluatedArguments),
+                PrimitiveProcedureType.IsPair => IsPair(evaluatedArguments),
                 PrimitiveProcedureType.List => List(evaluatedArguments),
                 PrimitiveProcedureType.IsNull => IsNull(evaluatedArguments),
                 PrimitiveProcedureType.SetCar => SetCar(evaluatedArguments),

@@ -17,6 +17,7 @@
         Cons,
         Car,
         Cdr,
+        IsPair,
         List,
         IsNull,
         SetCar,

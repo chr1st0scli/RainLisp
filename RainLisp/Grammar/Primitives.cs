@@ -17,6 +17,7 @@
         public const string CONS = "cons";
         public const string CAR = "car";
         public const string CDR = "cdr";
+        public const string IS_PAIR = "pair?";
         public const string NIL = "nil";
         public const string LIST = "list";
         public const string IS_NULL = "null?";
