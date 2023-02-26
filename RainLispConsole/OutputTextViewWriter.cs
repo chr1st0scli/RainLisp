@@ -40,6 +40,9 @@ namespace RainLispConsole
 
         public override void WriteLine(string? value)
         {
+            if (string.IsNullOrEmpty(value))
+                return;
+
             if (_errorMode)
                 _textView.RegisterError(value);
 
