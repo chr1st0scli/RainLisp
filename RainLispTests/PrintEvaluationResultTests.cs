@@ -25,6 +25,7 @@ namespace RainLispTests
         [InlineData("\"hello\\tworld\"", "\"hello\\tworld\"")]
         [InlineData("\"hello\\\"world\"", "\"hello\\\"world\"")]
         [InlineData("\"hello\\\\world\"", "\"hello\\\\world\"")]
+        [InlineData("(make-datetime 2022 12 31 10 30 45 100)", "2022-12-31 10:30:45.100")]
         public void Evaluate_ExpressionGivingPrimitive_PrintsCorrectly(string expression, string expectedResult)
         {
             // Arrange

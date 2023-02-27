@@ -31,6 +31,7 @@ namespace RainLispTests
                 // Last comment should be excluded from EOF's position.
                 { "; a comment", new[] { Expect(EOF, "", 1) } },
                 { " ; a comment", new[] { Expect(EOF, "", 2) } },
+                { " ; comment a \n1 ; comment b", new[] { Expect(Number, "1", 1, 2, numberValue: 1), Expect(EOF, "", 3, 2) } },
 
                 { "1", new[] { Expect(Number, "1", 1, numberValue: 1d), Expect(EOF, "", 2) } },
                 { "01", new[] { Expect(Number, "01", 1, numberValue: 1d), Expect(EOF, "", 3) } },
@@ -103,51 +104,62 @@ namespace RainLispTests
                 { "1'abcd2\"hello\"", new[] { Expect(Number, "1", 1, numberValue: 1), Expect(QuoteAlt, "'", 2), Expect(Identifier, "abcd2", 3), Expect(TokenType.String, "\"hello\"", 8, stringValue: "hello"), Expect(EOF, "", 15) } },
                 { "a'abcd2\"hello\"", new[] { Expect(Identifier, "a", 1), Expect(QuoteAlt, "'", 2), Expect(Identifier, "abcd2", 3), Expect(TokenType.String, "\"hello\"", 8, stringValue: "hello"), Expect(EOF, "", 15) } },
                 { "'(ab cd)", new[] { Expect(QuoteAlt, "'", 1), Expect(LParen, "(", 2), Expect(Identifier, "ab", 3), Expect(Identifier, "cd", 6), Expect(RParen, ")", 8), Expect(EOF, "", 9) } },
+
+                {
+                    "(quote abcd)", new[] 
+                    {
+                        Expect(LParen, "(", 1),
+                        Expect(Quote, "quote", 2),
+                        Expect(Identifier, "abcd", 8),
+                        Expect(RParen, ")", 12),
+                        Expect(EOF, "", 13)
+                    }
+                },
+                {
+                    "(set! ab 15)", new[]
+                    {
+                        Expect(LParen, "(", 1),
+                        Expect(Assignment, "set!", 2),
+                        Expect(Identifier, "ab", 7),
+                        Expect(Number, "15", 10, numberValue: 15d),
+                        Expect(RParen, ")", 12),
+                        Expect(EOF, "", 13)
+                    }
+                },
+                {
+                    "(set! ab 15.4)", new[]
+                    {
+                        Expect(LParen, "(", 1),
+                        Expect(Assignment, "set!", 2),
+                        Expect(Identifier, "ab", 7),
+                        Expect(Number, "15.4", 10, numberValue: 15.4),
+                        Expect(RParen, ")", 14),
+                        Expect(EOF, "", 15)
+                    }
+                },
+                {
+                    "(define ab 15)", new[]
+                    {
+                        Expect(LParen, "(", 1),
+                        Expect(Definition, "define", 2),
+                        Expect(Identifier, "ab", 9),
+                        Expect(Number, "15", 12, numberValue : 15d),
+                        Expect(RParen, ")", 14),
+                        Expect(EOF, "", 15)
+                    }
+                },
+                {
+                    "(define ab 15.32)", new[]
+                    {
+                        Expect(LParen, "(", 1),
+                        Expect(Definition, "define", 2),
+                        Expect(Identifier, "ab", 9),
+                        Expect(Number, "15.32", 12, numberValue: 15.32),
+                        Expect(RParen, ")", 17),
+                        Expect(EOF, "", 18)
+                    }
+                }
             };
-
-            data.Add("(quote abcd)", new[] {
-                Expect(LParen, "(", 1),
-                Expect(Quote, "quote", 2),
-                Expect(Identifier, "abcd", 8),
-                Expect(RParen, ")", 12),
-                Expect(EOF, "", 13)
-            });
-
-            data.Add("(set! ab 15)", new[] {
-                Expect(LParen, "(", 1),
-                Expect(Assignment, "set!", 2),
-                Expect(Identifier, "ab", 7),
-                Expect(Number, "15", 10, numberValue: 15d),
-                Expect(RParen, ")", 12),
-                Expect(EOF, "", 13)
-            });
-
-            data.Add("(set! ab 15.4)", new[] {
-                Expect(LParen, "(", 1),
-                Expect(Assignment, "set!", 2),
-                Expect(Identifier, "ab", 7),
-                Expect(Number, "15.4", 10, numberValue: 15.4),
-                Expect(RParen, ")", 14),
-                Expect(EOF, "", 15)
-            });
-
-            data.Add("(define ab 15)", new[] {
-                Expect(LParen, "(", 1),
-                Expect(Definition, "define", 2),
-                Expect(Identifier, "ab", 9),
-                Expect(Number, "15", 12, numberValue : 15d),
-                Expect(RParen, ")", 14),
-                Expect(EOF, "", 15)
-            });
-
-            data.Add("(define ab 15.32)", new[] {
-                Expect(LParen, "(", 1),
-                Expect(Definition, "define", 2),
-                Expect(Identifier, "ab", 9),
-                Expect(Number, "15.32", 12, numberValue: 15.32),
-                Expect(RParen, ")", 17),
-                Expect(EOF, "", 18)
-            });
 
             var defineExpectedTokens = new ExpectedToken[]
             {
