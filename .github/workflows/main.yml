@@ -2,7 +2,7 @@ name: Unit Test With Coverage
 on:
   push:
     branches:
-    - code-coverage-badge
+    - master
   #workflow_dispatch:
 jobs:
   build:
