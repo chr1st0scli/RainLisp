@@ -1,6 +1,9 @@
 name: Unit Test With Coverage
 on:
-  workflow_dispatch:
+  push:
+    branches:
+    - code-coverage-badge
+  #workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
