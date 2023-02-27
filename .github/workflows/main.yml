@@ -28,7 +28,7 @@ jobs:
       with:
         label: Unit Test Coverage
         color: brightgreen
-        path: RainLispTests/TestResults/*/coverage.opencover.xml
+        path: RainLispTests/TestResults/coverage.opencover.xml
         gist-filename: code-coverage.json
         gist-id: 3ad6a6f6575320603cc8edf6171b42e8
         gist-auth-token: ${{ secrets.GIST_AUTH_TOKEN }}       
