@@ -31,6 +31,7 @@ namespace RainLispTests
                 // Last comment should be excluded from EOF's position.
                 { "; a comment", new[] { Expect(EOF, "", 1) } },
                 { " ; a comment", new[] { Expect(EOF, "", 2) } },
+                { " ; comment a \n1 ; comment b", new[] { Expect(Number, "1", 1, 2, numberValue: 1), Expect(EOF, "", 3, 2) } },
 
                 { "1", new[] { Expect(Number, "1", 1, numberValue: 1d), Expect(EOF, "", 2) } },
                 { "01", new[] { Expect(Number, "01", 1, numberValue: 1d), Expect(EOF, "", 3) } },

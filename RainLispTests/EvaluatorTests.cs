@@ -1,4 +1,5 @@
 ﻿using RainLisp;
+using RainLisp.AbstractSyntaxTree;
 using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
 using System.Text;
@@ -415,6 +416,7 @@ namespace RainLispTests
         }
 
         [Theory]
+        [InlineData("")]
         [InlineData("(define a 1)")]
         [InlineData("(define (foo) 1)")]
         [InlineData("(define (foo x) x)")]
@@ -1449,6 +1451,23 @@ b";
 
             // Assert
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
+        }
+
+        [Fact]
+        public void Evaluate_ProgramStructure_Correctly()
+        {
+            // Arrange
+            const double NUMBER = 12;
+            var program = new Program
+            {
+                DefinitionsAndExpressions = new List<Node> { new NumberLiteral(NUMBER) }
+            };
+
+            // Act
+            var result = (NumberDatum)_interpreter.Evaluate(program).Last();
+
+            // Assert
+            Assert.Equal(NUMBER, result.Value);
         }
 
         [Theory]
