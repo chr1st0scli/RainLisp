@@ -12,15 +12,24 @@ namespace RainLisp.Tokenization
         private bool _charInstring;
         private bool _charInNumber;
         private bool _charInComment;
-        private StringTokenizer? _stringTokenizer;
-        private NumberTokenizer? _numberTokenizer;
-        private StringBuilder _lexemeStringBuilder = null!;
-        private IList<Token> _tokens = null!;
+
+        private readonly StringTokenizer _stringTokenizer;
+        private readonly NumberTokenizer _numberTokenizer;
+        private readonly StringBuilder _lexemeStringBuilder;
+        private readonly IList<Token> _tokens;
+
+        public Tokenizer()
+        {
+            _stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
+            _numberTokenizer = new NumberTokenizer();
+            _lexemeStringBuilder = new StringBuilder();
+            _tokens = new List<Token>();
+        }
 
         public IList<Token> Tokenize(string? expression)
         {
-            _tokens = new List<Token>();
             _line = _charPosition = 1;
+            _tokens.Clear();
 
             if (string.IsNullOrEmpty(expression))
             {
@@ -29,9 +38,9 @@ namespace RainLisp.Tokenization
             }
 
             _charInstring = _charInNumber = _charInComment = false;
-            _stringTokenizer = null;
-            _numberTokenizer = null;
-            _lexemeStringBuilder = new StringBuilder();
+            _stringTokenizer.Clear();
+            _numberTokenizer.Clear();
+            _lexemeStringBuilder.Clear();
 
             for (int i = 0; i < expression.Length; i++)
                 ProcessCharacter(expression[i], ref i, expression);
@@ -48,7 +57,7 @@ namespace RainLisp.Tokenization
         private void ProcessCharacter(char c, ref int i, string expression)
         {
             if (_charInstring)
-                _stringTokenizer!.AddToString(c, _line, _charPosition);
+                _stringTokenizer.AddToString(c, _line, _charPosition);
 
             else if (_charInComment)
             {
@@ -67,7 +76,7 @@ namespace RainLisp.Tokenization
             {
                 RegisterUnknownToken();
                 _charInstring = true;
-                _stringTokenizer ??= new StringTokenizer(RegisterStringLiteralToken);
+                _stringTokenizer.Clear();
             }
             else if (c == LPAREN)
             {
@@ -102,13 +111,13 @@ namespace RainLisp.Tokenization
 
             else if (_charInNumber)
             {
-                _numberTokenizer!.AddToNumber(c, _line, _charPosition);
+                _numberTokenizer.AddToNumber(c, _line, _charPosition);
                 _lexemeStringBuilder.Append(c);
             }
             else if (NumberStartsAt(i, expression))
             {
                 _charInNumber = true;
-                _numberTokenizer ??= new NumberTokenizer();
+                _numberTokenizer.Clear();
                 _numberTokenizer.AddToNumber(c, _line, _charPosition);
                 _lexemeStringBuilder.Append(c);
             }
@@ -146,7 +155,7 @@ namespace RainLisp.Tokenization
         private void RegisterStringLiteralToken()
         {
             _charInstring = false;
-            RegisterSpecificToken(_stringTokenizer!.GetStringLiteral(), TokenType.String, GetLastStringStartPosition(), stringValue: _stringTokenizer.GetStringValue());
+            RegisterSpecificToken(_stringTokenizer.GetStringLiteral(), TokenType.String, GetLastStringStartPosition(), stringValue: _stringTokenizer.GetStringValue());
             _stringTokenizer.Clear();
         }
 
@@ -161,7 +170,7 @@ namespace RainLisp.Tokenization
             if (_charInNumber)
             {
                 _charInNumber = false;
-                RegisterSpecificToken(value, TokenType.Number, _charPosition - (uint)value.Length, _numberTokenizer!.GetNumber());
+                RegisterSpecificToken(value, TokenType.Number, _charPosition - (uint)value.Length, _numberTokenizer.GetNumber());
                 _numberTokenizer.Clear();
             }
             else
@@ -202,7 +211,7 @@ namespace RainLisp.Tokenization
 
         // The string token's position relates to the actual number of characters typed in the string and not the resulting string value's length.
         private uint GetLastStringStartPosition()
-            => _charPosition - _stringTokenizer!.CharactersProcessed - 1;
+            => _charPosition - _stringTokenizer.CharactersProcessed - 1;
 
         private static Token InferToken(string value, uint line, uint position)
         {
