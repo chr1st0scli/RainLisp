@@ -20,6 +20,8 @@ jobs:
     - name: Test
       run: dotnet test --collect:"XPlat Code Coverage;Format=opencover"
         #dotnet test  -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover --no-build --verbosity normal RainLispTests/
+    - name: Copy File
+      run: cp RainLispTests\TestResults\*\coverage.opencover.xml RainLispTests\TestResults
     - name: Create Test Coverage Badge
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
       id: create_coverage_badge
