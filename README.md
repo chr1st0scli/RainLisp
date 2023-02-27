@@ -1,5 +1,5 @@
 # RainLisp
-
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/chr1st0scli/chr1st0scli/3ad6a6f6575320603cc8edf6171b42e8/raw/code-coverage.json)
 ![Cloudy RainLisp Logo](Artwork/RainLisp-Colored.svg)
 
 ## Work in progress.
