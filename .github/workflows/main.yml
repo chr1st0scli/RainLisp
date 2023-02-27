@@ -1,27 +1,30 @@
-- name: Test
-  run: dotnet test  -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover --no-build --verbosity normal RainLispTests/
-  
-- name: .Net Code Coverage Badge
-  # You may pin to the exact commit or the version.
-  # uses: simon-k/dotnet-code-coverage-badge@481191ec44286e8d401ad98797299b6226df63a6
-  uses: simon-k/dotnet-code-coverage-badge@v1.0.0
-  id: create_coverage_badge
-  with:
-    # The badge label. For example "Unit Test Coverage"
-    label: Code Coverage # optional, default is Test Coverage
-    # The color of the badge. See https://shields.io/ for options
-    color: # optional, default is brightgreen
-    # the path to the opencover.xml file
-    path: RainLispTests/TestResults/coverage.opencover.xml
-    # Filename of the Gist used for storing the badge data
-    gist-filename: code-coverage.json
-    # ID if the Gist used for storing the badge data
-    gist-id: 3ad6a6f6575320603cc8edf6171b42e8
-    # Auth token that alows to write to the given Gist
-    gist-auth-token: ${{ secrets.GIST_AUTH_TOKEN }}
-    
-- name: Print code coverage
-  run: echo "Code coverage percentage ${{steps.create_coverage_badge.outputs.percentage}}%"
-
-- name: Print badge data
-  run: echo "Badge data ${{steps.test_step.outputs.badge}}"
+name: Unit Test With Coverage
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.405
+    - name: Restore dependencies
+      run: dotnet restore   
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test  -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover --no-build --verbosity normal RainLispTests/
+    - name: Create Test Coverage Badge
+      uses: simon-k/dotnet-code-coverage-badge@v1.0.0
+      id: create_coverage_badge
+      with:
+        label: Unit Test Coverage
+        color: brightgreen
+        path: RainLispTests/TestResults/coverage.opencover.xml
+        gist-filename: code-coverage.json
+        gist-id: 3ad6a6f6575320603cc8edf6171b42e8
+        gist-auth-token: ${{ secrets.GIST_AUTH_TOKEN }}       
+    - name: Print code coverage
+      run: echo "Code coverage percentage ${{steps.create_coverage_badge.outputs.percentage}}%"
