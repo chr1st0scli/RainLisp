@@ -48,6 +48,10 @@ namespace RainLispTests
             foreach (var token in environmentJObject.SelectTokens("$.._previousEnvironment").ToList())
                 token.Parent.Remove();
 
+            // Remove _quoteSymbols.
+            foreach (var token in environmentJObject.SelectTokens("$.._quoteSymbols").ToList())
+                token.Parent.Remove();
+
             // Remove the primitives from the definitions output, because we are not interested to check them.
             var fields = typeof(Primitives).GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var field in fields)
@@ -99,7 +103,7 @@ namespace RainLispTests
             var fooResult = interpreter.Evaluate(foo, ref environment).Last() as QuoteSymbol;
             var barResult = interpreter.Evaluate(bar, ref environment).Last() as QuoteSymbol;
 
-            EvaluationEnvironment.TryGetQuoteSymbol(quoteToQuery, out var storedQuoteSymbol);
+            environment!.TryGetQuoteSymbol(quoteToQuery, out var storedQuoteSymbol);
 
             // Assert
             Assert.True(ReferenceEquals(fooResult, barResult));
