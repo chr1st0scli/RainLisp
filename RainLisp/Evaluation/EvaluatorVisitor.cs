@@ -22,8 +22,8 @@ namespace RainLisp.Evaluation
         public EvaluationResult EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment)
             => EvaluateWithDebugInfo(() => environment.LookupIdentifierValue(identifier.Name), identifier);
 
-        public EvaluationResult EvaluateQuote(Quote quote)
-            => EvaluateQuotable(quote.Quotable);
+        public EvaluationResult EvaluateQuote(Quote quote, IEvaluationEnvironment environment)
+            => EvaluateQuotable(quote.Quotable, environment);
 
         public EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment)
         {
@@ -129,11 +129,11 @@ namespace RainLisp.Evaluation
             return result!;
         }
 
-        private static EvaluationResult EvaluateQuotable(Quotable quotable)
+        private static EvaluationResult EvaluateQuotable(Quotable quotable, IEvaluationEnvironment environment)
         {
-            static EvaluationResult MakeQuoteSymbolsList(IList<Quotable> quotables, int currentIndex)
+            EvaluationResult MakeQuoteSymbolsList(IList<Quotable> quotables, int currentIndex)
             {
-                var quoteSymbol = EvaluateQuotable(quotables[currentIndex]);
+                var quoteSymbol = EvaluateQuotable(quotables[currentIndex], environment);
 
                 if (currentIndex == quotables.Count - 1)
                     return new Pair(quoteSymbol, Nil.GetNil());
@@ -143,12 +143,12 @@ namespace RainLisp.Evaluation
 
             if (quotable.Text != null)
             {
-                if (EvaluationEnvironment.TryGetQuoteSymbol(quotable.Text, out var quoteSymbol))
+                if (environment.TryGetQuoteSymbol(quotable.Text, out var quoteSymbol))
                     return quoteSymbol;
                 else
                 {
                     quoteSymbol = new QuoteSymbol(quotable.Text);
-                    EvaluationEnvironment.RegisterQuoteSymbol(quoteSymbol);
+                    environment.RegisterQuoteSymbol(quoteSymbol);
 
                     return quoteSymbol;
                 }

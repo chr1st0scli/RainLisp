@@ -8,11 +8,14 @@ namespace RainLisp.Evaluation
         private readonly IDictionary<string, EvaluationResult> _definitions;
         private EvaluationEnvironment? _previousEnvironment;
 
-        // Quote symbols are unique accross the entire system.
-        private static Dictionary<string, QuoteSymbol>? _quoteSymbols;
+        // Quote symbols are unique accross an evaluation environment chain.
+        private Dictionary<string, QuoteSymbol> _quoteSymbols;
 
         public EvaluationEnvironment()
-            => _definitions = new Dictionary<string, EvaluationResult>();
+        {
+            _definitions = new Dictionary<string, EvaluationResult>();
+            _quoteSymbols = new Dictionary<string, QuoteSymbol>();
+        }
 
         public IEvaluationEnvironment ExtendEnvironment(IList<string>? parameters, EvaluationResult[]? evaluatedArguments)
         {
@@ -22,7 +25,12 @@ namespace RainLisp.Evaluation
             if (parametersCount != argumentsCount)
                 throw new WrongNumberOfArgumentsException(argumentsCount, parametersCount);
 
-            var extendedEnvironment = new EvaluationEnvironment { _previousEnvironment = this };
+            var extendedEnvironment = new EvaluationEnvironment
+            {
+                _previousEnvironment = this,
+                // Quote symbols are shared between environments in a chain.
+                _quoteSymbols = _quoteSymbols
+            };
 
             for (int i = 0; i < parametersCount; i++)
                 extendedEnvironment.DefineIdentifier(parameters![i], evaluatedArguments![i]);
@@ -47,13 +55,10 @@ namespace RainLisp.Evaluation
         public string[] GetIdentifierNames()
             => _definitions.Keys.ToArray();
 
-        public static void RegisterQuoteSymbol(QuoteSymbol symbol)
-        {
-            _quoteSymbols ??= new();
-            _quoteSymbols.TryAdd(symbol.SymbolText, symbol);
-        }
+        public void RegisterQuoteSymbol(QuoteSymbol symbol)
+            => _quoteSymbols.TryAdd(symbol.SymbolText, symbol);
 
-        public static bool TryGetQuoteSymbol(string symbolText, [MaybeNullWhen(false)] out QuoteSymbol quoteSymbol)
+        public bool TryGetQuoteSymbol(string symbolText, [MaybeNullWhen(false)] out QuoteSymbol quoteSymbol)
         {
             quoteSymbol = null;
             if (_quoteSymbols == null)

@@ -1,5 +1,6 @@
 ﻿using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RainLispTests
 {
@@ -41,5 +42,11 @@ namespace RainLispTests
 
         public string[] GetIdentifierNames()
             => actualEnvironment.GetIdentifierNames();
+
+        public void RegisterQuoteSymbol(QuoteSymbol symbol)
+            => actualEnvironment.RegisterQuoteSymbol(symbol);
+
+        public bool TryGetQuoteSymbol(string symbolText, [MaybeNullWhen(false)] out QuoteSymbol quoteSymbol)
+            => actualEnvironment.TryGetQuoteSymbol(symbolText, out quoteSymbol);
     }
 }

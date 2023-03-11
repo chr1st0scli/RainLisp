@@ -13,7 +13,7 @@ namespace RainLisp.Evaluation
 
         EvaluationResult EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment);
 
-        EvaluationResult EvaluateQuote(Quote quote);
+        EvaluationResult EvaluateQuote(Quote quote, IEvaluationEnvironment environment);
 
         EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment);
 

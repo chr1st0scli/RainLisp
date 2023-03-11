@@ -883,7 +883,7 @@ Should be 5th";
             _interpreter.EvaluateAndPrint(expression, ref environment, value => stringWriter.WriteLine(value), (value, ex) => stringWriter.WriteLine(ex.Message));
 
             // Assert
-            Assert.Equal(expectedOutput, sb.ToString().TrimEnd());
+            Assert.Equal(expectedOutput.TrimStart().TrimEnd(), sb.ToString().TrimStart().TrimEnd());
         }
 
         [Fact]
