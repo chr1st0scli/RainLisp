@@ -9,6 +9,11 @@ namespace RainLisp.DerivedExpressions
     /// </summary>
     public static class Transformations
     {
+        /// <summary>
+        /// Converts a condition expression to a nested if expression in the abstract syntax tree.
+        /// </summary>
+        /// <param name="condition">The condition to convert.</param>
+        /// <returns>A nested if expression with an "if, else if, else" structure.</returns>
         public static If ToIf(this Condition condition)
         {
             Expression ToSingleExpression(IList<Expression> expressions)
@@ -41,6 +46,11 @@ namespace RainLisp.DerivedExpressions
             return MakeIf();
         }
 
+        /// <summary>
+        /// Converts a let expression to a lambda application in the abstract syntax tree.
+        /// </summary>
+        /// <param name="let">The let expression to convert.</param>
+        /// <returns>The application of a lambda with parameters and arguments as specified in the let clauses.</returns>
         public static Application ToLambdaApplication(this Let let)
         {
             // Transform a let expression to an application of a lambda.
@@ -58,20 +68,28 @@ namespace RainLisp.DerivedExpressions
             return new Application(lambda, operands);
         }
 
+        /// <summary>
+        /// Converts and to an if expression in the abstract syntax tree in a way that each and's operand will be evaluated until
+        /// an operand evaluates to false or the last operand is reached, in which case it will be the result of the evaluation.
+        /// </summary>
+        /// <param name="and">The and expression to convert.</param>
+        /// <returns>An equivalent if expression.</returns>
         public static Expression ToIf(this And and)
         {
-            // And is turned into an if expression in a way that each and's operand will be evaluated until an operand
-            // evaluates to false or the last operand is reached, in which case it will be the result of the evaluation.
             if (and.Expressions.Count == 1)
                 return and.Expressions[0];
 
             return AndOrToNestedIf(and.Expressions, CreateIfForAnd);
         }
 
+        /// <summary>
+        /// Converts or to an if expression in the abstract syntax tree in a way that each or's operand will be evaluated until
+        /// an operand evaluates to true or the last operand is reached, in which case it will be the result of the evaluation.
+        /// </summary>
+        /// <param name="or">The or expression to convert.</param>
+        /// <returns>An equivalent if expression.</returns>
         public static Expression ToIf(this Or or)
         {
-            // Or is turned into an if expression in a way that each or's operand will be evaluated until an operand evaluates to
-            // true (anything but false) or the last operand is reached, in which case it will be the result of the evaluation.
             if (or.Expressions.Count == 1)
                 return or.Expressions[0];
 
