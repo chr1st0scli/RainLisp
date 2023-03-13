@@ -1,5 +1,8 @@
 ﻿namespace RainLisp.Grammar
 {
+    /// <summary>
+    /// Primitive procedures of the language.
+    /// </summary>
     public static class Primitives
     {
         public const string PLUS = "+";

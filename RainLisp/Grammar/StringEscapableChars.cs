@@ -1,5 +1,8 @@
 ﻿namespace RainLisp.Grammar
 {
+    /// <summary>
+    /// Characters that can be escaped in a string literal, as defined in the lexical grammar of the language.
+    /// </summary>
     public static class StringEscapableChars
     {
         public const char ESCAPABLE_NEW_LINE = 'n';

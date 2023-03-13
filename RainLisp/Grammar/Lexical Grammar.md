@@ -32,13 +32,13 @@ Examples of strings with valid escape sequences are `"This is a double quote \" 
 ## Identifiers
 A symbol is qualified for an identifier as long as it is none of the above literals (boolean, number or string) and special forms or derived expressions of the language (see below). If it does not fall into the above categories, it can comprise of one or more of any characters except delimiters (see below).
 ```
-[^;"()\s]+
+[^;'"()\s]+
 ```
 
 ## Delimiters
-Numbers, boolean literals, identifiers and special keywords can be delimited with a comment start `;`, a string start `"`, an opening or closing parenthesis, or any white space character such as space, tab and new line.
+Number and boolean literals, identifiers and special keywords can be delimited with a semicolon `;` starting a comment, a single quote `'`, a double quote `"` starting a string, an opening or closing parenthesis, or any white space character such as space, tab and new line.
 ```
-[;"()\s]
+[;'"()\s]
 ```
 
 ## Comment

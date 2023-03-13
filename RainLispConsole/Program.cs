@@ -37,7 +37,7 @@ if (mode == 0)
             Console.WriteLine(result);
     }
 
-    void PrintError(string message, Exception ex)
+    void PrintError(string message, Exception ex, bool unknownError)
     {
         var originalColor = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.Red;
@@ -45,7 +45,7 @@ if (mode == 0)
         Console.WriteLine(message);
 
         // Print the entire exception if it is unknown.
-        if (message == ErrorMessages.UNKNOWN_ERROR)
+        if (unknownError)
             Console.WriteLine(ex.ToString());
 
         // Or print the exception's message if one provided by a programmer extending the library.

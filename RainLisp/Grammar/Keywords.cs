@@ -1,5 +1,8 @@
 ﻿namespace RainLisp.Grammar
 {
+    /// <summary>
+    /// Keywords, i.e. special forms and derived expressions, as defined in the lexical grammar of the language.
+    /// </summary>
     public static class Keywords
     {
         public const string TRUE = "true";

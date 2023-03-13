@@ -21,6 +21,9 @@ namespace RainLisp
 
         private static Type[]? _primitiveTypes;
 
+        public delegate void PrintResult(string result);
+        public delegate void PrintError(string message, Exception exception, bool unknownError = false);
+
         public Interpreter(ITokenizer? tokenizer = null, IParser? parser = null, IEvaluatorVisitor? evaluator = null, IEnvironmentFactory? environmentFactory = null, IEvaluationResultVisitor<string>? resultPrinter = null, bool installLispLibraries = true)
         {
             _tokenizer = tokenizer ?? new Tokenizer();
@@ -59,7 +62,7 @@ namespace RainLisp
             return _evaluator.EvaluateProgram(program, environment);
         }
 
-        public void ReadEvalPrintLoop(Func<string?> read, Action<string> print, Action<string, Exception> printError)
+        public void ReadEvalPrintLoop(Func<string?> read, PrintResult print, PrintError printError)
         {
             ArgumentNullException.ThrowIfNull(read, nameof(read));
             ArgumentNullException.ThrowIfNull(print, nameof(print));
@@ -73,7 +76,7 @@ namespace RainLisp
             }
         }
 
-        public void EvaluateAndPrint(string? expression, ref IEvaluationEnvironment? environment, Action<string> print, Action<string, Exception> printError)
+        public void EvaluateAndPrint(string? expression, ref IEvaluationEnvironment? environment, PrintResult print, PrintError printError)
         {
             ArgumentNullException.ThrowIfNull(print, nameof(print));
             ArgumentNullException.ThrowIfNull(printError, nameof(printError));
@@ -156,7 +159,7 @@ namespace RainLisp
             }
             catch (Exception ex)
             {
-                printError(ErrorMessages.UNKNOWN_ERROR, ex);
+                printError(ErrorMessages.UNKNOWN_ERROR, ex, true);
             }
         }
 

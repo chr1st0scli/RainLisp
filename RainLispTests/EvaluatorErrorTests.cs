@@ -31,7 +31,7 @@ namespace RainLispTests
             // Arrange
             IEvaluationEnvironment? environment = null;
             Exception? exception = null;
-            void PrintError(string message, Exception ex) => exception = ex;
+            void PrintError(string message, Exception ex, bool unknownError) => exception = ex;
 
             // Act
             _interpreter.EvaluateAndPrint(expression, ref environment, str => { }, PrintError);

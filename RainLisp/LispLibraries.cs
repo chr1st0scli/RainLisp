@@ -1,8 +1,11 @@
 ﻿namespace RainLisp
 {
-    public static class LispLibraries
+    /// <summary>
+    /// Common LISP libraries defined in the language itself.
+    /// </summary>
+    internal static class LispLibraries
     {
-        public const string LIBS = @"
+        internal const string LIBS = @"
 
 (define (map proc sequence)
   (if (null? sequence)

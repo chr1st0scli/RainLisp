@@ -99,6 +99,7 @@ namespace RainLispTests
                 { "'12.34", new[] { Expect(QuoteAlt, "'", 1), Expect(Number, "12.34", 2, numberValue: 12.34), Expect(EOF, "", 7) } },
                 { "' 12.34", new[] { Expect(QuoteAlt, "'", 1), Expect(Number, "12.34", 3, numberValue: 12.34), Expect(EOF, "", 8) } },
                 { "'abcd", new[] { Expect(QuoteAlt, "'", 1), Expect(Identifier, "abcd", 2), Expect(EOF, "", 6) } },
+                { "'ab'cd", new[] { Expect(QuoteAlt, "'", 1), Expect(Identifier, "ab", 2), Expect(QuoteAlt, "'", 4), Expect(Identifier, "cd", 5), Expect(EOF, "", 7) } },
                 { "' abcd", new[] { Expect(QuoteAlt, "'", 1), Expect(Identifier, "abcd", 3), Expect(EOF, "", 7) } },
                 { "1'abcd2", new[] { Expect(Number, "1", 1, numberValue: 1), Expect(QuoteAlt, "'", 2), Expect(Identifier, "abcd2", 3), Expect(EOF, "", 8) } },
                 { "1'abcd2\"hello\"", new[] { Expect(Number, "1", 1, numberValue: 1), Expect(QuoteAlt, "'", 2), Expect(Identifier, "abcd2", 3), Expect(TokenType.String, "\"hello\"", 8, stringValue: "hello"), Expect(EOF, "", 15) } },
