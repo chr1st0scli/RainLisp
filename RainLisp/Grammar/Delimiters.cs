@@ -1,5 +1,8 @@
 ﻿namespace RainLisp.Grammar
 {
+    /// <summary>
+    /// Delimeters as defined in the lexical grammar of the language.
+    /// </summary>
     public static class Delimiters
     {
         public const char LPAREN = '(';
