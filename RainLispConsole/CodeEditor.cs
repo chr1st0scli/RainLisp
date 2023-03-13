@@ -277,12 +277,12 @@ namespace RainLispConsole
         private void Print(string result)
             => Console.WriteLine(result);
 
-        private void PrintError(string message, Exception ex)
+        private void PrintError(string message, Exception ex, bool unknownError)
         {
             Console.Error.WriteLine(message);
 
             // Print the entire exception if it is unknown.
-            if (message == ErrorMessages.UNKNOWN_ERROR)
+            if (unknownError)
                 Console.Error.WriteLine(ex.ToString());
 
             // Or print the exception's message if one provided by a programmer extending the library.

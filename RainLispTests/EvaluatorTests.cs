@@ -880,7 +880,7 @@ Should be 5th";
 
             // Act
             IEvaluationEnvironment? environment = null;
-            _interpreter.EvaluateAndPrint(expression, ref environment, value => stringWriter.WriteLine(value), (value, ex) => stringWriter.WriteLine(ex.Message));
+            _interpreter.EvaluateAndPrint(expression, ref environment, value => stringWriter.WriteLine(value), (value, ex, unknownError) => stringWriter.WriteLine(ex.Message));
 
             // Assert
             Assert.Equal(expectedOutput.TrimStart().TrimEnd(), sb.ToString().TrimStart().TrimEnd());
@@ -1303,7 +1303,7 @@ b";
             string? error = null;
 
             // Act
-            _interpreter.EvaluateAndPrint(expression, ref environment, str => actualResult = str, (str, ex) => error = str);
+            _interpreter.EvaluateAndPrint(expression, ref environment, str => actualResult = str, (str, ex, unknownError) => error = str);
 
             // Assert
             Assert.Null(error);
