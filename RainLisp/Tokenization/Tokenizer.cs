@@ -5,6 +5,9 @@ using static RainLisp.Grammar.NumberSpecialChars;
 
 namespace RainLisp.Tokenization
 {
+    /// <summary>
+    /// Represents a tokenizer capable of performing lexical analysis on the code.
+    /// </summary>
     public class Tokenizer : ITokenizer
     {
         private uint _line;
@@ -18,6 +21,9 @@ namespace RainLisp.Tokenization
         private readonly StringBuilder _lexemeStringBuilder;
         private readonly IList<Token> _tokens;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tokenizer"/> class.
+        /// </summary>
         public Tokenizer()
         {
             _stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
@@ -26,6 +32,15 @@ namespace RainLisp.Tokenization
             _tokens = new List<Token>();
         }
 
+        /// <summary>
+        /// Performs lexical analysis on code and produces tokens as a result.
+        /// </summary>
+        /// <param name="expression">The code to lexically analyze.</param>
+        /// <returns>A list of tokens.</returns>
+        /// <exception cref="NonTerminatedStringException">A string literal is not properly terminated.</exception>
+        /// <exception cref="InvalidEscapeSequenceException">An invalid string literal escape sequence is provided.</exception>
+        /// <exception cref="InvalidStringCharacterException">An invalid string literal character is provided.</exception>
+        /// <exception cref="InvalidNumberCharacterException">An invalid character for a numeric literal is provided.</exception>
         public IList<Token> Tokenize(string? expression)
         {
             _line = _charPosition = 1;

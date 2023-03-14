@@ -11,7 +11,7 @@
         public uint Line { get; set; }
 
         /// <summary>
-        /// Gets or sets the starting character position on the <see cref="Line"/> in the source code.
+        /// Gets or sets the starting character position in the <see cref="Line"/>.
         /// </summary>
         public uint Position { get; set; }
 
