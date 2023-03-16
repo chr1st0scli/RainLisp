@@ -2,6 +2,9 @@
 
 namespace RainLisp.Tokenization
 {
+    /// <summary>
+    /// Extension methods for tokens.
+    /// </summary>
     public static class Extensions
     {
         /// <summary>
