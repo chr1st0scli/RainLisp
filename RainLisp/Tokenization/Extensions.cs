@@ -2,8 +2,16 @@
 
 namespace RainLisp.Tokenization
 {
+    /// <summary>
+    /// Extension methods for tokens.
+    /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Returns the string representation of a token type in a human friendly format.
+        /// </summary>
+        /// <param name="tokenType">The token type to get the string representation from.</param>
+        /// <returns>The string representation of a token type in a human friendly format.</returns>
         public static string ToWord(this TokenType tokenType)
         {
             return tokenType switch
@@ -26,6 +34,13 @@ namespace RainLisp.Tokenization
             };
         }
 
+        /// <summary>
+        /// Returns the token type that corresponds to a word.
+        /// If the word is a keyword, the corresponding token type is returned.
+        /// Otherwise, it is assumed to be an identifier.
+        /// </summary>
+        /// <param name="word">The word to infer the token type from.</param>
+        /// <returns>The token type that corresponds to <paramref name="word"/>.</returns>
         public static TokenType ToTokenType(this string word)
         {
             return word switch
