@@ -135,46 +135,118 @@
         }
     }
 
+    /// <summary>
+    /// Represents an exception that may occur during the lexical analysis of code, that relates to an invalid escape sequence in a string literal.
+    /// </summary>
     public class InvalidEscapeSequenceException : InvalidCharacterException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidEscapeSequenceException"/> class.
+        /// </summary>
+        /// <param name="line">The line in the code which the tokenization problem refers to.</param>
+        /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
+        /// <param name="character">The invalid character causing the error.</param>
         public InvalidEscapeSequenceException(uint line, uint position, char character) : base(line, position, character)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidEscapeSequenceException"/> class.
+        /// </summary>
+        /// <param name="line">The line in the code which the tokenization problem refers to.</param>
+        /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
+        /// <param name="character">The invalid character causing the error.</param>
+        /// <param name="message">The message that describes the error.</param>
         public InvalidEscapeSequenceException(uint line, uint position, char character, string? message) : base(line, position, character, message)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidEscapeSequenceException"/> class.
+        /// </summary>
+        /// <param name="line">The line in the code which the tokenization problem refers to.</param>
+        /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
+        /// <param name="character">The invalid character causing the error.</param>
+        /// <param name="message">The message that describes the error.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
         public InvalidEscapeSequenceException(uint line, uint position, char character, string? message, Exception? innerException) : base(line, position, character, message, innerException)
         {
         }
     }
 
+    /// <summary>
+    /// Represents an exception that may occur during the lexical analysis of code, that relates to an invalid character in a string literal.
+    /// </summary>
     public class InvalidStringCharacterException : InvalidCharacterException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidStringCharacterException"/> class.
+        /// </summary>
+        /// <param name="line">The line in the code which the tokenization problem refers to.</param>
+        /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
+        /// <param name="character">The invalid character causing the error.</param>
         public InvalidStringCharacterException(uint line, uint position, char character) : base(line, position, character)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidStringCharacterException"/> class.
+        /// </summary>
+        /// <param name="line">The line in the code which the tokenization problem refers to.</param>
+        /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
+        /// <param name="character">The invalid character causing the error.</param>
+        /// <param name="message">The message that describes the error.</param>
         public InvalidStringCharacterException(uint line, uint position, char character, string? message) : base(line, position, character, message)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidStringCharacterException"/> class.
+        /// </summary>
+        /// <param name="line">The line in the code which the tokenization problem refers to.</param>
+        /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
+        /// <param name="character">The invalid character causing the error.</param>
+        /// <param name="message">The message that describes the error.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
         public InvalidStringCharacterException(uint line, uint position, char character, string? message, Exception? innerException) : base(line, position, character, message, innerException)
         {
         }
     }
 
+    /// <summary>
+    /// Represents an exception that may occur during the lexical analysis of code, that relates to an invalid character in a numeric literal.
+    /// </summary>
     public class InvalidNumberCharacterException : InvalidCharacterException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidNumberCharacterException"/> class.
+        /// </summary>
+        /// <param name="line">The line in the code which the tokenization problem refers to.</param>
+        /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
+        /// <param name="character">The invalid character causing the error.</param>
         public InvalidNumberCharacterException(uint line, uint position, char character) : base(line, position, character)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidNumberCharacterException"/> class.
+        /// </summary>
+        /// <param name="line">The line in the code which the tokenization problem refers to.</param>
+        /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
+        /// <param name="character">The invalid character causing the error.</param>
+        /// <param name="message">The message that describes the error.</param>
         public InvalidNumberCharacterException(uint line, uint position, char character, string? message) : base(line, position, character, message)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidNumberCharacterException"/> class.
+        /// </summary>
+        /// <param name="line">The line in the code which the tokenization problem refers to.</param>
+        /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
+        /// <param name="character">The invalid character causing the error.</param>
+        /// <param name="message">The message that describes the error.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
         public InvalidNumberCharacterException(uint line, uint position, char character, string? message, Exception? innerException) : base(line, position, character, message, innerException)
         {
         }
