@@ -35,10 +35,10 @@ namespace RainLisp
             LoadPrimitiveTypes();
         }
 
-        public IEnumerable<EvaluationResult> Evaluate(string? expression)
+        public IEnumerable<EvaluationResult> Evaluate(string? code)
         {
             IEvaluationEnvironment? environment = null;
-            return Evaluate(expression, ref environment);
+            return Evaluate(code, ref environment);
         }
 
         public IEnumerable<EvaluationResult> Evaluate(Program program)
@@ -47,9 +47,9 @@ namespace RainLisp
             return Evaluate(program, ref environment);
         }
 
-        public IEnumerable<EvaluationResult> Evaluate(string? expression, ref IEvaluationEnvironment? environment)
+        public IEnumerable<EvaluationResult> Evaluate(string? code, ref IEvaluationEnvironment? environment)
         {
-            var tokens = _tokenizer.Tokenize(expression);
+            var tokens = _tokenizer.Tokenize(code);
             var programAST = _parser.Parse(tokens);
 
             return Evaluate(programAST, ref environment);
@@ -76,7 +76,7 @@ namespace RainLisp
             }
         }
 
-        public void EvaluateAndPrint(string? expression, ref IEvaluationEnvironment? environment, PrintResult print, PrintError printError)
+        public void EvaluateAndPrint(string? code, ref IEvaluationEnvironment? environment, PrintResult print, PrintError printError)
         {
             ArgumentNullException.ThrowIfNull(print, nameof(print));
             ArgumentNullException.ThrowIfNull(printError, nameof(printError));
@@ -85,7 +85,7 @@ namespace RainLisp
 
             try
             {
-                var tokens = _tokenizer.Tokenize(expression);
+                var tokens = _tokenizer.Tokenize(code);
                 var programAST = _parser.Parse(tokens);
 
                 var results = _evaluator.EvaluateProgram(programAST, environment);
