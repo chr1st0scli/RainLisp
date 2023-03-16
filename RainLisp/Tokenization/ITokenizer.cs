@@ -1,7 +1,7 @@
 ﻿namespace RainLisp.Tokenization
 {
     /// <summary>
-    /// Represents a tokenizer capable of performing lexical analysis on the code.
+    /// Represents a tokenizer capable of performing lexical analysis on the code, based on the language's lexical grammar.
     /// </summary>
     public interface ITokenizer
     {
