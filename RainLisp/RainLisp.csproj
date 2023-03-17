@@ -17,6 +17,7 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Authors>Christos Giamouridis</Authors>
     <Company>Rainsoft</Company>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
