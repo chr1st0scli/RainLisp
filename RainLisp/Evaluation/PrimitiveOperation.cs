@@ -4,6 +4,9 @@ using System.Globalization;
 
 namespace RainLisp.Evaluation
 {
+    /// <summary>
+    /// Implementation of primitive procedures and constructs of the language.
+    /// </summary>
     public static class PrimitiveOperation
     {
         public static EvaluationResult Add(EvaluationResult[]? values)
