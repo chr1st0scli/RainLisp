@@ -9,6 +9,11 @@ namespace RainLisp.Evaluation
     /// </summary>
     public static class PrimitiveOperation
     {
+        /// <summary>
+        /// Returns the sum of numeric or the concatenation of string values. It accepts two or more values.
+        /// </summary>
+        /// <param name="values">The numbers to add or strings to concatenate.</param>
+        /// <returns>The sum of numeric or the concatenation of string values.</returns>
         public static EvaluationResult Add(EvaluationResult[]? values)
             => ApplyMultivalueOperatorOnEitherPrimitive(AsDouble, AsString,
                 (val1, val2) => val1 + val2,
@@ -17,59 +22,139 @@ namespace RainLisp.Evaluation
                 result => new StringDatum(result),
                 values);
 
+        /// <summary>
+        /// Returns the result of subtracting two or more numeric values. The subtraction accumulates from left to right.
+        /// </summary>
+        /// <param name="values">The numeric values to subtract.</param>
+        /// <returns>The result of the subtraction.</returns>
         public static EvaluationResult Subtract(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 - val2, result => new NumberDatum(result), values);
 
+        /// <summary>
+        /// Returns the result of multiplying two or more numeric values.
+        /// </summary>
+        /// <param name="values">The numeric values to multiply.</param>
+        /// <returns>The result of the multiplication.</returns>
         public static EvaluationResult Multiply(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 * val2, result => new NumberDatum(result), values);
 
+        /// <summary>
+        /// Returns the result of dividing two or more numeric values. The division accumulates from left to right.
+        /// </summary>
+        /// <param name="values">The numeric values to divide.</param>
+        /// <returns>The result of the division.</returns>
         public static EvaluationResult Divide(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 / val2, result => new NumberDatum(result), values);
 
+        /// <summary>
+        /// Returns the result of calculating the modulo of two or more numeric values. The operation accumulates from left to right.
+        /// </summary>
+        /// <param name="values">The numeric values to calculate their modulo.</param>
+        /// <returns>The result of the modulo calculation.</returns>
         public static EvaluationResult Modulo(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, result => new NumberDatum(result), values);
 
+        /// <summary>
+        /// Determines if the first numeric value is greater than the second one, or the first datetime is later than the second one.
+        /// </summary>
+        /// <param name="values">The numeric or datetime values to compare.</param>
+        /// <returns>true if the first value is greater or later than the second one; otherwise, false.</returns>
         public static EvaluationResult GreaterThan(EvaluationResult[]? values)
             => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
                 (val1, val2) => new BoolDatum(val1.Value > val2.Value),
                 (val1, val2) => new BoolDatum(val1.Value > val2.Value), values);
 
+        /// <summary>
+        /// Determines if the first numeric value is greater than or equal to the second one, or the first datetime is the same as or later than the second one.
+        /// </summary>
+        /// <param name="values">The numeric or datetime values to compare.</param>
+        /// <returns>true if the first value is equal to or greater/later than the second one; otherwise, false.</returns>
         public static EvaluationResult GreaterThanOrEqualTo(EvaluationResult[]? values)
             => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
                 (val1, val2) => new BoolDatum(val1.Value >= val2.Value),
                 (val1, val2) => new BoolDatum(val1.Value >= val2.Value), values);
 
+        /// <summary>
+        /// Determines if the first numeric value is less than the second one, or the first datetime is earlier than the second one.
+        /// </summary>
+        /// <param name="values">The numeric or datetime values to compare.</param>
+        /// <returns>true if the first value is less or earlier than the second one; otherwise, false.</returns>
         public static EvaluationResult LessThan(EvaluationResult[]? values)
             => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
                 (val1, val2) => new BoolDatum(val1.Value < val2.Value),
                 (val1, val2) => new BoolDatum(val1.Value < val2.Value), values);
 
+        /// <summary>
+        /// Determines if the first numeric value is less than or equal to the second one, or the first datetime is the same as or earlier than the second one.
+        /// </summary>
+        /// <param name="values">The numeric or datetime values to compare.</param>
+        /// <returns>true if the first value is equal to or less/earlier than the second one; otherwise, false.</returns>
         public static EvaluationResult LessThanOrEqualTo(EvaluationResult[]? values)
             => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
                 (val1, val2) => new BoolDatum(val1.Value <= val2.Value),
                 (val1, val2) => new BoolDatum(val1.Value <= val2.Value), values);
 
+        /// <summary>
+        /// Determines if two values are equal. Primitive values like numbers, strings, booleans and datetimes are compared by value. All others are compared by reference.
+        /// </summary>
+        /// <param name="values">The values to compare.</param>
+        /// <returns>true if the two values are equal; otherwise, false.</returns>
         public static EvaluationResult EqualTo(EvaluationResult[]? values)
             => ApplyBinaryOperator((val1, val2) => new BoolDatum(val1.Equals(val2)), values);
 
+        /// <summary>
+        /// Returns the result of calculating the logical xor of two or more values. The operation accumulates from left to right.
+        /// </summary>
+        /// <param name="values">The values to calculate their logical xor.</param>
+        /// <returns>The result of the logical xor calculation.</returns>
         public static EvaluationResult LogicalXor(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, result => new BoolDatum(result), values);
 
+        /// <summary>
+        /// Returns the logical negation of a value.
+        /// </summary>
+        /// <param name="values">The value to calculate its logical negation.</param>
+        /// <returns>true if the given value is false; otherwise, false.</returns>
         public static EvaluationResult LogicalNot(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsBool, val => new BoolDatum(!val), values);
 
+        /// <summary>
+        /// Returns a pair made of the two given values.
+        /// </summary>
+        /// <param name="values">The two values to make the pair from.</param>
+        /// <returns>A new pair.</returns>
         public static EvaluationResult Cons(EvaluationResult[]? values)
             => ApplyBinaryOperator((val1, val2) => new Pair(val1, val2), values);
 
+        /// <summary>
+        /// Returns the first element of a pair.
+        /// </summary>
+        /// <param name="values">A pair.</param>
+        /// <returns>The first element of the pair.</returns>
         public static EvaluationResult Car(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsPair, val => val.First, values);
 
+        /// <summary>
+        /// Returns the second element of a pair.
+        /// </summary>
+        /// <param name="values">A pair.</param>
+        /// <returns>The second element of the pair.</returns>
         public static EvaluationResult Cdr(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsPair, val => val.Second, values);
 
+        /// <summary>
+        /// Determines if the given value is a pair.
+        /// </summary>
+        /// <param name="values">The value to check.</param>
+        /// <returns>true if the value is a pair; otherwise, false.</returns>
         public static EvaluationResult IsPair(EvaluationResult[]? values)
             => ApplyUnaryOperator(val => new BoolDatum(val is Pair), values);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
         public static EvaluationResult List(EvaluationResult[]? values)
         {
             if (values == null || values.Length == 0)

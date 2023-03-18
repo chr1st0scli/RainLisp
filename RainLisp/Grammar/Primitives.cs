@@ -31,22 +31,22 @@
         public const string MULTIPLY = "*";
 
         /// <summary>
-        /// Numerical or date and time, greater than operator.
+        /// Numerical or datetime, greater than operator.
         /// </summary>
         public const string GREATER = ">";
 
         /// <summary>
-        /// Numerical or date and time, greater than or equal to operator.
+        /// Numerical or datetime, greater than or equal to operator.
         /// </summary>
         public const string GREATER_OR_EQUAL = ">=";
 
         /// <summary>
-        /// Numerical or date and time, less than operator.
+        /// Numerical or datetime, less than operator.
         /// </summary>
         public const string LESS = "<";
 
         /// <summary>
-        /// Numerical or date and time, less than or equal to operator.
+        /// Numerical or datetime, less than or equal to operator.
         /// </summary>
         public const string LESS_OR_EQUAL = "<=";
 
