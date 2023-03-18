@@ -151,10 +151,10 @@ namespace RainLisp.Evaluation
             => ApplyUnaryOperator(val => new BoolDatum(val is Pair), values);
 
         /// <summary>
-        /// 
+        /// Returns a new list made of the values provided, or nil if none is given.
         /// </summary>
-        /// <param name="values"></param>
-        /// <returns></returns>
+        /// <param name="values">The values the list will consist of.</param>
+        /// <returns>A new list made of the values provided, or nil if none is given.</returns>
         public static EvaluationResult List(EvaluationResult[]? values)
         {
             if (values == null || values.Length == 0)
@@ -163,9 +163,19 @@ namespace RainLisp.Evaluation
             return ApplyFoldRightOperator((val1, val2) => new Pair(val1, val2), Nil.GetNil(), values);
         }
 
+        /// <summary>
+        /// Determines if the given value is nil, i.e. an empty list.
+        /// </summary>
+        /// <param name="values">The value to check.</param>
+        /// <returns>true if the given value is nil; otherwise, false;</returns>
         public static EvaluationResult IsNull(EvaluationResult[]? values)
             => ApplyUnaryOperator(val => new BoolDatum(val == Nil.GetNil()), values);
 
+        /// <summary>
+        /// Sets the first part of a pair to the value provided.
+        /// </summary>
+        /// <param name="values">A pair and a value to set its first part to.</param>
+        /// <returns>The unspecified result.</returns>
         public static EvaluationResult SetCar(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsPair, (Pair val1, EvaluationResult val2) =>
             {
@@ -173,6 +183,11 @@ namespace RainLisp.Evaluation
                 return Unspecified.GetUnspecified();
             }, values);
 
+        /// <summary>
+        /// Sets the second part of a pair to the value provided.
+        /// </summary>
+        /// <param name="values">A pair and a value to set its second part to.</param>
+        /// <returns>The unspecified result.</returns>
         public static EvaluationResult SetCdr(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsPair, (Pair val1, EvaluationResult val2) =>
             {
@@ -180,30 +195,65 @@ namespace RainLisp.Evaluation
                 return Unspecified.GetUnspecified();
             }, values);
 
+        /// <summary>
+        /// Returns the length of a given string.
+        /// </summary>
+        /// <param name="values">A string value.</param>
+        /// <returns>The length of the given string.</returns>
         public static EvaluationResult StringLength(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => new NumberDatum(val.Length), values);
 
+        /// <summary>
+        /// Returns a substring value of a given string. The substring starts at a specified character position and has a specified length.
+        /// </summary>
+        /// <param name="values">The string to get a substring from, the zero-based start index and the length of the substring.</param>
+        /// <returns>A substring starting at the specified character position and with the given length, or an empty string if the start index is equal to the length of the string and the desired length is zero.</returns>
         public static EvaluationResult Substring(EvaluationResult[]? values)
             => ApplyTripleOperator(AsString, AsDouble, AsDouble,
                 (value, startIndex, length) => ValueOrThrowInvalid(() => new StringDatum(value.Substring((int)startIndex, (int)length))),
                 values);
 
+        /// <summary>
+        /// Returns the zero-based index of the first occurence of a string withing another string. The search starts at a specified character position.
+        /// </summary>
+        /// <param name="values">The string to search in, the string to look for and the search starting position.</param>
+        /// <returns>The zero-based index of the first occurence of a string withing another string if it is found, or -1 if it is not. If the string to look for is empty, the return value is the start index.</returns>
         public static EvaluationResult IndexOfString(EvaluationResult[]? values)
             => ApplyTripleOperator(AsString, AsString, AsDouble,
                 (value, searchValue, startIndex) => ValueOrThrowInvalid(() => new NumberDatum(value.IndexOf(searchValue, (int)startIndex))),
                 values);
 
+        /// <summary>
+        /// Returns a new string in which all occurrences of a substring within a given string are replaced by another one.
+        /// </summary>
+        /// <param name="values">The string to search in, the string to be replaced and the string to replace all occurrences of the old value.</param>
+        /// <returns>A new string in which all occurrences of a substring within a given string are replaced by another one. If the string to be replaced is not found, the original string is returned unchanged.</returns>
         public static EvaluationResult ReplaceString(EvaluationResult[]? values)
             => ApplyTripleOperator(AsString, AsString, AsString,
                 (value, oldValue, newValue) => ValueOrThrowInvalid(() => new StringDatum(value.Replace(oldValue, newValue))),
                 values);
 
+        /// <summary>
+        /// Returns a copy of a string value converted to lower case using the casing rules of the invariant culture.
+        /// </summary>
+        /// <param name="values">The string value to convert.</param>
+        /// <returns>A copy of the string value converted to lower case.</returns>
         public static EvaluationResult ToLower(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => new StringDatum(val.ToLowerInvariant()), values);
 
+        /// <summary>
+        /// Returns a copy of a string value converted to upper case using the casing rules of the invariant culture.
+        /// </summary>
+        /// <param name="values">The string value to convert.</param>
+        /// <returns>A copy of the string value converted to upper case.</returns>
         public static EvaluationResult ToUpper(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => new StringDatum(val.ToUpperInvariant()), values);
 
+        /// <summary>
+        /// Writes a primitive value to the standard output. The format of the output is determined by the local culture.
+        /// </summary>
+        /// <param name="values">A primitive value such as a boolean, a number, a string or a datetime.</param>
+        /// <returns>The unspecified result.</returns>
         public static EvaluationResult Display(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
@@ -211,6 +261,11 @@ namespace RainLisp.Evaluation
                 return Unspecified.GetUnspecified();
             }, values);
 
+        /// <summary>
+        /// Writes a primitive value to the trace listeners in the debug listeners collection. The format of the output is determined by the local culture.
+        /// </summary>
+        /// <param name="values">A primitive value such as a boolean, a number, a string or a datetime.</param>
+        /// <returns>The unspecified result.</returns>
         public static EvaluationResult Debug(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
@@ -218,6 +273,11 @@ namespace RainLisp.Evaluation
                 return Unspecified.GetUnspecified();
             }, values);
 
+        /// <summary>
+        /// Writes a primitive value to the trace listeners in the trace listeners collection. The format of the output is determined by the local culture.
+        /// </summary>
+        /// <param name="values">A primitive value such as a boolean, a number, a string or a datetime.</param>
+        /// <returns>The unspecified result.</returns>
         public static EvaluationResult Trace(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
@@ -225,6 +285,11 @@ namespace RainLisp.Evaluation
                 return Unspecified.GetUnspecified();
             }, values);
 
+        /// <summary>
+        /// Writes a new line to the standard output.
+        /// </summary>
+        /// <param name="values">No arguments are expected.</param>
+        /// <returns>The unspecified result.</returns>
         public static EvaluationResult NewLine(EvaluationResult[]? values)
         {
             RequireZero(values);
@@ -232,6 +297,13 @@ namespace RainLisp.Evaluation
             return Unspecified.GetUnspecified();
         }
 
+        /// <summary>
+        /// Causes a user exception carrying a primitive value to be thrown.
+        /// A number primitive value is formatted using the invariant culture but all other primitives use the local culture.
+        /// </summary>
+        /// <param name="values">A primitive value such as a boolean, a number, a string or a datetime.</param>
+        /// <returns>Not applicable.</returns>
+        /// <exception cref="UserException">Always throws a user exception.</exception>
         public static EvaluationResult Error(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
@@ -244,23 +316,46 @@ namespace RainLisp.Evaluation
                 throw new UserException(message);
             }, values);
 
+        /// <summary>
+        /// Returns the current date and time on this computer, expressed as the local time.
+        /// </summary>
+        /// <param name="values">No arguments are expected.</param>
+        /// <returns>The current local date and time.</returns>
         public static EvaluationResult Now(EvaluationResult[]? values)
         {
             RequireZero(values);
             return new DateTimeDatum(DateTime.Now);
         }
 
+        /// <summary>
+        /// Returns the current date and time on this computer, expressed as the Coordinated Universal Time (UTC).
+        /// </summary>
+        /// <param name="values">No arguments are expected.</param>
+        /// <returns>The current UTC date and time.</returns>
         public static EvaluationResult UtcNow(EvaluationResult[]? values)
         {
             RequireZero(values);
             return new DateTimeDatum(DateTime.UtcNow);
         }
 
+        /// <summary>
+        /// Returns a new datetime value in an unspecified time zone, made of a year, month and day of the month.
+        /// </summary>
+        /// <param name="values">The year (1 through 9999), the month (1 through 12) and the day (1 through the number of days in month).</param>
+        /// <returns>A datetime value.</returns>
         public static EvaluationResult MakeDate(EvaluationResult[]? values)
             => ApplyTripleOperator(AsDouble, AsDouble, AsDouble,
                 (year, month, day) => ValueOrThrowInvalid(() => new DateTimeDatum(new DateTime((int)year, (int)month, (int)day))),
                 values);
 
+        /// <summary>
+        /// Returns a new datetime value in an unspecified time zone, made of a year, month, day of the month, hour, minute, second and millisecond.
+        /// </summary>
+        /// <param name="values">
+        /// The year (1 through 9999), the month (1 through 12), the day (1 through the number of days in month),
+        /// The hours (0 through 23), the minutes (0 through 59), the seconds (0 through 59) and the milliseconds (0 through 999).
+        /// </param>
+        /// <returns>A datetime value.</returns>
         public static EvaluationResult MakeDateTime(EvaluationResult[]? values)
         {
             RequireMoreThanZero(values, 7);
@@ -275,33 +370,83 @@ namespace RainLisp.Evaluation
             return ValueOrThrowInvalid(() => new DateTimeDatum(new DateTime(year, month, day, hour, minute, second, millisecond)));
         }
 
+        /// <summary>
+        /// Returns the year of a given datetime value.
+        /// </summary>
+        /// <param name="values">The datetime to get the year from.</param>
+        /// <returns>The year, expressed as a value between 1 and 9999.</returns>
         public static EvaluationResult Year(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Year), values);
 
+        /// <summary>
+        /// Returns the month of a given datetime value.
+        /// </summary>
+        /// <param name="values">The datetime to get the month from.</param>
+        /// <returns>The month, expressed as a value between 1 and 12.</returns>
         public static EvaluationResult Month(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Month), values);
 
+        /// <summary>
+        /// Returns the day of the month of a given datetime value.
+        /// </summary>
+        /// <param name="values">The datetime to get the day from.</param>
+        /// <returns>The day, expressed as a value between 1 and 31.</returns>
         public static EvaluationResult Day(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Day), values);
 
+        /// <summary>
+        /// Returns the hour of a given datetime value.
+        /// </summary>
+        /// <param name="values">The datetime to get the hour from.</param>
+        /// <returns>The hour, expressed as a value between 0 and 23.</returns>
         public static EvaluationResult Hour(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Hour), values);
 
+        /// <summary>
+        /// Returns the minute of a given datetime value.
+        /// </summary>
+        /// <param name="values">The datetime to get the minute from.</param>
+        /// <returns>The minute, expressed as a value between 0 and 59.</returns>
         public static EvaluationResult Minute(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Minute), values);
 
+        /// <summary>
+        /// Returns the second of a given datetime value.
+        /// </summary>
+        /// <param name="values">The datetime to get the second from.</param>
+        /// <returns>The second, expressed as a value between 0 and 59.</returns>
         public static EvaluationResult Second(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Second), values);
 
+        /// <summary>
+        /// Returns the millisecond of a given datetime value.
+        /// </summary>
+        /// <param name="values">The datetime to get the millisecond from.</param>
+        /// <returns>The millisecond, expressed as a value between 0 and 999.</returns>
         public static EvaluationResult Millisecond(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Millisecond), values);
 
+        /// <summary>
+        /// Determines if the given datetime is Coordinated Universal Time (UTC).
+        /// </summary>
+        /// <param name="values">The datetime that is checked.</param>
+        /// <returns>true if the given datetime is UTC; otherwise, false.</returns>
         public static EvaluationResult IsUtc(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new BoolDatum(val.Kind == DateTimeKind.Utc), values);
 
+        /// <summary>
+        /// Converts a datetime value to local.
+        /// </summary>
+        /// <param name="values">The datetime value to convert. It must be a UTC or unspecified datetime.</param>
+        /// <returns>The datetime value expressed in local time.</returns>
         public static EvaluationResult ToLocal(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => ValueOrThrowInvalid(() => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Utc, TimeZoneInfo.Local))), values);
 
+        /// <summary>
+        /// Converts a datetime value to Universal Coordinated Time (UTC).
+        /// </summary>
+        /// <param name="values">The datetime value to convert. It must be a local or unspecified datetime.</param>
+        /// <returns>The datetime value expressed in UTC.</returns>
         public static EvaluationResult ToUtc(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => ValueOrThrowInvalid(() => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Local, TimeZoneInfo.Utc))), values);
 

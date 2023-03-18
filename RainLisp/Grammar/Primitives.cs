@@ -126,7 +126,7 @@
         public const string INDEX_OF_STRING = "index-of-string";
 
         /// <summary>
-        /// Returns a new string by replacing a substring within a given string.
+        /// Returns a new string by replacing a substring with a string within a given string.
         /// </summary>
         public const string REPLACE_STRING = "replace-string";
 
