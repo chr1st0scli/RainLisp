@@ -240,7 +240,7 @@ namespace RainLisp.Evaluation
         /// <summary>
         /// Returns a substring value of a given string. The substring starts at a specified character position and has a specified length.
         /// </summary>
-        /// <param name="values">The string to get a substring from, the zero-based start index and the length of the substring.</param>
+        /// <param name="values">The string to get a substring from, the zero-based start index and the length of the substring. Note that only the integral part of the numeric arguments is considered.</param>
         /// <returns>A substring starting at the specified character position and with the given length, or an empty string if the start index is equal to the length of the string and the desired length is zero.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not three.</exception>
         /// <exception cref="WrongTypeOfArgumentException">The first argument is not a string value or the other two are not all numeric ones.</exception>
@@ -253,7 +253,7 @@ namespace RainLisp.Evaluation
         /// <summary>
         /// Returns the zero-based index of the first occurence of a string withing another string. The search starts at a specified character position.
         /// </summary>
-        /// <param name="values">The string to search in, the string to look for and the search starting position.</param>
+        /// <param name="values">The string to search in, the string to look for and the search starting position. Note that only the integral part of the starting position is considered.</param>
         /// <returns>The zero-based index of the first occurence of a string withing another string if it is found, or -1 if it is not. If the string to look for is empty, the return value is the start index.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not three.</exception>
         /// <exception cref="WrongTypeOfArgumentException">The first two arguments are not all string values or the third one is not a numeric one.</exception>
@@ -399,7 +399,7 @@ namespace RainLisp.Evaluation
         /// <summary>
         /// Returns a new datetime value in an unspecified time zone, made of a year, month and day of the month.
         /// </summary>
-        /// <param name="values">The year (1 through 9999), the month (1 through 12) and the day (1 through the number of days in month).</param>
+        /// <param name="values">The year (1 through 9999), the month (1 through 12) and the day (1 through the number of days in month). Note that only the integral part of the arguments is considered.</param>
         /// <returns>A datetime value.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not three.</exception>
         /// <exception cref="WrongTypeOfArgumentException">Not all arguments are numeric values.</exception>
@@ -415,6 +415,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">
         /// The year (1 through 9999), the month (1 through 12), the day (1 through the number of days in month),
         /// The hours (0 through 23), the minutes (0 through 59), the seconds (0 through 59) and the milliseconds (0 through 999).
+        /// Note that only the integral part of the arguments is considered.
         /// </param>
         /// <returns>A datetime value.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not seven.</exception>
@@ -539,7 +540,7 @@ namespace RainLisp.Evaluation
         /// <summary>
         /// Returns a new datetime that adds the specified number of years to the specified datetime.
         /// </summary>
-        /// <param name="values">The datetime to add years to, the number of years to add which can be positive or negative.</param>
+        /// <param name="values">The datetime to add years to, the number of years to add which can be positive or negative. Note that only the integral part of years is considered.</param>
         /// <returns>A new datetime having added the given number of years.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
         /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a numeric one.</exception>
@@ -550,7 +551,7 @@ namespace RainLisp.Evaluation
         /// <summary>
         /// Returns a new datetime that adds the specified number of months to the specified datetime.
         /// </summary>
-        /// <param name="values">The datetime to add months to, the number of months to add which can be positive or negative.</param>
+        /// <param name="values">The datetime to add months to, the number of months to add which can be positive or negative. Note that only the integral part of months is considered.</param>
         /// <returns>A new datetime having added the given number of months.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
         /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a numeric one.</exception>
