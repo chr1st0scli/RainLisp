@@ -450,57 +450,155 @@ namespace RainLisp.Evaluation
         public static EvaluationResult ToUtc(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => ValueOrThrowInvalid(() => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Local, TimeZoneInfo.Utc))), values);
 
+        /// <summary>
+        /// Returns a new datetime that adds the specified number of years to the specified datetime.
+        /// </summary>
+        /// <param name="values">The datetime to add years to, the number of years to add which can be positive or negative.</param>
+        /// <returns>A new datetime having added the given number of years.</returns>
         public static EvaluationResult AddYears(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddYears((int)value))), values);
 
+        /// <summary>
+        /// Returns a new datetime that adds the specified number of months to the specified datetime.
+        /// </summary>
+        /// <param name="values">The datetime to add months to, the number of months to add which can be positive or negative.</param>
+        /// <returns>A new datetime having added the given number of months.</returns>
         public static EvaluationResult AddMonths(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddMonths((int)value))), values);
 
+        /// <summary>
+        /// Returns a new datetime that adds the specified number of days to the specified datetime.
+        /// </summary>
+        /// <param name="values">The datetime to add days to, the whole and fractional number of days to add, which can be positive or negative.</param>
+        /// <returns>A new datetime having added the given number of days.</returns>
         public static EvaluationResult AddDays(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddDays(value))), values);
 
+        /// <summary>
+        /// Returns a new datetime that adds the specified number of hours to the specified datetime.
+        /// </summary>
+        /// <param name="values">The datetime to add hours to, the whole and fractional number of hours to add, which can be positive or negative.</param>
+        /// <returns>A new datetime having added the given number of hours.</returns>
         public static EvaluationResult AddHours(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddHours(value))), values);
 
+        /// <summary>
+        /// Returns a new datetime that adds the specified number of minutes to the specified datetime.
+        /// </summary>
+        /// <param name="values">The datetime to add minutes to, the whole and fractional number of minutes to add, which can be positive or negative.</param>
+        /// <returns>A new datetime having added the given number of minutes.</returns>
         public static EvaluationResult AddMinutes(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddMinutes(value))), values);
 
+        /// <summary>
+        /// Returns a new datetime that adds the specified number of seconds to the specified datetime.
+        /// </summary>
+        /// <param name="values">The datetime to add seconds to, the whole and fractional number of seconds to add, which can be positive or negative.</param>
+        /// <returns>A new datetime having added the given number of seconds.</returns>
         public static EvaluationResult AddSeconds(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddSeconds(value))), values);
 
+        /// <summary>
+        /// Returns a new datetime that adds the specified number of milliseconds to the specified datetime.
+        /// </summary>
+        /// <param name="values">
+        /// The datetime to add milliseconds to, the whole and fractional number of milliseconds to add, which can be positive or negative.
+        /// Note that milliseconds is rounded to the nearest integer.
+        /// </param>
+        /// <returns>A new datetime having added the given number of milliseconds.</returns>
         public static EvaluationResult AddMilliseconds(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddMilliseconds(value))), values);
 
+        /// <summary>
+        /// Returns the number of days between two datetimes.
+        /// </summary>
+        /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
+        /// <returns>The number of days which can be positive or negative.</returns>
         public static EvaluationResult DaysDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Days)), values);
 
+        /// <summary>
+        /// Returns the number of hours between two datetimes.
+        /// </summary>
+        /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
+        /// <returns>The number of hours ranging from -23 through 23.</returns>
         public static EvaluationResult HoursDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Hours)), values);
 
+        /// <summary>
+        /// Returns the number of minutes between two datetimes.
+        /// </summary>
+        /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
+        /// <returns>The number of minutes ranging from -59 through 59.</returns>
         public static EvaluationResult MinutesDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Minutes)), values);
 
+        /// <summary>
+        /// Returns the number of seconds between two datetimes.
+        /// </summary>
+        /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
+        /// <returns>The number of seconds ranging from -59 through 59.</returns>
         public static EvaluationResult SecondsDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Seconds)), values);
 
+        /// <summary>
+        /// Returns the number of milliseconds between two datetimes.
+        /// </summary>
+        /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
+        /// <returns>The number of milliseconds ranging from -999 through 999.</returns>
         public static EvaluationResult MillisecondsDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Milliseconds)), values);
 
+        /// <summary>
+        /// Converts a string representation of a datetime in invariant culture to its datetime equivalent, using a specified format.
+        /// </summary>
+        /// <param name="values">A string containing the datetime info, a string specifying the exact format of the datetime info.</param>
+        /// <returns>The equivalent datetime value.</returns>
         public static EvaluationResult ParseDateTime(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsString, (dt, format) => ValueOrThrowInvalid(() => new DateTimeDatum(DateTime.ParseExact(dt, format, CultureInfo.InvariantCulture))), values);
 
+        /// <summary>
+        /// Converts a datetime to its equivalent string representation, using a specified format in invariant culture.
+        /// </summary>
+        /// <param name="values">A datetime to convert, a standard or custom date and time format string.</param>
+        /// <returns>The string representation of the datetime value.</returns>
         public static EvaluationResult DateTimeToString(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsString, (dt, format) => ValueOrThrowInvalid(() => new StringDatum(dt.ToString(format, CultureInfo.InvariantCulture))), values);
 
+        /// <summary>
+        /// Converts a numeric value to its equivalent string representation, using a specified format in invariant culture.
+        /// </summary>
+        /// <param name="values">A numeric value to convert, a numeric format string value.</param>
+        /// <returns>The string representation of the numeric value.</returns>
         public static EvaluationResult NumberToString(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, AsString, (num, format) => ValueOrThrowInvalid(() => new StringDatum(num.ToString(format, CultureInfo.InvariantCulture))), values);
 
+        /// <summary>
+        /// Converts a string representation of a numeric value in invariant culture to its number equivalent.
+        /// </summary>
+        /// <param name="values">A string containing the numeric info.</param>
+        /// <returns>The equivalent numeric value.</returns>
         public static EvaluationResult ParseNumber(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => ValueOrThrowInvalid(() => new NumberDatum(double.Parse(val, CultureInfo.InvariantCulture))), values);
 
+        /// <summary>
+        /// Rounds a numeric value to a specified number of fractional digits, using the away from zero rounding convention.
+        /// </summary>
+        /// <param name="values">
+        /// A numeric value to round, a numeric value that specifies the number of decimal places in the return value.
+        /// Note that only the integral part of decimal places is considered.
+        /// </param>
+        /// <returns>The rounded numeric value. If given numeric value to round has fewer fractional digits than the one specified, it is returned unchanged.</returns>
         public static EvaluationResult Round(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, (val, decimals) => ValueOrThrowInvalid(() => new NumberDatum((double)Math.Round((decimal)val, (int)decimals, MidpointRounding.AwayFromZero))), values);
 
+        /// <summary>
+        /// Returns a result by evaluating a quote symbol or a non-empty list of quote symbols as user code.
+        /// </summary>
+        /// <param name="values">A quote symbol or a non-empty list of quote symbols.</param>
+        /// <param name="EvalCallback">A callback that is capable of performing the evaluation.</param>
+        /// <returns>The result of the evaluation.</returns>
+        /// <exception cref="WrongTypeOfArgumentException">The given parameter's type is other than a quote symbol or a non-empty list of quote symbols.</exception>
         public static EvaluationResult Eval(EvaluationResult[]? values, Func<EvaluationResult, EvaluationResult> EvalCallback)
         {
             RequireMoreThanZero(values, 1);

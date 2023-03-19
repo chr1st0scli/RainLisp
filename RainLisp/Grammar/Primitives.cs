@@ -296,17 +296,17 @@
         public const string MILLISECONDS_DIFF = "milliseconds-diff";
 
         /// <summary>
-        /// Converts a string representation of a datetime in invariant culture to its datetime equivalent using a specified format.
+        /// Converts a string representation of a datetime in invariant culture to its datetime equivalent, using a specified format.
         /// </summary>
         public const string PARSE_DATETIME = "parse-datetime";
 
         /// <summary>
-        /// Converts a datetime to its equivalent string representation using a specified format in invariant culture.
+        /// Converts a datetime to its equivalent string representation, using a specified format in invariant culture.
         /// </summary>
         public const string DATETIME_TO_STRING = "datetime-to-string";
 
         /// <summary>
-        /// Converts a numeric value to its equivalent string representation using a specified format.
+        /// Converts a numeric value to its equivalent string representation, using a specified format in invariant culture.
         /// </summary>
         public const string NUMBER_TO_STRING = "number-to-string";
 
@@ -316,7 +316,7 @@
         public const string PARSE_NUMBER = "parse-number";
 
         /// <summary>
-        /// Rounds a numeric value to a specified number of fractional digits using the away from zero rounding convention.
+        /// Rounds a numeric value to a specified number of fractional digits, using the away from zero rounding convention.
         /// </summary>
         public const string ROUND = "round";
 
