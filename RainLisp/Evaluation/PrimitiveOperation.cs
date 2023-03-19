@@ -15,6 +15,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The numbers to add or strings to concatenate.</param>
         /// <returns>The sum of numeric or the concatenation of string values.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two or more.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given arguments are not all numbers or strings.</exception>
         public static EvaluationResult Add(EvaluationResult[]? values)
             => ApplyMultivalueOperatorOnEitherPrimitive(AsDouble, AsString,
                 (val1, val2) => val1 + val2,
@@ -29,6 +30,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The numeric values to subtract.</param>
         /// <returns>The result of the subtraction.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two or more.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given arguments are not all numbers.</exception>
         public static EvaluationResult Subtract(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 - val2, result => new NumberDatum(result), values);
 
@@ -38,6 +40,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The numeric values to multiply.</param>
         /// <returns>The result of the multiplication.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two or more.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given arguments are not all numbers.</exception>
         public static EvaluationResult Multiply(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 * val2, result => new NumberDatum(result), values);
 
@@ -47,6 +50,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The numeric values to divide.</param>
         /// <returns>The result of the division.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two or more.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given arguments are not all numbers.</exception>
         public static EvaluationResult Divide(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 / val2, result => new NumberDatum(result), values);
 
@@ -56,6 +60,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The numeric values to calculate their modulo.</param>
         /// <returns>The result of the modulo calculation.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two or more.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given arguments are not all numbers.</exception>
         public static EvaluationResult Modulo(EvaluationResult[]? values)
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, result => new NumberDatum(result), values);
 
@@ -65,6 +70,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The numeric or datetime values to compare.</param>
         /// <returns>true if the first value is greater or later than the second one; otherwise, false.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given arguments are not all numbers or datetimes.</exception>
         public static EvaluationResult GreaterThan(EvaluationResult[]? values)
             => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
                 (val1, val2) => new BoolDatum(val1.Value > val2.Value),
@@ -76,6 +82,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The numeric or datetime values to compare.</param>
         /// <returns>true if the first value is equal to or greater/later than the second one; otherwise, false.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given arguments are not all numbers or datetimes.</exception>
         public static EvaluationResult GreaterThanOrEqualTo(EvaluationResult[]? values)
             => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
                 (val1, val2) => new BoolDatum(val1.Value >= val2.Value),
@@ -87,6 +94,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The numeric or datetime values to compare.</param>
         /// <returns>true if the first value is less or earlier than the second one; otherwise, false.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given arguments are not all numbers or datetimes.</exception>
         public static EvaluationResult LessThan(EvaluationResult[]? values)
             => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
                 (val1, val2) => new BoolDatum(val1.Value < val2.Value),
@@ -98,6 +106,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The numeric or datetime values to compare.</param>
         /// <returns>true if the first value is equal to or less/earlier than the second one; otherwise, false.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given arguments are not all numbers or datetimes.</exception>
         public static EvaluationResult LessThanOrEqualTo(EvaluationResult[]? values)
             => ApplyBinaryOperatorOnEither(As<NumberDatum>, As<DateTimeDatum>,
                 (val1, val2) => new BoolDatum(val1.Value <= val2.Value),
@@ -122,7 +131,7 @@ namespace RainLisp.Evaluation
             => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, result => new BoolDatum(result), values);
 
         /// <summary>
-        /// Returns the logical negation of a value.
+        /// Returns the logical negation of a value. Every value is true except false itself.
         /// </summary>
         /// <param name="values">The value to calculate its logical negation.</param>
         /// <returns>true if the given value is false; otherwise, false.</returns>
@@ -145,6 +154,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A pair.</param>
         /// <returns>The first element of the pair.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given argument is not a pair.</exception>
         public static EvaluationResult Car(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsPair, val => val.First, values);
 
@@ -154,6 +164,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A pair.</param>
         /// <returns>The second element of the pair.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The given argument is not a pair.</exception>
         public static EvaluationResult Cdr(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsPair, val => val.Second, values);
 
@@ -194,6 +205,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A pair and a value to set its first part to.</param>
         /// <returns>The unspecified result.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a pair.</exception>
         public static EvaluationResult SetCar(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsPair, (Pair val1, EvaluationResult val2) =>
             {
@@ -207,6 +219,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A pair and a value to set its second part to.</param>
         /// <returns>The unspecified result.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a pair.</exception>
         public static EvaluationResult SetCdr(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsPair, (Pair val1, EvaluationResult val2) =>
             {
@@ -220,6 +233,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A string value.</param>
         /// <returns>The length of the given string.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a string value.</exception>
         public static EvaluationResult StringLength(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => new NumberDatum(val.Length), values);
 
@@ -229,6 +243,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The string to get a substring from, the zero-based start index and the length of the substring.</param>
         /// <returns>A substring starting at the specified character position and with the given length, or an empty string if the start index is equal to the length of the string and the desired length is zero.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not three.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a string value or the other two are not all numeric ones.</exception>
         public static EvaluationResult Substring(EvaluationResult[]? values)
             => ApplyTripleOperator(AsString, AsDouble, AsDouble,
                 (value, startIndex, length) => ValueOrThrowInvalid(() => new StringDatum(value.Substring((int)startIndex, (int)length))),
@@ -240,6 +255,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The string to search in, the string to look for and the search starting position.</param>
         /// <returns>The zero-based index of the first occurence of a string withing another string if it is found, or -1 if it is not. If the string to look for is empty, the return value is the start index.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not three.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first two arguments are not all string values or the third one is not a numeric one.</exception>
         public static EvaluationResult IndexOfString(EvaluationResult[]? values)
             => ApplyTripleOperator(AsString, AsString, AsDouble,
                 (value, searchValue, startIndex) => ValueOrThrowInvalid(() => new NumberDatum(value.IndexOf(searchValue, (int)startIndex))),
@@ -251,6 +267,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The string to search in, the string to be replaced and the string to replace all occurrences of the old value.</param>
         /// <returns>A new string in which all occurrences of a substring within a given string are replaced by another one. If the string to be replaced is not found, the original string is returned unchanged.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not three.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are string values.</exception>
         public static EvaluationResult ReplaceString(EvaluationResult[]? values)
             => ApplyTripleOperator(AsString, AsString, AsString,
                 (value, oldValue, newValue) => ValueOrThrowInvalid(() => new StringDatum(value.Replace(oldValue, newValue))),
@@ -262,6 +279,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The string value to convert.</param>
         /// <returns>A copy of the string value converted to lower case.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a string value.</exception>
         public static EvaluationResult ToLower(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => new StringDatum(val.ToLowerInvariant()), values);
 
@@ -271,6 +289,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The string value to convert.</param>
         /// <returns>A copy of the string value converted to upper case.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a string value.</exception>
         public static EvaluationResult ToUpper(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => new StringDatum(val.ToUpperInvariant()), values);
 
@@ -280,6 +299,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A primitive value such as a boolean, a number, a string or a datetime.</param>
         /// <returns>The unspecified result.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a primitive value.</exception>
         public static EvaluationResult Display(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
@@ -293,6 +313,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A primitive value such as a boolean, a number, a string or a datetime.</param>
         /// <returns>The unspecified result.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a primitive value.</exception>
         public static EvaluationResult Debug(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
@@ -306,6 +327,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A primitive value such as a boolean, a number, a string or a datetime.</param>
         /// <returns>The unspecified result.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a primitive value.</exception>
         public static EvaluationResult Trace(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
@@ -333,6 +355,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A primitive value such as a boolean, a number, a string or a datetime.</param>
         /// <returns>Not applicable.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a primitive value.</exception>
         /// <exception cref="UserException">Always throws a user exception.</exception>
         public static EvaluationResult Error(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
@@ -376,6 +399,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The year (1 through 9999), the month (1 through 12) and the day (1 through the number of days in month).</param>
         /// <returns>A datetime value.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not three.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are numeric values.</exception>
         public static EvaluationResult MakeDate(EvaluationResult[]? values)
             => ApplyTripleOperator(AsDouble, AsDouble, AsDouble,
                 (year, month, day) => ValueOrThrowInvalid(() => new DateTimeDatum(new DateTime((int)year, (int)month, (int)day))),
@@ -390,6 +414,7 @@ namespace RainLisp.Evaluation
         /// </param>
         /// <returns>A datetime value.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not seven.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are numeric values.</exception>
         public static EvaluationResult MakeDateTime(EvaluationResult[]? values)
         {
             RequireMoreThanZero(values, 7);
@@ -410,6 +435,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to get the year from.</param>
         /// <returns>The year, expressed as a value between 1 and 9999.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult Year(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Year), values);
 
@@ -419,6 +445,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to get the month from.</param>
         /// <returns>The month, expressed as a value between 1 and 12.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult Month(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Month), values);
 
@@ -428,6 +455,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to get the day from.</param>
         /// <returns>The day, expressed as a value between 1 and 31.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult Day(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Day), values);
 
@@ -437,6 +465,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to get the hour from.</param>
         /// <returns>The hour, expressed as a value between 0 and 23.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult Hour(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Hour), values);
 
@@ -446,6 +475,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to get the minute from.</param>
         /// <returns>The minute, expressed as a value between 0 and 59.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult Minute(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Minute), values);
 
@@ -455,6 +485,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to get the second from.</param>
         /// <returns>The second, expressed as a value between 0 and 59.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult Second(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Second), values);
 
@@ -464,6 +495,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to get the millisecond from.</param>
         /// <returns>The millisecond, expressed as a value between 0 and 999.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult Millisecond(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new NumberDatum(val.Millisecond), values);
 
@@ -473,6 +505,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime that is checked.</param>
         /// <returns>true if the given datetime is UTC; otherwise, false.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult IsUtc(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => new BoolDatum(val.Kind == DateTimeKind.Utc), values);
 
@@ -482,6 +515,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime value to convert. It must be a UTC or unspecified datetime.</param>
         /// <returns>The datetime value expressed in local time.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult ToLocal(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => ValueOrThrowInvalid(() => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Utc, TimeZoneInfo.Local))), values);
 
@@ -491,6 +525,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime value to convert. It must be a local or unspecified datetime.</param>
         /// <returns>The datetime value expressed in UTC.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
         public static EvaluationResult ToUtc(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsDateTime, val => ValueOrThrowInvalid(() => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Local, TimeZoneInfo.Utc))), values);
 
@@ -500,6 +535,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to add years to, the number of years to add which can be positive or negative.</param>
         /// <returns>A new datetime having added the given number of years.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a numeric one.</exception>
         public static EvaluationResult AddYears(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddYears((int)value))), values);
 
@@ -509,6 +545,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to add months to, the number of months to add which can be positive or negative.</param>
         /// <returns>A new datetime having added the given number of months.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a numeric one.</exception>
         public static EvaluationResult AddMonths(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddMonths((int)value))), values);
 
@@ -518,6 +555,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to add days to, the whole and fractional number of days to add, which can be positive or negative.</param>
         /// <returns>A new datetime having added the given number of days.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a numeric one.</exception>
         public static EvaluationResult AddDays(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddDays(value))), values);
 
@@ -527,6 +565,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to add hours to, the whole and fractional number of hours to add, which can be positive or negative.</param>
         /// <returns>A new datetime having added the given number of hours.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a numeric one.</exception>
         public static EvaluationResult AddHours(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddHours(value))), values);
 
@@ -536,6 +575,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to add minutes to, the whole and fractional number of minutes to add, which can be positive or negative.</param>
         /// <returns>A new datetime having added the given number of minutes.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a numeric one.</exception>
         public static EvaluationResult AddMinutes(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddMinutes(value))), values);
 
@@ -545,6 +585,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to add seconds to, the whole and fractional number of seconds to add, which can be positive or negative.</param>
         /// <returns>A new datetime having added the given number of seconds.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a numeric one.</exception>
         public static EvaluationResult AddSeconds(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddSeconds(value))), values);
 
@@ -557,6 +598,7 @@ namespace RainLisp.Evaluation
         /// </param>
         /// <returns>A new datetime having added the given number of milliseconds.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a numeric one.</exception>
         public static EvaluationResult AddMilliseconds(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsDouble, (dt, value) => ValueOrThrowInvalid(() => new DateTimeDatum(dt.AddMilliseconds(value))), values);
 
@@ -566,6 +608,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
         /// <returns>The number of days which can be positive or negative.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are datetime values.</exception>
         public static EvaluationResult DaysDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Days)), values);
 
@@ -575,6 +618,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
         /// <returns>The number of hours ranging from -23 through 23.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are datetime values.</exception>
         public static EvaluationResult HoursDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Hours)), values);
 
@@ -584,6 +628,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
         /// <returns>The number of minutes ranging from -59 through 59.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are datetime values.</exception>
         public static EvaluationResult MinutesDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Minutes)), values);
 
@@ -593,6 +638,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
         /// <returns>The number of seconds ranging from -59 through 59.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are datetime values.</exception>
         public static EvaluationResult SecondsDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Seconds)), values);
 
@@ -602,6 +648,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
         /// <returns>The number of milliseconds ranging from -999 through 999.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are datetime values.</exception>
         public static EvaluationResult MillisecondsDiff(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Milliseconds)), values);
 
@@ -611,6 +658,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A string containing the datetime info, a string specifying the exact format of the datetime info.</param>
         /// <returns>The equivalent datetime value.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are string values.</exception>
         public static EvaluationResult ParseDateTime(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsString, (dt, format) => ValueOrThrowInvalid(() => new DateTimeDatum(DateTime.ParseExact(dt, format, CultureInfo.InvariantCulture))), values);
 
@@ -620,6 +668,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A datetime to convert, a standard or custom date and time format string.</param>
         /// <returns>The string representation of the datetime value.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a datetime value or the second is not a string one.</exception>
         public static EvaluationResult DateTimeToString(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDateTime, AsString, (dt, format) => ValueOrThrowInvalid(() => new StringDatum(dt.ToString(format, CultureInfo.InvariantCulture))), values);
 
@@ -629,6 +678,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A numeric value to convert, a numeric format string value.</param>
         /// <returns>The string representation of the numeric value.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The first argument is not a numeric value or the second is not a string one.</exception>
         public static EvaluationResult NumberToString(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, AsString, (num, format) => ValueOrThrowInvalid(() => new StringDatum(num.ToString(format, CultureInfo.InvariantCulture))), values);
 
@@ -638,6 +688,7 @@ namespace RainLisp.Evaluation
         /// <param name="values">A string containing the numeric info.</param>
         /// <returns>The equivalent numeric value.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a string value.</exception>
         public static EvaluationResult ParseNumber(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsString, val => ValueOrThrowInvalid(() => new NumberDatum(double.Parse(val, CultureInfo.InvariantCulture))), values);
 
@@ -650,6 +701,7 @@ namespace RainLisp.Evaluation
         /// </param>
         /// <returns>The rounded numeric value. If given numeric value to round has fewer fractional digits than the one specified, it is returned unchanged.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are numeric values.</exception>
         public static EvaluationResult Round(EvaluationResult[]? values)
             => ApplyBinaryOperator(AsDouble, (val, decimals) => ValueOrThrowInvalid(() => new NumberDatum((double)Math.Round((decimal)val, (int)decimals, MidpointRounding.AwayFromZero))), values);
 
@@ -660,7 +712,7 @@ namespace RainLisp.Evaluation
         /// <param name="EvalCallback">A callback that is capable of performing the evaluation.</param>
         /// <returns>The result of the evaluation.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
-        /// <exception cref="WrongTypeOfArgumentException">The given parameter's type is other than a quote symbol or a non-empty list of quote symbols.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is neither a quote symbol nor a non-empty list of quote symbols.</exception>
         public static EvaluationResult Eval(EvaluationResult[]? values, Func<EvaluationResult, EvaluationResult> EvalCallback)
         {
             RequireMoreThanZero(values, 1);
