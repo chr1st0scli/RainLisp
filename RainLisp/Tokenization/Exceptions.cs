@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="line">The line in the code which the tokenization problem refers to.</param>
         /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
-        public TokenizationException(uint line, uint position)
+        protected TokenizationException(uint line, uint position)
         {
             Line = line;
             Position = position;
@@ -22,7 +22,7 @@
         /// <param name="line">The line in the code which the tokenization problem refers to.</param>
         /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
         /// <param name="message">The message that describes the error.</param>
-        public TokenizationException(uint line, uint position, string? message) : base(message)
+        protected TokenizationException(uint line, uint position, string? message) : base(message)
         {
             Line = line;
             Position = position;
@@ -35,7 +35,7 @@
         /// <param name="position">The character position in the <paramref name="line"/> where the tokenization problem refers to.</param>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
-        public TokenizationException(uint line, uint position, string? message, Exception? innerException) : base(message, innerException)
+        protected TokenizationException(uint line, uint position, string? message, Exception? innerException) : base(message, innerException)
         {
             Line = line;
             Position = position;
