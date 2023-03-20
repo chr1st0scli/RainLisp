@@ -3,28 +3,69 @@ using RainLisp.Evaluation.Results;
 
 namespace RainLisp.Evaluation
 {
+    /// <summary>
+    /// Represents an evaluator that is capable of evaluating an abstract syntax tree and its components.
+    /// </summary>
     public class EvaluatorVisitor : IEvaluatorVisitor
     {
         private readonly IProcedureApplicationVisitor _procedureApplicationVisitor;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EvaluatorVisitor"/> class.
+        /// </summary>
+        /// <param name="procedureApplicationVisitor">An evaluator that is capable of evaluating user and primitive procedure applications (calls).</param>
+        /// <exception cref="ArgumentNullException">The <paramref name="procedureApplicationVisitor"/> is null.</exception>
         public EvaluatorVisitor(IProcedureApplicationVisitor procedureApplicationVisitor)
             => _procedureApplicationVisitor = procedureApplicationVisitor ?? throw new ArgumentNullException(nameof(procedureApplicationVisitor));
 
+        /// <summary>
+        /// Returns the result of evaluating a numeric literal.
+        /// </summary>
+        /// <param name="numberLiteral">The numeric literal to evaluate.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateNumberLiteral(NumberLiteral numberLiteral)
             => new NumberDatum(numberLiteral.Value);
 
+        /// <summary>
+        /// Returns the result of evaluating a string literal.
+        /// </summary>
+        /// <param name="stringLiteral">The string literal to evaluate.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateStringLiteral(StringLiteral stringLiteral)
             => new StringDatum(stringLiteral.Value);
 
+        /// <summary>
+        /// Returns the result of evaluating a boolean literal.
+        /// </summary>
+        /// <param name="boolLiteral">The boolean literal to evaluate.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateBooleanLiteral(BooleanLiteral boolLiteral)
             => new BoolDatum(boolLiteral.Value);
 
+        /// <summary>
+        /// Returns the result of evaluating an identifier.
+        /// </summary>
+        /// <param name="identifier">The identifier to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment)
             => EvaluateWithDebugInfo(() => environment.LookupIdentifierValue(identifier.Name), identifier);
 
+        /// <summary>
+        /// Returns the result of evaluating a quote.
+        /// </summary>
+        /// <param name="quote">The quote to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateQuote(Quote quote, IEvaluationEnvironment environment)
             => EvaluateQuotable(quote.Quotable, environment);
 
+        /// <summary>
+        /// Returns the result of evaluating an assignment.
+        /// </summary>
+        /// <param name="assignment">The assignment to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment)
         {
             EvaluationResult Evaluate()
@@ -40,6 +81,12 @@ namespace RainLisp.Evaluation
             return EvaluateWithDebugInfo(Evaluate, assignment);
         }
 
+        /// <summary>
+        /// Returns the result of evaluating a definition.
+        /// </summary>
+        /// <param name="definition">The definition to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateDefinition(Definition definition, IEvaluationEnvironment environment)
         {
             // Evaluate the expression to get the initial value to assign to the identifier.
@@ -50,9 +97,21 @@ namespace RainLisp.Evaluation
             return Unspecified.GetUnspecified();
         }
 
+        /// <summary>
+        /// Returns the result of evaluating a lambda.
+        /// </summary>
+        /// <param name="lambda">The lambda to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateLambda(Lambda lambda, IEvaluationEnvironment environment)
             => new UserProcedure(lambda.Parameters, lambda.Body, environment);
 
+        /// <summary>
+        /// Returns the result of evaluating an if expression.
+        /// </summary>
+        /// <param name="ifExpression">The if expression to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateIf(If ifExpression, IEvaluationEnvironment environment)
         {
             // Evaluate the predicate of the if expression.
@@ -71,9 +130,21 @@ namespace RainLisp.Evaluation
                 return Unspecified.GetUnspecified();
         }
 
+        /// <summary>
+        /// Returns the result of evaluating a begin code block.
+        /// </summary>
+        /// <param name="begin">The begin code block to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateBegin(Begin begin, IEvaluationEnvironment environment)
             => EvaluateSequence(begin.Expressions, environment);
 
+        /// <summary>
+        /// Returns the result of evaluating a procedure application (call).
+        /// </summary>
+        /// <param name="application">The application to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateApplication(Application application, IEvaluationEnvironment environment)
         {
             EvaluationResult Evaluate()
@@ -94,6 +165,12 @@ namespace RainLisp.Evaluation
             return EvaluateWithDebugInfo(Evaluate, application);
         }
 
+        /// <summary>
+        /// Returns the result of evaluating a procedure body.
+        /// </summary>
+        /// <param name="body">The body to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public EvaluationResult EvaluateBody(Body body, IEvaluationEnvironment environment)
         {
             // If the body contains any definitions, evaluate them to establish them in the environment.
@@ -106,6 +183,12 @@ namespace RainLisp.Evaluation
             return EvaluateSequence(body.Expressions, environment);
         }
 
+        /// <summary>
+        /// Returns the result of evaluating a program.
+        /// </summary>
+        /// <param name="program">The program to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
         public IEnumerable<EvaluationResult> EvaluateProgram(Program program, IEvaluationEnvironment environment)
         {
             if (program.DefinitionsAndExpressions == null || program.DefinitionsAndExpressions.Count == 0)
