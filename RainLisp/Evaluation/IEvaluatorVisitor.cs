@@ -106,7 +106,7 @@ namespace RainLisp.Evaluation
         /// </summary>
         /// <param name="program">The program to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
-        /// <returns>The result of the evaluation.</returns>
+        /// <returns>An <see cref="IEnumerable{EvaluationResult}"/> whose elements are the results of the program's evaluation.</returns>
         IEnumerable<EvaluationResult> EvaluateProgram(Program program, IEvaluationEnvironment environment);
     }
 }

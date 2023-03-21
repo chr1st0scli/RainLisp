@@ -10,7 +10,7 @@ namespace RainLispTests
 {
     public class EnvironmentTests
     {
-        private readonly Interpreter interpreter = new(environmentFactory: new TestableEnvironmentFactory(), installLispLibraries: false);
+        private readonly Interpreter interpreter = new(installLispLibraries: false) { EnvironmentFactory = new TestableEnvironmentFactory() };
 
         [Theory]
         [InlineData(0, "(define a 0)")]
