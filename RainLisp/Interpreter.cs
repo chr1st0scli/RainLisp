@@ -50,7 +50,7 @@ namespace RainLisp
         /// <summary>
         /// Evaluates <paramref name="code"/> and returns the results.
         /// </summary>
-        /// <param name="code">The LISP code to evaluate.</param>
+        /// <param name="code">The code to evaluate.</param>
         /// <returns>An <see cref="IEnumerable{EvaluationResult}"/> whose elements are the results of the code's evaluation.</returns>
         /// <exception cref="NonTerminatedStringException">A string literal is not terminated properly; occurs during the lexical analysis of code.</exception>
         /// <exception cref="InvalidEscapeSequenceException">There is an invalid escape sequence in a string literal; occurs during the lexical analysis of code.</exception>
@@ -92,7 +92,7 @@ namespace RainLisp
         /// Typically, the first time it is called, null is passed to <paramref name="environment"/> which creates one and returns it by reference.
         /// Subsequent calls should use that environment to progressively add more definitions to it.
         /// </summary>
-        /// <param name="code">The LISP code to evaluate.</param>
+        /// <param name="code">The code to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in. If null a global environment is created and returned for subsequent evaluations.</param>
         /// <returns>An <see cref="IEnumerable{EvaluationResult}"/> whose elements are the results of the code's evaluation.</returns>
         /// <exception cref="NonTerminatedStringException">A string literal is not terminated properly; occurs during the lexical analysis of code.</exception>
@@ -162,7 +162,7 @@ namespace RainLisp
         /// Typically, the first time it is called, null is passed to <paramref name="environment"/> which creates one and returns it by reference.
         /// Subsequent calls should use that environment to progressively add more definitions to it.
         /// </summary>
-        /// <param name="code">The LISP code to evaluate.</param>
+        /// <param name="code">The code to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in. If null a global environment is created and returned for subsequent evaluations.</param>
         /// <param name="print">A function that prints an evaluation result.</param>
         /// <param name="printError">A function that prints an evaluation error.</param>

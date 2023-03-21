@@ -107,6 +107,12 @@ namespace RainLisp.Evaluation
         /// <param name="program">The program to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>An <see cref="IEnumerable{EvaluationResult}"/> whose elements are the results of the program's evaluation.</returns>
+        /// <exception cref="WrongNumberOfArgumentsException">A procedure is called with the wrong number of arguments.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">A procedure is called with the wrong type of argument.</exception>
+        /// <exception cref="UnknownIdentifierException">An undefined identifier is evaluated.</exception>
+        /// <exception cref="NotProcedureException">A procedure application is evaluated on a value that is not a procedure.</exception>
+        /// <exception cref="UserException">User code explicitly caused an error.</exception>
+        /// <exception cref="InvalidValueException">A procedure is called with a wrong argument value.</exception>
         IEnumerable<EvaluationResult> EvaluateProgram(Program program, IEvaluationEnvironment environment);
     }
 }
