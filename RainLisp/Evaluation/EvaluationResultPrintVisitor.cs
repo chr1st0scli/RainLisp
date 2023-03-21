@@ -6,14 +6,33 @@ using static RainLisp.Grammar.StringEscapableChars;
 
 namespace RainLisp.Evaluation
 {
+    /// <summary>
+    /// Represents a transformer of evaluation results to their string representation.
+    /// A common usage scenario is writing the result of evaluation to the standard output.
+    /// </summary>
     public class EvaluationResultPrintVisitor : IEvaluationResultVisitor<string>
     {
+        /// <summary>
+        /// Returns a string by processing a numeric evaluation result.
+        /// </summary>
+        /// <param name="numberDatum">The numeric evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
         public string VisitNumberDatum(NumberDatum numberDatum)
             => numberDatum.Value.ToString(CultureInfo.InvariantCulture);
 
+        /// <summary>
+        /// Returns a string by processing a boolean evaluation result.
+        /// </summary>
+        /// <param name="boolDatum">The boolean evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
         public string VisitBoolDatum(BoolDatum boolDatum)
             => boolDatum.Value.ToString().ToLower();
 
+        /// <summary>
+        /// Returns a string by processing a string evaluation result.
+        /// </summary>
+        /// <param name="stringDatum">The string evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
         public string VisitStringDatum(StringDatum stringDatum)
         {
             var sb = new StringBuilder();
@@ -46,15 +65,35 @@ namespace RainLisp.Evaluation
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Returns a string by processing a datetime evaluation result.
+        /// </summary>
+        /// <param name="dateTimeDatum">The datetime evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
         public string VisitDateTimeDatum(DateTimeDatum dateTimeDatum)
             => dateTimeDatum.Value.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
 
+        /// <summary>
+        /// Returns a string by processing a quote symbol evaluation result.
+        /// </summary>
+        /// <param name="quoteSymbol">The quote symbol evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
         public string VisitQuoteSymbol(QuoteSymbol quoteSymbol)
             => quoteSymbol.SymbolText;
 
+        /// <summary>
+        /// Returns a string by processing a primitive procedure evaluation result.
+        /// </summary>
+        /// <param name="primitiveProcedure">The primitive procedure evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
         public string VisitPrimitiveProcedure(PrimitiveProcedure primitiveProcedure)
             => $"[{nameof(PrimitiveProcedure)}] {primitiveProcedure.Name}";
 
+        /// <summary>
+        /// Returns a string by processing a user procedure evaluation result.
+        /// </summary>
+        /// <param name="userProcedure">The user procedure evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
         public string VisitUserProcedure(UserProcedure userProcedure)
         {
             string parameters = "0";
@@ -64,12 +103,27 @@ namespace RainLisp.Evaluation
             return $"[{nameof(UserProcedure)}] {nameof(userProcedure.Parameters)}: {parameters}";
         }
 
+        /// <summary>
+        /// Returns a string by processing the unspecified evaluation result.
+        /// </summary>
+        /// <param name="unspecified">The unspecified evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
         public string VisitUnspecified(Unspecified unspecified)
             => string.Empty;
 
-        public string VisitNil(Nil ni)
+        /// <summary>
+        /// Returns a string by processing the nil evaluation result.
+        /// </summary>
+        /// <param name="nil">The nil evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
+        public string VisitNil(Nil nil)
             => "()";
 
+        /// <summary>
+        /// Returns a string by processing a pair evaluation result.
+        /// </summary>
+        /// <param name="pair">The pair evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
         public string VisitPair(Pair pair)
         {
             var sb = new StringBuilder();

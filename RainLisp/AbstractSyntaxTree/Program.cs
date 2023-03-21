@@ -1,7 +1,7 @@
 ﻿namespace RainLisp.AbstractSyntaxTree
 {
     /// <summary>
-    /// Program in the abstract syntax tree.
+    /// Represents the root of the abstract syntax tree.
     /// </summary>
     public class Program
     {
