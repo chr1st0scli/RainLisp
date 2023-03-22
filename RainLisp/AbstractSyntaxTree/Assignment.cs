@@ -36,6 +36,7 @@ namespace RainLisp.AbstractSyntaxTree
         /// <param name="environment">The environment the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
         /// <exception cref="UnknownIdentifierException">The <see cref="IdentifierName"/> is not defined.</exception>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of this instance.</exception>
         public override EvaluationResult AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
             => visitor.EvaluateAssignment(this, environment);
 

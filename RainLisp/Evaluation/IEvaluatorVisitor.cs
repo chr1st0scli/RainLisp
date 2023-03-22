@@ -53,6 +53,7 @@ namespace RainLisp.Evaluation
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
         /// <exception cref="UnknownIdentifierException">The <paramref name="assignment"/>'s identifier name is not defined.</exception>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of the <paramref name="assignment"/>'s value.</exception>
         EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment);
 
         /// <summary>
@@ -61,6 +62,7 @@ namespace RainLisp.Evaluation
         /// <param name="definition">The definition to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of the <paramref name="definition"/>'s value.</exception>
         EvaluationResult EvaluateDefinition(Definition definition, IEvaluationEnvironment environment);
 
         /// <summary>
@@ -77,6 +79,7 @@ namespace RainLisp.Evaluation
         /// <param name="ifExpression">The if expression to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of the <paramref name="ifExpression"/>.</exception>
         EvaluationResult EvaluateIf(If ifExpression, IEvaluationEnvironment environment);
 
         /// <summary>
@@ -85,6 +88,7 @@ namespace RainLisp.Evaluation
         /// <param name="begin">The begin code block to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of the <paramref name="begin"/>.</exception>
         EvaluationResult EvaluateBegin(Begin begin, IEvaluationEnvironment environment);
 
         /// <summary>
@@ -94,6 +98,7 @@ namespace RainLisp.Evaluation
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
         /// <exception cref="NotProcedureException">The <paramref name="application"/>'s operator does not evaluate to a procedure.</exception>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of the <paramref name="application"/>.</exception>
         EvaluationResult EvaluateApplication(Application application, IEvaluationEnvironment environment);
 
         /// <summary>
@@ -102,6 +107,7 @@ namespace RainLisp.Evaluation
         /// <param name="body">The body to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of the <paramref name="body"/>.</exception>
         EvaluationResult EvaluateBody(Body body, IEvaluationEnvironment environment);
 
         /// <summary>
@@ -110,12 +116,7 @@ namespace RainLisp.Evaluation
         /// <param name="program">The program to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>An <see cref="IEnumerable{EvaluationResult}"/> whose elements are the results of the program's evaluation.</returns>
-        /// <exception cref="WrongNumberOfArgumentsException">A procedure is called with the wrong number of arguments.</exception>
-        /// <exception cref="WrongTypeOfArgumentException">A procedure is called with the wrong type of argument.</exception>
-        /// <exception cref="UnknownIdentifierException">An undefined identifier is evaluated.</exception>
-        /// <exception cref="NotProcedureException">A procedure application is evaluated on a value that is not a procedure.</exception>
-        /// <exception cref="UserException">User code explicitly caused an error.</exception>
-        /// <exception cref="InvalidValueException">A procedure is called with a wrong argument value.</exception>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of the <paramref name="program"/>.</exception>
         IEnumerable<EvaluationResult> EvaluateProgram(Program program, IEvaluationEnvironment environment);
     }
 }
