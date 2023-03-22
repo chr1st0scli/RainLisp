@@ -35,6 +35,7 @@ namespace RainLisp.Evaluation
         /// <param name="identifier">The identifier to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
+        /// <exception cref="UnknownIdentifierException">The <paramref name="identifier"/> is not defined.</exception>
         EvaluationResult EvaluateIdentifier(Identifier identifier, IEvaluationEnvironment environment);
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace RainLisp.Evaluation
         /// <param name="assignment">The assignment to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
+        /// <exception cref="UnknownIdentifierException">The <paramref name="assignment"/>'s identifier name is not defined.</exception>
         EvaluationResult EvaluateAssignment(Assignment assignment, IEvaluationEnvironment environment);
 
         /// <summary>
@@ -91,6 +93,7 @@ namespace RainLisp.Evaluation
         /// <param name="application">The application to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
+        /// <exception cref="NotProcedureException">The <paramref name="application"/>'s operator does not evaluate to a procedure.</exception>
         EvaluationResult EvaluateApplication(Application application, IEvaluationEnvironment environment);
 
         /// <summary>

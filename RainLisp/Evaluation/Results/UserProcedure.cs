@@ -51,6 +51,7 @@ namespace RainLisp.Evaluation.Results
         /// <param name="evaluatedArguments">Optional evaluated arguments passed to the procedure's parameters.</param>
         /// <param name="evaluatorVisitor">An evaluator visitor that will evaluate the procedure's body.</param>
         /// <returns>The evaluation result of the procedure application.</returns>
+        /// <exception cref="WrongNumberOfArgumentsException">The procedure is called with the wrong number of arguments.</exception>
         public override EvaluationResult AcceptVisitor(IProcedureApplicationVisitor visitor, EvaluationResult[]? evaluatedArguments, IEvaluatorVisitor evaluatorVisitor)
             => visitor.ApplyUserProcedure(this, evaluatedArguments, evaluatorVisitor);
     }
