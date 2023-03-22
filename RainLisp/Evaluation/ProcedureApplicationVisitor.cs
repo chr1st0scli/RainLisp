@@ -14,6 +14,8 @@ namespace RainLisp.Evaluation
         /// <param name="evaluatedArguments">The evaluated arguments to be passed to the procedure's parameters.</param>
         /// <param name="evaluatorVisitor">An evaluator that is capable of evaluating the body of the procedure.</param>
         /// <returns>The result of calling the user procedure.</returns>
+        /// <exception cref="WrongNumberOfArgumentsException">The <paramref name="procedure"/> is called with the wrong number of arguments.</exception>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of the <paramref name="procedure"/>'s body.</exception>
         public EvaluationResult ApplyUserProcedure(UserProcedure procedure, EvaluationResult[]? evaluatedArguments, IEvaluatorVisitor evaluatorVisitor)
         {
             var extendedEnvironment = procedure.Environment.ExtendEnvironment(procedure.Parameters, evaluatedArguments);

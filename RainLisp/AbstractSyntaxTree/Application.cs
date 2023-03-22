@@ -35,6 +35,8 @@ namespace RainLisp.AbstractSyntaxTree
         /// <param name="visitor">The visitor that implements the evaluation.</param>
         /// <param name="environment">The environment the evaluation occurs in.</param>
         /// <returns>The result of the evaluation.</returns>
+        /// <exception cref="NotProcedureException">The <see cref="Operator"/> does not evaluate to a procedure.</exception>
+        /// <exception cref="EvaluationException">An error occurs during the evaluation of this instance.</exception>
         public override EvaluationResult AcceptVisitor(IEvaluatorVisitor visitor, IEvaluationEnvironment environment)
             => visitor.EvaluateApplication(this, environment);
 
