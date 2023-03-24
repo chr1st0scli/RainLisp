@@ -17,6 +17,8 @@ namespace RainLisp.Parsing
         /// </summary>
         /// <param name="tokens">The tokens to syntactically analyze.</param>
         /// <returns>An abstract syntax tree to evaluate.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="tokens"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="tokens"/> is empty.</exception>
         /// <exception cref="ParsingException">The token sequence is syntactically incorrect.</exception>
         public Program Parse(IList<Token> tokens)
         {
@@ -54,12 +56,12 @@ namespace RainLisp.Parsing
             string identifierName = currentToken.Value;
             Definition definition;
 
-            if (_tokens.Match(TokenType.Identifier, currentToken))
+            if (_tokens.Match(TokenType.Identifier))
                 definition = new Definition(identifierName, Expression());
             else
             {
                 // Invalid definition, if none of the two expected tokens is encountered.
-                _tokens.Require(TokenType.LParen, currentToken, TokenType.Identifier, TokenType.LParen);
+                _tokens.Require(TokenType.LParen, TokenType.Identifier, TokenType.LParen);
 
                 // Function name
                 identifierName = _tokens.RequireIdentifierName();
@@ -98,56 +100,56 @@ namespace RainLisp.Parsing
             var currentToken = _tokens.CurrentToken();
             Expression expression;
 
-            if (_tokens.Match(TokenType.Number, currentToken))
+            if (_tokens.Match(TokenType.Number))
                 expression = new NumberLiteral(currentToken.NumberValue);
 
-            else if (_tokens.Match(TokenType.String, currentToken))
+            else if (_tokens.Match(TokenType.String))
                 expression = new StringLiteral(currentToken.StringValue);
 
-            else if (_tokens.Match(TokenType.Boolean, currentToken))
+            else if (_tokens.Match(TokenType.Boolean))
                 expression = new BooleanLiteral(currentToken.BooleanValue);
 
-            else if (_tokens.Match(TokenType.Identifier, currentToken))
+            else if (_tokens.Match(TokenType.Identifier))
                 expression = new Identifier(currentToken.Value);
 
-            else if (_tokens.Match(TokenType.QuoteAlt, currentToken))
+            else if (_tokens.Match(TokenType.QuoteAlt))
                 expression = new Quote(Quotable());
 
             else
             {
                 // Missing expression, one of the expected tokens was not encountered.
-                _tokens.Require(TokenType.LParen, currentToken, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen);
+                _tokens.Require(TokenType.LParen, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen);
 
                 currentToken = _tokens.CurrentToken();
 
-                if (_tokens.Match(TokenType.Quote, currentToken))
+                if (_tokens.Match(TokenType.Quote))
                     expression = CompleteQuote();
 
-                else if (_tokens.Match(TokenType.Assignment, currentToken))
+                else if (_tokens.Match(TokenType.Assignment))
                     expression = CompleteAssignment();
 
-                else if (_tokens.Match(TokenType.If, currentToken))
+                else if (_tokens.Match(TokenType.If))
                     expression = CompleteIf();
 
                 // cond is a derived expression, so it gets converted to an equivalent if.
-                else if (_tokens.Match(TokenType.Cond, currentToken))
+                else if (_tokens.Match(TokenType.Cond))
                     expression = CompleteCondition().ToIf();
 
-                else if (_tokens.Match(TokenType.Begin, currentToken))
+                else if (_tokens.Match(TokenType.Begin))
                     expression = new Begin(OneOrMoreExpressionsUntilRightParen());
 
-                else if (_tokens.Match(TokenType.Lambda, currentToken))
+                else if (_tokens.Match(TokenType.Lambda))
                     expression = CompleteLambda();
 
                 // let is a derived expression, so it gets converted to an equivalent lambda application.
-                else if (_tokens.Match(TokenType.Let, currentToken))
+                else if (_tokens.Match(TokenType.Let))
                     expression = CompleteLet().ToLambdaApplication();
 
                 // and & or are derived expressions, so that they get converted to equivalent ifs.
-                else if (_tokens.Match(TokenType.And, currentToken))
+                else if (_tokens.Match(TokenType.And))
                     expression = new And(OneOrMoreExpressionsUntilRightParen()).ToIf();
 
-                else if (_tokens.Match(TokenType.Or, currentToken))
+                else if (_tokens.Match(TokenType.Or))
                     expression = new Or(OneOrMoreExpressionsUntilRightParen()).ToIf();
 
                 // If it is none of the above, then it can only be a function application.
@@ -166,11 +168,11 @@ namespace RainLisp.Parsing
             List<Quotable>? quotes = null;
 
             // If the quotable itself is of the form '<quotable>, it gets converted to the equivalent list of quotables (quote <quotable>).
-            if (_tokens.Match(TokenType.QuoteAlt, currentToken))
+            if (_tokens.Match(TokenType.QuoteAlt))
                 quotes = new List<Quotable> { new Quotable(Keywords.QUOTE), Quotable() };
 
             // All other tokens are valid for a singular (i.e. non list) quotable.
-            else if (_tokens.MatchAnyBut(new[] { TokenType.LParen, TokenType.RParen, TokenType.EOF }, currentToken))
+            else if (_tokens.MatchAnyBut(new[] { TokenType.LParen, TokenType.RParen, TokenType.EOF }))
                 quoteText = currentToken.Value;
 
             else

@@ -9,18 +9,21 @@ namespace RainLisp.Parsing
     {
         private readonly IList<Token> _tokens;
         private int _currPosition;
+        private Token _currentToken;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenConsumer"/> class.
         /// </summary>
-        /// <param name="tokens">The tokens to traverse.</param>
+        /// <param name="tokens">The tokens to traverse. It must be terminated with an <see cref="TokenType.EOF"/> token.</param>
         /// <exception cref="ArgumentNullException"><paramref name="tokens"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="tokens"/> is empty.</exception>
         public TokenConsumer(IList<Token> tokens)
         {
             ArgumentNullException.ThrowIfNull(tokens, nameof(tokens));
 
             _tokens = tokens;
             _currPosition = 0;
+            _currentToken = tokens[0];
         }
 
         /// <summary>
@@ -28,7 +31,7 @@ namespace RainLisp.Parsing
         /// </summary>
         /// <returns>The token at the current position.</returns>
         public Token CurrentToken()
-            => _tokens[_currPosition];
+            => _currentToken;
 
         /// <summary>
         /// Returns a value indicating whether the current token has a certain type.
@@ -51,43 +54,31 @@ namespace RainLisp.Parsing
         /// </summary>
         /// <param name="tokenType">The token type to look for.</param>
         /// <returns>true if the current token's type is the same with <paramref name="tokenType"/>; otherwise, false.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The matched token is the last one, so the token position cannot be advanced.</exception>
         public bool Match(TokenType tokenType)
-            => Match(tokenType, CurrentToken());
-
-        /// <summary>
-        /// Returns a value indicating whether <paramref name="token"/> has a certain type and if it does it advances the current position.
-        /// It is preferable to call this overload if the current token has already been acquired for other purposes,
-        /// in which case it's the caller's resposibility to ensure that <paramref name="token"/> is the current one.
-        /// </summary>
-        /// <param name="tokenType">The token type to look for.</param>
-        /// <param name="token">The token to check. It should be the current one.</param>
-        /// <returns>true if the <paramref name="token"/>'s type is the same with <paramref name="tokenType"/>; otherwise, false.</returns>
-        public bool Match(TokenType tokenType, Token token)
         {
-            if (tokenType != token.Type)
+            if (tokenType != _currentToken.Type)
                 return false;
 
-            _currPosition++;
+            _currentToken = _tokens[++_currPosition];
             return true;
         }
 
         /// <summary>
-        /// Returns a value indicating whether <paramref name="token"/> has any type other than <paramref name="tokenTypes"/> and if it does it advances the current position.
-        /// It is preferable to call this overload if the current token has already been acquired for other purposes,
-        /// in which case it's the caller's resposibility to ensure that <paramref name="token"/> is the current one.
+        /// Returns a value indicating whether the current token has any type other than <paramref name="tokenTypes"/> and if it does it advances the current position.
         /// </summary>
         /// <param name="tokenTypes">The undesirable token types.</param>
-        /// <param name="token">The token to check. It should be the current one.</param>
-        /// <returns>true if the <paramref name="token"/>'s type is any other than <paramref name="tokenTypes"/>; otherwise, false.</returns>
-        public bool MatchAnyBut(TokenType[] tokenTypes, Token token)
+        /// <returns>true if the current token's type is any other than <paramref name="tokenTypes"/>; otherwise, false.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The matched token is the last one, so the token position cannot be advanced.</exception>
+        public bool MatchAnyBut(TokenType[] tokenTypes)
         {
             foreach (var tokenType in tokenTypes)
             {
-                if (tokenType == token.Type)
+                if (tokenType == _currentToken.Type)
                     return false;
             }
 
-            _currPosition++;
+            _currentToken = _tokens[++_currPosition];
             return true;
         }
 
@@ -95,23 +86,12 @@ namespace RainLisp.Parsing
         /// Requires that the current token has a certain type. If it does, it advances the current position; otherwise, it throws an exception.
         /// </summary>
         /// <param name="tokenType">The token type to look for.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The required token is the last one, so the token position cannot be advanced.</exception>
         /// <exception cref="ParsingException">The current token's type is not the same with <paramref name="tokenType"/>.</exception>
         public void Require(TokenType tokenType)
-            => Require(tokenType, CurrentToken());
-
-        /// <summary>
-        /// Requires that <paramref name="token"/> has a certain type. If it does, it advances the current position; otherwise, it throws an exception.
-        /// It is preferable to call this overload if the current token has already been acquired for other purposes,
-        /// in which case it's the caller's resposibility to ensure that <paramref name="token"/> is the current one.
-        /// </summary>
-        /// <param name="tokenType">The token type to look for.</param>
-        /// <param name="token">The token to check. It should be the current one.</param>
-        /// <exception cref="ParsingException">The <paramref name="token"/>'s type is not the same with <paramref name="tokenType"/>.</exception>
-        public void Require(TokenType tokenType, Token token)
         {
-            // It's the caller's resposibility to ensure that the given token is the current one.
-            if (!Match(tokenType, token))
-                throw new ParsingException(token.Line, token.Position, new[] { tokenType });
+            if (!Match(tokenType))
+                throw new ParsingException(_currentToken.Line, _currentToken.Position, new[] { tokenType });
         }
 
         /// <summary>
@@ -120,25 +100,12 @@ namespace RainLisp.Parsing
         /// </summary>
         /// <param name="tokenType">The token type to look for.</param>
         /// <param name="alternatives">Token types to report as missing if the current token's type is not matched.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The required token is the last one, so the token position cannot be advanced.</exception>
         /// <exception cref="ParsingException">The current token's type is not the same with <paramref name="tokenType"/>.</exception>
         public void Require(TokenType tokenType, params TokenType[] alternatives)
-            => Require(tokenType, CurrentToken(), alternatives);
-
-        /// <summary>
-        /// Requires that <paramref name="token"/> has a certain type. If it does, it advances the current position.
-        /// Otherwise, it throws an exception, reporting <paramref name="alternatives"/> as missing token types.
-        /// It is preferable to call this overload if the current token has already been acquired for other purposes,
-        /// in which case it's the caller's resposibility to ensure that <paramref name="token"/> is the current one.
-        /// </summary>
-        /// <param name="tokenType">The token type to look for.</param>
-        /// <param name="token">The token to check. It should be the current one.</param>
-        /// <param name="alternatives">Token types to report as missing if the <paramref name="token"/>'s type is not matched.</param>
-        /// <exception cref="ParsingException">The <paramref name="token"/>'s type is not the same with <paramref name="tokenType"/>.</exception>
-        public void Require(TokenType tokenType, Token token, params TokenType[] alternatives)
         {
-            // It's the caller's resposibility to ensure that the given token is the current one.
-            if (!Match(tokenType, token))
-                throw new ParsingException(token.Line, token.Position, alternatives);
+            if (!Match(tokenType))
+                throw new ParsingException(_currentToken.Line, _currentToken.Position, alternatives);
         }
 
         private bool Check(TokenType tokenType, int position)
