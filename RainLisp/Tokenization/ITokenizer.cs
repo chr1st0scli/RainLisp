@@ -9,7 +9,7 @@
         /// Performs lexical analysis on code and produces tokens as a result.
         /// </summary>
         /// <param name="code">The code to lexically analyze.</param>
-        /// <returns>A list of tokens.</returns>
+        /// <returns>A list of tokens that always terminates with an <see cref="TokenType.EOF"/> token.</returns>
         /// <exception cref="NonTerminatedStringException">A string literal is not properly terminated.</exception>
         /// <exception cref="InvalidEscapeSequenceException">An invalid string literal escape sequence is provided.</exception>
         /// <exception cref="InvalidStringCharacterException">An invalid string literal character is provided.</exception>

@@ -13,6 +13,8 @@ namespace RainLisp.Parsing
         /// </summary>
         /// <param name="tokens">The tokens to syntactically analyze.</param>
         /// <returns>An abstract syntax tree to evaluate.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="tokens"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="tokens"/> is empty.</exception>
         /// <exception cref="ParsingException">The token sequence is syntactically incorrect.</exception>
         Program Parse(IList<Token> tokens);
     }

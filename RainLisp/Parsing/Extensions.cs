@@ -29,11 +29,12 @@ namespace RainLisp.Parsing
         /// </summary>
         /// <param name="tokenConsumer">The token consumer to request the identifier from.</param>
         /// <returns>The identifier's name.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The required token is the last one, so the token position cannot be advanced.</exception>
         /// <exception cref="ParsingException">The current token's type is not an identifier.</exception>
         public static string RequireIdentifierName(this TokenConsumer tokenConsumer)
         {
             var currentToken = tokenConsumer.CurrentToken();
-            tokenConsumer.Require(TokenType.Identifier, currentToken);
+            tokenConsumer.Require(TokenType.Identifier);
 
             return currentToken.Value;
         }
