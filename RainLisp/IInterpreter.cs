@@ -41,6 +41,7 @@ namespace RainLisp
         /// </summary>
         /// <param name="program">The abstract syntax tree to evaluate.</param>
         /// <returns>An <see cref="IEnumerable{EvaluationResult}"/> whose elements are the results of the <paramref name="program"/>'s evaluation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="program"/> is null.</exception>
         /// <exception cref="WrongNumberOfArgumentsException">A procedure is called with the wrong number of arguments; occurs during evaluation.</exception>
         /// <exception cref="WrongTypeOfArgumentException">A procedure is called with the wrong type of argument; occurs during evaluation.</exception>
         /// <exception cref="UnknownIdentifierException">An undefined identifier is evaluated; occurs during evaluation.</exception>
@@ -79,6 +80,7 @@ namespace RainLisp
         /// <param name="program">The abstract syntax tree to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in. If null a global environment is created and returned for subsequent evaluations.</param>
         /// <returns>An <see cref="IEnumerable{EvaluationResult}"/> whose elements are the results of the <paramref name="program"/>'s evaluation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="program"/> is null.</exception>
         /// <exception cref="WrongNumberOfArgumentsException">A procedure is called with the wrong number of arguments; occurs during evaluation.</exception>
         /// <exception cref="WrongTypeOfArgumentException">A procedure is called with the wrong type of argument; occurs during evaluation.</exception>
         /// <exception cref="UnknownIdentifierException">An undefined identifier is evaluated; occurs during evaluation.</exception>

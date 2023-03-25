@@ -13,7 +13,7 @@
         internal const string INVALID_STRING_CHARACTER = "Invalid string character {0}. Line {1}, position {2}.";
         internal const string INVALID_NUMBER_CHARACTER = "Invalid number character {0}. Line {1}, position {2}.";
 
-        internal const string PARSING_ERROR = "Wrong syntax. Line {0}, position {1}. Expecting {2}.";
+        internal const string PARSING_ERROR = "Syntax error. Line {0}, position {1}. Expecting {2}.";
         internal const string SYMBOL_SEPARATOR = " or ";
 
         internal const string WRONG_NUMBER_OF_ARGUMENTS = "Wrong number of arguments, expecting {0} but got {1}.";
