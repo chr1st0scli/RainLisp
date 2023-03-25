@@ -15,6 +15,7 @@ namespace RainLisp.Tokenization
         private bool _charInstring;
         private bool _charInNumber;
         private bool _charInComment;
+        private string _code;
 
         private readonly StringTokenizer _stringTokenizer;
         private readonly NumberTokenizer _numberTokenizer;
@@ -26,6 +27,7 @@ namespace RainLisp.Tokenization
         /// </summary>
         public Tokenizer()
         {
+            _code = string.Empty;
             _stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
             _numberTokenizer = new NumberTokenizer();
             _lexemeStringBuilder = new StringBuilder();
@@ -52,13 +54,14 @@ namespace RainLisp.Tokenization
                 return _tokens;
             }
 
+            _code = code;
             _charInstring = _charInNumber = _charInComment = false;
             _stringTokenizer.Clear();
             _numberTokenizer.Clear();
             _lexemeStringBuilder.Clear();
 
             for (int i = 0; i < code.Length; i++)
-                ProcessCharacter(code[i], ref i, code);
+                ProcessCharacter(code[i], ref i);
 
             if (_charInstring)
                 throw new NonTerminatedStringException(_line, GetLastStringStartPosition());
@@ -69,14 +72,14 @@ namespace RainLisp.Tokenization
             return _tokens;
         }
 
-        private void ProcessCharacter(char c, ref int i, string code)
+        private void ProcessCharacter(char c, ref int i)
         {
             if (_charInstring)
                 _stringTokenizer.AddToString(c, _line, _charPosition);
 
             else if (_charInComment)
             {
-                ProcessCommentCharacter(c, ref i, code);
+                ProcessCommentCharacter(c, ref i);
                 return; // Skip advancing character position.
             }
             // Start of a comment.
@@ -112,7 +115,7 @@ namespace RainLisp.Tokenization
             {
                 RegisterUnknownToken();
                 ChangeLine();
-                PlatformBounceNextNewLine(ref i, code);
+                PlatformBounceNextNewLine(ref i);
                 return; // Skip advancing character position.
             }
             else if (c == NEW_LINE)
@@ -129,7 +132,7 @@ namespace RainLisp.Tokenization
                 _numberTokenizer.AddToNumber(c, _line, _charPosition);
                 _lexemeStringBuilder.Append(c);
             }
-            else if (NumberStartsAt(i, code))
+            else if (NumberStartsAt(i))
             {
                 _charInNumber = true;
                 _numberTokenizer.Clear();
@@ -142,14 +145,14 @@ namespace RainLisp.Tokenization
             _charPosition++;
         }
 
-        private void ProcessCommentCharacter(char c, ref int i, string code)
+        private void ProcessCommentCharacter(char c, ref int i)
         {
             // Disregard a character in a comment except a new line that ends it.
             if (c == CARRIAGE_RETURN)
             {
                 _charInComment = false;
                 ChangeLine();
-                PlatformBounceNextNewLine(ref i, code);
+                PlatformBounceNextNewLine(ref i);
             }
             else if (c == NEW_LINE)
             {
@@ -198,27 +201,27 @@ namespace RainLisp.Tokenization
             _charPosition = 1;
         }
 
-        private static void PlatformBounceNextNewLine(ref int i, string code)
+        private void PlatformBounceNextNewLine(ref int i)
         {
             // Skip the next \n character, so that \r\n is treated as a single new line if the platform dictates it.
-            if (i < code.Length - 1 && code[i + 1] == NEW_LINE && Environment.NewLine == $"{CARRIAGE_RETURN}{NEW_LINE}")
+            if (i < _code.Length - 1 && _code[i + 1] == NEW_LINE && Environment.NewLine == $"{CARRIAGE_RETURN}{NEW_LINE}")
                 i++;
         }
 
-        private bool NumberStartsAt(int i, string code)
+        private bool NumberStartsAt(int i)
         {
             // If a lexeme is already being built, we are not dealing with the start of a number.
             if (_lexemeStringBuilder.Length > 0)
                 return false;
 
-            char c = code[i];
+            char c = _code[i];
 
             // If it starts with a digit, then a number is being started.
             if (char.IsDigit(c))
                 return true;
 
             // If it starts with a number sign followed by a digit, then a number is considered to being started.
-            if ((c == PLUS || c == MINUS) && i < code.Length - 1 && char.IsDigit(code[i + 1]))
+            if ((c == PLUS || c == MINUS) && i < _code.Length - 1 && char.IsDigit(_code[i + 1]))
                 return true;
 
             return false;
