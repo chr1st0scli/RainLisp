@@ -3,3 +3,8 @@
 (define (cdaddr sequence)
   (cdr (caddr sequence)))
 ```
+
+## Example
+```scheme
+
+```

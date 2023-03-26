@@ -5,3 +5,8 @@
       initial
       (op (car sequence) (fold-right op initial (cdr sequence)))))
 ```
+
+## Example
+```scheme
+
+```

@@ -5,3 +5,8 @@
         ((null? (cdr sequence)) (car sequence))
         (else (fold-left op (car sequence) (cdr sequence)))))
 ```
+
+## Example
+```scheme
+
+```

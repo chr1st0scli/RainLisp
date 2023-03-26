@@ -7,3 +7,8 @@
         (length-iter (cdr seq) (+ 1 count))))
   (length-iter sequence 0))
 ```
+
+## Example
+```scheme
+
+```

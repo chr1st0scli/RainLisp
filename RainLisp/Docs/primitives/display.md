@@ -14,3 +14,8 @@
 ```scheme
 (display datetime)
 ```
+
+## Example
+```scheme
+
+```

@@ -2,3 +2,8 @@
 ```scheme
 (xor value1 value2 . values)
 ```
+
+## Example
+```scheme
+
+```

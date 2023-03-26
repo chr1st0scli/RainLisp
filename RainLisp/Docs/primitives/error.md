@@ -14,3 +14,8 @@
 ```scheme
 (error datetime)
 ```
+
+## Example
+```scheme
+
+```

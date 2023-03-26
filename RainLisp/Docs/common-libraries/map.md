@@ -5,3 +5,8 @@
       nil
       (cons (proc (car sequence)) (map proc (cdr sequence)))))
 ```
+
+## Example
+```scheme
+
+```

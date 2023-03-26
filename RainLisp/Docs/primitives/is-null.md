@@ -2,3 +2,8 @@
 ```scheme
 (null? value)
 ```
+
+## Example
+```scheme
+
+```

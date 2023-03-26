@@ -2,3 +2,8 @@
 ```scheme
 (to-upper str)
 ```
+
+## Example
+```scheme
+
+```

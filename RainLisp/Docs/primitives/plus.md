@@ -6,3 +6,8 @@
 ```scheme
 (+ str1 str2 . strs)
 ```
+
+## Example
+```scheme
+
+```

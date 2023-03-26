@@ -14,3 +14,8 @@
 ```scheme
 (trace datetime)
 ```
+
+## Example
+```scheme
+
+```

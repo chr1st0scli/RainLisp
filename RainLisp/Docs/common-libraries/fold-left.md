@@ -7,3 +7,8 @@
         (iter (op result (car rest)) (cdr rest))))
   (iter initial sequence))
 ```
+
+## Example
+```scheme
+
+```

@@ -2,3 +2,8 @@
 ```scheme
 (string-length str)
 ```
+
+## Example
+```scheme
+
+```
