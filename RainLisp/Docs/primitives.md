@@ -1,9 +1,9 @@
 # Primitives
+- [+](primitives/plus.md)
 - [-](primitives/minus.md)
 - [*](primitives/multiply.md)
 - [/](primitives/divide.md)
 - [%](primitives/modulo.md)
-- [+](primitives/plus.md)
 - [<](primitives/less.md)
 - [<=](primitives/less-or-equal.md)
 - [=](primitives/equal.md)
