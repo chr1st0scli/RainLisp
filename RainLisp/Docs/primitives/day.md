@@ -1,1 +1,4 @@
 # day
+```scheme
+(day datetime)
+```

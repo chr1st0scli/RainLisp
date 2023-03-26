@@ -1,1 +1,4 @@
 # now
+```scheme
+(now)
+```

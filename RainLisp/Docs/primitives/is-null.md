@@ -1,1 +1,4 @@
 # null?
+```scheme
+(null? value)
+```

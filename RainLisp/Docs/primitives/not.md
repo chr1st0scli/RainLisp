@@ -1,1 +1,4 @@
 # not
+```scheme
+(not value)
+```

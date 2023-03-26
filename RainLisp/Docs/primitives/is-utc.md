@@ -1,1 +1,4 @@
 # utc?
+```scheme
+(utc? datetime)
+```

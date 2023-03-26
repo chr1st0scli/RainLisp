@@ -1,1 +1,4 @@
 # cdr
+```scheme
+(cdr pair)
+```

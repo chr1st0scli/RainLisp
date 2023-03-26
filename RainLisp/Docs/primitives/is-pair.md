@@ -1,1 +1,4 @@
 # pair?
+```scheme
+(pair? value)
+```
