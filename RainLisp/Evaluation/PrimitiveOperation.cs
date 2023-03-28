@@ -131,7 +131,7 @@ namespace RainLisp.Evaluation
             => ApplyMultivalueOperator(AsBool, (val1, val2) => val1 ^ val2, result => new BoolDatum(result), values);
 
         /// <summary>
-        /// Returns the logical negation of a value. Every value is true except false itself.
+        /// Returns the logical negation of a value. Every value is true except explicit false.
         /// </summary>
         /// <param name="values">The value to calculate its logical negation.</param>
         /// <returns>true if the given value is false; otherwise, false.</returns>
