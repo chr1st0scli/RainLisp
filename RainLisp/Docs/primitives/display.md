@@ -1,21 +1,12 @@
 # display
 ```scheme
-(display bool)
+(display primitive-value)
 ```
+Writes a primitive value to the standard output. The format of the output is determined by the local culture. Its return value is unspecified.
 
-```scheme
-(display num)
-```
-
-```scheme
-(display str)
-```
-
-```scheme
-(display datetime)
-```
+> *primitive-value* is either a boolean, number, string or datetime.
 
 ## Example
 ```scheme
-
+(display "RainLisp")
 ```

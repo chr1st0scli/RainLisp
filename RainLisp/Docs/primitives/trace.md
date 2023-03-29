@@ -1,21 +1,12 @@
 # trace
 ```scheme
-(trace bool)
+(trace primitive-value)
 ```
+Writes a primitive value to the trace listeners in the trace [listeners](https://learn.microsoft.com/en-us/dotnet/framework/debug-trace-profile/trace-listeners) collection. The format of the output is determined by the local culture. Its return value is unspecified.
 
-```scheme
-(trace num)
-```
-
-```scheme
-(trace str)
-```
-
-```scheme
-(trace datetime)
-```
+> *primitive-value* is either a boolean, number, string or datetime.
 
 ## Example
 ```scheme
-
+(trace "RainLisp")
 ```

@@ -352,14 +352,14 @@ namespace RainLisp.Evaluation
         }
 
         /// <summary>
-        /// Causes a user exception carrying a primitive value to be thrown.
-        /// A number primitive value is formatted using the invariant culture but all other primitives use the local culture.
+        /// Causes a user exception with a string representation of a primitive value to be thrown.
+        /// A numeric primitive value is formatted using the invariant culture but all other primitives use the local culture.
         /// </summary>
         /// <param name="values">A primitive value such as a boolean, a number, a string or a datetime.</param>
         /// <returns>Not applicable.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
         /// <exception cref="WrongTypeOfArgumentException">The argument is not a primitive value.</exception>
-        /// <exception cref="UserException">Always throws a user exception.</exception>
+        /// <exception cref="UserException">Always thrown if called correctly.</exception>
         public static EvaluationResult Error(EvaluationResult[]? values)
             => ApplyUnaryOperator(AsAnyPrimitive, val =>
             {
