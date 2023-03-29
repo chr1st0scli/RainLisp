@@ -4,6 +4,8 @@
 ```
 Determines if two values are equal. Primitive values like numbers, strings, booleans and datetimes are compared by value. All others are compared by reference.
 
+> In traditional Scheme LISP, there are two related primitives. *equal?* compares values and *eq?* compares references. RainLisp differentiates in this regard and encapsulates both with *=*.
+
 ## Examples
 ```scheme
 (= 12.5 12.5)
