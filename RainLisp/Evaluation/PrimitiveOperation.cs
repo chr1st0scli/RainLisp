@@ -516,9 +516,9 @@ namespace RainLisp.Evaluation
             => ApplyUnaryOperator(AsDateTime, val => new BoolDatum(val.Kind == DateTimeKind.Utc), values);
 
         /// <summary>
-        /// Converts a datetime value to local.
+        /// Converts a Universal Coordinated Time (UTC) datetime value to local.
         /// </summary>
-        /// <param name="values">The datetime value to convert. It must be a UTC or unspecified datetime.</param>
+        /// <param name="values">The datetime value to convert. It must be a UTC or unspecified datetime, in which case it is treated as UTC.</param>
         /// <returns>The datetime value expressed in local time.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
         /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
@@ -527,9 +527,9 @@ namespace RainLisp.Evaluation
             => ApplyUnaryOperator(AsDateTime, val => ValueOrThrowInvalid(() => new DateTimeDatum(TimeZoneInfo.ConvertTime(val, TimeZoneInfo.Utc, TimeZoneInfo.Local))), values);
 
         /// <summary>
-        /// Converts a datetime value to Universal Coordinated Time (UTC).
+        /// Converts a local datetime value to Universal Coordinated Time (UTC).
         /// </summary>
-        /// <param name="values">The datetime value to convert. It must be a local or unspecified datetime.</param>
+        /// <param name="values">The datetime value to convert. It must be a local or unspecified datetime, in which case it is treated as local.</param>
         /// <returns>The datetime value expressed in UTC.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
         /// <exception cref="WrongTypeOfArgumentException">The argument is not a datetime value.</exception>
