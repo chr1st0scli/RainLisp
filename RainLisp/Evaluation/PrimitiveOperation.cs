@@ -629,7 +629,7 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Days)), values);
 
         /// <summary>
-        /// Returns the number of hours between two datetimes.
+        /// Returns the number of hours between the times of two datetimes.
         /// </summary>
         /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
         /// <returns>The number of hours ranging from -23 through 23.</returns>
@@ -640,7 +640,7 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Hours)), values);
 
         /// <summary>
-        /// Returns the number of minutes between two datetimes.
+        /// Returns the number of minutes between the times of two datetimes.
         /// </summary>
         /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
         /// <returns>The number of minutes ranging from -59 through 59.</returns>
@@ -651,7 +651,7 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Minutes)), values);
 
         /// <summary>
-        /// Returns the number of seconds between two datetimes.
+        /// Returns the number of seconds between the times of two datetimes.
         /// </summary>
         /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
         /// <returns>The number of seconds ranging from -59 through 59.</returns>
@@ -662,7 +662,7 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator(AsDateTime, (val1, val2) => ValueOrThrowInvalid(() => new NumberDatum(val2.Subtract(val1).Seconds)), values);
 
         /// <summary>
-        /// Returns the number of milliseconds between two datetimes.
+        /// Returns the number of milliseconds between the times of two datetimes.
         /// </summary>
         /// <param name="values">The datetime to subtract the other one from, the datetime to subtract.</param>
         /// <returns>The number of milliseconds ranging from -999 through 999.</returns>
@@ -723,7 +723,7 @@ namespace RainLisp.Evaluation
         /// A numeric value to round, a numeric value that specifies the number of decimal places in the return value (0 through 28).
         /// Note that only the integral part of decimal places is considered.
         /// </param>
-        /// <returns>The rounded numeric value. If given numeric value to round has fewer fractional digits than the one specified, it is returned unchanged.</returns>
+        /// <returns>The rounded numeric value. If the given numeric value to round has fewer fractional digits than the one specified, it is returned unchanged.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
         /// <exception cref="WrongTypeOfArgumentException">Not all arguments are numeric values.</exception>
         /// <exception cref="InvalidValueException">The number of decimal places is not within a valid range or the result is outside the range of numeric values.</exception>
