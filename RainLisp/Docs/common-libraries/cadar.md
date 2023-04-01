@@ -3,7 +3,7 @@
 (define (cadar sequence)
   (car (cdar sequence)))
 ```
-Helper for accessing a particular element based on [car](..\primitives\car.md) and [cdr](..\primitives\cdr.md) primitives.
+Helper for accessing a particular element based on [car](../primitives/car.md) and [cdr](../primitives/cdr.md) primitives.
 
 ## Example
 ```scheme
