@@ -45,11 +45,7 @@
   (fold-right append nil (map proc sequence)))
 
 (define (length sequence)
-  (define (length-iter seq count)
-    (if (null? seq)
-        count
-        (length-iter (cdr seq) (+ 1 count))))
-  (length-iter sequence 0))
+  (fold-left (lambda (count n) (+ count 1)) 0 sequence))
 
 ; car and cdr flavors.
 ; 2 levels.
