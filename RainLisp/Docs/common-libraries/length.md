@@ -1,14 +1,12 @@
 # length
 ```scheme
 (define (length sequence)
-  (define (length-iter seq count)
-    (if (null? seq)
-        count
-        (length-iter (cdr seq) (+ 1 count))))
-  (length-iter sequence 0))
+  (fold-left (lambda (count n) (+ count 1)) 0 sequence))
 ```
+Returns the length of a list.
 
 ## Example
 ```scheme
-
+(length (list 1 2 3 4))
 ```
+-> *4*
