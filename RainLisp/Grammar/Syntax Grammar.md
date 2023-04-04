@@ -1,6 +1,5 @@
 ﻿# RainLisp Syntax Grammar
 
-## EBNF-like Grammar
 Terms followed by `*` occur zero or more times.
 Terms followed by `+` occur one or more times.
 Terms inside square brackets `[]` are optional, i.e. they appear zero or one time.
