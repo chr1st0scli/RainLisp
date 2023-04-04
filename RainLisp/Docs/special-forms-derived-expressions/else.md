@@ -1,6 +1,0 @@
-# else
-
-## Example
-```scheme
-
-```
