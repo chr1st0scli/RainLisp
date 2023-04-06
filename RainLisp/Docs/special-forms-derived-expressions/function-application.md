@@ -2,7 +2,7 @@
 A special form for applying a function to optional arguments.
 This is typically known as a function call.
 
-> In Scheme LISP, a function might be often referred to as a procedure.
+> In Scheme LISP, a function might be more often referred to as a procedure.
 
 The first expression gives the procedure to call. The following zero or more expressions
 are evaluated from left to right and give the arguments passed to the procedure's parameters.
@@ -10,8 +10,8 @@ are evaluated from left to right and give the arguments passed to the procedure'
 ```
 "(" expression expression* ")"
 ```
-The body of the procedure is evaluated in a new scope where the procedure's parameters are
-bound to the values passed as the evaluated arguments.
+The body of the procedure is evaluated in a new inner scope where the procedure's parameters are
+bound to the values passed as arguments.
 
 ## Examples
 ```scheme
@@ -46,14 +46,14 @@ bound to the values passed as the evaluated arguments.
       (* -1 x)
       x))
 
-; Call the procedure
+; Call the procedure.
 (abs -7)
 ```
 -> *7*
 
 ```scheme
-; Declare an anonymous user procedure, i.e. a lambda, that
-; returns the greater of two numbers and apply it to arguments 4 and 9.
+; Declare an anonymous user procedure, i.e. a lambda, that returns
+; the greater of two numbers and apply it to arguments 4 and 9.
 ((lambda (x y)
   (if (>= x y)
       x
