@@ -52,7 +52,7 @@ bound to the values passed as arguments.
 -> *7*
 
 ```scheme
-; Declare an anonymous user procedure, i.e. a lambda, that returns
+; Create an anonymous user procedure, i.e. a lambda, that returns
 ; the greater of two numbers and apply it to arguments 4 and 9.
 ((lambda (x y)
   (if (>= x y)
