@@ -10,6 +10,20 @@ A function is defined by its name `ID` followed by zero or more parameters `ID*`
 ```
 The evaluation result of the definition itself is unspecified.
 
+> Note that the form for defining functions is syntactic sugar for `(define ID (lambda (ID*) body)`.
+
+For example,
+```scheme
+(define (foo x y)
+  (+ x y))
+```
+is really a user procedure, i.e. a `lambda`, assigned to variable `foo`.
+```scheme
+(define foo
+  (lambda (x y)
+    (+ x y)))
+```
+
 ## Examples
 ```scheme
 ; define a variable called my-var with the value 10.
@@ -48,17 +62,3 @@ foo ; Get value of foo.
 foo ; Get value of foo.
 ```
 -> *[UserProcedure] Parameters: x, y*
-
-> Note that the form for defining functions is syntactic sugar for `(define ID (lambda (ID*) body)`.
-
-For example,
-```scheme
-(define (foo x y)
-  (+ x y))
-```
-is really a user procedure, i.e. a `lambda`, assigned to variable `foo`.
-```scheme
-(define foo
-  (lambda (x y)
-    (+ x y)))
-```
