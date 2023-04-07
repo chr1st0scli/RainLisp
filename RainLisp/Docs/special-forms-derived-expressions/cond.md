@@ -19,8 +19,6 @@ If no conditional else clause is provided, the final result is unspecified.
 condition_else_clause = "(" "else" expression+ ")"
 ```
 
-> Note that `cond` is syntactic sugar for a nested `if`.
-
 ## Example
 ```scheme
 ; Define a variable.
@@ -55,3 +53,6 @@ condition_else_clause = "(" "else" expression+ ")"
 positive
 1
 ```
+
+## Remarks
+> Note that `cond` is syntactic sugar for a nested `if`.

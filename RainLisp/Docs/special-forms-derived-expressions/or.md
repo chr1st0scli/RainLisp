@@ -3,11 +3,7 @@ A derived expression that implements a logical or. It accepts at least one expre
 ```
 "(" "or" expression+ ")"
 ```
-Each expression is evaluated until one evaluates to true or the last expression is reached, in which case it is the result of the evaluation.
-
-> `or` is syntactic sugar for a nested `if`.
-
-> Note that in traditional LISP `(or)` with no operands, evaluates to `false`. RainLisp differentiates in this regard.
+Each expression is evaluated from left to right, until one evaluates to true or the last expression is reached, in which case it is the result of the evaluation.
 
 ## Examples
 ```scheme
@@ -29,3 +25,8 @@ Each expression is evaluated until one evaluates to true or the last expression 
 (or (< 1 0) (< 2 1) (< 3 2))
 ```
 -> *false*
+
+## Remarks
+> `or` is syntactic sugar for a nested `if`.
+
+> Note that in traditional LISP `(or)` with no operands, evaluates to `false`. RainLisp differentiates in this regard.

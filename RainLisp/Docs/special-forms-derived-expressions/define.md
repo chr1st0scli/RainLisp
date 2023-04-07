@@ -38,24 +38,6 @@ is the final result of the procedure when called.
 body = definition* expression+
 ```
 
-> Note that the form for defining functions is syntactic sugar for `(define ID (lambda (ID*) body)`.
-
-For example,
-```scheme
-(define (foo x y)
-  (+ x y))
-```
-is really a user procedure, i.e. a `lambda`, assigned to variable `foo`.
-```scheme
-(define foo
-  (lambda (x y)
-    (+ x y)))
-```
-
-So, when foo is called like so `(foo 1 2)`, what happens is that foo is evaluated first, which gives
-the user procedure, then the expressions `1` and `2` are evaluated in turn and finally the
-procedure is applied to them. See, [function application](function-application.md).
-
 ## Examples
 ```scheme
 ; Define a function with no parameters that returns a string.
@@ -78,3 +60,23 @@ foo ; Get value of foo.
 foo ; Get value of foo.
 ```
 -> *[UserProcedure] Parameters: x, y*
+
+## Remarks
+
+> Note that the form for defining functions is syntactic sugar for `(define ID (lambda (ID*) body)`.
+
+For example,
+```scheme
+(define (foo x y)
+  (+ x y))
+```
+is really a user procedure, i.e. a `lambda`, assigned to variable `foo`.
+```scheme
+(define foo
+  (lambda (x y)
+    (+ x y)))
+```
+
+So, when foo is called like so `(foo 1 2)`, what happens is that foo is evaluated first, which gives
+the user procedure, then the expressions `1` and `2` are evaluated in turn and finally the
+procedure is applied to them. See, [function application](function-application.md).
