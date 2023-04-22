@@ -13,15 +13,15 @@ enclosing double quotes need to be on the same line.
 
 ## Escape Sequences
 You can specify well known escape sequences within a string. An escape sequence specifies
-a special character within the string. You denote one by starting with a backslash `\`,
+a special character. You denote one by starting with a backslash `\`,
 followed by a reserved character with a special meaning.
 
 The valid escape sequences in RainLisp are:
-- `\n` is the line feed character.
-- `\r` is the carriage return character.
-- `\t` is the tab character.
-- `\"` escapes the double quote character. It specifies a double quote by preventing the string termination.
-- `\\` escapes the backslash character. It specifies a backslash by preventing the need to specify any of the above escape sequences.
+- `\n`, a line feed character.
+- `\r`, a carriage return character.
+- `\t`, a tab character.
+- `\"` specifies a double quote character by preventing the string termination.
+- `\\` specifies a backslash character by preventing the need to specify any of the above escape sequences.
 
 Let's evaluate some strings with escape sequences.
 
