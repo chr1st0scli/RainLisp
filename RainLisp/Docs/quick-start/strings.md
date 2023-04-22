@@ -64,9 +64,12 @@ Let's try it.
 ```
 -> *"Hello World!"*
 
-There are other common string-related operations such as [string-length](../primitives/string-length.md),
-[substring](../primitives/substring.md), [index-of-string](../primitives/index-of-string.md),
-[replace-string](../primitives/replace-string.md), [to-lower](../primitives/to-lower.md) and
-[to-upper](../primitives/to-upper.md)
+There are other common string-related operations such as:
+- [index-of-string](../primitives/index-of-string.md)
+- [replace-string](../primitives/replace-string.md)
+- [string-length](../primitives/string-length.md)
+- [substring](../primitives/substring.md)
+- [to-lower](../primitives/to-lower.md)
+- [to-upper](../primitives/to-upper.md)
 
 Next, let's learn about [datetimes](datetimes.md).
