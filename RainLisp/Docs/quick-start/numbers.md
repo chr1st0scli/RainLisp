@@ -19,7 +19,7 @@ Let's try evaluating some numbers.
 ```
 -> *-12.34*
 
-> Note that under the hood, all RainLisp numbers are doubles, which reminds the way Javascript treats them.
+> Note that under the hood, all RainLisp numbers are 64-bit floating point, which reminds the way Javascript treats them.
 
 You can do all the typical operations on numbers that you are already familiar with.
 Let's add some.
