@@ -3,11 +3,6 @@
 
 ![Cloudy RainLisp Logo](Artwork/RainLisp-Colored.svg)
 
-## Work in progress.
-
-This is in working state but still incomplete. There are a few pending alterations, further tests and documentation that will be present in the next phases of the project.
-
-## Introduction
 RainLisp is a LISP dialect with many similarities to Scheme. It is implemented entirely in C# and therefore brought to the .NET ecosystem.
 
 It is not intended to replace your everyday programming language at work. Though, you can integrate it with your existing systems to allow for their configuration in terms of code.
@@ -18,6 +13,7 @@ Additionally, you can easily extend it to implement your own LISP dialect or rep
 
 You can also use it independently, using its code editor to learn LISP, play around with it and have fun!
 
+- [Quick Start](RainLisp/Docs/quick-start/quick-start.md) (Work in progress...)
 - [Lexical Grammar](<RainLisp/Grammar/Lexical Grammar.md>)
 - [Syntax Grammar](<RainLisp/Grammar/Syntax Grammar.md>)
 - [Documentation](RainLisp/Docs/contents.md)
