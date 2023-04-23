@@ -81,4 +81,5 @@ There are many operations that help you work with datetimes:
 - [utc?](../primitives/is-utc.md)
 - [year](../primitives/year.md)
 
-Next, let's learn about [variables](variables.md).
+Well done! You have learned about RainLisp's primitive types.
+Now, it's time to move on and learn about the essence of the language, starting with [variables](variables.md).
