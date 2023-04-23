@@ -40,6 +40,19 @@ Let's subtract some numbers.
 ```
 -> *4.5*
 
-You can see other common number operations in the [primitives](../primitives.md) section.
+The operations that relate to numbers are:
+
+- [+](../primitives/plus.md)
+- [-](../primitives/minus.md)
+- [*](../primitives/multiply.md)
+- [/](../primitives/divide.md)
+- [%](../primitives/modulo.md)
+- [<](../primitives/less.md)
+- [<=](../primitives/less-or-equal.md)
+- [=](../primitives/equal.md)
+- [>](../primitives/greater.md)
+- [>=](../primitives/greater-or-equal.md)
+- [number-to-string](../primitives/number-to-string.md)
+- [round](../primitives/round.md)
 
 Next, let's learn about [booleans](booleans.md).
