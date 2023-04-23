@@ -6,7 +6,7 @@ It is recommended to download RainLisp console to follow along the examples.
 
 Let's start our endeavor with [numbers](numbers.md).
 
-## Basic Data Types
+## Data Types
 - [Numbers](numbers.md)
 - [Booleans](booleans.md)
 - [Strings](strings.md)
@@ -25,9 +25,9 @@ Let's start our endeavor with [numbers](numbers.md).
 - [Lists](lists.md)
 - [List operations](list-operations.md)
 - [User data structures](user-data-structures.md)
-- [Advanced structures](advanced-structures.md)
+- [Advanced data structures](advanced-data-structures.md)
 
-## Advanced
+## Advanced Topics
 - [Continuation passing style](cps.md)
 - [Message passing](message-passing.md)
 - [Encapsulation](encapsulation.md)
