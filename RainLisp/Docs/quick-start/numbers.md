@@ -53,6 +53,7 @@ The operations that relate to numbers are:
 - [>](../primitives/greater.md)
 - [>=](../primitives/greater-or-equal.md)
 - [number-to-string](../primitives/number-to-string.md)
+- [parse-number](../primitives/parse-number.md)
 - [round](../primitives/round.md)
 
 Next, let's learn about [booleans](booleans.md).
