@@ -80,3 +80,5 @@ There are many operations that help you work with datetimes:
 - [utc-now](../primitives/utc-now.md)
 - [utc?](../primitives/is-utc.md)
 - [year](../primitives/year.md)
+
+Next, let's learn about [variables](variables.md).
