@@ -26,9 +26,12 @@ There is a primitive procedure `not` that returns the logical negation of the ar
 -> *true*
 
 > Note that in RainLisp, in conditional expressions like `if`, `cond` and others like `not` that expect booleans,
-all values other than false are considered to be true. Therefore, `(not 0)` and `(not 1)` both give `false`.
+all values other than false are considered to be true. For example, `(not 0)` and `(not 1)` both give `false`.
 
-Apart from [not](../primitives/not.md), there exist all common boolean logical operations like [and](../special-forms-derived-expressions/and.md),
-[or](../special-forms-derived-expressions/or.md) and [xor](../primitives/xor.md).
+The boolean logical operations are:
+- [and](../special-forms-derived-expressions/and.md)
+- [not](../primitives/not.md)
+- [or](../special-forms-derived-expressions/or.md)
+- [xor](../primitives/xor.md)
 
 Next, let's learn about [strings](strings.md).
