@@ -9,6 +9,8 @@ As a LISP dialect, it uses prefix notation.
 It adopts an applicative order of evaluation, which means that a function's arguments are evaluated before
 the function is applied to them.
 
+It is dynamic.
+
 It is interpreted on the .NET runtime.
 
 # Contents

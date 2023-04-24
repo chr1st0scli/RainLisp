@@ -1,4 +1,8 @@
 # Special Forms & Derived Expressions
+
+Special forms are reserved keywords with special language semantics. Derived expressions are
+syntactic sugar, i.e. reserved keywords that are transformed to equivalent special forms.
+
 - [and](special-forms-derived-expressions/and.md)
 - [begin](special-forms-derived-expressions/begin.md)
 - [cond](special-forms-derived-expressions/cond.md)

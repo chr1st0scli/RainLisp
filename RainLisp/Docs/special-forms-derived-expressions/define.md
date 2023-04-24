@@ -1,5 +1,5 @@
 # define
-Definition is a special form for defining variables and functions.
+Definition is a special form for defining variables and functions in the current scope.
 The evaluation result of the definition itself is unspecified.
 
 ## Variable Definition

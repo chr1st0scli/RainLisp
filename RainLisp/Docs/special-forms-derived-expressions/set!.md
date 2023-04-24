@@ -4,7 +4,7 @@ Assignment is a special form for changing a variable's value.
 ```
 "(" "set!" ID expression ")"
 ```
-The identifier needs to be already defined in the current scope; otherwise, an error occurs.
+The identifier needs to be visible in the current scope; otherwise, an error occurs.
 The evaluation result of the assignment itself is unspecified.
 
 ## Examples

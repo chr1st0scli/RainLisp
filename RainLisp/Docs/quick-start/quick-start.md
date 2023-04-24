@@ -14,6 +14,7 @@ Let's start our endeavor with [numbers](numbers.md).
 
 ## Language Basics
 - [Variables](variables.md)
+- [Comment](comment.md)
 - [Conditionals](conditionals.md)
 - [Procedures](procedures.md)
 - [Loops](loops.md)
