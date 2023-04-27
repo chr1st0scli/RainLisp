@@ -15,10 +15,11 @@ Let's start our endeavor with [numbers](quick-start/numbers.md).
 ## Language Basics
 - [Variables](quick-start/variables.md)
 - [Comment](quick-start/comment.md)
+- [Begin code block](quick-start/begin.md)
 - [Conditionals](quick-start/conditionals.md)
 - [Procedures](quick-start/procedures.md)
 - [Loops](quick-start/loops.md)
-- [Code blocks](quick-start/code-blocks.md)
+- [Let code block](quick-start/let.md)
 - [Quotes](quick-start/quotes.md)
 
 ## Data Structures
