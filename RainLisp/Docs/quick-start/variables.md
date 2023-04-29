@@ -32,7 +32,7 @@ my-var
 ```
 -> *5*
 
-> You have a lot of freedom in choosing names for your variables, but they can't start with a number or use a reserved keyword.
+> You have a lot of freedom in choosing names for your variables, but they can't start with a number or use a reserved word.
 
 > A variable is defined in the current scope. In the above examples, we defined the variable `my-var`
 in the top-level or global scope.
