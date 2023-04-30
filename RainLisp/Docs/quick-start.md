@@ -27,9 +27,9 @@ Let's start our endeavor with [numbers](quick-start/numbers.md).
 - [Lists](quick-start/lists.md)
 - [List operations](quick-start/list-operations.md)
 - [User data structures](quick-start/user-data-structures.md)
-- [Advanced data structures](quick-start/advanced-data-structures.md)
 
 ## Advanced Topics
+- [Advanced data structures](quick-start/advanced-data-structures.md)
 - [Continuation passing style](quick-start/cps.md)
 - [Message passing](quick-start/message-passing.md)
 - [Encapsulation](quick-start/encapsulation.md)

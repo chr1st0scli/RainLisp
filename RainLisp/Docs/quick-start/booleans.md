@@ -25,7 +25,7 @@ There is a primitive procedure `not` that returns the logical negation of the ar
 ```
 -> *true*
 
-> Note that in RainLisp, in conditional expressions like `if`, `cond` and others like `not` that expect booleans,
+> Note that in RainLisp, in conditional expressions like `if`, `cond` and others like `not`, `and`, `or` that expect booleans,
 all values other than false are considered to be true. For example, `(not 0)` and `(not 1)` both give `false`.
 
 The boolean logical operations are:

@@ -12,7 +12,7 @@ Let's write some comment.
 -> *2*
 
 > Note that in RainLisp, there is no alternative way to write comment.
-For example, there is no comment block construct.
+For example, there is no block comment construct.
 If you want to comment a group of lines, each should start with a semicolon.
 
 Next, let's see how to define a block of code with [begin](begin.md).
