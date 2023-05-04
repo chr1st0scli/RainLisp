@@ -23,8 +23,10 @@ Generally, `'abc` is equivalent to `(quote abc)`.
 -> *this-is-a-quote*
 
 A quote symbol is unique during an evaluation session, so it comes in handy for equality checks.
-For example, we can check if something is tagged with a particular text. The comparisons are also performant,
-because quotes are reference types, which means that only memory addresses are compared.
+For example, we can check if something is tagged with a particular text.
+
+> The comparisons are also performant, because quotes are reference types, which means that only
+memory addresses are compared.
 
 ```scheme
 (= 'this-is-a-quote 'this-is-a-quote)
