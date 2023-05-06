@@ -47,4 +47,6 @@ in order to start using and experimenting with RainLisp yourself.
 But if you haven't had enough yet, you may read the old time classic
 [Structure and Interpretation of Computer Programs](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book.html).
 Remember that RainLisp is so much similar to Scheme LISP, which means you can follow along the book's examples
-using RainLisp! Have fun!
+using RainLisp!
+
+Have fun!
