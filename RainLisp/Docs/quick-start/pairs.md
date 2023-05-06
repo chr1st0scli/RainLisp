@@ -8,11 +8,6 @@ all and comprises of just two values bundled together.
 It's counter-intuitive how so many complex data structures can be built out of this simple one.
 One can build lists, queues, stacks, binary trees and more based on pairs, as we will see later in the advanced section.
 
-> The procedure names `cons`, `car` and `cdr` that handle pairs, might seem peculiar but they are the
-standard names used in LISP in general. The name `cons` stands for "*Construct*", `car` for "*Contents of Address part of Register'*"
-and `cdr` which is pronounced could-er, stands for "*Contents of Decrement part of Register*".
-You don't need to worry about this at all, it is just mentioned for historic purposes.
-
 ## Cons
 In order to create a pair, we can use the `cons` primitive procedure and supply the first and second
 constituent parts.
@@ -23,13 +18,13 @@ constituent parts.
 -> *(1 . 2)*
 
 As you can see, the string representation of a pair is the first value, followed by a dot, followed by
-the second value and all surrounded with parentheses.
+the second value and having all surrounded with parentheses.
 
 The above pair looks something like that in memory.
 
 ![simple-pair](img/simple-pair.png)
 
-It consists of two values (boxes), each containing a pointer to its actual value; `1` and `2` respectively.
+It consists of two values (boxes), each containing a pointer to another value; `1` and `2` respectively.
 
 We can also mix pairs together.
 
@@ -39,15 +34,14 @@ We can also mix pairs together.
 -> *(("Counter" . 1) . 2)*
 
 We just specified a pair whose first value is another pair and the second one is the number `2`.
-
-This pair is represented in memory as follows.
+It is represented in memory as follows.
 
 ![complex-pair](img/complex-pair.png)
 
 Once, you start mixing pairs in more complex ways, you might observe a string representation
 that you may find confusing. You don't need to worry about it at all, it's just a string
-representation of the value. Though, if you want to understand it, you will have to wait a little
-bit until we talk about lists.
+representation of the value after all. Though, if you are curious, you will have to wait a little
+bit, until we talk about lists and how they are represented.
 
 ```scheme
 (cons (cons 1 2) (cons 3 4))
@@ -64,5 +58,10 @@ bit until we talk about lists.
 ## Car
 
 ## Cdr
+
+> The procedure names `cons`, `car` and `cdr` that handle pairs, might seem peculiar, but they have
+generally become standard in LISP for historical reasons. For what it's worth, the name `cons` stands
+for "*Construct*", `car` for "*Contents of Address part of Register'*" and `cdr`, which is pronounced
+could-er, stands for "*Contents of Decrement part of Register*".
 
 ## Car and cdr flavors
