@@ -9,7 +9,7 @@ It's counter-intuitive how so many complex data structures can be built out of t
 One can build lists, queues, stacks, binary trees and more based on pairs, as we will see later in the advanced section.
 
 ## Cons
-In order to create a pair, we can use the `cons` primitive procedure and supply the first and second
+In order to create a pair, we can use the [cons](../primitives/cons.md) primitive procedure and supply the first and second
 constituent parts.
 
 ```scheme
@@ -55,9 +55,27 @@ bit, until we talk about lists and how they are represented.
 ```
 -> *false*
 
+> It's worth mentioning the [pair?](../primitives/is-pair.md) primitive procedure, that you can use
+to check if a given value is a pair or not.
+
+> It's a common LISP convention that procedures that return a boolean value, are given
+a name ending with a question mark. It's an indication that they question the validity of a fact.
+
 ## Car
+To get the first element of a pair, you can use the [car](../primitives/car.md) primitive procedure.
+
+```scheme
+(car (cons 1 2))
+```
+-> *1*
 
 ## Cdr
+To get the second element of a pair, you can use the [cdr](../primitives/cdr.md) primitive procedure.
+
+```scheme
+(cdr (cons 1 2))
+```
+-> *2*
 
 > The procedure names `cons`, `car` and `cdr` that handle pairs, might seem peculiar, but they have
 generally become standard in LISP for historical reasons. For what it's worth, the name `cons` stands
@@ -65,3 +83,37 @@ for "*Construct*", `car` for "*Contents of Address part of Register'*" and `cdr`
 could-er, stands for "*Contents of Decrement part of Register*".
 
 ## Car and cdr flavors
+Traditionally in LISP, there are 28 car and cdr flavors that combine alternating `car` and `cdr` operations,
+allowing you to dig into pairs up to four levels deep with a single procedure.
+
+Once you get used to the logic behind their naming, you can use them for brevity, instead of explicitly
+combining `car` and `cdr` operations yourself.
+
+The logic behind their names is that you start with a `c` and end with an `r` (just like `car` and `cdr` do)
+and in between there are `a`s that correspond to `car`s and `d`s that correspond to `cdr`s.
+For example, `(cadr pair)` is equivalent to `(car (cdr pair))`.
+
+```scheme
+(define pair (cons (cons 1 2) (cons 3 4)))
+(cadr pair)
+```
+-> *3*
+
+The `cdr` above gives the second element, which is the pair `(3 . 4)`. Then `car` is applied to it and
+gives `3`.
+
+Let's see `(caddr pair)` which is equivalent to `(car (cdr (cdr pair)))`.
+
+```scheme
+(define pair 
+  (cons 
+    (cons (cons 1 2) (cons 3 4)) 
+    (cons (cons 5 6) (cons 7 8))))
+
+(caddr pair)
+```
+-> *7*
+
+You can find all `car` and `cdr` flavors in the [specification](../common-libraries.md).
+
+Next, we will see [lists](lists.md)
