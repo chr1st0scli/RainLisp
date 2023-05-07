@@ -116,4 +116,4 @@ Let's see `(caddr pair)` which is equivalent to `(car (cdr (cdr pair)))`.
 
 You can find all `car` and `cdr` flavors in the [specification](../common-libraries.md).
 
-Next, we will see [lists](lists.md)
+Next, we will see [lists](lists.md).
