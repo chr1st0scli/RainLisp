@@ -3,7 +3,13 @@
 nil
 ```
 
-## Example
+## Examples
 ```scheme
-
+(= nil (list))
 ```
+-> *true*
+
+```scheme
+(null? nil)
+```
+-> *true*
