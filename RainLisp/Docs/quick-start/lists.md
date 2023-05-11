@@ -95,4 +95,4 @@ Try to follow along the code step by step, to understand how combining `null?`, 
 recursion, effectively allow us to iterate over the list's elements.
 
 Next, let's see some library procedures that implement some common [list operations](list-operations.md)
-in the functional languages domain.
+in the functional programming world.
