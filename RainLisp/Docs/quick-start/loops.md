@@ -85,7 +85,15 @@ Let's fix this based on what we have learned in the previous section.
 As you can see, we renamed the previous `factorial` to `iter` and made it a local procedure.
 Now, callers only need to provide the number they want to calculate the factorial for.
 
-> True tail recursion requires a low-level support. RainLisp is interpreted in the .NET
+Notice, that its usage has now become the same with `factorial` from the previous section.
+
+> This is our first glimpse of abstraction in a procedural level. The point is that callers do not
+need to know about `iter`, which can be seen as an internal detail of `factorial`. They only need
+to know something more abstract, the name of the procedure, i.e. `factorial`, the fact that it
+accepts a single numeric argument and what it does but not how. In fact, we could use this version of
+`factorial`, or the one from the previous section. The client code could work with either, with no change at all.
+
+> True tail recursion requires low-level support. RainLisp is interpreted in the .NET
 framework where a stack is always being built, no matter which style you use. Though, it's
 always good to know!
 
