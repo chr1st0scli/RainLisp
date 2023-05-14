@@ -1,11 +1,10 @@
 ﻿# Quick Start
-This guide is designed to help you get started quickly, but it also contains supplementary information to the rest of the documentation.
+This guide is designed to help you get started with RainLisp quickly.
+It also contains supplementary information to the rest of the documentation.
 
-The author tried to make no assumptions about the reader's level in programming;
-the intention is that it will be readable by everyone. Though, some bias might have
-been introduced, so it's always useful to have at least some experience.
-
-The quick start guide also presents some general educational information that can be applicable in other contexts too.
+The author tried to give it some introductory programming course characteristics, so that anyone can benefit from it.
+Despite the fact that it focuses on RainLisp and LISP in general, it presents some general educational information
+that can be applicable in other contexts too.
 
 It is recommended to download RainLisp console to follow along the examples.
 
@@ -40,7 +39,7 @@ Let's start our endeavor with [numbers](quick-start/numbers.md).
 - [Encapsulation](quick-start/encapsulation.md)
 - [Data-directed programming](quick-start/data-directed-programming.md)
 
-## What's next?
+## What's Next?
 If you covered all of the above sections, you already have more than what you need,
 in order to start using and experimenting with RainLisp yourself.
 
