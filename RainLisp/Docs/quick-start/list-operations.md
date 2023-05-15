@@ -2,8 +2,8 @@
 There are some operations on sets of data that are very common in all languages with
 functional programming characteristics. Let's see some of them and how they are typically used.
 
-## Map
-Map projects elements of a list in a certain way. In other words, you can use it to convert a set
+## Mapping
+Mapping projects elements of a list in a certain way. In other words, you can use it to convert a set
 of data, based on a conversion rule.
 
 Let's suppose that we have a list of the first 5 natural numbers and we want to get a new one
@@ -32,8 +32,8 @@ to upper case.
 Notice that this time, we don't specify a lambda with the details of the conversion, because the
 primitive procedure `to-upper` already accepts a single argument which it converts.
 
-## Filter
-Filter is suitable for selecting a subset of a given data set, based on some
+## Filtering
+Filtering is suitable for selecting a subset of a given data set, based on some
 criteria.
 
 Let's suppose that, given a list of natural numbers, we want to keep only those
