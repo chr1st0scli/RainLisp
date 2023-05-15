@@ -82,6 +82,37 @@ generally become standard in LISP for historical reasons. For what it's worth, t
 for "*Construct*", `car` for "*Contents of Address part of Register'*" and `cdr`, which is pronounced
 could-er, stands for "*Contents of Decrement part of Register*".
 
+## Pair Mutation
+But once created, can we change a pair? The answer is yes; it's done with the `set-car!` and `set-cdr!`
+primitive procedures.
+
+Let's see a couple of examples.
+
+```scheme
+; Create a pair.
+(define a-pair (cons 1 2))
+a-pair
+
+; Change the first element.
+(set-car! a-pair 3)
+a-pair
+
+; Change the second element.
+(set-cdr! a-pair 4)
+a-pair
+```
+->
+```
+(1 . 2)
+(3 . 2)
+(3 . 4)
+```
+
+In the above example, you see how we started with pair `(1 . 2)` and ended up with `(3 . 4)`.
+
+>Although simple in principle, these two primitive procedures can unlock the power that allows us
+to build elaborate data structures, as we will see later in the advanced section.
+
 ## Car and cdr flavors
 Traditionally in LISP, there are 28 car and cdr flavors that combine alternating `car` and `cdr` operations,
 allowing you to dig into pairs up to four levels deep with a single procedure.
