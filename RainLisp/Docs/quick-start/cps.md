@@ -1,38 +1,56 @@
-﻿# More Looping (Still in progress)
-Remember when we saw various ways of looping? We have seen how we can create a recursive process
-that seems mathematically elegant and increases the stack.
+﻿# More Looping Techniques
+Remember when we saw various ways of looping? We have seen recursive processes that increase the stack but look
+elegant. We have also seen iterative processes (tail recursion) that do not increase the stack.
 
-We have also seen iterative processes (tail recursion) that do not increase the stack.
+Let's investigate a couple of other common techniques that may come in handy.
 
-## Create Deferred Procedure
-We can create a procedure that creates another procedure. The goal is that we want to make some processing
-for defining an algorithm but not execute it immediately.
+## Deferred Procedures
+We can create and call a procedure that creates another procedure to be called later. The goal is that we want to
+make some pre-processing for defining an algorithm just once and possibly execute it multiple times later.
+In scenarios that such pre-processing is realistic, we can avoid repeating it every time we want to apply an
+algorithm.
 
-Let's use the factorial example once again. This time, we will successively create a procedure within another
-procedure multiple times. The resulting procedure will be like a babushka, containing other smaller ones
-within it. When the outer procedure is called, our babushka will start opening up until we get the final result.
+Even though a factorial calculation might not be a realistic example, we can use it to illustrate the idea.
+
+We will successively create a procedure within another procedure multiple times. The resulting procedure will be
+like a babushka, containing other smaller ones within it. When the outer procedure is called, our babushka will start opening up until we get the final result.
+
+First, let's remember the factorial example, defined as an iterative process (tail-recursive).
 
 ```scheme
-(define (factorial n)
+(define (factorial number)
+  (define (iter num acc)
+    (if (= num 1)
+        acc
+        (iter (- num 1) (* num acc))))
 
+  (iter number 1))
+```
+
+Now let's redefine it in a way that it returns a user procedure.
+
+```scheme
+(define (factorial number)
   (define (iter num proc)
     (if (= num 1)
         proc
         (iter (- num 1) (lambda () (* num (proc))))))
 
-  (iter n (lambda () 1)))
+  (iter number (lambda () 1)))
 
 (define factorial5 (factorial 5))
 (factorial5)
 ```
 -> *120*
 
-This time, we created the `factorial` procedure which creates and returns another procedure that calculates
-the factorial of `5`. We assign that procedure to the `factorial5` variable.
+If you compare the two versions, you will notice that the accumulator `acc` is not a number any more, but a
+procedure named `proc`. Also, notice that instead of immediately executing the multiplication `(* num acc)`,
+we siply defer it by enclosing it in a lambda `(lambda () (* num (proc)))`.
 
-When we call it, the enclosed lambdas start being called.
+In the example above, we create a procedure that knows how to calculate the factorial of `5`. We assign it
+to the `factorial5` variable and when we call it, the enclosed lambdas start being called one after the other.
 
-Try to follow along the code. You will see that the computation process is something like the following code.
+Try to follow along the code. You will see that the computation process goes something like that:
 
 ```scheme
 (define factorial5
@@ -46,27 +64,25 @@ Try to follow along the code. You will see that the computation process is somet
 ```
 -> *120*
 
-```
-5*1
-4*5
-3*20
-2*60
-```
+The multiplications, expressed in infix notation, occur in the following order.
 
-> By doing this, we effectively created a procedure `factorial5` which encapsulates the algorithm for computing the factorial of
-5. The algorithm has been analyzed and encapsulated in `factorial5`. So, this technique is very useful if you need to perform
-some kind of an algorithm analysis but actually call it later. Theoretically, we could perform a required analysis step just once
-and possibly use (call) it multiple times without the need to perform the analysis over and over again.
+```
+5 * 1
+4 * 5
+3 * 20
+2 * 60
+```
 
 ## Continuation Passing Style
-Another well known technique is CPS which stands for continuation passing style.
-The idea is that each next step in an algorithm is performed by another procedure, called continuation.
-It's the one that continues with the processing of the previous step's result.
+Another well known technique is CPS, which stands for continuation passing style.
+The idea is that each step in an algorithm produces a result, which is passed to a continuation procedure that
+embodies the next step. That way, program flow is more explicit.
 
-In order to implement this, every procedure should accept an extra argument, a continuation.
-When a procedure calculates a result, it shouldn't return it to the caller, but instead pass it to the continuation.
+In order to apply CPS, every procedure should accept an extra argument, a continuation.
+When a procedure calculates a result, it shouldn't return it to the caller, but instead pass it to the continuation
+and return whatever that returns.
 
-Let's start by laying down the factorial example we defined for the recursive process.
+First, let's remember the factorial example, defined as a recursive process.
 
 ```scheme
 (define (factorial num)
@@ -89,11 +105,8 @@ So, let's define these operations in CPS style.
   (proc (* n1 n2)))
 ```
 
-We define `=c` that checks if two numbers are equal and pass the result to the continuation `proc` and its result is returned.
-Similarly, `-c` subtracts two numbers and pass the difference to `proc` and `*c` multiplies two numbers and passes the product to `proc`.
-
-Now with these helper procedures at hand and the original factorial procedure as a reference, we can try to define factorial in CPS style.
-Let's see the complete program.
+Now, with these helper procedures at hand and the original recursive example as a reference, we can try to define `factorial` in CPS style.
+Once again, a nested lambda is created, but it's called immediately.
 
 ```scheme
 (define (=c n1 n2 proc)
@@ -106,39 +119,49 @@ Let's see the complete program.
   (proc (* n1 n2)))
 
 (define (factorial num)
-  (define (iter n proc)
+  (define (iter-cps n proc)
     (=c n 1
         (lambda (exit)
           (if exit
               (proc 1)
               (-c n 1
                   (lambda (prev-num)
-                    (iter prev-num
-                          (lambda (prev-num-fact)
-                            (*c n prev-num-fact proc)))))))))
-  (iter num (lambda (x) x)))
+                    (iter-cps prev-num
+                              (lambda (prev-num-fact)
+                                (*c n prev-num-fact proc)))))))))
+  (iter-cps num (lambda (x) x)))
 
 (factorial 5)
 ```
 -> *120*
 
-This is read like this:
-First we check if `n` is equal to `1` and the result is saved in the `exit` parameter of the lambda which is the next step.
-If we are meant to exit, we call the `proc` continuation with `1` in an analogous way to the original factorial procedure.
-If we shouldn't exit, we decrement `n` by `1` and the result is saved in the `prev-num` parameter of the next step.
+The local (or inner) procedure `iter-cps` is itself written in CPS style; note its continuation parameter `proc`.
+We are declaring it as a local procedure to hide this detail from the caller and simplify its usage.
 
-> One thing to notice about CPS is that it is more explicit in the order things happen. In other words, the order in which code
-is written reflects the actual evaluation order in the original factorial example.
+Let's go through it and explain how it can be read.
 
-The tricky part is the final continuation which iteratively calls the inner procedure `iter` but the argument that is passed
-to `proc` is a new lambda that performs the multiplication and passes the result to the previous `proc`'s value.
+First, we check if `n` is equal to `1` and the result is saved in the `exit` parameter of the lambda which is the next step.
 
-This will effectivey build a nested lambda structure that will unfold when we call `(proc 1)` when `exit` is true.
+Then, if we must exit, we call `(proc 1)`. Compare that with the original recursive version where `1` is immediately returned.
+Recall the rule that a CPS procedure shouldn't immediately return a result, but rather pass it to a continuation.
 
-> Notice the first continuation we pass `(iter num (lambda (x) x))`. This is a procedure that simply returns the passed argument.
-It is commonly known as the identity function. It will be the last one called, when we arrive at the final result.
+Otherwise, if we shouldn't exit, we decrement `n` by `1` and the result is saved in the `prev-num` parameter of the last step.
 
-It might seem intimidating, but if you try to follow along the code, you will see that what happens goes something like that.
+> One thing to notice about CPS is that the order in which code is written, reflects the actual evaluation order.
+Indeed, if you consider the line `(* num (factorial (- num 1)))` in the original recursive version, you will realize that the
+subtraction occurs first, then the call to `factorial` and finally the multiplication.
+
+The tricky part is the final step which iteratively calls the inner procedure `iter-cps`. The argument that is passed
+to `proc` is a new deferred lambda that performs a multiplication and passes the product to the current `proc`'s value.
+
+This is the point where successive continuations are chained together to form a nested lambda, which will be ultimately
+called when `(proc 1)` is executed.
+
+> Notice the first continuation we pass to `iter-cps`, i.e. `(lambda (x) x)`. It will be the last one called, when we arrive
+at the final result. It's a procedure that simply returns the passed argument unchanged and that's why it is commonly known
+as the identity function.
+
+It might seem intimidating, but if you try to follow along the code, you will see that what happens goes something like that:
 
 ```scheme
 (define (*c n1 n2 proc)
@@ -156,9 +179,13 @@ It might seem intimidating, but if you try to follow along the code, you will se
 ```
 -> *120*
 
+The multiplications, expressed in infix notation, occur in the following order.
+
 ```
 2 * 1
 3 * 2
 4 * 6
 5 * 24
 ```
+
+Congratulations! You have completed the quick start guide, which wasn't that quick after all! :-)
