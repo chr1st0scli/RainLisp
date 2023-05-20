@@ -37,6 +37,7 @@ Let's start our endeavor with [numbers](quick-start/numbers.md).
 - [Message passing](quick-start/message-passing.md)
 - [Encapsulation](quick-start/encapsulation.md)
 - [Data-directed programming](quick-start/data-directed-programming.md)
+- [Metaprogramming](quick-start/metaprogramming.md)
 - [Even more looping](quick-start/cps.md)
 
 ## What's Next?
