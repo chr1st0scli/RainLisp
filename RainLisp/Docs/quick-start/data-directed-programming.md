@@ -146,7 +146,7 @@ Now, we have everything we need to tackle with the actual problem and see data-d
   'ok)
 ```
 
-### Reusable Code
+## Reusable Code
 
 ```scheme
 ; Code that does not need to change no matter how many user packages are installed.
@@ -184,7 +184,7 @@ Now, we have everything we need to tackle with the actual problem and see data-d
   (newline))
 ```
 
-### Installation And Execution
+## Installation And Execution
 
 ```scheme
 (install-cat-package)
