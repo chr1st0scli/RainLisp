@@ -55,6 +55,10 @@ pair is returned; otherwise, `false`.
 The `insert!` procedure searches for the `key` in the `table`. If it is found, it simply updates its respective value.
 Otherwise, it creates a new key-value pair and inserts it at the start of the table, just after `'*table*`.
 
+A diagram representation always helps to better understand the code.
+
+![1d-table](img/1d-table.png)
+
 ### 2-D Table
 Let's build the two-dimensional table.
 
@@ -96,6 +100,10 @@ update or create a key-value pair. If the first key is not found, a new one-dime
 of the two-dimensional one, just after `'*table*`.
 
 Our code will only access the table via just two helper methods, `put` and `get`, that create and access records in a specific `dispatch-table`.
+
+Once again, let's see a sample diagram representation.
+
+![2d-table](img/2d-table.png)
 
 If you want a deeper insight or explanation about tables, have a look at
 [SICP](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-22.html#%_sec_3.3.3).
@@ -240,6 +248,12 @@ So, it's time to introduce my pets to you!
 (present my-cat)
 (present my-dog)
 ```
+->
+```
+My pet's name is Ruby. It's a cat, 8 years of age, it says "meow" and likes fish.
+
+My pet's name is August. It's a dog, 16 years of age, it says "woof" and likes meat.
+```
 
 ## Complete Program Listing
 
@@ -383,12 +397,6 @@ So, it's time to introduce my pets to you!
 
 (present my-cat)
 (present my-dog)
-```
-->
-```
-My pet's name is Ruby. It's a cat, 8 years of age, it says "meow" and likes fish.
-
-My pet's name is August. It's a dog, 16 years of age, it says "woof" and likes meat.
 ```
 
 Let's see another interesting capability, [metaprogramming](metaprogramming.md).
