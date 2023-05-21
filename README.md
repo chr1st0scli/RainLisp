@@ -13,7 +13,7 @@ Additionally, you can easily extend it to implement your own LISP dialect or rep
 
 You can also use it independently, using its code editor to learn LISP, play around with it and have fun!
 
-- [Quick Start](RainLisp/Docs/quick-start.md) (Work in progress...)
+- [Quick Start](RainLisp/Docs/quick-start.md)
 - [Lexical Grammar](<RainLisp/Grammar/Lexical Grammar.md>)
 - [Syntax Grammar](<RainLisp/Grammar/Syntax Grammar.md>)
 - [Documentation](RainLisp/Docs/contents.md)

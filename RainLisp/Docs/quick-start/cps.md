@@ -188,4 +188,4 @@ The multiplications, expressed in infix notation, occur in the following order.
 5 * 24
 ```
 
-Congratulations! You have completed the quick start guide, which wasn't that quick after all! :-)
+Congratulations! You have completed the quick start guide, which might not have been that quick after all! :-)
