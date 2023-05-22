@@ -65,7 +65,7 @@ namespace RainLisp.Evaluation
             => ApplyMultivalueOperator(AsDouble, (val1, val2) => val1 % val2, result => new NumberDatum(result), values);
 
         /// <summary>
-        /// Determines if the first numeric value is greater than the second one, or the first datetime is later than the second one.
+        /// Determines if the first numeric value is greater than the second one, or the first datetime is later than the second one, ignoring time zones.
         /// </summary>
         /// <param name="values">The numeric or datetime values to compare.</param>
         /// <returns>true if the first value is greater or later than the second one; otherwise, false.</returns>
@@ -77,7 +77,7 @@ namespace RainLisp.Evaluation
                 (val1, val2) => new BoolDatum(val1.Value > val2.Value), values);
 
         /// <summary>
-        /// Determines if the first numeric value is greater than or equal to the second one, or the first datetime is the same as or later than the second one.
+        /// Determines if the first numeric value is greater than or equal to the second one, or the first datetime is the same as or later than the second one, ignoring time zones.
         /// </summary>
         /// <param name="values">The numeric or datetime values to compare.</param>
         /// <returns>true if the first value is equal to or greater/later than the second one; otherwise, false.</returns>
@@ -89,7 +89,7 @@ namespace RainLisp.Evaluation
                 (val1, val2) => new BoolDatum(val1.Value >= val2.Value), values);
 
         /// <summary>
-        /// Determines if the first numeric value is less than the second one, or the first datetime is earlier than the second one.
+        /// Determines if the first numeric value is less than the second one, or the first datetime is earlier than the second one, ignoring time zones.
         /// </summary>
         /// <param name="values">The numeric or datetime values to compare.</param>
         /// <returns>true if the first value is less or earlier than the second one; otherwise, false.</returns>
@@ -101,7 +101,7 @@ namespace RainLisp.Evaluation
                 (val1, val2) => new BoolDatum(val1.Value < val2.Value), values);
 
         /// <summary>
-        /// Determines if the first numeric value is less than or equal to the second one, or the first datetime is the same as or earlier than the second one.
+        /// Determines if the first numeric value is less than or equal to the second one, or the first datetime is the same as or earlier than the second one, ignoring time zones.
         /// </summary>
         /// <param name="values">The numeric or datetime values to compare.</param>
         /// <returns>true if the first value is equal to or less/earlier than the second one; otherwise, false.</returns>
@@ -114,6 +114,7 @@ namespace RainLisp.Evaluation
 
         /// <summary>
         /// Determines if two values are equal. Primitive values like numbers, strings, booleans and datetimes are compared by value. All others are compared by reference.
+        /// Datetime time zones are ignored.
         /// </summary>
         /// <param name="values">The values to compare.</param>
         /// <returns>true if the two values are equal; otherwise, false.</returns>

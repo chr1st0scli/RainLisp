@@ -7,7 +7,7 @@ Determines if the first numeric value is greater than or equal to the second one
 ```scheme
 (>= datetime1 datetime2)
 ```
-Determines if the first datetime is the same as or later than the second one.
+Determines if the first datetime is the same as or later than the second one, ignoring time zones.
 
 ## Examples
 ```scheme

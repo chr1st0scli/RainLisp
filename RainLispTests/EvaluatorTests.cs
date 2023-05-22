@@ -2,6 +2,7 @@
 using RainLisp.AbstractSyntaxTree;
 using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace RainLispTests
@@ -458,39 +459,117 @@ namespace RainLispTests
         [Theory]
         // Linear recursive processes, growing the stack.
         [InlineData(@"
-(define (factorial n)
-    (if (= n 1)
-        1
-        (* n (factorial (- n 1)))))
+(define (factorial num)
+  (if (= num 1)
+      1
+      (* num (factorial (- num 1)))))
 
 (factorial 5)", 120d)]
 
         [InlineData(@"
-(define (factorial n)
-    (if (= n 1)
-        1
-        (* n (factorial (- n 1)))))
+(define (factorial num)
+  (if (= num 1)
+      1
+      (* num (factorial (- num 1)))))
 
 (factorial 6)", 720d)]
 
         // Linear iterative processes, maintaining the stack size to one.
         [InlineData(@"
-(define (factorial n)
-    (define (iter i acc)
-        (if (> i n)
-            acc
-            (iter (+ i 1) (* i acc))))
-    (iter 1 1))
+(define (factorial number)
+  (define (iter num acc)
+    (if (= num 1)
+        acc
+        (iter (- num 1) (* num acc))))
+
+  (iter number 1))
 
 (factorial 5)", 120d)]
 
         [InlineData(@"
-(define (factorial n)
-    (define (iter i acc)
-        (if (> i n)
-            acc
-            (iter (+ i 1) (* i acc))))
-    (iter 1 1))
+(define (factorial number)
+  (define (iter num acc)
+    (if (= num 1)
+        acc
+        (iter (- num 1) (* num acc))))
+
+  (iter number 1))
+
+(factorial 6)", 720d)]
+
+        // Linear iterative processes as deferred procedures.
+        [InlineData(@"
+(define (factorial number)
+  (define (iter num proc)
+    (if (= num 1)
+        proc
+        (iter (- num 1) (lambda () (* num (proc))))))
+
+  (iter number (lambda () 1)))
+
+(define factorial5 (factorial 5))
+(factorial5)", 120d)]
+
+        [InlineData(@"
+(define (factorial number)
+  (define (iter num proc)
+    (if (= num 1)
+        proc
+        (iter (- num 1) (lambda () (* num (proc))))))
+
+  (iter number (lambda () 1)))
+
+(define factorial6 (factorial 6))
+(factorial6)", 720d)]
+
+        // Linear iterative processes in continuation passing style.
+        [InlineData(@"
+(define (=c n1 n2 proc)
+  (proc (= n1 n2)))
+
+(define (-c n1 n2 proc)
+  (proc (- n1 n2)))
+
+(define (*c n1 n2 proc)
+  (proc (* n1 n2)))
+
+(define (factorial num)
+  (define (iter-cps n proc)
+    (=c n 1
+        (lambda (exit)
+          (if exit
+              (proc 1)
+              (-c n 1
+                  (lambda (prev-num)
+                    (iter-cps prev-num
+                              (lambda (prev-num-fact)
+                                (*c n prev-num-fact proc)))))))))
+  (iter-cps num (lambda (x) x)))
+
+(factorial 5)", 120d)]
+
+        [InlineData(@"
+(define (=c n1 n2 proc)
+  (proc (= n1 n2)))
+
+(define (-c n1 n2 proc)
+  (proc (- n1 n2)))
+
+(define (*c n1 n2 proc)
+  (proc (* n1 n2)))
+
+(define (factorial num)
+  (define (iter-cps n proc)
+    (=c n 1
+        (lambda (exit)
+          (if exit
+              (proc 1)
+              (-c n 1
+                  (lambda (prev-num)
+                    (iter-cps prev-num
+                              (lambda (prev-num-fact)
+                                (*c n prev-num-fact proc)))))))))
+  (iter-cps num (lambda (x) x)))
 
 (factorial 6)", 720d)]
         public void Evaluate_RecursiveExpression_Correctly(string expression, double expectedResult)
@@ -504,27 +583,27 @@ namespace RainLispTests
         }
 
         [Theory]
-        [InlineData("(fibonacci 1)", 0d)]
+        [InlineData("(fibonacci 1)", 1d)]
         [InlineData("(fibonacci 2)", 1d)]
-        [InlineData("(fibonacci 3)", 1d)]
-        [InlineData("(fibonacci 4)", 2d)]
-        [InlineData("(fibonacci 5)", 3d)]
-        [InlineData("(fibonacci 6)", 5d)]
-        [InlineData("(fibonacci 7)", 8d)]
-        [InlineData("(fibonacci 8)", 13d)]
-        [InlineData("(fibonacci 9)", 21d)]
-        [InlineData("(fibonacci 10)", 34d)]
-        [InlineData("(fibonacci 11)", 55d)]
-        [InlineData("(fibonacci 12)", 89d)]
+        [InlineData("(fibonacci 3)", 2d)]
+        [InlineData("(fibonacci 4)", 3d)]
+        [InlineData("(fibonacci 5)", 5d)]
+        [InlineData("(fibonacci 6)", 8d)]
+        [InlineData("(fibonacci 7)", 13)]
+        [InlineData("(fibonacci 8)", 21d)]
+        [InlineData("(fibonacci 9)", 34d)]
+        [InlineData("(fibonacci 10)", 55d)]
+        [InlineData("(fibonacci 11)", 89d)]
+        [InlineData("(fibonacci 12)", 144d)]
         public void Evaluate_FibonacciAsTreeRecursiveProcess_Correctly(string call, double expectedResult)
         {
             // Arrange
             string expression = $@"
 (define (fibonacci n)
-(cond ((<= n 1) 0)
-      ((= n 2) 1)
-      (else (+ (fibonacci (- n 1))
-	           (fibonacci (- n 2))))))
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (else (+ (fibonacci (- n 1))
+                 (fibonacci (- n 2))))))
 {call}";
 
             // Act
@@ -535,31 +614,30 @@ namespace RainLispTests
         }
 
         [Theory]
-        [InlineData("(fibonacci 1)", 0d)]
+        [InlineData("(fibonacci 1)", 1d)]
         [InlineData("(fibonacci 2)", 1d)]
-        [InlineData("(fibonacci 3)", 1d)]
-        [InlineData("(fibonacci 4)", 2d)]
-        [InlineData("(fibonacci 5)", 3d)]
-        [InlineData("(fibonacci 6)", 5d)]
-        [InlineData("(fibonacci 7)", 8d)]
-        [InlineData("(fibonacci 8)", 13d)]
-        [InlineData("(fibonacci 9)", 21d)]
-        [InlineData("(fibonacci 10)", 34d)]
-        [InlineData("(fibonacci 11)", 55d)]
-        [InlineData("(fibonacci 12)", 89d)]
+        [InlineData("(fibonacci 3)", 2d)]
+        [InlineData("(fibonacci 4)", 3d)]
+        [InlineData("(fibonacci 5)", 5d)]
+        [InlineData("(fibonacci 6)", 8d)]
+        [InlineData("(fibonacci 7)", 13)]
+        [InlineData("(fibonacci 8)", 21d)]
+        [InlineData("(fibonacci 9)", 34d)]
+        [InlineData("(fibonacci 10)", 55d)]
+        [InlineData("(fibonacci 11)", 89d)]
+        [InlineData("(fibonacci 12)", 144d)]
         public void Evaluate_FibonacciAsIterativeProcess_Correctly(string call, double expectedResult)
         {
             // Arrange
             string expression = $@"
 (define (fibonacci n)
-    (define (iter a b count)
-        (if (= count n)
-            b
-            (iter b (+ a b) (+ count 1))))
+  (define (iter n1 n2 index)
+    (if (= index n)
+        n1
+        (iter n2 (+ n1 n2) (+ index 1))))
 
-    (cond ((<= n 1) 0)
-          ((= n 2) 1)
-          (else (iter 0 1 2))))
+  (iter 0 1 0))
+
 {call}";
 
             // Act
@@ -574,31 +652,32 @@ namespace RainLispTests
         {
             // Arrange
             string code = @"
-(define (math-op op x y)
-  (define (add-numbers) (+ x y))
-  (define (subtract-numbers) (- x y))
-  (define (multiply-numbers) (* x y))
-  (define (divide-numbers) (/ x y))
+(define (op-squared op x y)
 
-  (cond ((= op 'add) add-numbers)
-        ((= op 'subtract) subtract-numbers)
-        ((= op 'multiply) multiply-numbers)
-        ((= op 'divide) divide-numbers)
-        (else (error ""unknown operation""))))
+  (define (square n) 
+    (* n n))
 
-((math-op 'add 4 2))
-((math-op 'subtract 4 2))
-((math-op 'multiply 4 2))
-((math-op 'divide 4 2))";
+  (define proc (cond ((= op '+) +)
+                     ((= op '-) -)
+                     ((= op '*) *)
+                     ((= op '/) /)
+                     (else (error ""Unsupported operation.""))))
+
+  (square (proc x y)))
+
+(op-squared '+ 8 4)
+(op-squared '- 8 4)
+(op-squared '* 8 4)
+(op-squared '/ 8 4)";
 
             // Act
             var results = _interpreter.Evaluate(code).ToArray();
 
             // Assert
-            Assert.Equal(6, ((NumberDatum)results[1]).Value);
-            Assert.Equal(2, ((NumberDatum)results[2]).Value);
-            Assert.Equal(8, ((NumberDatum)results[3]).Value);
-            Assert.Equal(2, ((NumberDatum)results[4]).Value);
+            Assert.Equal(144, ((NumberDatum)results[1]).Value);
+            Assert.Equal(16, ((NumberDatum)results[2]).Value);
+            Assert.Equal(1024, ((NumberDatum)results[3]).Value);
+            Assert.Equal(4, ((NumberDatum)results[4]).Value);
         }
 
         [Fact]
@@ -610,24 +689,26 @@ namespace RainLispTests
 (define (build-counting-code count)
   (define (iter quote-list cnt)
     (if (= cnt count)
-        (append quote-list '(a)) ; Return a.
-        (iter (append quote-list '((set! a (+ a 1)))) (+ cnt 1)))) ; Append successive assignments to a.
+        (append quote-list '(a)) ; In the end, return a.
+        (iter (append quote-list '((set! a (+ a 1)))) (+ cnt 1)))) ; Append successive assignments to a, incremented by one.
 
   ; Start with a lambda that defines variable a that is set to 0.
   (iter '(lambda () (define a 0)) 0))
 
-; code is a list of quote symbols.
 (define code (build-counting-code 4))
-; eval gives a user procedure.
-(define proc (eval code))
 
+; A list of quote symbols.
 code
-(proc)";
+
+; Evaluating code, gives a lambda as defined above.
+(define count-proc (eval code))
+
+(count-proc)";
             string expectedCodeBuilt = "(lambda () (define a 0) (set! a (+ a 1)) (set! a (+ a 1)) (set! a (+ a 1)) (set! a (+ a 1)) a)";
 
             // Act
             var results = _interpreter.Evaluate(code).ToArray();
-            string actualCodeBuilt = results[3].AcceptVisitor(new EvaluationResultPrintVisitor());
+            string actualCodeBuilt = results[2].AcceptVisitor(new EvaluationResultPrintVisitor());
 
             // Assert
             Assert.Equal(expectedCodeBuilt, actualCodeBuilt);
@@ -640,34 +721,49 @@ code
             // Arrange
             string code = @"
 (define (make-account amount)
-  (define total amount)
 
+  ; Data.
+  (define balance amount)
+
+  ; Local procedures that operate on data.
   (define (deposit amount)
-    (set! total (+ total amount)))
+    (set! balance (+ balance amount)))
 
   (define (withdraw amount)
-    (if (>= total amount)
-        (set! total (- total amount))
-        (error ""Insufficient funds."")))
+    (if (< balance amount)
+        (error ""Insufficient funds."")
+        (set! balance (- balance amount))))
 
-  (define (balance) total)
+  (define (get-balance)
+    balance)
 
-  (lambda (operation)
-    (cond ((= operation 'deposit) deposit)
-          ((= operation 'withdraw) withdraw)
-          ((= operation 'balance) balance)
-          (else (error ""Invalid operation."")))))
+  ; A lambda is returned that captures and gives access to the internal procedures.
+  (lambda (op)
+    (cond ((= op 'deposit) deposit)
+          ((= op 'withdraw) withdraw)
+          ((= op 'balance) get-balance)
+          (else (error ""Unknown operation."")))))
 
-(define account (make-account 225))
-(define balance (account 'balance))
-(define deposit (account 'deposit))
-(define withdraw (account 'withdraw))
+; Optional interface procedures that allow us to operate on different accounts and hide the message passing details.
+(define (get-balance account)
+  ((account 'balance)))
 
-(balance)
-(deposit 50)
-(balance)
-(withdraw 200)
-(balance)";
+(define (withdraw account amount)
+  ((account 'withdraw) amount))
+
+(define (deposit account amount)
+  ((account 'deposit) amount))
+
+; Ready to try it! Create two accounts and make transactions.
+(define lisa-account (make-account 300))
+(define bob-account (make-account 320))
+
+(withdraw lisa-account 100)
+(withdraw bob-account 200)
+(deposit lisa-account 42.50)
+
+(get-balance lisa-account)
+(get-balance bob-account)";
 
             // Act
             var results = _interpreter.Evaluate(code)
@@ -677,9 +773,8 @@ code
                 .ToArray();
 
             // Assert
-            Assert.Equal(225, results[0]);
-            Assert.Equal(275, results[1]);
-            Assert.Equal(75, results[2]);
+            Assert.Equal(242.5, results[0]);
+            Assert.Equal(120, results[1]);
         }
 
         [Fact]
@@ -743,7 +838,7 @@ code
 (define (contents object)
   (cdr object))
 
-; User modules.
+; User packages.
 ; Cat type.
 (define (install-cat-package)
   (define type 'cat)
@@ -762,9 +857,8 @@ code
   (put 'kind type kind)
   (put 'get-name type get-name)
   (put 'get-age type get-age)
-  ; Registers a user procedure that creates a cat and attaches the appropriate tag to it.
-  (put 'make type (lambda (name age) (set-tag type (make name age))))
-  'ok)
+  ; Return a user procedure that creates a cat and attaches the appropriate tag to it.
+  (lambda (name age) (set-tag type (make name age))))
 
 ; Dog type.
 (define (install-dog-package)
@@ -775,7 +869,7 @@ code
   (define (get-age dog) (cdr dog))
   ; dog specific operations.
   (define (sound) ""woof"")
-  (define (likes) ""bone"")
+  (define (likes) ""meat"")
   (define (kind) ""dog"")
 
   ; Install the procedure-type bindings in the table.
@@ -784,70 +878,63 @@ code
   (put 'kind type kind)
   (put 'get-name type get-name)
   (put 'get-age type get-age)
-  ; Registers a user procedure that creates a dog and attaches the appropriate tag to it.
-  (put 'make type (lambda (name age) (set-tag type (make name age))))
-  'ok)
+  ; Return a user procedure that creates a dog and attaches the appropriate tag to it.
+  (lambda (name age) (set-tag type (make name age))))
 
-(install-cat-package)
-(install-dog-package)
-
-; Code that does not need to change no matter how many user packages are installed.
-(define (apply-to-pet operation pet supply-pet-as-arg)
+; Package interface helpers.
+(define (pet-operation pet operation)
   ; Retrieve the right procedure based on the pet's type.
   (let ((proc (get operation (get-tag pet))))
     (if proc
-        (if supply-pet-as-arg
-            (proc (contents pet))
-            (proc))
+        proc
         (error ""Unknown operation.""))))
 
 (define (sound pet)
-  (apply-to-pet 'sound pet false))
+  ((pet-operation pet 'sound)))
 
 (define (likes pet)
-  (apply-to-pet 'likes pet false))
+  ((pet-operation pet 'likes)))
 
 (define (kind pet)
-  (apply-to-pet 'kind pet false))
+  ((pet-operation pet 'kind)))
 
 (define (get-name pet)
-  (apply-to-pet 'get-name pet true))
+  ((pet-operation pet 'get-name) (contents pet)))
 
 (define (get-age pet)
-  (apply-to-pet 'get-age pet true))
+  ((pet-operation pet 'get-age) (contents pet)))
 
+; Code that does not need to change no matter how many user packages are installed.
 (define (present pet)
-  (+ ""My pet's name is "" (get-name pet) "". ""
-     ""It's a "" (kind pet) "", ""
-     ""it's "" (number-to-string (get-age pet) """") "" years old, ""
-     ""it says "" (sound pet) "" ""
-     ""and it likes "" (likes pet) "".""))
+  (display (+ ""My pet's name is "" (get-name pet) "". ""))
+  (display (+ ""It's a "" (kind pet) "", ""))
+  (display (+ (number-to-string (get-age pet) """") "" years of age, ""))
+  (display (+ ""it says \"""" (sound pet) ""\"" ""))
+  (display (+ ""and likes "" (likes pet) "".\n\n"")))
 
-; Helper constructors.
-(define (make-cat name age)
-  ((get 'make 'cat) name age))
+(define make-cat (install-cat-package))
+(define make-dog (install-dog-package))
 
-(define (make-dog name age)
-  ((get 'make 'dog) name age))
-
-; Present two different pets.
+; Present my two pets to the world.
 (define my-cat (make-cat ""Ruby"" 8))
 (define my-dog (make-dog ""August"" 16))
 
 (present my-cat)
 (present my-dog)";
 
+            string expectedStdOut = @"
+My pet's name is Ruby. It's a cat, 8 years of age, it says ""meow"" and likes fish.
+My pet's name is August. It's a dog, 16 years of age, it says ""woof"" and likes meat.";
+
+            var sb = new StringBuilder();
+            var stringWriter = new StringWriter(sb);
+            Console.SetOut(stringWriter);
+
             // Act
-            string[] results = _interpreter.Evaluate(code)
-                .Where(res => res is StringDatum)
-                .Cast<StringDatum>()
-                .Select(str => str.Value)
-                .ToArray();
+            _ = _interpreter.Evaluate(code).ToArray();
 
             // Assert
-            Assert.Equal(2, results.Length);
-            Assert.Equal("My pet's name is Ruby. It's a cat, it's 8 years old, it says meow and it likes fish.", results[0]);
-            Assert.Equal("My pet's name is August. It's a dog, it's 16 years old, it says woof and it likes bone.", results[1]);
+            Assert.Equal(expectedStdOut.Replace("\r", "").Replace("\n", ""), sb.ToString().Replace("\r", "").Replace("\n", ""));
         }
 
         [Fact]
@@ -883,7 +970,7 @@ Should be 5th";
             _interpreter.EvaluateAndPrint(expression, ref environment, value => stringWriter.WriteLine(value), (value, ex, unknownError) => stringWriter.WriteLine(ex.Message));
 
             // Assert
-            Assert.Equal(expectedOutput.TrimStart().TrimEnd(), sb.ToString().TrimStart().TrimEnd());
+            Assert.Equal(expectedOutput.Replace("\r", "").Replace("\n", ""), sb.ToString().Replace("\r", "").Replace("\n", ""));
         }
 
         [Fact]
