@@ -74,7 +74,8 @@ namespace RainLispTests
             }
 
             string actualEnvironment = environmentJObject.ToString();
-            string expectedEnvironment = File.ReadAllText($"Environments\\{environmentIndex:00}.json");
+            // Files are saved in Windows format. Load them as platform independent.
+            string expectedEnvironment = Utils.ReadAllTextOnAnyPlatform(Path.Combine("Environments", $"{environmentIndex:00}.json"));
 
             // Assert
             Assert.Equal(expectedEnvironment, actualEnvironment);
