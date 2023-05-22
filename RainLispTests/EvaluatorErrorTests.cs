@@ -3,6 +3,7 @@ using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
 using RainLisp.Parsing;
 using RainLisp.Tokenization;
+using static RainLispTests.Utils;
 
 namespace RainLispTests
 {
@@ -664,9 +665,6 @@ namespace RainLispTests
 
         private static TheoryData<string, IDebugInfo[]> GetCallStackData()
         {
-            static uint PickLine(uint winOS, uint otherOS)
-                => Environment.NewLine == "\r\n" ? winOS : otherOS;
-
             var data = new TheoryData<string, IDebugInfo[]>
             {
                 { "(+ 12)", new[] { new TestDebugInfo(1, 2) } },    // WrongNumberOfArgumentsException
@@ -683,31 +681,31 @@ namespace RainLispTests
     2
     3
     (+))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(5, 9), 6) });
+            data.Add(code, new[] { new TestDebugInfo(PickLine(5), 6) });
 
             code = @"
 (if true
     (+)
     (-))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(3, 5), 6) });
+            data.Add(code, new[] { new TestDebugInfo(PickLine(3), 6) });
 
             code = @"
 (if false
     (+)
     (-))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(4, 7), 6) });
+            data.Add(code, new[] { new TestDebugInfo(PickLine(4), 6) });
 
             code = @"
 (let ((a 1) 
       (b (+ 1))) 
      (+ a))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(3, 5), 11), new TestDebugInfo(PickLine(2, 3), 2) });
+            data.Add(code, new[] { new TestDebugInfo(PickLine(3), 11), new TestDebugInfo(PickLine(2), 2) });
 
             code = @"
 (let ((a 1) 
       (b (+ 1 2))) 
      (+ a))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(4, 7), 7), new TestDebugInfo(PickLine(2, 3), 2) });
+            data.Add(code, new[] { new TestDebugInfo(PickLine(4), 7), new TestDebugInfo(PickLine(2), 2) });
 
             code = @"
 (define (get-lambda)
@@ -715,17 +713,17 @@ namespace RainLispTests
         (+)))
 
 ((get-lambda))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(4, 7), 10), new TestDebugInfo(PickLine(6, 11), 2) });
+            data.Add(code, new[] { new TestDebugInfo(PickLine(4), 10), new TestDebugInfo(PickLine(6), 2) });
 
             code = @"
 ((lambda () 
     (+ 3)) 43)";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(2, 3), 2) });
+            data.Add(code, new[] { new TestDebugInfo(PickLine(2), 2) });
 
             code = @"
 ((lambda () 
     (+ 3)))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(3, 5), 6), new TestDebugInfo(PickLine(2, 3), 2) });
+            data.Add(code, new[] { new TestDebugInfo(PickLine(3), 6), new TestDebugInfo(PickLine(2), 2) });
 
             // Application of an identifier is two calls in the evaluation stack, identifier evaluation and then application.
             code = "(a)";
@@ -742,7 +740,7 @@ namespace RainLispTests
     (+))
 
 (foo)";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(9, 17), 6), new TestDebugInfo(PickLine(6, 11), 6), new TestDebugInfo(PickLine(3, 5), 6), new TestDebugInfo(PickLine(11, 21), 2) });
+            data.Add(code, new[] { new TestDebugInfo(PickLine(9), 6), new TestDebugInfo(PickLine(6), 6), new TestDebugInfo(PickLine(3), 6), new TestDebugInfo(PickLine(11), 2) });
 
             return data;
         }

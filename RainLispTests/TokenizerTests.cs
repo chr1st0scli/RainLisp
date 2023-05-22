@@ -1,5 +1,6 @@
 using RainLisp.Tokenization;
 using static RainLisp.Tokenization.TokenType;
+using static RainLispTests.Utils;
 
 namespace RainLispTests
 {
@@ -16,9 +17,6 @@ namespace RainLispTests
 
         public static TheoryData<string, ExpectedToken[]> GetTokens()
         {
-            static uint PickLine(uint winOS, uint otherOS)
-                => Environment.NewLine == "\r\n" ? winOS : otherOS;
-
             static ExpectedToken Expect(TokenType tokenType, string value, uint position, uint line = 1, double numberValue = 0, bool booleanValue = false, string stringValue = "")
                 => new(tokenType, value, position, line, numberValue, booleanValue, stringValue);
 
@@ -489,10 +487,10 @@ namespace RainLispTests
 2)", new[] {
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
-                Expect(Number, "1", 1, PickLine(2, 3), numberValue: 1d),
-                Expect(Number, "2", 1, PickLine(3, 5), numberValue: 2d),
-                Expect(RParen, ")", 2, PickLine(3, 5)),
-                Expect(EOF, "", 3, PickLine(3, 5))
+                Expect(Number, "1", 1, PickLine(2), numberValue: 1d),
+                Expect(Number, "2", 1, PickLine(3), numberValue: 2d),
+                Expect(RParen, ")", 2, PickLine(3)),
+                Expect(EOF, "", 3, PickLine(3))
             });
 
             data.Add("(+ 10 15);This is a comment, () \t\";", new[] {
@@ -511,30 +509,30 @@ namespace RainLispTests
         num2))
 
 (max 55 21); Expecting 55.", new[] {
-                Expect(LParen, "(", 1, PickLine(2, 3)),
-                Expect(Definition, "define", 2, PickLine(2, 3)),
-                Expect(LParen, "(", 9, PickLine(2, 3)),
-                Expect(Identifier, "max", 10, PickLine(2, 3)),
-                Expect(Identifier, "num1", 14, PickLine(2, 3)),
-                Expect(Identifier, "num2", 19, PickLine(2, 3)),
-                Expect(RParen, ")", 23, PickLine(2, 3)),
-                Expect(LParen, "(", 5, PickLine(4, 7)),
-                Expect(If, "if", 6, PickLine(4, 7)),
-                Expect(LParen, "(", 9, PickLine(4, 7)),
-                Expect(Identifier, ">", 10, PickLine(4, 7)),
-                Expect(Identifier, "num1", 12, PickLine(4, 7)),
-                Expect(Identifier, "num2", 17, PickLine(4, 7)),
-                Expect(RParen, ")", 21, PickLine(4, 7)),
-                Expect(Identifier, "num1", 23, PickLine(4, 7)),
-                Expect(Identifier, "num2", 9, PickLine(5, 9)),
-                Expect(RParen, ")", 13, PickLine(5, 9)),
-                Expect(RParen, ")", 14, PickLine(5, 9)),
-                Expect(LParen, "(", 1, PickLine(7, 13)),
-                Expect(Identifier, "max", 2, PickLine(7, 13)),
-                Expect(Number, "55", 6, PickLine(7, 13), numberValue: 55d),
-                Expect(Number, "21", 9, PickLine(7, 13), numberValue: 21d),
-                Expect(RParen, ")", 11, PickLine(7, 13)),
-                Expect(EOF, "", 12, PickLine(7, 13)),
+                Expect(LParen, "(", 1, PickLine(2)),
+                Expect(Definition, "define", 2, PickLine(2)),
+                Expect(LParen, "(", 9, PickLine(2)),
+                Expect(Identifier, "max", 10, PickLine(2)),
+                Expect(Identifier, "num1", 14, PickLine(2)),
+                Expect(Identifier, "num2", 19, PickLine(2)),
+                Expect(RParen, ")", 23, PickLine(2)),
+                Expect(LParen, "(", 5, PickLine(4)),
+                Expect(If, "if", 6, PickLine(4)),
+                Expect(LParen, "(", 9, PickLine(4)),
+                Expect(Identifier, ">", 10, PickLine(4)),
+                Expect(Identifier, "num1", 12, PickLine(4)),
+                Expect(Identifier, "num2", 17, PickLine(4)),
+                Expect(RParen, ")", 21, PickLine(4)),
+                Expect(Identifier, "num1", 23, PickLine(4)),
+                Expect(Identifier, "num2", 9, PickLine(5)),
+                Expect(RParen, ")", 13, PickLine(5)),
+                Expect(RParen, ")", 14, PickLine(5)),
+                Expect(LParen, "(", 1, PickLine(7)),
+                Expect(Identifier, "max", 2, PickLine(7)),
+                Expect(Number, "55", 6, PickLine(7), numberValue: 55d),
+                Expect(Number, "21", 9, PickLine(7), numberValue: 21d),
+                Expect(RParen, ")", 11, PickLine(7)),
+                Expect(EOF, "", 12, PickLine(7)),
             });
 
             data.Add(@"; Return the smallest of two numbers.
@@ -543,30 +541,30 @@ namespace RainLispTests
         num1 ; return num1
         num2)) ; return num2
 (min 7 4)", new[] {
-                Expect(LParen, "(", 1, PickLine(2, 3)),
-                Expect(Definition, "define", 2, PickLine(2, 3)),
-                Expect(LParen, "(", 9, PickLine(2, 3)),
-                Expect(Identifier, "min", 10, PickLine(2, 3)),
-                Expect(Identifier, "num1", 14, PickLine(2, 3)),
-                Expect(Identifier, "num2", 19, PickLine(2, 3)),
-                Expect(RParen, ")", 23, PickLine(2, 3)),
-                Expect(LParen, "(", 5, PickLine(3, 5)),
-                Expect(If, "if", 6, PickLine(3, 5)),
-                Expect(LParen, "(", 9, PickLine(3, 5)),
-                Expect(Identifier, "<=", 10, PickLine(3, 5)),
-                Expect(Identifier, "num1", 13, PickLine(3, 5)),
-                Expect(Identifier, "num2", 18, PickLine(3, 5)),
-                Expect(RParen, ")", 22, PickLine(3, 5)),
-                Expect(Identifier, "num1", 9, PickLine(4, 7)),
-                Expect(Identifier, "num2", 9, PickLine(5, 9)),
-                Expect(RParen, ")", 13, PickLine(5, 9)),
-                Expect(RParen, ")", 14, PickLine(5, 9)),
-                Expect(LParen, "(", 1, PickLine(6, 11)),
-                Expect(Identifier, "min", 2, PickLine(6, 11)),
-                Expect(Number, "7", 6, PickLine(6, 11), numberValue: 7d),
-                Expect(Number, "4", 8, PickLine(6, 11), numberValue: 4d),
-                Expect(RParen, ")", 9, PickLine(6, 11)),
-                Expect(EOF, "", 10, PickLine(6, 11)),
+                Expect(LParen, "(", 1, PickLine(2)),
+                Expect(Definition, "define", 2, PickLine(2)),
+                Expect(LParen, "(", 9, PickLine(2)),
+                Expect(Identifier, "min", 10, PickLine(2)),
+                Expect(Identifier, "num1", 14, PickLine(2)),
+                Expect(Identifier, "num2", 19, PickLine(2)),
+                Expect(RParen, ")", 23, PickLine(2)),
+                Expect(LParen, "(", 5, PickLine(3)),
+                Expect(If, "if", 6, PickLine(3)),
+                Expect(LParen, "(", 9, PickLine(3)),
+                Expect(Identifier, "<=", 10, PickLine(3)),
+                Expect(Identifier, "num1", 13, PickLine(3)),
+                Expect(Identifier, "num2", 18, PickLine(3)),
+                Expect(RParen, ")", 22, PickLine(3)),
+                Expect(Identifier, "num1", 9, PickLine(4)),
+                Expect(Identifier, "num2", 9, PickLine(5)),
+                Expect(RParen, ")", 13, PickLine(5)),
+                Expect(RParen, ")", 14, PickLine(5)),
+                Expect(LParen, "(", 1, PickLine(6)),
+                Expect(Identifier, "min", 2, PickLine(6)),
+                Expect(Number, "7", 6, PickLine(6), numberValue: 7d),
+                Expect(Number, "4", 8, PickLine(6), numberValue: 4d),
+                Expect(RParen, ")", 9, PickLine(6)),
+                Expect(EOF, "", 10, PickLine(6)),
             });
 
             return data;

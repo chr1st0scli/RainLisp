@@ -98,8 +98,7 @@ namespace RainLispTests
             // Arrange
             var tokens = _tokenizer.Tokenize(expression);
             // Files are saved in Windows format. Load them as platform independent.
-            string expectedAst = File.ReadAllText(Path.Combine("AbstractSyntaxTrees", $"{astIndex:00}.json"))
-                .Replace("\r\n", Environment.NewLine);
+            string expectedAst = Utils.ReadAllTextOnAnyPlatform(Path.Combine("AbstractSyntaxTrees", $"{astIndex:00}.json"));
 
             // Act
             var programJObj = JObject.FromObject(_parser.Parse(tokens));
