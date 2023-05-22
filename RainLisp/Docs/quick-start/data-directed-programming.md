@@ -256,6 +256,7 @@ My pet's name is August. It's a dog, 16 years of age, it says "woof" and likes m
 ```
 
 ## Complete Program Listing
+Here's the complete program listing that was presented in parts above.
 
 ```scheme
 (define (make-table)
