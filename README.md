@@ -3,7 +3,7 @@
 
 ![Cloudy RainLisp Logo](Artwork/RainLisp-Colored.svg)
 
-RainLisp is a LISP dialect with many similarities to Scheme. It is implemented entirely in C# and therefore brought to the .NET ecosystem.
+RainLisp is a programming language, belonging to the LISP family of languages, with many similarities to Scheme. It is implemented entirely in C# and therefore brought to the .NET ecosystem.
 
 It is not intended to replace your everyday programming language at work. Though, you can integrate it with your existing systems to allow for their configuration in terms of code.
 
