@@ -12,6 +12,7 @@ namespace RainLispConsole
         private readonly FrameView _inputFrameView;
         private readonly OutputTextView _outputTextView;
         private readonly StatusItem _cursorPosStatusItem;
+        private readonly StatusBar _statusBar;
 
         private readonly Interpreter _interpreter;
         private readonly List<string> _allowedFileTypes;
@@ -76,7 +77,7 @@ namespace RainLispConsole
                 new(Key.CtrlMask | Key.F4, Resources.QUIT, Quit),
             };
 
-            var statusBar = new StatusBar(statusBarItems);
+            _statusBar = new StatusBar(statusBarItems);
 
             var fileMenuItems = new MenuItem[]
             {
@@ -106,7 +107,7 @@ namespace RainLispConsole
             _mainWindow.MenuBar = menuBar;
             SetWorkingFile(null);
 
-            Application.Top.Add(menuBar, _mainWindow, statusBar);
+            Application.Top.Add(menuBar, _mainWindow, _statusBar);
 
             // Redirect the standard output and error to the same output text view.
             var outputWriter = new OutputTextViewWriter(_outputTextView, false);
@@ -122,17 +123,17 @@ namespace RainLispConsole
         }
 
         private void InputTextViewCursorPositionChanged(Point point)
-            => _cursorPosStatusItem.Title = string.Format(Resources.CURSOR_POS_FORMAT, point.Y + 1, point.X + 1);
+        {
+            _cursorPosStatusItem.Title = string.Format(Resources.CURSOR_POS_FORMAT, point.Y + 1, point.X + 1);
+            _statusBar.SetNeedsDisplay();
+        }
 
         private bool ProceedAndLosePossibleChanges()
         {
             if (_inputTextView.Text == _originalWorkingFileBytes)
                 return true;
 
-            bool proceed = MessageBox.Query(Resources.CONFIRMATION, Resources.LOSE_UNSAVED_CHANGES, Resources.NO, Resources.YES) == 1;
-            RedisplayInputCursor();
-
-            return proceed;
+            return MessageBox.Query(Resources.CONFIRMATION, Resources.LOSE_UNSAVED_CHANGES, Resources.NO, Resources.YES) == 1;
         }
 
         private void Quit()
@@ -164,7 +165,6 @@ namespace RainLispConsole
                 openDialog.DirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             Application.Run(openDialog);
-            RedisplayInputCursor();
 
             if (openDialog.Canceled)
                 return;
@@ -203,7 +203,6 @@ namespace RainLispConsole
                 saveDialog.DirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             Application.Run(saveDialog);
-            RedisplayInputCursor();
 
             if (saveDialog.Canceled)
                 return null;
@@ -212,14 +211,8 @@ namespace RainLispConsole
 
             string? filePath = saveDialog.FilePath.ToString();
 
-            if (File.Exists(filePath))
-            {
-                bool overwrite = MessageBox.Query(Resources.CONFIRMATION, Resources.OVERWRITE_FILE, Resources.NO, Resources.YES) == 1;
-                RedisplayInputCursor();
-
-                if (!overwrite)
-                    return null;
-            }
+            if (File.Exists(filePath) && MessageBox.Query(Resources.CONFIRMATION, Resources.OVERWRITE_FILE, Resources.NO, Resources.YES) == 0)
+                return null;
 
             return filePath;
         }
@@ -255,16 +248,10 @@ namespace RainLispConsole
         }
 
         private void ViewHelp()
-        {
-            MessageBox.Query(Resources.HELP, Resources.HELP_CONTENTS, Resources.OK);
-            RedisplayInputCursor();
-        }
+            => MessageBox.Query(Resources.HELP, Resources.HELP_CONTENTS, Resources.OK);
 
         private void About()
-        {
-            MessageBox.Query(Resources.ABOUT, Resources.INFO, Resources.OK);
-            RedisplayInputCursor();
-        }
+            => MessageBox.Query(Resources.ABOUT, Resources.INFO, Resources.OK);
 
         private void Evaluate()
         {
@@ -289,9 +276,5 @@ namespace RainLispConsole
             else if (!string.IsNullOrWhiteSpace(ex.Message) && !ex.Message.StartsWith("Exception of type"))
                 Console.Error.WriteLine(ex.Message);
         }
-
-        // When a modal dialog appears, the input cursor is lost (seems like a component's bug).
-        // Just setting the DesiredCursorVisibility seems to deal with the issue.
-        private void RedisplayInputCursor() => _inputTextView.DesiredCursorVisibility = _inputTextView.DesiredCursorVisibility;
     }
 }
