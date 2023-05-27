@@ -12,6 +12,7 @@ namespace RainLispConsole
         private readonly FrameView _inputFrameView;
         private readonly OutputTextView _outputTextView;
         private readonly StatusItem _cursorPosStatusItem;
+        private readonly StatusBar _statusBar;
 
         private readonly Interpreter _interpreter;
         private readonly List<string> _allowedFileTypes;
@@ -76,7 +77,7 @@ namespace RainLispConsole
                 new(Key.CtrlMask | Key.F4, Resources.QUIT, Quit),
             };
 
-            var statusBar = new StatusBar(statusBarItems);
+            _statusBar = new StatusBar(statusBarItems);
 
             var fileMenuItems = new MenuItem[]
             {
@@ -106,7 +107,7 @@ namespace RainLispConsole
             _mainWindow.MenuBar = menuBar;
             SetWorkingFile(null);
 
-            Application.Top.Add(menuBar, _mainWindow, statusBar);
+            Application.Top.Add(menuBar, _mainWindow, _statusBar);
 
             // Redirect the standard output and error to the same output text view.
             var outputWriter = new OutputTextViewWriter(_outputTextView, false);
@@ -122,7 +123,10 @@ namespace RainLispConsole
         }
 
         private void InputTextViewCursorPositionChanged(Point point)
-            => _cursorPosStatusItem.Title = string.Format(Resources.CURSOR_POS_FORMAT, point.Y + 1, point.X + 1);
+        {
+            _cursorPosStatusItem.Title = string.Format(Resources.CURSOR_POS_FORMAT, point.Y + 1, point.X + 1);
+            _statusBar.SetNeedsDisplay();
+        }
 
         private bool ProceedAndLosePossibleChanges()
         {
