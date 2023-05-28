@@ -9,6 +9,7 @@
 2: Code Editor";
         internal const string MODE_PROMPT = "(0/1/2)?";
         internal const string REPL_PROMPT = "> ";
+        internal const string REPL_MULTILINE_PROMPT = "(Ctrl + Enter to evaluate) >";
         internal const string TITLE = "Rainλisp";
         internal const string CODE_EDITOR = "Code Editor";
         internal const string OUTPUT = "Output";

@@ -6,8 +6,15 @@
 
         internal static void Print(string result)
         {
-            if (!string.IsNullOrEmpty(result))
-                Console.WriteLine(result);
+            if (string.IsNullOrEmpty(result))
+                return;
+
+            var originalColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+
+            Console.WriteLine(result);
+
+            Console.ForegroundColor = originalColor;
         }
 
         internal static void PrintError(string message, Exception ex, bool unknownError)
