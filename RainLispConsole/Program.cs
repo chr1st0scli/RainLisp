@@ -28,12 +28,6 @@ else
 {
     Console.WriteLine();
 
-    Repl repl = mode switch
-    {
-        0 => new SingleLineRepl(),
-        _ => new MultiLineRepl(),
-    };
-
     var interpreter = new Interpreter();
-    interpreter.ReadEvalPrintLoop(repl.Read, Repl.Print, Repl.PrintError);
+    interpreter.ReadEvalPrintLoop(mode == 0 ? Repl.ReadLine : Repl.ReadLines, Repl.Print, Repl.PrintError);
 }
