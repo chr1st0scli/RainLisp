@@ -3,13 +3,14 @@
     internal static class Resources
     {
         internal const string WELCOME_MESSAGE = @"Choose Mode:
-------------
-0: Single-line Read-Eval-Print-Loop, 
-1: Multi-line Read-Eval-Print-Loop, 
-2: Code Editor";
+--------------
+0: Single-line Read-Eval-Print-Loop,
+1: Multi-line Read-Eval-Print-Loop,
+2: Code Editor
+--------------";
         internal const string MODE_PROMPT = "(0/1/2)?";
         internal const string REPL_PROMPT = "> ";
-        internal const string REPL_MULTILINE_PROMPT = "(Ctrl + Enter to evaluate) >";
+        internal const string REPL_MULTILINE_PROMPT = "(Ctrl + Z, Enter on a new line to evaluate) >";
         internal const string TITLE = "Rainλisp";
         internal const string CODE_EDITOR = "Code Editor";
         internal const string OUTPUT = "Output";
@@ -56,7 +57,6 @@
     ""▀▀▀╙   ╙▀╙` ▀▀╙ ""▀""  ""▀╙  ╙▀   ╙▀'  ▀▀▀▀`          ╘▀▀▀└  ╙▀"" └▀╙*╙'  ██▀*╙└
                                                                           ╓█⌐
     
-
 ";
 
         internal const string INFO = @"
