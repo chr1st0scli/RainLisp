@@ -13,6 +13,11 @@ It is dynamic.
 
 It is interpreted on the .NET runtime.
 
+# Specification
+
+- [Lexical Grammar](<../Grammar/Lexical Grammar.md>)
+- [Syntax Grammar](<../Grammar/Syntax Grammar.md>)
+
 # Contents
 
 - [Special Forms & Derived Expressions](special-forms-derived-expressions.md)

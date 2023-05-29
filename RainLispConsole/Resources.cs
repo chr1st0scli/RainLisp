@@ -36,7 +36,8 @@
         internal const string YES = "Yes";
         internal const string NO = "No";
         internal const string CURSOR_POS_FORMAT = "Ln: {0}, Col: {1}";
-        internal const string HELP_CONTENTS = "https://github.com/chr1st0scli/RainLisp";
+        internal const string HELP_CONTENTS = @"https://github.com/chr1st0scli/RainLisp/blob/master/RainLisp/Docs/contents.md
+https://github.com/chr1st0scli/RainLisp/blob/master/RainLisp/Docs/quick-start.md";
 
         internal const string LOGO = @"
 
