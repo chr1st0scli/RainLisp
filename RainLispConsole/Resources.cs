@@ -2,9 +2,15 @@
 {
     internal static class Resources
     {
-        internal const string WELCOME_PROMPT = "[0: Single-line Read-Eval-Print-Loop, 1: Code Editor]";
-        internal const string ZERO_OR_ONE = "(0/1)?";
+        internal const string WELCOME_MESSAGE = @"Choose Mode:
+--------------
+0: Single-line Read-Eval-Print-Loop,
+1: Multi-line Read-Eval-Print-Loop,
+2: Code Editor
+--------------";
+        internal const string MODE_PROMPT = "(0/1/2)?";
         internal const string REPL_PROMPT = "> ";
+        internal const string REPL_MULTILINE_PROMPT = "(Ctrl + Z, Enter on a new line to evaluate) >";
         internal const string TITLE = "Rainλisp";
         internal const string CODE_EDITOR = "Code Editor";
         internal const string OUTPUT = "Output";
@@ -30,7 +36,8 @@
         internal const string YES = "Yes";
         internal const string NO = "No";
         internal const string CURSOR_POS_FORMAT = "Ln: {0}, Col: {1}";
-        internal const string HELP_CONTENTS = "https://github.com/chr1st0scli/RainLisp";
+        internal const string HELP_CONTENTS = @"https://github.com/chr1st0scli/RainLisp/blob/master/RainLisp/Docs/contents.md
+https://github.com/chr1st0scli/RainLisp/blob/master/RainLisp/Docs/quick-start.md";
 
         internal const string LOGO = @"
 
@@ -51,7 +58,6 @@
     ""▀▀▀╙   ╙▀╙` ▀▀╙ ""▀""  ""▀╙  ╙▀   ╙▀'  ▀▀▀▀`          ╘▀▀▀└  ╙▀"" └▀╙*╙'  ██▀*╙└
                                                                           ╓█⌐
     
-
 ";
 
         internal const string INFO = @"

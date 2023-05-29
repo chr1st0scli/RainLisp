@@ -3,60 +3,31 @@ using RainLisp;
 using RainLispConsole;
 
 Console.WriteLine(Resources.LOGO);
-Console.Write(Resources.WELCOME_PROMPT);
+Console.Write(Resources.WELCOME_MESSAGE);
 
 int mode = -1;
 do
 {
     Console.WriteLine();
-    Console.Write(Resources.ZERO_OR_ONE);
+    Console.Write(Resources.MODE_PROMPT);
     mode = Console.ReadKey().Key switch
     {
         ConsoleKey.D0 or ConsoleKey.NumPad0 => 0,
         ConsoleKey.D1 or ConsoleKey.NumPad1 => 1,
+        ConsoleKey.D2 or ConsoleKey.NumPad1 => 2,
         _ => -1
     };
 } while (mode == -1);
 
-if (mode == 0)
+if (mode == 2)
+{
+    _ = new CodeEditor();
+    CodeEditor.Run();
+}
+else
 {
     Console.WriteLine();
 
     var interpreter = new Interpreter();
-    interpreter.ReadEvalPrintLoop(Read, Print, PrintError);
-
-    string? Read()
-    {
-        Console.Write(Resources.REPL_PROMPT);
-        return Console.ReadLine();
-    }
-
-    void Print(string result)
-    {
-        if (!string.IsNullOrEmpty(result))
-            Console.WriteLine(result);
-    }
-
-    void PrintError(string message, Exception ex, bool unknownError)
-    {
-        var originalColor = Console.ForegroundColor;
-        Console.ForegroundColor = ConsoleColor.Red;
-
-        Console.WriteLine(message);
-
-        // Print the entire exception if it is unknown.
-        if (unknownError)
-            Console.WriteLine(ex.ToString());
-
-        // Or print the exception's message if one provided by a programmer extending the library.
-        else if (!string.IsNullOrWhiteSpace(ex.Message) && !ex.Message.StartsWith("Exception of type"))
-            Console.WriteLine(ex.Message);
-
-        Console.ForegroundColor = originalColor;
-    }
-}
-else
-{
-    _ = new CodeEditor();
-    CodeEditor.Run();
+    interpreter.ReadEvalPrintLoop(mode == 0 ? Repl.ReadLine : Repl.ReadLines, Repl.Print, Repl.PrintError);
 }

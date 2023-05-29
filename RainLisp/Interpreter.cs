@@ -156,7 +156,16 @@ namespace RainLisp
 
             while (true)
             {
-                EvaluateAndPrint(read(), ref environment, print, printError);
+                try
+                {
+                    // read might throw an Exception. EvaluateAndPrint is already safe.
+                    string? code = read();
+                    EvaluateAndPrint(code, ref environment, print, printError);
+                }
+                catch (Exception ex)
+                {
+                    printError(ErrorMessages.UNKNOWN_ERROR, ex, true);
+                }
             }
         }
 
