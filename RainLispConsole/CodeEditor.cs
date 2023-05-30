@@ -109,6 +109,9 @@ namespace RainLispConsole
 
             Application.Top.Add(menuBar, _mainWindow, _statusBar);
 
+            var inputTextScrollbar = new TextViewScrollbar(_inputTextView);
+            var outputTextScrollbar = new TextViewScrollbar(_outputTextView);
+
             // Redirect the standard output and error to the same output text view.
             var outputWriter = new OutputTextViewWriter(_outputTextView, false);
             var errorWriter = new OutputTextViewWriter(_outputTextView, true);
