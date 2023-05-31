@@ -19,15 +19,15 @@ do
     };
 } while (mode == -1);
 
+var interpreter = new Interpreter();
+
 if (mode == 2)
 {
-    _ = new CodeEditor();
+    _ = new CodeEditor(interpreter);
     CodeEditor.Run();
 }
 else
 {
     Console.WriteLine();
-
-    var interpreter = new Interpreter();
     interpreter.ReadEvalPrintLoop(mode == 0 ? Repl.ReadLine : Repl.ReadLines, Repl.Print, Repl.PrintError);
 }
