@@ -14,16 +14,17 @@ namespace RainLispConsole
         private readonly StatusItem _cursorPosStatusItem;
         private readonly StatusBar _statusBar;
 
-        private readonly Interpreter _interpreter;
+        private readonly IInterpreter _interpreter;
         private readonly List<string> _allowedFileTypes;
 
         private string? _filePath;
         private string? _recentDirectory;
         private byte[]? _originalWorkingFileBytes;
 
-        public CodeEditor()
+        public CodeEditor(IInterpreter interpreter)
         {
-            _interpreter = new();
+            _interpreter = interpreter ?? throw new ArgumentNullException(nameof(interpreter));
+
             _allowedFileTypes = new List<string> { Resources.FILE_EXT };
 
             Application.Init();
