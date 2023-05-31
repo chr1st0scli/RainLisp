@@ -3,14 +3,14 @@
 namespace RainLispConsole
 {
     // This code is based on the official example given on how to add scrollbars to a text view.
-    // See UICatalog, Editor scenario at terminal gui project.
+    // See UICatalog, Editor scenario at Terminal GUI project.
     internal class TextViewScrollbar : ScrollBarView
     {
         private readonly TextView _textView;
 
         public TextViewScrollbar(TextView textView) : base(textView, true)
         {
-            _textView = textView;
+            _textView = textView ?? throw new ArgumentNullException(nameof(textView));
 
             ChangedPosition += ScrollbarChangedPosition;
             OtherScrollBarView.ChangedPosition += OtherScrollbarChangedPosition;
