@@ -4,11 +4,34 @@
     {
         internal const string WELCOME_MESSAGE = @"Available Modes:
 ----------------
-0: Single-line Read-Eval-Print-Loop,
-1: Multi-line Read-Eval-Print-Loop,
+0: Single-line REPL,
+1: Multi-line REPL,
 2: Code Editor
+3: Help
 ----------------";
-        internal const string MODE_PROMPT = "(0/1/2)?";
+        internal const string COMMAND_LINE_HELP = @"
+HELP
+====
+Modes
+-----
+Single-line REPL provides a Read-Eval-Print-Loop, based on individual line evaluations.
+
+Multi-line REPL provides a Read-Eval-Print-Loop, based on evaluation of several lines at a time.
+
+Code Editor provides whole program evaluation, syntax highlighting, basic code completion and source code file management.
+
+Command Line Arguments
+----------------------
+[-c <code>]
+Evaluates the specified code and exits.
+Example: RainLispConsole -c ""(+ 1 2 3)""
+
+[-f <file path>]
+Evaluates the contents of the specified file and exits.
+Example: RainLispConsole -f somefile.rl";
+        internal const string CODE_OPTION = "-c";
+        internal const string FILE_OPTION = "-f";
+        internal const string MODE_PROMPT = "(0/1/2/3)?";
         internal const string REPL_PROMPT = "Hit Enter to evaluate > ";
         internal const string REPL_MULTILINE_PROMPT = "Ctrl + Z on a new line and hit Enter to evaluate >";
         internal const string TITLE = "Rainλisp";
