@@ -3,8 +3,18 @@ using RainLisp;
 using RainLisp.Evaluation;
 using RainLispConsole;
 
+// By convention, a 0 process exit code represents a success, whereas any other is a failure.
+int exitCode = 0;
 var interpreter = new Interpreter();
 
+#region Command line arguments.
+void PrintErrorAndSetExitCode(string message, Exception ex, bool unknownError)
+{
+    exitCode = 1;
+    Repl.PrintError(message, ex, unknownError);
+}
+
+// If command line arguments are specified, the process evaluates code and exits.
 if (args.Length > 0)
 {
     if (args.Length != 2 || (args[0] != Resources.CODE_OPTION && args[0] != Resources.FILE_OPTION))
@@ -16,43 +26,45 @@ if (args.Length > 0)
         {
             string code = args[0] == Resources.CODE_OPTION ? args[1] : File.ReadAllText(args[1]);
             IEvaluationEnvironment? env = null;
-            interpreter.EvaluateAndPrint(code, ref env, Repl.Print, Repl.PrintError);
+            interpreter.EvaluateAndPrint(code, ref env, Repl.Print, PrintErrorAndSetExitCode);
         }
         catch (Exception ex)
         {
             // A file related exception might occur. Interpreter exceptions are already handled by EvaluateAndPrint.
-            Repl.PrintError(ex.Message, ex, true);
+            PrintErrorAndSetExitCode(ex.Message, ex, true);
         }
     }
 
-    return;
+    return exitCode;
 }
+#endregion
 
+#region REPL or editor mode.
 Console.WriteLine(Resources.LOGO);
 Console.Write(Resources.WELCOME_MESSAGE);
 
-int mode = -1;
+// If no command line arguments are specified, the user enters a REPL or editor mode.
+Mode mode = Mode.None;
 do
 {
     Console.WriteLine();
     Console.Write(Resources.MODE_PROMPT);
     mode = Console.ReadKey().Key switch
     {
-        ConsoleKey.D0 or ConsoleKey.NumPad0 => 0,
-        ConsoleKey.D1 or ConsoleKey.NumPad1 => 1,
-        ConsoleKey.D2 or ConsoleKey.NumPad1 => 2,
-        ConsoleKey.D3 or ConsoleKey.NumPad3 => 3,
-        _ => -1
+        ConsoleKey.D0 or ConsoleKey.NumPad0 => Mode.SingleLineRepl,
+        ConsoleKey.D1 or ConsoleKey.NumPad1 => Mode.MultiLineRepl,
+        ConsoleKey.D2 or ConsoleKey.NumPad1 => Mode.Editor,
+        ConsoleKey.D3 or ConsoleKey.NumPad3 => Mode.Help,
+        _ => Mode.None
     };
-} while (mode == -1);
+} while (mode == Mode.None);
 
-
-if (mode == 3)
+if (mode == Mode.Help)
 {
     Console.WriteLine();
     Console.WriteLine(Resources.COMMAND_LINE_HELP);
 }
-else if (mode == 2)
+else if (mode == Mode.Editor)
 {
     _ = new CodeEditor(interpreter);
     CodeEditor.Run();
@@ -60,5 +72,11 @@ else if (mode == 2)
 else
 {
     Console.WriteLine();
-    interpreter.ReadEvalPrintLoop(mode == 0 ? Repl.ReadLine : Repl.ReadLines, Repl.Print, Repl.PrintError);
+    // REPL is an infinite loop.
+    interpreter.ReadEvalPrintLoop(mode == Mode.SingleLineRepl ? Repl.ReadLine : Repl.ReadLines, Repl.Print, Repl.PrintError);
 }
+
+return exitCode;
+
+enum Mode { None = -1, SingleLineRepl, MultiLineRepl, Editor, Help }
+#endregion
