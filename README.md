@@ -1,7 +1,7 @@
 # RainLisp
 ![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/chr1st0scli/3ad6a6f6575320603cc8edf6171b42e8/raw/code-coverage.json)
 [![nuget](https://img.shields.io/nuget/vpre/RainLisp?color=blue)](https://www.nuget.org/packages/RainLisp/)
-[![License](https://img.shields.io/github/license/chr1st0scli/rainlisp)](LICENSE)
+[![License](https://img.shields.io/github/license/chr1st0scli/rainlisp)](LICENSE.txt)
 
 ![Cloudy RainLisp Logo](Artwork/RainLisp-Colored.svg)
 
