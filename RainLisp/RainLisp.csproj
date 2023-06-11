@@ -6,14 +6,14 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>RainLisp a .NET LISP implementation</Title>
-    <Version>1.0.0-alpha003</Version>
+    <Version>1.0.0-alpha004</Version>
     <Description>RainLisp a .NET LISP implementation.</Description>
     <Copyright>2023</Copyright>
     <PackageProjectUrl>https://github.com/chr1st0scli/RainLisp</PackageProjectUrl>
     <PackageIcon>RainLisp-Colored-128x128.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>nuget.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/chr1st0scli/RainLisp</RepositoryUrl>
-    <PackageTags>lisp;interpreter;programming;language;.net;</PackageTags>
+    <PackageTags>lisp;interpreter;repl;programming;language;.net;</PackageTags>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Authors>Christos Giamouridis</Authors>
     <Company>Rainsoft</Company>
@@ -29,7 +29,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="..\README.md">
+    <None Include="..\nuget.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
