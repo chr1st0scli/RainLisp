@@ -3,7 +3,7 @@
 ![nuget](https://img.shields.io/nuget/vpre/RainLisp?color=blue)
 ![License](https://img.shields.io/github/license/chr1st0scli/rainlisp)
 
-![Cloudy RainLisp Logo](https://github.com/chr1st0scli/RainLisp/blob/master/Artwork/RainLisp-Colored.svg)
+![Cloudy RainLisp Logo](https://github.com/chr1st0scli/RainLisp/blob/master/Artwork/RainLisp-Colored.png)
 
 RainLisp is a programming language, belonging to the LISP family of languages, with many similarities to Scheme. It is implemented entirely in C# and therefore brought to the .NET ecosystem.
 
