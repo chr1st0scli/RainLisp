@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>RainLisp a .NET LISP implementation</Title>
-    <Version>1.0.0-alpha002</Version>
+    <Version>1.0.0-alpha003</Version>
     <Description>RainLisp a .NET LISP implementation.</Description>
     <Copyright>2023</Copyright>
     <PackageProjectUrl>https://github.com/chr1st0scli/RainLisp</PackageProjectUrl>
-    <PackageIcon>RainLisp-Colored-128x287.png</PackageIcon>
+    <PackageIcon>RainLisp-Colored-128x128.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/chr1st0scli/RainLisp</RepositoryUrl>
     <PackageTags>lisp;interpreter;programming;language;.net;</PackageTags>
@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\Artwork\RainLisp-Colored-128x287.png">
+    <None Include="..\Artwork\RainLisp-Colored-128x128.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
