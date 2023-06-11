@@ -21,7 +21,6 @@ jobs:
       
     - name: Test
       run: dotnet test
-        #dotnet test --no-build --verbosity normal RainLispTests/
         
     - name: Publish to Nuget.org
-      run: dotnet nuget push RainLisp/bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push RainLisp\bin\Release\*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
