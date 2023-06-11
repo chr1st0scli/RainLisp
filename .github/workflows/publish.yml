@@ -1,0 +1,27 @@
+name: Publish to Nuget
+on:
+  # Manual workflow.
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6
+        
+    - name: Restore dependencies
+      run: dotnet restore   
+      
+    - name: Build Release
+      run: dotnet build --configuration Release --no-restore
+      
+    - name: Test
+      run: dotnet test
+        #dotnet test --no-build --verbosity normal RainLispTests/
+        
+    - name: Publish to Nuget.org
+      run: dotnet nuget push RainLisp/bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
