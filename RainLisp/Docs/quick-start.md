@@ -1,9 +1,9 @@
-﻿# Quick Start
+﻿# Tutorial
 This guide is designed to help you get started with RainLisp quickly.
 It also contains supplementary information to the rest of the documentation.
 
 The author tried to give it some introductory programming course characteristics, so that anyone can benefit from it.
-Despite the fact that it focuses on RainLisp and LISP in general, it presents some general educational information
+Despite the fact that it focuses on RainLisp and LISP in general, it presents some educational information
 that can be applicable in other contexts too.
 
 It is recommended to download RainLisp console to follow along the examples.

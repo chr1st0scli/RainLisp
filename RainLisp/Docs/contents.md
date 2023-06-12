@@ -1,4 +1,4 @@
-# Introduction
+# Specification
 
 RainLisp is a LISP dialect with many similarities to Scheme, which means it emphasizes on simplicity.
 
@@ -13,7 +13,7 @@ It is dynamic.
 
 It is interpreted on the .NET runtime.
 
-# Specification
+# Grammars
 
 - [Lexical Grammar](<../Grammar/Lexical Grammar.md>)
 - [Syntax Grammar](<../Grammar/Syntax Grammar.md>)
