@@ -13,5 +13,9 @@ Additionally, you can easily extend it to implement your own LISP dialect or rep
 
 You can also use it independently, using its code editor to learn LISP, play around with it and have fun!
 
-- [Quick Start](https://github.com/chr1st0scli/RainLisp/blob/master/RainLisp/Docs/quick-start.md)
-- [Documentation](https://github.com/chr1st0scli/RainLisp/blob/master/RainLisp/Docs/contents.md)
+## Documentation
+- [Tutorial](https://github.com/chr1st0scli/RainLisp/blob/master/RainLisp/Docs/quick-start.md)
+- [Specification](https://github.com/chr1st0scli/RainLisp/blob/master/RainLisp/Docs/contents.md)
+
+## Tools
+- [RainLisp Console](https://github.com/chr1st0scli/RainLispConsole)
