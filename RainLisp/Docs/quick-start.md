@@ -6,7 +6,10 @@ The author tried to give it some introductory programming course characteristics
 Despite the fact that it focuses on RainLisp and LISP in general, it presents some educational information
 that can be applicable in other contexts too.
 
-It is recommended to download [RainLisp console](https://github.com/chr1st0scli/RainLispConsole) to follow along the examples.
+## Prerequisites
+To follow along the examples, you can download just [RainLisp Console](https://github.com/chr1st0scli/RainLispConsole).
+But for the best experience, you are encouraged to download the [RainLisp VSCode extension](https://marketplace.visualstudio.com/items?itemName=chr1st0scli.rainlisp-vscode)
+as well. By having both, you can write and execute code right from inside [Visual Studio Code](https://code.visualstudio.com/).
 
 Let's start our endeavor with [numbers](quick-start/numbers.md).
 
