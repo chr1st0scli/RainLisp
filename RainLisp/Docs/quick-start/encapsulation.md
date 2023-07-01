@@ -1,4 +1,4 @@
-﻿# Encapsulation
+﻿# Encapsulation a la Functional
 Even though, immutability is a desired trait in many cases, there are problems in the real world that are better and/or more
 easily modeled with mutability. I.e. state that can change. But when it comes to that, we will probably need a controlled way of doing so.
 
