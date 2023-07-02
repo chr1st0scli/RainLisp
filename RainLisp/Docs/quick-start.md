@@ -38,7 +38,7 @@ Let's start our endeavor with [numbers](quick-start/numbers.md).
 ## Advanced Topics
 - [Advanced data structures](quick-start/advanced-data-structures.md)
 - [Message passing](quick-start/message-passing.md)
-- [Encapsulation a la Functional](quick-start/encapsulation.md)
+- [Encapsulation a la functional](quick-start/encapsulation.md)
 - [Data-directed programming](quick-start/data-directed-programming.md)
 - [Metaprogramming](quick-start/metaprogramming.md)
 - [Even more looping](quick-start/cps.md)
