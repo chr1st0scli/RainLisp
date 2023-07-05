@@ -1,14 +1,11 @@
-# Function Application
-A special form for applying a function to optional arguments.
-This is typically known as a function call.
-
-> In Scheme LISP, a function might be more often referred to as a procedure.
+# Procedure Application
+A special form for applying a procedure to optional arguments. This is typically known as a procedure call.
 
 The first expression gives the procedure to call. The following zero or more expressions
 are evaluated from left to right and give the arguments passed to the procedure's parameters.
 
 ```
-"(" expression expression* ")"
+(expression . expressions)
 ```
 The body of the procedure is evaluated in a new inner scope where the procedure's parameters are
 bound to the values passed as arguments.

@@ -1,7 +1,7 @@
 # or
 A derived expression that implements a logical or. It accepts at least one expression.
 ```
-"(" "or" expression+ ")"
+(or expression . expressions)
 ```
 Each expression is evaluated from left to right, until one evaluates to true or the last expression is reached, in which case it is the result of the evaluation.
 

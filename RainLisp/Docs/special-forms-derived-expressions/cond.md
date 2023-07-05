@@ -1,25 +1,17 @@
 # cond
 A derived expression for declaring many alternative expressions to be evaluated based on the result of different predicates.
 This is typically known as an `if... else if... else...` expression.
-It has one or more conditional clauses followed by an optional conditional else clause in the end.
+It has one or more conditional clauses, the `(predicate expression . expressions)` part, followed by an optional conditional else clause in the end.
 ```
-"(" "cond" condition_clause+ [condition_else_clause] ")"
+(cond (predicate expression . expressions) (else expression . expressions))
 ```
 
 The first expression of a conditional clause is the predicate. If it evaluates to true, the rest of the expressions
-will be evaluated in turn and the last one's result will be the final one.
-```
-condition_clause = "(" expression expression+ ")"
-```
-
-If the predicates of all the above conditional clauses evaluate to false, the conditional else clause is evaluated.
-The expressions are once again evaluated in the order they appear and the last one's result is the final one.
+will be evaluated in turn and the last one's result will be the final one. If the predicates of all conditional clauses evaluate to false, the
+conditional else clause is evaluated. The expressions are once again evaluated in the order they appear and the last one's result is the final one.
 If no conditional else clause is provided, the final result is unspecified.
-```
-condition_else_clause = "(" "else" expression+ ")"
-```
 
-## Example
+## Examples
 ```scheme
 ; Define a variable.
 (define x 0)

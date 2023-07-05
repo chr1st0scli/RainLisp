@@ -1,8 +1,8 @@
 # set!
 Assignment is a special form for changing a variable's value.
-`ID` is the name of the identifier to change and expression gives the new value.
+`id` is the identifier of the variable to change and `expression` gives the new value.
 ```
-"(" "set!" ID expression ")"
+(set! id expression)
 ```
 The identifier needs to be visible in the current scope; otherwise, an error occurs.
 The evaluation result of the assignment itself is unspecified.

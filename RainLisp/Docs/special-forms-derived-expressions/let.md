@@ -1,22 +1,16 @@
 # let
 A derived expression for declaring variables and expressions using them, in a scope limited
-within the `let` expression itself. It has one or more let clauses which define the variables,
+within the `let` expression itself. It has one or more let clauses, the `(id expression)` part, which define the variables,
 followed by a body.
 ```
-"(" "let" "(" let_clause+ ")" body ")"
+(let ((id expression)) body)
 ```
 
-A let clause starts with an `ID` being the name of the identifier, followed by an expression that gives its value.
-```
-let_clause = "(" ID expression ")"
-```
+A let clause starts with an `id` being the name of the variable, followed by an expression that gives its value.
 
 The body consists of zero or more definitions, followed by at least one expression.
 The expressions are evaluated in the order they appear and the evaluation result of the last one
 is the final result of the `let` expression.
-```
-body = definition* expression+
-```
 
 ## Examples
 ```scheme
