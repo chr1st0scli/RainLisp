@@ -1,7 +1,7 @@
 # begin
 A special form for defining a block of expressions to evaluate in the order they appear.
 ```
-"(" "begin" expression+ ")"
+(begin expression . expressions)
 ```
 It accepts at least one expression and the evaluation result of the `begin` itself, is the last expression's result.
 

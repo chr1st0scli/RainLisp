@@ -2,23 +2,17 @@
 A special form for creating quote symbols. A quote symbol can be viewed as a unique tag.
 It is created based on something that can be quoted, i.e. a quotable.
 ```
-"(" "quote" quotable ")"
+(quote quotable)
 ```
 
 There is an alternative form for creating a quote symbol that is equivalent to the above.
 It starts with an apostrophe `'` and is followed by a quotable. This form is often preferred for brevity.
 ```
-"'" quotable
+'quotable
 ```
 
 A quotable is anything that can be quoted. It can be a number, string or boolean literal, an identifier (e.g. variable name),
-a language keyword or a list of zero or more quotables.
-```
-quotable = NUM | STRING | BOOL | ID
-		| "quote" | "set!" | "define" | "if" | "cond" 
-		| "else" | "begin" | "lambda" | "let" | "and" | "or"
-		| "'" quotable | "(" quotable* ")"
-```
+a language keyword or a list of zero or more quotables in the form `(. quotables)`.
 
 ## Examples
 ```scheme

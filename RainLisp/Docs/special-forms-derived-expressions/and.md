@@ -1,7 +1,7 @@
 # and
 A derived expression that implements a logical and. It accepts at least one expression.
 ```
-"(" "and" expression+ ")"
+(and expression . expressions)
 ```
 Each expression is evaluated from left to right, until one evaluates to false or the last expression is reached, in which case it is the result of the evaluation.
 
