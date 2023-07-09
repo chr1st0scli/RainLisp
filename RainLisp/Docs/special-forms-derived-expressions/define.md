@@ -3,7 +3,7 @@ Definition is a special form for defining variables and procedures in the curren
 The evaluation result of the definition itself is unspecified.
 
 ## Variable Definition
-A variable is defined by its identifier `id` followed by an expression that gives its value.
+A variable is defined by its identifier `id`, followed by an expression that gives its value.
 ```
 (define id expression)
 ```
@@ -26,9 +26,9 @@ my-var ; Get value of my-var.
 -> *11*
 
 ## Procedure Definition
-A procedure is defined by its `name` followed by zero or more parameters and a body.
+A procedure is defined by its identifier `id`, followed by zero or more parameters and a body.
 ```
-(define (name . parameters) body)
+(define (id . parameters) body)
 ```
 
 The body consists of zero or more definitions, followed by at least one expression.
