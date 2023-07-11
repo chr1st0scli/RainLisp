@@ -19,3 +19,4 @@ You can also use it independently, using its code editor to learn LISP, play aro
 
 ## Tools
 - [RainLisp Console](https://github.com/chr1st0scli/RainLispConsole)
+- [RainLisp VSCode](https://marketplace.visualstudio.com/items?itemName=chr1st0scli.rainlisp-vscode)
