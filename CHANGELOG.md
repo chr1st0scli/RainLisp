@@ -16,6 +16,10 @@ Semantic versioning is followed.
 
 ### Removed
 
+## [1.0.0] - 2023-07-20
+
+Initial release.
+
 ## [1.0.0-beta.1] - 2023-07-11
 
 Initial beta release.
