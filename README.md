@@ -1,4 +1,4 @@
-# RainLisp ![Twitter URL](https://img.shields.io/twitter/url?url=https%3A%2F%2Fgithub.com%2Fchr1st0scli%2FRainLisp)
+# RainLisp [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=RainLisp%20a%20.NET%20LISP%20implementation.&url=https://github.com/chr1st0scli/RainLisp&hashtags=lisplang,Dotnet,developers)
 
 ![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/chr1st0scli/3ad6a6f6575320603cc8edf6171b42e8/raw/code-coverage.json)
 [![nuget](https://img.shields.io/nuget/vpre/RainLisp?color=blue)](https://www.nuget.org/packages/RainLisp/)
