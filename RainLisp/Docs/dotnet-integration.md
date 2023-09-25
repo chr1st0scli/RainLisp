@@ -100,12 +100,6 @@ as a parameter and returns a numeric ratio.
 same code and use string interpolation for example to inject the month number. Be careful if you use this technique with strings though, to avoid
 a possible malicious code injection.
 
-## Retrieving Multiple Values
-
-### Pair
-
-### More Complex Structures
-
 ## Improving Performance
 
 The two `Evaluate` method flavors we have seen so far, have respective overloads accepting a `RainLisp.AbstractSyntaxTree.Program` instance
@@ -113,6 +107,68 @@ which is an abstract syntax tree instead of the code as a `string`. When you kno
 use these calls to speed up the evaluation.
 
 For example, you can cache the result of the lexical and grammar syntax analysis and skip these steps in consecutive calls by calling the
-aforementioned overloads.
+aforementioned overloads. If your code is simple, you can even always skip the analysis phases by specifying an abstract syntax tree directly,
+effectively treating code as data.
+
+Let's see this in action.
+
+```csharp
+using RainLisp;
+using RainLisp.AbstractSyntaxTree;
+using RainLisp.Evaluation;
+using RainLisp.Evaluation.Results;
+using RainLisp.Parsing;
+using RainLisp.Tokenization;
+
+// Suppose this is retrieved from a database or another suitable storage.
+// It creates the RainLisp get-monthly-ratio procedure.
+const string RAIN_LISP_CODE = @"
+(define (get-monthly-ratio month)
+    (cond ((= month 1) 12.42)
+          ((= month 2) 31.71)
+          (else 9.32)))
+";
+
+// Perform lexical analysis.
+var tokenizer = new Tokenizer();
+var tokens = tokenizer.Tokenize(RAIN_LISP_CODE);
+
+// Perform syntax analysis.
+var parser = new Parser();
+// program is the abstract syntax tree which can be cached. The tokenization and parsing don't need to be repeated again to create the get-monthly-ratio procedure.
+var program = parser.Parse(tokens);
+
+// Evaluate to create get-monthly-ratio and keep it in the given environment.
+var interpreter = new Interpreter();
+IEvaluationEnvironment? environment = null;
+// We evaluate the abstract syntax tree instead of source code.
+_ = interpreter.Evaluate(program, ref environment)
+    .Last();
+
+// For the actual call to get-monthly-ratio, we are taking a different approach.
+// Since it is just a simple procedure call (application), we build the abstract syntax tree ourselves, effectively treating code as data.
+var procedureCallProgram = new RainLisp.AbstractSyntaxTree.Program
+{
+    DefinitionsAndExpressions = new List<Node>
+    {
+        // Call to get-monthly-ratio with an argument of 2 which is February.
+        new Application(new Identifier("get-monthly-ratio"), new List<Expression> { new NumberLiteral(2) })
+    }
+};
+
+var result = interpreter.Evaluate(procedureCallProgram, ref environment)
+    .Last();
+
+double ratio = ((NumberDatum)result).Value;
+
+Console.WriteLine($"The calculation ratio for February is: {ratio}.");
+```
+
+## Retrieving Multiple Values
+
+### Pair
+
+### More Complex Structures
+
 
 ## Implementing a REPL
