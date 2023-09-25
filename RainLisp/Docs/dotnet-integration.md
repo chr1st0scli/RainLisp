@@ -172,3 +172,7 @@ Console.WriteLine($"The calculation ratio for February is: {ratio}.");
 
 
 ## Implementing a REPL
+
+`IInterpreter` specifies two methods that are useful in case you want to implement a REPL (Readl Eval Print Loop) or an editor and evalution
+program around RainLisp. These are `ReadEvalPrintLoop` and `EvaluateAndPrint`. You can have a look at how [RainLispConsole](https://github.com/chr1st0scli/RainLispConsole)
+takes advantage of these methods. Of course, you might discover other use cases yourself.
