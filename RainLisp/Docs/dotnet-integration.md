@@ -4,8 +4,8 @@ Even though RainLisp is closer to a general purpose language (in principle and n
 the core goal of its initial design was to use it like a DSL (Domain Specific Language) and integrate it with existing
 .NET systems.
 
-Imagine cases where parts of your computations change frequently in an ad hoc fashion and largely vary between clients.
-Your .NET system can specify an overall computational infrastructure and call RainLisp code for the small configurable parts.
+Imagine cases where parts of your computations change frequently in an ad hoc fashion and vary largely between clients.
+Your .NET system can specify an overall computational infrastructure and call RainLisp code for smaller configurable parts.
 
 > Currenly .NET code can call RainLisp but not the other way round which is a future plan.
 
@@ -26,8 +26,6 @@ Conventionally, the RainLisp coder knows that the last thing they should return 
 The above code can be stored in a database or some other configuration medium. In the code below, assume it is loaded in `RAIN_LISP_CODE`.
 Then the .NET system can evaluate the above code as follows.
 
-> Note that exception handling is omitted for brevity.
-
 ```csharp
 using RainLisp;
 using RainLisp.Evaluation.Results;
@@ -43,6 +41,7 @@ Console.WriteLine($"Calculated log file name: {logFileName}.");
 Notice that the last evaluation result is taken into consideration which is expected to be a `StringDatum`, which effectively reflects
 the programming contract between the two systems.
 
+> Note that exception handling is omitted for brevity.
 
 ## Consecutive Calls
 
@@ -93,3 +92,27 @@ start from scratch. The ratio for February is asked `(get-monthly-ratio 2)`.
 
 > Once again, the `Last` method is used to force the evaluation, even though other Linq techniques can apply. For this particular example,
 `First` could also work since `(get-monthly-ratio 2)` is the only call that is made.
+
+In this example, the contract is that the RainLisp code implements a procedure called `get-monthly-ratio` which takes a month number
+as a parameter and returns a numeric ratio.
+
+> You could get away of using consecutive calls by adopting other techniques like combining the `get-monthly-ratio` definition and call in the
+same code and use string interpolation for example to inject the month number. Be careful if you use this technique with strings though, to avoid
+a possible malicious code injection.
+
+## Retrieving Multiple Values
+
+### Pair
+
+### More Complex Structures
+
+## Improving Performance
+
+The two `Evaluate` method flavors we have seen so far, have respective overloads accepting a `RainLisp.AbstractSyntaxTree.Program` instance
+which is an abstract syntax tree instead of the code as a `string`. When you know that the RainLisp code is unlikely to change, you can
+use these calls to speed up the evaluation.
+
+For example, you can cache the result of the lexical and grammar syntax analysis and skip these steps in consecutive calls by calling the
+aforementioned overloads.
+
+## Implementing a REPL
