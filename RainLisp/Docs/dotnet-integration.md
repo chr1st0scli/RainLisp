@@ -11,20 +11,43 @@ Your .NET system can specify an overall computational infrastructure and call Ra
 
 ## One-off Call
 
-Let's suppose there is a custom RainLisp code that specifies the format of a log file's name for a .NET system.
+Let's suppose there is a custom RainLisp code that specifies a log file's name for a .NET system.
+It first prints a message to the standard output and finally returns the log file name by concatenating some strings.
+Conventionally, the RainLisp coder knows that the last thing they should return is a string.
 
 ```scheme
 (define dt (utc-now))
 (display "Generating log file name at ")
 (display dt)
 (newline)
-(+ "system-" (datetime-to-string dt "yyyy-MM-dd_HH-mm-ss") ".log")
+(+ "system-" (datetime-to-string dt "yyyy-MM-dd_HH-mm-ss-fff") ".log")
 ```
+
+The above code can be stored in a database or some other configuration medium. In the code below, assume it is loaded in `RAIN_LISP_CODE`.
+Then the .NET system can evaluate the above code as follows.
+
+> Note that exception handling is omitted for brevity.
+
+```csharp
+using RainLisp;
+using RainLisp.Evaluation.Results;
+
+var interpreter = new Interpreter();
+
+var result = interpreter.Evaluate(RAIN_LISP_CODE).Last();
+string logFileName = ((StringDatum)result).Value;
+
+Console.WriteLine($"Calculated log file name: {logFileName}.");
+```
+
+Notice that the last evaluation result is taken into consideration which is expected to be a `StringDatum`, which effectively reflects
+the programming contract between the two systems.
+
 
 ## Consecutive Calls
 
 Now let's suppose there is a RainLisp procedure that gives a ratio varying between calendar months.
-That custom ratio is then consumed by a .NET system as part of a more general calculation algorithm.
+It specifies a `12.42` ratio for January, `31.71` for February and `9.32` for every other month.
 
 ```scheme
 (define (get-monthly-ratio month)
@@ -32,3 +55,41 @@ That custom ratio is then consumed by a .NET system as part of a more general ca
           ((= month 2) 31.71)
           (else 9.32)))
 ```
+
+That custom ratio is then consumed by a .NET system as part of a more general calculation algorithm.
+Below, it is demonstrated how one can additively make calls to RainLisp, each building on the previous one in an
+additive fashion. In simple words, the first call will "install" or create if you will the `get-monthly-ratio` procedure
+and the second one will call it with an appropriate value.
+
+Once again, assume that the above code is loaded into `RAIN_LISP_CODE`.
+
+```csharp
+using RainLisp;
+using RainLisp.Evaluation;
+using RainLisp.Evaluation.Results;
+
+var interpreter = new Interpreter();
+
+IEvaluationEnvironment? environment = null;
+_ = interpreter.Evaluate(RAIN_LISP_CODE, ref environment)
+    .Last();
+
+var result = interpreter.Evaluate("(get-monthly-ratio 2)", ref environment)
+    .Last();
+
+double ratio = ((NumberDatum)result).Value;
+
+Console.WriteLine($"The calculation ratio for February is: {ratio}.");
+```
+
+In order for one evaluation to take into consideration and
+build onto another, a common `IEvaluationEnvironment` is used.
+
+> `Evaluate` returns an `IEnumerable<EvaluationResult>`. Therefore, notice that the Linq `Last` method is called to force the enumeration
+and therefore actually evaluate the code. If this is not done, `get-monthly-ratio` will never actually be created.
+
+The second time `Evaluate` is called, the existing `environment` is used so that the procedure `get-monthly-ratio` exists and we don't
+start from scratch. The ratio for February is asked `(get-monthly-ratio 2)`. 
+
+> Once again, the `Last` method is used to force the evaluation, even though other Linq techniques can apply. For this particular example,
+`First` could also work since `(get-monthly-ratio 2)` is the only call that is made.
