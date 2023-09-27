@@ -166,9 +166,62 @@ Console.WriteLine($"The calculation ratio for February is: {ratio}.");
 
 ## Retrieving Multiple Values
 
-### Pair
+```scheme
+; Constructs a data structure with payroll analysis data.
+(define (make-payroll-analysis tax insurance net-income married pay-date)
+    (list (cons 'tax tax)
+          (cons 'insurance insurance)
+          (cons 'net-income net-income)
+          (cons 'married married)
+          (cons 'pay-date pay-date)))
 
-### More Complex Structures
+; Getters of individual payroll analysis data.
+(define (get-tax payroll-analysis)
+    (cdar payroll-analysis))
+
+(define (get-insurance payroll-analysis)
+    (cdadr payroll-analysis))
+
+(define (get-net-income payroll-analysis)
+    (cdaddr payroll-analysis))
+
+(define (get-marital-status payroll-analysis)
+    (cdaddr (cdr payroll-analysis)))
+
+(define (get-paydate payroll-analysis)
+    (cdaddr (cddr payroll-analysis)))
+
+; Procedure that calculates and returns the payroll analysis based on the employee's monthly gross income and wether or not they are married.
+(define (calculate-payroll monthly-gross-income married)
+
+    ; Set the rates.
+    (define tax-rate (if married 18.4 18.6))
+    (define insurance-rate 13.9)
+    (define net-rate (- 100 tax-rate insurance-rate))
+
+    (define tax (round (* (/ tax-rate 100)
+                          monthly-gross-income)
+                       2))
+
+    (define insurance (round (* (/ insurance-rate 100)
+                                monthly-gross-income)
+                             2))
+
+    (define net (round (* (/ net-rate 100)
+                          monthly-gross-income)
+                       2))
+
+    (define now (utc-now))
+    ; Pay on the last day of the current month.
+    (define pay-date (add-days
+                        (add-months (make-date (year now) (month now) 1) 
+                                    1)
+                        -1))
+    
+    (make-payroll-analysis tax insurance net married pay-date))
+
+(define payroll (calculate-payroll 3000 false))
+```
 
 
 ## Implementing a REPL
