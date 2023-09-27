@@ -199,6 +199,7 @@ Console.WriteLine($"The calculation ratio for February is: {ratio}.");
     (define insurance-rate 13.9)
     (define net-rate (- 100 tax-rate insurance-rate))
 
+    ; Calculate amounts.
     (define tax (round (* (/ tax-rate 100)
                           monthly-gross-income)
                        2))
