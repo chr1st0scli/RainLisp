@@ -19,6 +19,7 @@ You can also use it independently, using its code editor to learn LISP, play aro
 ## Documentation
 - [Tutorial](RainLisp/Docs/quick-start.md)
 - [Specification](RainLisp/Docs/contents.md)
+- [.NET Integration](RainLisp/Docs/dotnet-integration.md)
 
 ## Tools
 - [RainLisp Console](https://github.com/chr1st0scli/RainLispConsole)
