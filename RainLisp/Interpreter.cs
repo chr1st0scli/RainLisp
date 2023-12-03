@@ -336,6 +336,8 @@ namespace RainLisp
             Install(NUMBER_TO_STRING, PrimitiveOperation.NumberToString);
             Install(PARSE_NUMBER, PrimitiveOperation.ParseNumber);
             Install(ROUND, PrimitiveOperation.Round);
+            Install(CEILING, PrimitiveOperation.Ceiling);
+            Install(FLOOR, PrimitiveOperation.Floor);
 
             _mostRecentGlobalEnvironment.DefineIdentifier(EVAL, new PrimitiveProcedure(EVAL, values => PrimitiveOperation.Eval(values, EvalPrimitiveCallback)));
             _mostRecentGlobalEnvironment.DefineIdentifier(NIL, Nil.GetNil());

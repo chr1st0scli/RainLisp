@@ -104,6 +104,16 @@ namespace RainLispTests
         [InlineData("(round 2.4 0)", 2d)]
         [InlineData("(round 21.423 2)", 21.42d)]
         [InlineData("(round 21.425 2)", 21.43d)]
+        [InlineData("(ceiling 2)", 2d)]
+        [InlineData("(ceiling 2.5)", 3d)]
+        [InlineData("(ceiling 2.4)", 3d)]
+        [InlineData("(ceiling 21.423)", 22d)]
+        [InlineData("(ceiling 21.825)", 22d)]
+        [InlineData("(floor 2)", 2d)]
+        [InlineData("(floor 2.5)", 2d)]
+        [InlineData("(floor 2.4)", 2d)]
+        [InlineData("(floor 21.423)", 21d)]
+        [InlineData("(floor 21.825)", 21d)]
         public void Evaluate_NumericExpression_Correctly(string expression, double expectedResult)
         {
             // Arrange
