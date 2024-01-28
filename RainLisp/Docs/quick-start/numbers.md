@@ -52,6 +52,8 @@ The operations that relate to numbers are:
 - [=](../primitives/equal.md)
 - [>](../primitives/greater.md)
 - [>=](../primitives/greater-or-equal.md)
+- [ceiling](../primitives/ceiling.md)
+- [floor](../primitives/floor.md)
 - [number-to-string](../primitives/number-to-string.md)
 - [parse-number](../primitives/parse-number.md)
 - [round](../primitives/round.md)
