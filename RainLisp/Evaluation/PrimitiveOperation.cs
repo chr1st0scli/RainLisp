@@ -732,6 +732,26 @@ namespace RainLisp.Evaluation
             => ApplyBinaryOperator(AsDouble, (val, decimals) => ValueOrThrowInvalid(() => new NumberDatum((double)Math.Round((decimal)val, (int)decimals, MidpointRounding.AwayFromZero))), values);
 
         /// <summary>
+        /// Rounds a numeric value to the smallest integral that is greater than or equal to it.
+        /// </summary>
+        /// <param name="values">A numeric value to round.</param>
+        /// <returns>The integral numeric value that is greater than or equal to the specified one.</returns>
+        /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a numeric value.</exception>
+        public static EvaluationResult Ceiling(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDouble, val => new NumberDatum(Math.Ceiling(val)), values);
+
+        /// <summary>
+        /// Rounds a numeric value to the largest integral that is less than or equal to it.
+        /// </summary>
+        /// <param name="values">A numeric value to round.</param>
+        /// <returns>The integral numeric value that is less than or equal to the specified one.</returns>
+        /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not one.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">The argument is not a numeric value.</exception>
+        public static EvaluationResult Floor(EvaluationResult[]? values)
+            => ApplyUnaryOperator(AsDouble, val => new NumberDatum(Math.Floor(val)), values);
+
+        /// <summary>
         /// Returns a result by evaluating a quote symbol or a non-empty list of quote symbols as user code.
         /// </summary>
         /// <param name="values">A quote symbol or a non-empty list of quote symbols.</param>

@@ -321,6 +321,16 @@
         public const string ROUND = "round";
 
         /// <summary>
+        /// Rounds a numeric value to the smallest integral that is greater than or equal to it.
+        /// </summary>
+        public const string CEILING = "ceiling";
+
+        /// <summary>
+        /// Rounds a numeric value to the largest integral that is less than or equal to it.
+        /// </summary>
+        public const string FLOOR = "floor";
+
+        /// <summary>
         /// Returns a result by evaluating a quote symbol or a non-empty list of quote symbols as user code.
         /// </summary>
         public const string EVAL = "eval";

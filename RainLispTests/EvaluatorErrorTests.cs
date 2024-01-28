@@ -85,7 +85,7 @@ namespace RainLispTests
                 {
                     "not", "car", "cdr", "null?", "display", "debug", "trace", "error", "string-length", "to-lower", "to-upper",
                     "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc", "parse-number",
-                    "eval", "pair?"
+                    "eval", "pair?", "ceiling", "floor"
                 }, expression, expected, false, actual);
         }
 
@@ -216,6 +216,21 @@ namespace RainLispTests
         public void Evaluate_CallExpectingNumbersOrStringsWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
             Evaluate_CallsWithWrongExpression_Throws(new[] { "+" }, expression, actual, expected);
+        }
+
+        [Theory]
+        [InlineData("({0} \"hi\")", typeof(StringDatum))]
+        [InlineData("({0} false)", typeof(BoolDatum))]
+        [InlineData("({0} true)", typeof(BoolDatum))]
+        [InlineData("({0} nil)", typeof(Nil))]
+        [InlineData("({0} (cons 1 2))", typeof(Pair))]
+        [InlineData("({0} (lambda(x) x))", typeof(UserProcedure))]
+        [InlineData("({0} -)", typeof(PrimitiveProcedure))]
+        [InlineData("({0} (now))", typeof(DateTimeDatum))]
+        [InlineData("({0} (newline))", typeof(Unspecified))]
+        public void Evaluate_CallExpectingNumberWithWrongTypeOfArgument_Throws(string expression, Type actual)
+        {
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "ceiling", "floor" }, expression, actual, typeof(NumberDatum));
         }
 
         [Theory]
