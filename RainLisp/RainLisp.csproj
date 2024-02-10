@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>RainLisp a .NET LISP implementation</Title>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Description>RainLisp a .NET LISP implementation.</Description>
     <Copyright>2023</Copyright>
     <PackageProjectUrl>https://github.com/chr1st0scli/RainLisp</PackageProjectUrl>
@@ -18,7 +18,7 @@
     <Authors>Christos Giamouridis</Authors>
     <Company>Rainsoft</Company>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Add ceiling and floor primitive procedures.</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/chr1st0scli/RainLisp/releases</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

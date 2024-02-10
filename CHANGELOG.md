@@ -9,6 +9,7 @@ Semantic versioning is followed.
 ## [Unreleased]
 
 ### Added
+- Add extension methods for easier consumption by .NET systems.
 
 ### Fixed
 
