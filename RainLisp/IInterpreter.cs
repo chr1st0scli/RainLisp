@@ -18,7 +18,7 @@ namespace RainLisp
         public IEnvironmentFactory? EnvironmentFactory { get; set; }
 
         /// <summary>
-        /// Evaluates <paramref name="code"/> and returns the results.
+        /// Evaluates <paramref name="code"/> and returns the results. The evaluation occurs lazily on a per request basis, while the return value is being enumerated.
         /// </summary>
         /// <param name="code">The code to evaluate.</param>
         /// <returns>An <see cref="IEnumerable{EvaluationResult}"/> whose elements are the results of the code's evaluation.</returns>
@@ -38,6 +38,7 @@ namespace RainLisp
         /// <summary>
         /// Evaluates an abstract syntax tree. Lexical and syntax analysis are omitted, which can be useful for
         /// scenarios where an abstract syntax tree can be cached and reused for improved performance.
+        /// The evaluation occurs lazily on a per request basis, while the return value is being enumerated.
         /// </summary>
         /// <param name="program">The abstract syntax tree to evaluate.</param>
         /// <returns>An <see cref="IEnumerable{EvaluationResult}"/> whose elements are the results of the <paramref name="program"/>'s evaluation.</returns>
@@ -54,6 +55,7 @@ namespace RainLisp
         /// Evaluates <paramref name="code"/> in the given evaluation <paramref name="environment"/> and returns the results.
         /// Typically, the first time it is called, null is passed to <paramref name="environment"/> which creates one and returns it by reference.
         /// Subsequent calls should use that environment to progressively add more definitions to it.
+        /// The evaluation occurs lazily on a per request basis, while the return value is being enumerated.
         /// </summary>
         /// <param name="code">The code to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in. If null a global environment is created and returned for subsequent evaluations.</param>
@@ -76,6 +78,7 @@ namespace RainLisp
         /// are omitted, which can be useful for scenarios where an abstract syntax tree can be cached and reused for improved performance.
         /// Typically, the first time it is called, null is passed to <paramref name="environment"/> which creates one and returns it by reference.
         /// Subsequent calls should use that environment to progressively add more definitions to it.
+        /// The evaluation occurs lazily on a per request basis, while the return value is being enumerated.
         /// </summary>
         /// <param name="program">The abstract syntax tree to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in. If null a global environment is created and returned for subsequent evaluations.</param>

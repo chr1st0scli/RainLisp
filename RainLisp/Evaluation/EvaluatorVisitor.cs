@@ -193,7 +193,7 @@ namespace RainLisp.Evaluation
         }
 
         /// <summary>
-        /// Returns the result of evaluating a program.
+        /// Returns the result of evaluating a program. The evaluation occurs lazily on a per request basis, while the return value is being enumerated.
         /// </summary>
         /// <param name="program">The program to evaluate.</param>
         /// <param name="environment">The environment which the evaluation occurs in.</param>
