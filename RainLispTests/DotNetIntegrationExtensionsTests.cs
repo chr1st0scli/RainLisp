@@ -2,6 +2,7 @@
 using RainLisp.AbstractSyntaxTree;
 using RainLisp.DotNetIntegration;
 using RainLisp.Evaluation;
+using RainLisp.Evaluation.Results;
 using RainLisp.Parsing;
 using RainLisp.Tokenization;
 
@@ -12,15 +13,14 @@ namespace RainLispTests
         private readonly IInterpreter _interpreter;
 
         public DotNetIntegrationExtensionsTests()
-        {
-            _interpreter = new Interpreter();
-        }
+            => _interpreter = new Interpreter();
 
         [Fact]
-        public void Evaluate_SingleExpression_Correctly()
+        public void EvaluateNow_SingleExpression_Correctly()
         {
             // Arrange
-            const string RAIN_LISP_CODE = @"(define dt (utc-now))
+            const string RAIN_LISP_CODE = @"
+(define dt (utc-now))
 (display ""Generating log file name at "")
 (display dt)
 (newline)
@@ -35,7 +35,7 @@ namespace RainLispTests
         }
 
         [Fact]
-        public void Evaluate_ConsecutiveExpressions_Correctly()
+        public void EvaluateNow_ConsecutiveExpressions_Correctly()
         {
             // Arrange
             const string RAIN_LISP_CODE = @"
@@ -56,7 +56,28 @@ namespace RainLispTests
         }
 
         [Fact]
-        public void Evaluate_CodeAndAST_Correctly()
+        public void EvaluateNow_AST_Correctly()
+        {
+            // Arrange
+            const double NUMBER = 28;
+
+            var program = new Program
+            {
+                DefinitionsAndExpressions = new List<Node>
+                {
+                    new NumberLiteral(NUMBER)
+                }
+            };
+
+            // Act
+            var result = _interpreter.EvaluateNow(program);
+
+            // Assert
+            Assert.Equal(NUMBER, result.Number());
+        }
+
+        [Fact]
+        public void EvaluateNow_CodeAndAST_Correctly()
         {
             // Arrange
             const string RAIN_LISP_CODE = @"
@@ -72,16 +93,12 @@ namespace RainLispTests
 
             // Perform syntax analysis.
             var parser = new Parser();
-            // program is the abstract syntax tree which can be cached. The tokenization and parsing don't need to be repeated again to create the get-monthly-ratio procedure.
             var program = parser.Parse(tokens);
 
             // Evaluate to create get-monthly-ratio and keep it in the given environment.
             IEvaluationEnvironment? environment = null;
-            // We evaluate the abstract syntax tree instead of source code.
             _ = _interpreter.EvaluateNow(program, ref environment);
 
-            // For the actual call to get-monthly-ratio, we are taking a different approach.
-            // Since it is just a simple procedure call (application), we build the abstract syntax tree ourselves, effectively treating code as data.
             var procedureCallProgram = new Program
             {
                 DefinitionsAndExpressions = new List<Node>
@@ -91,9 +108,7 @@ namespace RainLispTests
                 }
             };
 
-            // We evaluate the manually built abstract syntax tree
             var result = _interpreter.EvaluateNow(procedureCallProgram, ref environment);
-
             double ratio = result.Number();
 
             // Assert
@@ -101,7 +116,7 @@ namespace RainLispTests
         }
 
         [Fact]
-        public void Evaluate_VariousExpressions_Correctly()
+        public void EvaluateNow_VariousExpressions_Correctly()
         {
             // Arrange
             const string RAIN_LISP_CODE = @"
@@ -181,6 +196,34 @@ namespace RainLispTests
             Assert.Equal(3375, netIncome);
             Assert.False(isMarried);
             Assert.Equal(new DateTime(now.Year, now.Month, 1).AddMonths(1).AddDays(-1), payDate);
+        }
+
+        [Theory]
+        [InlineData(typeof(StringDatum))]
+        [InlineData(typeof(NumberDatum))]
+        [InlineData(typeof(BoolDatum))]
+        [InlineData(typeof(DateTimeDatum))]
+        public void EvaluateNow_UnexcpectedExpression_Throws(Type type)
+        {
+            // Arrange
+            const string RAIN_LISP_CODE = "nil";
+
+            // Act
+            var result = _interpreter.EvaluateNow(RAIN_LISP_CODE);
+
+            Action<EvaluationResult> extensionMethod = type switch
+            {
+                Type t when t == typeof(StringDatum) => res => res.String(),
+                Type t when t == typeof(NumberDatum) => res => res.Number(),
+                Type t when t == typeof(BoolDatum) => res => res.Bool(),
+                Type t when t == typeof(DateTimeDatum) => res => res.DateTime(),
+                _ => throw new InvalidOperationException("Unexpected primitive type.")
+            };
+
+            void CallExtensionMethod() => extensionMethod(result);
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(CallExtensionMethod);
         }
     }
 }

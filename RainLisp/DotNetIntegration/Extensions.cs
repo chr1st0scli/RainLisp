@@ -84,7 +84,7 @@ namespace RainLisp.DotNetIntegration
             if (result is TPrimitive datum)
                 return datum.Value;
 
-            throw new InvalidOperationException($"Unexpected runtime type {result.GetType().Name}.");
+            throw new InvalidOperationException($"Unexpected type {result.GetType().Name}. {typeof(TPrimitive).Name} was expected.");
         }
     }
 }
