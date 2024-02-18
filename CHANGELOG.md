@@ -16,10 +16,10 @@ Semantic versioning is followed.
 
 ### Removed
 
-## [1.2.0] - 2024-??-??
+## [1.2.0] - 2024-02-18
 
 ### Added
-- Add extension methods for easier consumption by .NET systems.
+- Add extension methods in the `RainLisp.DotNetIntegration` namespace for easier consumption by .NET systems.
 
 ## [1.1.0] - 2024-01-28
 
