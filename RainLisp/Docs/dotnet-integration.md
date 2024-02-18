@@ -15,6 +15,8 @@ Your .NET system can specify an overall computational infrastructure and call Ra
 `IInterpreter` defines `Evaluate` method overloads for evaluating RainLisp expressions, i.e. a program. These methods typically return an `IEnumerable<EvaluationResult>`
 and the actual evaluation of each RainLisp expression occurs on a per request basis, i.e. while the enumeration is enumerated.
 
+Let's see a simple example.
+
 ```csharp
 using RainLisp;
 using RainLisp.DotNetIntegration;
@@ -43,7 +45,8 @@ return the `EvaluationResult` of the last one.
 
 Let's suppose there is a custom RainLisp code that specifies a log file's name for a .NET system.
 It first prints a message to the standard output and finally returns the log file name by concatenating some strings.
-Conventionally, the RainLisp coder knows that the last thing they should return is a string.
+Conventionally, the RainLisp coder knows that the last thing they should return is a string and this effectively reflects
+the programming contract between the two systems.
 
 ```scheme
 (define dt (utc-now))
@@ -67,9 +70,6 @@ string logFileName = result.String();
 
 Console.WriteLine($"Calculated log file name: {logFileName}.");
 ```
-
-Notice that only the last evaluation result is taken into consideration, which is expected to be a `string`. This effectively reflects
-the programming contract between the two systems.
 
 > Note that exception handling in the C# example is omitted for brevity.
 
