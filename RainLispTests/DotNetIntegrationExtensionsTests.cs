@@ -27,7 +27,7 @@ namespace RainLispTests
 (+ ""system-"" (datetime-to-string dt ""yyyy-MM-dd_HH-mm-ss-fff"") "".log"")";
 
             // Act
-            var result = _interpreter.EvaluateNow(RAIN_LISP_CODE);
+            var result = _interpreter.Execute(RAIN_LISP_CODE);
             string logFileName = result.String();
 
             // Assert
@@ -46,9 +46,9 @@ namespace RainLispTests
 
             // Act
             IEvaluationEnvironment? environment = null;
-            _ = _interpreter.EvaluateNow(RAIN_LISP_CODE, ref environment);
+            _ = _interpreter.Execute(RAIN_LISP_CODE, ref environment);
 
-            var result = _interpreter.EvaluateNow("(get-monthly-ratio 2)", ref environment);
+            var result = _interpreter.Execute("(get-monthly-ratio 2)", ref environment);
             double ratio = result.Number();
 
             // Assert
@@ -70,7 +70,7 @@ namespace RainLispTests
             };
 
             // Act
-            var result = _interpreter.EvaluateNow(program);
+            var result = _interpreter.Execute(program);
 
             // Assert
             Assert.Equal(NUMBER, result.Number());
@@ -97,7 +97,7 @@ namespace RainLispTests
 
             // Evaluate to create get-monthly-ratio and keep it in the given environment.
             IEvaluationEnvironment? environment = null;
-            _ = _interpreter.EvaluateNow(program, ref environment);
+            _ = _interpreter.Execute(program, ref environment);
 
             var procedureCallProgram = new Program
             {
@@ -108,7 +108,7 @@ namespace RainLispTests
                 }
             };
 
-            var result = _interpreter.EvaluateNow(procedureCallProgram, ref environment);
+            var result = _interpreter.Execute(procedureCallProgram, ref environment);
             double ratio = result.Number();
 
             // Assert
@@ -177,17 +177,17 @@ namespace RainLispTests
             // Act
             // Install the necessary RainLisp code for payroll calculation.
             IEvaluationEnvironment? environment = null;
-            _ = _interpreter.EvaluateNow(RAIN_LISP_CODE, ref environment);
+            _ = _interpreter.Execute(RAIN_LISP_CODE, ref environment);
 
             // Calculate the payroll details for an unmarried employee that gets a 5000 gross income.
-            _ = _interpreter.EvaluateNow("(define payroll (calculate-payroll 5000 false))", ref environment);
+            _ = _interpreter.Execute("(define payroll (calculate-payroll 5000 false))", ref environment);
 
             // Get the calculated payroll details.
-            double tax = _interpreter.EvaluateNow("(get-tax payroll)", ref environment).Number();
-            double insurance = _interpreter.EvaluateNow("(get-insurance payroll)", ref environment).Number();
-            double netIncome = _interpreter.EvaluateNow("(get-net-income payroll)", ref environment).Number();
-            bool isMarried = _interpreter.EvaluateNow("(get-marital-status payroll)", ref environment).Bool();
-            DateTime payDate = _interpreter.EvaluateNow("(get-paydate payroll)", ref environment).DateTime();
+            double tax = _interpreter.Execute("(get-tax payroll)", ref environment).Number();
+            double insurance = _interpreter.Execute("(get-insurance payroll)", ref environment).Number();
+            double netIncome = _interpreter.Execute("(get-net-income payroll)", ref environment).Number();
+            bool isMarried = _interpreter.Execute("(get-marital-status payroll)", ref environment).Bool();
+            DateTime payDate = _interpreter.Execute("(get-paydate payroll)", ref environment).DateTime();
 
             // Assert
             var now = DateTime.UtcNow;
@@ -209,7 +209,7 @@ namespace RainLispTests
             const string RAIN_LISP_CODE = "nil";
 
             // Act
-            var result = _interpreter.EvaluateNow(RAIN_LISP_CODE);
+            var result = _interpreter.Execute(RAIN_LISP_CODE);
 
             Action<EvaluationResult> extensionMethod = type switch
             {

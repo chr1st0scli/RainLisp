@@ -11,6 +11,34 @@ Your .NET system can specify an overall computational infrastructure and call Ra
 
 > The .NET examples below are written in C# but any .NET language can be used.
 
+## Evaluating RainLisp Expressions
+`IInterpreter` defines `Evaluate` method overloads for evaluating RainLisp expressions, i.e. a program. These methods typically return an `IEnumerable<EvaluationResult>`
+and the actual evaluation of each RainLisp expression occurs on a per request basis, i.e. while the enumeration is enumerated.
+
+```csharp
+using RainLisp;
+using RainLisp.DotNetIntegration;
+
+const string RAIN_LISP_CODE = @"
+(+ 1 1)
+(- 10 2)
+(* 4 7)
+9";
+
+var interpreter = new Interpreter();
+var results = interpreter.Evaluate(RAIN_LISP_CODE);
+
+foreach (var result in results)
+{
+    Console.WriteLine(result.Number());
+}
+```
+
+`RAIN_LISP_CODE` above contains the RainLisp expressions, each on a new line. Each expression is evaluated at runtime while `results` are enumerated in the `foreach` loop.
+
+> Note that all subsequent examples use the `Execute` overloads which mirror the `Evaluate` ones. `Execute` methods evaluate all RainLisp expressions at once and
+return the `EvaluationResult` of the last one.
+
 ## One-off Call
 
 Let's suppose there is a custom RainLisp code that specifies a log file's name for a .NET system.
@@ -29,19 +57,18 @@ The above code can be stored in a database or some other configuration medium. F
 Then the .NET system can evaluate it as follows.
 
 ```csharp
-using System.Linq;
 using RainLisp;
-using RainLisp.Evaluation.Results;
+using RainLisp.DotNetIntegration;
 
 var interpreter = new Interpreter();
 
-var result = interpreter.Evaluate(RAIN_LISP_CODE).Last();
-string logFileName = ((StringDatum)result).Value;
+var result = interpreter.Execute(RAIN_LISP_CODE);
+string logFileName = result.String();
 
 Console.WriteLine($"Calculated log file name: {logFileName}.");
 ```
 
-Notice that only the last evaluation result (LINQ's Last() method call) is taken into consideration, which is expected to be a `StringDatum`. This effectively reflects
+Notice that only the last evaluation result is taken into consideration, which is expected to be a `string`. This effectively reflects
 the programming contract between the two systems.
 
 > Note that exception handling in the C# example is omitted for brevity.
@@ -66,23 +93,20 @@ and the second one will call it with an appropriate value.
 Once again, assume that the above code is loaded into `RAIN_LISP_CODE`.
 
 ```csharp
-using System.Linq;
 using RainLisp;
+using RainLisp.DotNetIntegration;
 using RainLisp.Evaluation;
-using RainLisp.Evaluation.Results;
 
 var interpreter = new Interpreter();
 
 // Create the procedure.
 IEvaluationEnvironment? environment = null;
-_ = interpreter.Evaluate(RAIN_LISP_CODE, ref environment)
-    .Last();
+_ = interpreter.Execute(RAIN_LISP_CODE, ref environment);
 
 // Call it for month February.
-var result = interpreter.Evaluate("(get-monthly-ratio 2)", ref environment)
-    .Last();
+var result = interpreter.Execute("(get-monthly-ratio 2)", ref environment);
 
-double ratio = ((NumberDatum)result).Value;
+double ratio = result.Number();
 
 // Write the result to the standard output.
 Console.WriteLine($"The calculation ratio for February is: {ratio}.");
@@ -90,16 +114,10 @@ Console.WriteLine($"The calculation ratio for February is: {ratio}.");
 
 In order for one evaluation to take into consideration and build onto another, a common `IEvaluationEnvironment` is used.
 
-The first call to `Evaluate` creates the `get-monthly-ratio` procedure.
+The first call to `Execute` creates the `get-monthly-ratio` procedure.
 
-> `Evaluate` returns an `IEnumerable<EvaluationResult>`. Therefore, notice that the LINQ `Last` method is called to force the enumeration
-and therefore actually evaluate the code. If this is not done, RainLisp code will actually never be executed.
-
-The second time `Evaluate` is called the February's ratio is asked `(get-monthly-ratio 2)`. Note that the existing `environment` is used so that
+The second time `Execute` is called the February's ratio is asked `(get-monthly-ratio 2)`. Note that the existing `environment` is used so that
 the previous evaluation, the procedure creation, is still in effect.
-
-> Once again, the `Last` method is used to force the evaluation, even though other LINQ techniques can apply. For this particular example,
-`First` could also work since `(get-monthly-ratio 2)` is the only call that is made.
 
 In this example, the contract is that the RainLisp code implements a procedure called `get-monthly-ratio` which takes a month number
 as a parameter and returns a numeric ratio.
@@ -110,7 +128,7 @@ a possible malicious code injection.
 
 ### Improving Performance
 
-The two `Evaluate` method flavors we have seen so far, have respective overloads accepting a `RainLisp.AbstractSyntaxTree.Program` instance,
+The two `Execute` method flavors we have seen so far, have respective overloads accepting a `RainLisp.AbstractSyntaxTree.Program` instance,
 which is an abstract syntax tree, instead of the code as a `string`. When you know that the RainLisp code is unlikely to change, you can
 use these calls to speed up the evaluation. For example, you can cache the result of the lexical and grammar syntax analysis and skip these steps
 in consecutive calls by calling the aforementioned overloads. If your code is simple, you can even always skip the analysis phases by specifying an
@@ -119,11 +137,10 @@ abstract syntax tree directly, effectively treating code as data.
 Let's see this in action.
 
 ```csharp
-using System.Linq;
 using RainLisp;
 using RainLisp.AbstractSyntaxTree;
+using RainLisp.DotNetIntegration;
 using RainLisp.Evaluation;
-using RainLisp.Evaluation.Results;
 using RainLisp.Parsing;
 using RainLisp.Tokenization;
 
@@ -149,8 +166,7 @@ var program = parser.Parse(tokens);
 var interpreter = new Interpreter();
 IEvaluationEnvironment? environment = null;
 // We evaluate the abstract syntax tree instead of source code.
-_ = interpreter.Evaluate(program, ref environment)
-    .Last();
+_ = interpreter.Execute(program, ref environment);
 
 // For the actual call to get-monthly-ratio, we are taking a different approach.
 // Since it is just a simple procedure call (application), we build the abstract syntax tree ourselves, effectively treating code as data.
@@ -164,10 +180,9 @@ var procedureCallProgram = new RainLisp.AbstractSyntaxTree.Program
 };
 
 // We evaluate the manually built abstract syntax tree
-var result = interpreter.Evaluate(procedureCallProgram, ref environment)
-    .Last();
+var result = interpreter.Execute(procedureCallProgram, ref environment);
 
-double ratio = ((NumberDatum)result).Value;
+double ratio = result.Number();
 
 // Write the result to the standard output.
 Console.WriteLine($"The calculation ratio for February is: {ratio}.");
@@ -241,28 +256,25 @@ Below, it is demonstrated how the .NET system could use the above code and acces
 Once again, assume the above code is stored in `RAIN_LISP_CODE`.
 
 ```csharp
-using System.Linq;
 using RainLisp;
+using RainLisp.DotNetIntegration;
 using RainLisp.Evaluation;
-using RainLisp.Evaluation.Results;
 
 // Install the necessary RainLisp code for payroll calculation.
 var interpreter = new Interpreter();
 IEvaluationEnvironment? environment = null;
-_ = interpreter.Evaluate(RAIN_LISP_CODE, ref environment)
-    .Last();
+_ = interpreter.Execute(RAIN_LISP_CODE, ref environment);
 
 // Calculate the payroll details for an unmarried employee that gets a 5000 gross income.
 // For simplicity, we are using RainLisp code for the calls but we could build our own AST, as we have seen before.
-_ = interpreter.Evaluate("(define payroll (calculate-payroll 5000 false))", ref environment)
-    .Last();
+_ = interpreter.Execute("(define payroll (calculate-payroll 5000 false))", ref environment);
 
 // Get the calculated payroll details.
-double tax = ((NumberDatum)interpreter.Evaluate("(get-tax payroll)", ref environment).First()).Value;
-double insurance = ((NumberDatum)interpreter.Evaluate("(get-insurance payroll)", ref environment).First()).Value;
-double netIncome = ((NumberDatum)interpreter.Evaluate("(get-net-income payroll)", ref environment).First()).Value;
-bool isMarried = ((BoolDatum)interpreter.Evaluate("(get-marital-status payroll)", ref environment).First()).Value;
-DateTime payDate = ((DateTimeDatum)interpreter.Evaluate("(get-paydate payroll)", ref environment).First()).Value;
+double tax = interpreter.Execute("(get-tax payroll)", ref environment).Number();
+double insurance = interpreter.Execute("(get-insurance payroll)", ref environment).Number();
+double netIncome = interpreter.Execute("(get-net-income payroll)", ref environment).Number();
+bool isMarried = interpreter.Execute("(get-marital-status payroll)", ref environment).Bool();
+DateTime payDate = interpreter.Execute("(get-paydate payroll)", ref environment).DateTime();
 
 // Write them to the standard output.
 Console.WriteLine($"Bob is {(!isMarried ? "not" : "")} married, pays {tax} tax, {insurance} insurance and is getting paid {netIncome} on {payDate}.");

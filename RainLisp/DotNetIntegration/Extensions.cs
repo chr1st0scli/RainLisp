@@ -12,7 +12,7 @@ namespace RainLisp.DotNetIntegration
     public static class Extensions
     {
         /// <summary>
-        /// Evaluates <paramref name="code"/> immediately and returns the last expression's result.
+        /// Executes <paramref name="code"/> immediately and returns the last expression's result.
         /// </summary>
         /// <param name="interpreter">The interpreter instance to perform the evaluation.</param>
         /// <param name="code">The code to evaluate.</param>
@@ -28,11 +28,11 @@ namespace RainLisp.DotNetIntegration
         /// <exception cref="NotProcedureException">A procedure application is evaluated on a value that is not a procedure; occurs during evaluation.</exception>
         /// <exception cref="UserException">User code explicitly caused an error; occurs during evaluation.</exception>
         /// <exception cref="InvalidValueException">A procedure is called with a wrong argument value; occurs during evaluation.</exception>
-        public static EvaluationResult EvaluateNow(this IInterpreter interpreter, string? code)
+        public static EvaluationResult Execute(this IInterpreter interpreter, string? code)
             => interpreter.Evaluate(code).Last();
 
         /// <summary>
-        /// Evaluates an abstract syntax tree immediately and returns the last expression's result. Lexical and syntax analysis are omitted,
+        /// Executes an abstract syntax tree immediately and returns the last expression's result. Lexical and syntax analysis are omitted,
         /// which can be useful for scenarios where an abstract syntax tree can be cached and reused for improved performance.
         /// </summary>
         /// <param name="interpreter">The interpreter instance to perform the evaluation.</param>
@@ -45,11 +45,11 @@ namespace RainLisp.DotNetIntegration
         /// <exception cref="NotProcedureException">A procedure application is evaluated on a value that is not a procedure; occurs during evaluation.</exception>
         /// <exception cref="UserException">User code explicitly caused an error; occurs during evaluation.</exception>
         /// <exception cref="InvalidValueException">A procedure is called with a wrong argument value; occurs during evaluation.</exception>
-        public static EvaluationResult EvaluateNow(this IInterpreter interpreter, Program program)
+        public static EvaluationResult Execute(this IInterpreter interpreter, Program program)
             => interpreter.Evaluate(program).Last();
 
         /// <summary>
-        /// Evaluates <paramref name="code"/> in the given evaluation <paramref name="environment"/> immediately and returns the last expression's result.
+        /// Executes <paramref name="code"/> in the given evaluation <paramref name="environment"/> immediately and returns the last expression's result.
         /// Typically, the first time it is called, null is passed to <paramref name="environment"/> which creates one and returns it by reference.
         /// Subsequent calls should use that environment to progressively add more definitions to it.
         /// </summary>
@@ -68,11 +68,11 @@ namespace RainLisp.DotNetIntegration
         /// <exception cref="NotProcedureException">A procedure application is evaluated on a value that is not a procedure; occurs during evaluation.</exception>
         /// <exception cref="UserException">User code explicitly caused an error; occurs during evaluation.</exception>
         /// <exception cref="InvalidValueException">A procedure is called with a wrong argument value; occurs during evaluation.</exception>
-        public static EvaluationResult EvaluateNow(this IInterpreter interpreter, string? code, ref IEvaluationEnvironment? environment)
+        public static EvaluationResult Execute(this IInterpreter interpreter, string? code, ref IEvaluationEnvironment? environment)
             => interpreter.Evaluate(code, ref environment).Last();
 
         /// <summary>
-        /// Evaluates an abstract syntax tree in the given evaluation <paramref name="environment"/> immediately and returns the last expression's result.
+        /// Executes an abstract syntax tree in the given evaluation <paramref name="environment"/> immediately and returns the last expression's result.
         /// Lexical and syntax analysis are omitted, which can be useful for scenarios where an abstract syntax tree can be cached and reused for improved performance.
         /// Typically, the first time it is called, null is passed to <paramref name="environment"/> which creates one and returns it by reference.
         /// Subsequent calls should use that environment to progressively add more definitions to it.
@@ -88,7 +88,7 @@ namespace RainLisp.DotNetIntegration
         /// <exception cref="NotProcedureException">A procedure application is evaluated on a value that is not a procedure; occurs during evaluation.</exception>
         /// <exception cref="UserException">User code explicitly caused an error; occurs during evaluation.</exception>
         /// <exception cref="InvalidValueException">A procedure is called with a wrong argument value; occurs during evaluation.</exception>
-        public static EvaluationResult EvaluateNow(this IInterpreter interpreter, Program program, ref IEvaluationEnvironment? environment)
+        public static EvaluationResult Execute(this IInterpreter interpreter, Program program, ref IEvaluationEnvironment? environment)
             => interpreter.Evaluate(program, ref environment).Last();
 
         /// <summary>
