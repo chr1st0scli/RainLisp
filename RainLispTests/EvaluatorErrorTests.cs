@@ -98,7 +98,7 @@ namespace RainLispTests
             Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
                 {
                     ">", ">=", "<", "<=", "=", "cons", "set-car!", "set-cdr!",
-                    "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds", "number-to-string",
+                    "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds", "number-to-string", "parse-number-culture",
                     "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff", "parse-datetime", "datetime-to-string", "round"
                 }, expression, expected, false, actual);
         }
@@ -420,7 +420,7 @@ namespace RainLispTests
         [InlineData("({0} \"hello\" true)", typeof(BoolDatum))]
         public void Evaluate_CallExpecting2StringsWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "parse-datetime" }, expression, actual, typeof(StringDatum));
+            Evaluate_CallsWithWrongExpression_Throws(new[] { "parse-datetime", "parse-number-culture" }, expression, actual, typeof(StringDatum));
         }
 
         [Theory]
@@ -587,6 +587,9 @@ namespace RainLispTests
         [InlineData("(replace-string \"hello\" \"\" \"world\")")]
         [InlineData("(parse-number \"\")")]
         [InlineData("(parse-number \"a\")")]
+        [InlineData("(parse-number-culture \"\" \"EN\")")]
+        [InlineData("(parse-number-culture \"a\" \"EN\")")]
+        [InlineData("(parse-number-culture \"1\" \"WQXY\")")]
         [InlineData("(round 2.5 -1)")]
         [InlineData("(round 2.5 29)")]
         public void Evaluate_ExpressionWithInvalidValue_Throws(string expression)

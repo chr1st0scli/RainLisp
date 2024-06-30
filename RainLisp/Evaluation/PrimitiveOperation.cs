@@ -720,7 +720,7 @@ namespace RainLisp.Evaluation
         /// <summary>
         /// Converts a string representation of a numeric value in a culture-specific format to its number equivalent.
         /// </summary>
-        /// <param name="values">A string containing the numeric info, a string specifying the culture name.</param>
+        /// <param name="values">A string containing the numeric info, a string specifying the culture name. If the culture name is an empty string, the invariant culture is used.</param>
         /// <returns>The equivalent numeric value.</returns>
         /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
         /// <exception cref="WrongTypeOfArgumentException">Not all arguments are string values.</exception>
