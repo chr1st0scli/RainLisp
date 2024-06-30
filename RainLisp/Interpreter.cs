@@ -338,6 +338,7 @@ namespace RainLisp
             Install(DATETIME_TO_STRING, PrimitiveOperation.DateTimeToString);
             Install(NUMBER_TO_STRING, PrimitiveOperation.NumberToString);
             Install(PARSE_NUMBER, PrimitiveOperation.ParseNumber);
+            Install(PARSE_NUMBER_CULTURE, PrimitiveOperation.ParseNumberCulture);
             Install(ROUND, PrimitiveOperation.Round);
             Install(CEILING, PrimitiveOperation.Ceiling);
             Install(FLOOR, PrimitiveOperation.Floor);
