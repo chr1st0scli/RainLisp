@@ -56,6 +56,7 @@ The operations that relate to numbers are:
 - [floor](../primitives/floor.md)
 - [number-to-string](../primitives/number-to-string.md)
 - [parse-number](../primitives/parse-number.md)
+- [parse-number-culture](../primitives/parse-number-culture.md)
 - [round](../primitives/round.md)
 
 Next, let's learn about [booleans](booleans.md).
