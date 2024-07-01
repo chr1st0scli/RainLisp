@@ -718,6 +718,17 @@ namespace RainLisp.Evaluation
             => ApplyUnaryOperator(AsString, val => ValueOrThrowInvalid(() => new NumberDatum(double.Parse(val, CultureInfo.InvariantCulture))), values);
 
         /// <summary>
+        /// Converts a string representation of a numeric value in a culture-specific format to its number equivalent.
+        /// </summary>
+        /// <param name="values">A string containing the numeric info, a string specifying the culture name. If the culture name is an empty string, the invariant culture is used.</param>
+        /// <returns>The equivalent numeric value.</returns>
+        /// <exception cref="WrongNumberOfArgumentsException">The given arguments are not two.</exception>
+        /// <exception cref="WrongTypeOfArgumentException">Not all arguments are string values.</exception>
+        /// <exception cref="InvalidValueException">The string value does not represent a number in a valid format for the specified culture or the culture is not found.</exception>
+        public static EvaluationResult ParseNumberCulture(EvaluationResult[]? values)
+            => ApplyBinaryOperator(AsString, (val, cult) => ValueOrThrowInvalid(() => new NumberDatum(double.Parse(val, new CultureInfo(cult, false)))), values);
+
+        /// <summary>
         /// Rounds a numeric value to a specified number of fractional digits, using the away from zero rounding convention.
         /// </summary>
         /// <param name="values">

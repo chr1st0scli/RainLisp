@@ -316,6 +316,11 @@
         public const string PARSE_NUMBER = "parse-number";
 
         /// <summary>
+        /// Converts a string representation of a numeric value in a culture-specific format to its number equivalent.
+        /// </summary>
+        public const string PARSE_NUMBER_CULTURE = "parse-number-culture";
+
+        /// <summary>
         /// Rounds a numeric value to a specified number of fractional digits, using the away from zero rounding convention.
         /// </summary>
         public const string ROUND = "round";

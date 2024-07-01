@@ -48,6 +48,7 @@
 - [pair?](primitives/is-pair.md)
 - [parse-datetime](primitives/parse-datetime.md)
 - [parse-number](primitives/parse-number.md)
+- [parse-number-culture](primitives/parse-number-culture.md)
 - [replace-string](primitives/replace-string.md)
 - [round](primitives/round.md)
 - [second](primitives/second.md)

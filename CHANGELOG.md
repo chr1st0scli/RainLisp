@@ -16,6 +16,11 @@ Semantic versioning is followed.
 
 ### Removed
 
+## [1.3.0] - 2024-06-30
+
+### Added
+- `parse-number-culture` primitive procedure. #146
+
 ## [1.2.0] - 2024-02-18
 
 ### Added
