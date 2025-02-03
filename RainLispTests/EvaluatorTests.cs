@@ -1576,5 +1576,155 @@ b";
             // Assert
             Assert.Equal(NUMBER, result.Value);
         }
+
+        [Theory]
+        [InlineData("(delay 1)", 1)]
+        [InlineData("(cdr (cons-stream 1 2))", 2)]
+        public void Evaluate_DelayedExpression_ReturnsLambda(string expression, double expectedDelayed)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression).Last() as MemoizedUserProcedure;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(1, result!.Body.Expressions.Count);
+            Assert.Equal(expectedDelayed, ((NumberLiteral)result!.Body.Expressions[0]).Value);
+        }
+
+        [Theory]
+        [InlineData("(force (delay 1))", 1)]
+        [InlineData("(force (cdr (cons-stream 1 2)))", 2)]
+        [InlineData("(cdr-stream (cons-stream 1 3))", 3)]
+        public void Evaluate_ForcedDelayedExpression_ReturnsNumberDatum(string expression, double expected)
+        {
+            // Arrange
+            // Act
+            var result = (NumberDatum)_interpreter.Evaluate(expression).Last();
+
+            // Assert
+            Assert.Equal(expected, result.Value);
+        }
+
+        [Theory]
+        [InlineData(@"
+(define x 1)
+
+(define (foo)
+    (set! x (+ x 1))
+    (set! x (+ x 1)))
+x
+(foo)
+x
+(foo)
+x")]
+        [InlineData(@"
+(define x 1)
+
+(define (foo)
+    (set! x (+ x 1))
+    (set! x (+ x 1)))
+x
+(force (delay (foo)))
+x
+(force (delay (foo)))
+x")]
+        public void Evaluate_ExpressionTwice_EvaluatesTwice(string code)
+        {
+            // Arrange
+            // Act
+            var results = _interpreter.Evaluate(code).ToList();
+
+            // Assert
+            Assert.True(results[2] is NumberDatum { Value: 1 });
+            Assert.True(results[4] is NumberDatum { Value: 3 });
+            Assert.True(results[6] is NumberDatum { Value: 5 });
+        }
+
+        [Theory]
+        [InlineData(@"
+(define x 1)
+
+(define (foo)
+    (set! x (+ x 1))
+    (set! x (+ x 1)))
+
+(define delayed (delay (foo)))
+x
+(force delayed)
+x
+(force delayed)
+x")]
+        [InlineData(@"
+(define x 1)
+x
+(define delayed
+  (delay
+    (begin
+        (set! x (+ x 1))
+        (set! x (+ x 1)))))
+x
+(force delayed)
+x
+(force delayed)
+x")]
+        [InlineData(@"
+(define x 1)
+
+(define (foo)
+    (set! x (+ x 1))
+    (set! x (+ x 1)))
+
+(define delayedPair (cons-stream x (foo)))
+x
+(cdr-stream delayedPair)
+x
+(cdr-stream delayedPair)
+x")]
+        public void Evaluate_ForcedMemoizedProcedureTwice_EvaluatesOnce(string code)
+        {
+            // Arrange
+            // Act
+            var results = _interpreter.Evaluate(code).ToList();
+
+            // Assert
+            Assert.True(results[3] is NumberDatum { Value: 1 });
+            Assert.True(results[5] is NumberDatum { Value: 3 });
+            Assert.True(results[7] is NumberDatum { Value: 3 });
+        }
+
+        [Fact]
+        public void Evaluate_ConsStream_PairOfEvaluatedAndDelayedExpressions()
+        {
+            // Arrange
+            const string CODE = "(cons-stream 0 7)";
+
+            // Act
+            var result = _interpreter.Evaluate(CODE).First() as Pair;
+            var first = result!.First as NumberDatum;
+            var second = result!.Second as MemoizedUserProcedure;
+
+            // Assert
+            Assert.Equal(0, first!.Value);
+            Assert.Equal(1, second!.Body.Expressions.Count);
+            Assert.True(second!.Body.Expressions[0] is NumberLiteral { Value: 7 });
+        }
+
+        [Fact]
+        public void Evaluate_MakeRangeStream_PairOfEvaluatedAndDelayedExpressions()
+        {
+            // Arrange
+            const string CODE = "(make-range-stream 1 5)";
+
+            // Act
+            var result = _interpreter.Evaluate(CODE).First() as Pair;
+            var first = result!.First as NumberDatum;
+            var second = result!.Second as MemoizedUserProcedure;
+
+            // Assert
+            Assert.Equal(1, first!.Value);
+            Assert.Equal(1, second!.Body.Expressions.Count);
+            Assert.True(second!.Body.Expressions[0] is Application { Operator: Identifier { Name: "make-range-stream" } });
+        }
     }
 }

@@ -152,6 +152,12 @@ namespace RainLisp.Parsing
                 else if (_tokens.Match(TokenType.Or))
                     expression = new Or(OneOrMoreExpressionsUntilRightParen()).ToIf();
 
+                else if (_tokens.Match(TokenType.Delay))
+                    expression = CompleteDelay();
+
+                else if (_tokens.Match(TokenType.ConsStream))
+                    expression = CompleteConsStream().ToConsOnFirstAndDelayedSecond();
+
                 // If it is none of the above, then it can only be a function application.
                 else
                     expression = CompleteApplication();
@@ -330,6 +336,23 @@ namespace RainLisp.Parsing
             }
 
             return new Application(operatorToApply, operands);
+        }
+
+        private Delay CompleteDelay()
+        {
+            var value = Expression();
+            _tokens.Require(TokenType.RParen);
+
+            return new Delay(value);
+        }
+
+        private ConsStream CompleteConsStream()
+        {
+            var first = Expression();
+            var second = Expression();
+            _tokens.Require(TokenType.RParen);
+            
+            return new ConsStream(first, second);
         }
         #endregion
 

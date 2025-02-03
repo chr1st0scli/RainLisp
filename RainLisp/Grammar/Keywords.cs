@@ -69,5 +69,15 @@
         /// Let expression.
         /// </summary>
         public const string LET = "let";
+
+        /// <summary>
+        /// Delayed expression.
+        /// </summary>
+        public const string DELAY = "delay";
+
+        /// <summary>
+        /// Pair of an expression and a delayed one.
+        /// </summary>
+        public const string CONS_STREAM = "cons-stream";
     }
 }

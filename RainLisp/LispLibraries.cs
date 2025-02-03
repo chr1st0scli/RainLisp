@@ -47,6 +47,18 @@
 (define (length sequence)
   (fold-left (lambda (count n) (+ count 1)) 0 sequence))
 
+; Stream related procedures.
+(define (force proc)
+  (proc))
+
+(define (cdr-stream pair)
+  (force (cdr pair)))
+
+(define (make-range-stream start end)
+  (if (> start end)
+      nil
+      (cons-stream start (make-range-stream (+ start 1) end))))
+
 ; car and cdr flavors.
 ; 2 levels.
 (define (cddr sequence)

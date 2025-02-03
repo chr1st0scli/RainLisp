@@ -87,6 +87,8 @@ namespace RainLispTests
         [InlineData(58, "(quote (ab cd (e f g) hi))")]
         [InlineData(58, "'(ab cd (e f g) hi)")]
         [InlineData(59, "(define a 1) (set! a 2) (define b a)")]
+        [InlineData(60, "(delay 1)")]
+        [InlineData(61, "(cons-stream 1 2)")]
         public void Parse_ValidExpression_GivesExpectedAST(int astIndex, string expression)
         {
             static void RemoveProperty(JObject jObj, string propertyName)
@@ -139,6 +141,8 @@ namespace RainLispTests
         [InlineData("let", 1, 1, ParsingError.MissingExpression)]
         [InlineData("and", 1, 1, ParsingError.MissingExpression)]
         [InlineData("or", 1, 1, ParsingError.MissingExpression)]
+        [InlineData("delay", 1, 1, ParsingError.MissingExpression)]
+        [InlineData("cons-stream", 1, 1, ParsingError.MissingExpression)]
         [InlineData("(quote)", 1, 7, ParsingError.MissingExpression)]
         [InlineData("(quote (", 1, 9, ParsingError.MissingExpression)]
         [InlineData("'(", 1, 3, ParsingError.MissingExpression)]
@@ -178,12 +182,21 @@ namespace RainLispTests
         [InlineData("(set! a)", 1, 8, ParsingError.MissingExpression)]
         [InlineData("(and)", 1, 5, ParsingError.MissingExpression)]    // In traditional Lisp this would return true.
         [InlineData("(or)", 1, 4, ParsingError.MissingExpression)]     // In traditional Lisp this would return false.
+        [InlineData("(delay", 1, 7, ParsingError.MissingExpression)]
+        [InlineData("(delay)", 1, 7, ParsingError.MissingExpression)]
+        [InlineData("(cons-stream", 1, 13, ParsingError.MissingExpression)]
+        [InlineData("(cons-stream)", 1, 13, ParsingError.MissingExpression)]
+        [InlineData("(cons-stream a", 1, 15, ParsingError.MissingExpression)]
+        [InlineData("(cons-stream a)", 1, 15, ParsingError.MissingExpression)]
         // Missing expressions. According to the syntax grammar, there can be no definition where an expression is expected.
         [InlineData("(if true (define a 1) 2)", 1, 11, ParsingError.MissingExpression)]
         [InlineData("(if true 1 (define b 2))", 1, 13, ParsingError.MissingExpression)]
         [InlineData("(cond (true (define a 1)) (else 2))", 1, 14, ParsingError.MissingExpression)]
         [InlineData("(cond (true 1) (else (define b 2)))", 1, 23, ParsingError.MissingExpression)]
         [InlineData("(begin 1 2 3 (define a 1) 4)", 1, 15, ParsingError.MissingExpression)]
+        [InlineData("(delay (define a 1))", 1, 9, ParsingError.MissingExpression)]
+        [InlineData("(cons-stream (define a 1) 3)", 1, 15, ParsingError.MissingExpression)]
+        [InlineData("(cons-stream 1 (define a 1))", 1, 17, ParsingError.MissingExpression)]
         // Missing specific symbols.
         [InlineData("(quote a", 1, 9, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(quote a b", 1, 10, ParsingError.MissingSymbol, TokenType.RParen)]
@@ -223,6 +236,8 @@ namespace RainLispTests
         [InlineData("(let ((2", 1, 8, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(let ((a 1", 1, 11, ParsingError.MissingSymbol, TokenType.RParen)]
         [InlineData("(let ((a 1 b", 1, 12, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(delay 1", 1, 9, ParsingError.MissingSymbol, TokenType.RParen)]
+        [InlineData("(cons-stream 1 2", 1, 17, ParsingError.MissingSymbol, TokenType.RParen)]
         // Missing either ) or (.
         [InlineData("(cond (true 1)", 1, 15, ParsingError.MissingRightOrLeftParen)]
         [InlineData("(cond (true 1) a", 1, 16, ParsingError.MissingRightOrLeftParen)]
@@ -246,6 +261,8 @@ namespace RainLispTests
         [InlineData("(define and 0)", 1, 9, ParsingError.MissingDefinition)]
         [InlineData("(define or 0)", 1, 9, ParsingError.MissingDefinition)]
         [InlineData("(define let 0)", 1, 9, ParsingError.MissingDefinition)]
+        [InlineData("(define delay 0)", 1, 9, ParsingError.MissingDefinition)]
+        [InlineData("(define cons-stream 0)", 1, 9, ParsingError.MissingDefinition)]
         [InlineData("(set! true 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! false 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! quote 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
@@ -260,6 +277,8 @@ namespace RainLispTests
         [InlineData("(set! and 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! or 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(set! let 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(set! delay 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(set! cons-stream 0)", 1, 7, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(define (true) 0)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(define (false) 0)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(define (quote) 0)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
@@ -274,6 +293,8 @@ namespace RainLispTests
         [InlineData("(define (and) 0)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(define (or) 0)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
         [InlineData("(define (let) 0)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(define (delay) 0)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
+        [InlineData("(define (cons-stream) 0)", 1, 10, ParsingError.MissingSymbol, TokenType.Identifier)]
         public void Parse_InvalidExpression_Throws(string expression, uint expectedLine, uint expectedPosition, ParsingError expectedError, TokenType? expectedMissingToken = null)
         {
             // Arrange

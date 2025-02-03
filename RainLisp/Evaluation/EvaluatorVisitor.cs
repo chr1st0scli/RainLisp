@@ -193,6 +193,21 @@ namespace RainLisp.Evaluation
         }
 
         /// <summary>
+        /// Returns the result of evaluating a delay.
+        /// </summary>
+        /// <param name="delay">The delay to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
+        public EvaluationResult EvaluateDelay(Delay delay, IEvaluationEnvironment environment)
+        {
+            // An expression is delayed by simply putting it in a procedure body that will be called later.
+            var body = new Body(null, new List<Expression> { delay.Delayed });
+
+            // A memoized user procedure caches the result of its first evaluation.
+            return new MemoizedUserProcedure(null, body, environment);
+        }
+
+        /// <summary>
         /// Returns the result of evaluating a program. The evaluation occurs lazily on a per request basis, while the return value is being enumerated.
         /// </summary>
         /// <param name="program">The program to evaluate.</param>

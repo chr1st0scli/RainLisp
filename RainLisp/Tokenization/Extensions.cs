@@ -30,6 +30,8 @@ namespace RainLisp.Tokenization
                 TokenType.Let => Keywords.LET,
                 TokenType.And => Keywords.AND,
                 TokenType.Or => Keywords.OR,
+                TokenType.Delay => Keywords.DELAY,
+                TokenType.ConsStream => Keywords.CONS_STREAM,
                 _ => tokenType.ToString(),
             };
         }
@@ -56,6 +58,8 @@ namespace RainLisp.Tokenization
                 Keywords.LET => TokenType.Let,
                 Keywords.AND => TokenType.And,
                 Keywords.OR => TokenType.Or,
+                Keywords.DELAY => TokenType.Delay,
+                Keywords.CONS_STREAM => TokenType.ConsStream,
                 _ => TokenType.Identifier
             };
         }

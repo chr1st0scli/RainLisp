@@ -157,6 +157,27 @@ namespace RainLispTests
                         Expect(RParen, ")", 17),
                         Expect(EOF, "", 18)
                     }
+                },
+                {
+                    "(delay ab)", new[]
+                    {
+                        Expect(LParen, "(", 1),
+                        Expect(Delay, "delay", 2),
+                        Expect(Identifier, "ab", 8),
+                        Expect(RParen, ")", 10),
+                        Expect(EOF, "", 11)
+                    }
+                },
+                {
+                    "(cons-stream ab 15.32)", new[]
+                    {
+                        Expect(LParen, "(", 1),
+                        Expect(ConsStream, "cons-stream", 2),
+                        Expect(Identifier, "ab", 14),
+                        Expect(Number, "15.32", 17, numberValue: 15.32),
+                        Expect(RParen, ")", 22),
+                        Expect(EOF, "", 23)
+                    }
                 }
             };
 

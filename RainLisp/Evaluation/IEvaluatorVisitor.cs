@@ -111,6 +111,14 @@ namespace RainLisp.Evaluation
         EvaluationResult EvaluateBody(Body body, IEvaluationEnvironment environment);
 
         /// <summary>
+        /// Returns the result of evaluating a delay.
+        /// </summary>
+        /// <param name="delay">The delay to evaluate.</param>
+        /// <param name="environment">The environment which the evaluation occurs in.</param>
+        /// <returns>The result of the evaluation.</returns>
+        EvaluationResult EvaluateDelay(Delay delay, IEvaluationEnvironment environment);
+
+        /// <summary>
         /// Returns the result of evaluating a program. The evaluation occurs lazily on a per request basis, while the return value is being enumerated.
         /// </summary>
         /// <param name="program">The program to evaluate.</param>
