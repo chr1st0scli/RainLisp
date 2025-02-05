@@ -1499,6 +1499,11 @@ b";
         [InlineData("(cadr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 11d)]
         [InlineData("(caddr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 2d)]
         [InlineData("(cadddr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 12d)]
+        [InlineData("(car (make-range-stream 1 5))", 1d)]
+        [InlineData("(car (cdr-stream (make-range-stream 1 5)))", 2d)]
+        [InlineData("(car (cdr-stream (cdr-stream (make-range-stream 1 5))))", 3d)]
+        [InlineData("(car (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5)))))", 4d)]
+        [InlineData("(car (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5))))))", 5d)]
         public void Evaluate_LibraryFunctions_Correctly(string expression, double expectedResult)
         {
             // Arrange
@@ -1725,6 +1730,41 @@ x")]
             Assert.Equal(1, first!.Value);
             Assert.Equal(1, second!.Body.Expressions.Count);
             Assert.True(second!.Body.Expressions[0] is Application { Operator: Identifier { Name: "make-range-stream" } });
+        }
+
+        [Theory]
+        [InlineData("(make-range-stream 1 5)", 1)]
+        [InlineData("(car (make-range-stream 1 5))", 1)]
+        [InlineData("(cdr (make-range-stream 1 5))", 1)]
+        [InlineData("(cdr-stream (make-range-stream 1 5))", 2)]
+        [InlineData("(car (cdr-stream (make-range-stream 1 5)))", 2)]
+        [InlineData("(cdr-stream (cdr-stream (make-range-stream 1 5)))", 3)]
+        [InlineData("(car (cdr-stream (cdr-stream (make-range-stream 1 5))))", 3)]
+        [InlineData("(cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5))))", 4)]
+        [InlineData("(cdr-stream (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5))))))", 6)]
+        public void Evaluate_MakeRangeStream_DeferredRecursion(string makeRangeStreamCall, int expectedXValue)
+        {
+            // Arrange
+            string code = @$"
+(define x 1)
+
+; Redefine library procedure to increment x as part of the deferred recursion step.
+(define (make-range-stream start end)
+  (if (> start end)
+      nil
+      (cons-stream start 
+                   (begin
+                     (set! x (+ x 1))
+                     (make-range-stream (+ start 1) end)))))
+
+{makeRangeStreamCall}
+x";
+
+            // Act
+            var result = _interpreter.Evaluate(code).Last() as NumberDatum;
+
+            // Assert
+            Assert.Equal(expectedXValue, result!.Value);
         }
     }
 }
