@@ -170,6 +170,9 @@ namespace RainLispTests
         [InlineData("(replace-string \"hello\" 1 \"world\")", typeof(NumberDatum), typeof(StringDatum))]
         [InlineData("(replace-string \"hello\" \"el\" +)", typeof(PrimitiveProcedure), typeof(StringDatum))]
         [InlineData("(replace-string \"hello\" \"el\" (lambda () 1))", typeof(UserProcedure), typeof(StringDatum))]
+        // Various
+        [InlineData("(length 1)", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(length (filter-stream (lambda(x) (> x 10)) (make-range-stream 1 50)))", typeof(MemoizedUserProcedure), typeof(Pair))]
         public void Evaluate_WrongTypeOfArgument_Throws(string expression, Type actual, Type expected)
         {
             // Arrange

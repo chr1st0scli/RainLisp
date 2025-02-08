@@ -59,6 +59,12 @@
       nil
       (cons-stream start (make-range-stream (+ start 1) end))))
 
+(define (filter-stream predicate sequence)
+  (cond ((null? sequence) nil)
+        ((predicate (car sequence))
+         (cons-stream (car sequence) (filter-stream predicate (cdr-stream sequence))))
+        (else (filter-stream predicate (cdr-stream sequence)))))
+
 ; car and cdr flavors.
 ; 2 levels.
 (define (cddr sequence)

@@ -2,7 +2,6 @@
 using RainLisp.AbstractSyntaxTree;
 using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
-using System.Linq.Expressions;
 using System.Text;
 
 namespace RainLispTests
@@ -1504,6 +1503,13 @@ b";
         [InlineData("(car (cdr-stream (cdr-stream (make-range-stream 1 5))))", 3d)]
         [InlineData("(car (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5)))))", 4d)]
         [InlineData("(car (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5))))))", 5d)]
+        [InlineData("(car (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5000000))))))", 5d)]
+        [InlineData("(car (filter-stream (lambda(x) (= (% x 2) 0)) (make-range-stream 1 5000000)))", 2d)]
+        [InlineData("(car (cdr-stream (filter-stream (lambda(x) (= (% x 2) 0)) (make-range-stream 1 5000000))))", 4d)]
+        [InlineData("(car (cdr-stream (cdr-stream (filter-stream (lambda(x) (= (% x 2) 0)) (make-range-stream 1 5000000)))))", 6d)]
+        [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 3 4 5)))", 0d)]
+        [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 12 3 4 21 5)))", 2d)]
+        [InlineData("(length (filter-stream (lambda(x) (> x 10)) (make-range-stream 1 5)))", 0d)]
         public void Evaluate_LibraryFunctions_Correctly(string expression, double expectedResult)
         {
             // Arrange
@@ -1742,6 +1748,7 @@ x")]
         [InlineData("(car (cdr-stream (cdr-stream (make-range-stream 1 5))))", 3)]
         [InlineData("(cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5))))", 4)]
         [InlineData("(cdr-stream (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5))))))", 6)]
+        [InlineData("(cdr-stream (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5000000))))))", 6)]
         public void Evaluate_MakeRangeStream_DeferredRecursion(string makeRangeStreamCall, int expectedXValue)
         {
             // Arrange
