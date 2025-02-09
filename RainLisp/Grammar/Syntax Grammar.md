@@ -33,7 +33,7 @@ body = definition* expression+
 
 ## Expression
 An expression can be a number, string or boolean literal, an identifier (e.g. variable name)
-or one of the special forms `'`, `quote`, `set!`, `if`, `begin`, `lambda`, or one of the derived expressions `cond`, `let`, `and`, `or`.
+or one of the special forms `'`, `quote`, `set!`, `if`, `begin`, `lambda`, `delay`, or one of the derived expressions `cond`, `let`, `and`, `or`, `cons-stream`.
 If it is none of the above, then it is a function application/call.
 The first expression of the function application gives the function to be applied
 and the zero or more expressions that follow, give the arguments the function is applied to.
@@ -49,6 +49,8 @@ expression = NUM | STRING | BOOL | ID
 		| "(" "let" "(" let_clause+ ")" body ")"
 		| "(" "and" expression+ ")"
 		| "(" "or" expression+ ")"
+		| "(" "delay" expression ")"
+		| "(" "cons-stream" expression expression ")"
 		| "(" expression expression* ")"
 ```
 
@@ -65,9 +67,9 @@ let_clause = "(" ID expression ")"
 ```
 
 ## Quotable
-A quotable can be a number, string or boolean literal, an identifier (e.g. variable name), a keyword (quote, set!, define, if, cond, else, begin, lambda, let, and, or) or a list of zero or more quotables.
+A quotable can be a number, string or boolean literal, an identifier (e.g. variable name), a keyword (quote, set!, define, if, cond, else, begin, lambda, let, and, or, delay, cons-stream) or a list of zero or more quotables.
 ```
 quotable = NUM | STRING | BOOL | ID
-		| "quote" | "set!" | "define" | "if" | "cond" | "else" | "begin" | "lambda" | "let" | "and" | "or"
+		| "quote" | "set!" | "define" | "if" | "cond" | "else" | "begin" | "lambda" | "let" | "and" | "or" | "delay" | "cons-stream"
 		| "'" quotable | "(" quotable* ")"
 ```
