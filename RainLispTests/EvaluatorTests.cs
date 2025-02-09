@@ -1494,6 +1494,8 @@ b";
         [InlineData("(length (list 1 2 3))", 3d)]
         [InlineData("(length (cons 1 (cons 2 nil)))", 2d)]
         [InlineData("(length (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 4d)]
+        [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 3 4 5)))", 0d)]
+        [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 12 3 4 21 5)))", 2d)]
         [InlineData("(car (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 1d)]
         [InlineData("(cadr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 11d)]
         [InlineData("(caddr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 2d)]
@@ -1507,9 +1509,24 @@ b";
         [InlineData("(car (filter-stream (lambda(x) (= (% x 2) 0)) (make-range-stream 1 5000000)))", 2d)]
         [InlineData("(car (cdr-stream (filter-stream (lambda(x) (= (% x 2) 0)) (make-range-stream 1 5000000))))", 4d)]
         [InlineData("(car (cdr-stream (cdr-stream (filter-stream (lambda(x) (= (% x 2) 0)) (make-range-stream 1 5000000)))))", 6d)]
-        [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 3 4 5)))", 0d)]
-        [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 12 3 4 21 5)))", 2d)]
         [InlineData("(length (filter-stream (lambda(x) (> x 10)) (make-range-stream 1 5)))", 0d)]
+        [InlineData("(length (filter-stream (lambda(x) (> x 20)) (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 5))))", 0d)]
+        [InlineData("(car (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 5000000)))", 11d)]
+        [InlineData("(car (cdr-stream (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 5000000))))", 12d)]
+        [InlineData("(car (cdr-stream (cdr-stream (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 5000000)))))", 13d)]
+        [InlineData(@"
+(car 
+    (cdr-stream 
+        (filter-stream (lambda(x) (= (% x 2) 0)) 
+                       (map-stream (lambda(x) (+ x 10)) 
+                                   (make-range-stream 1 5000000)))))", 14d)]
+        [InlineData(@"
+(car 
+    (cdr-stream
+        (cdr-stream 
+            (filter-stream (lambda(x) (= (% x 2) 0)) 
+                           (map-stream (lambda(x) (+ x 10)) 
+                                       (make-range-stream 1 5000000))))))", 16d)]
         public void Evaluate_LibraryFunctions_Correctly(string expression, double expectedResult)
         {
             // Arrange
