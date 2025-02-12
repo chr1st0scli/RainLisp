@@ -1,11 +1,11 @@
 # cons-stream
-A derived expression for declaring a pair of an immediately evaluated expression and a delayed one.
+A derived expression for constructing a stream, i.e. a pair of an immediately evaluated expression and a delayed one.
 ```
 (cons-stream expression expression)
 ```
 
 The first expression is evaluated immediately and the second one is delayed. The result of the `cons-stream` expression
-is a pair made of the value of the first expression and a procedure which evaluates the second one when called.
+is a pair made of the value of the first expression and a procedure which evaluates the second one when called, i.e. a promise.
 
 ## Examples
 ```scheme

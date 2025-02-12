@@ -1,4 +1,7 @@
 # Common Libraries
+
+Common libraries are procedures that are defined in the language itself.
+
 ## List Operations
 - [append](common-libraries/append.md)
 - [filter](common-libraries/filter.md)
@@ -9,6 +12,13 @@
 - [map](common-libraries/map.md)
 - [reduce](common-libraries/reduce.md)
 - [reverse](common-libraries/reverse.md)
+
+## Stream Operations
+- [cdr-stream](common-libraries/cdr-stream.md)
+- [filter-stream](common-libraries/filter-stream.md)
+- [force](common-libraries/force.md)
+- [make-range-stream](common-libraries/make-range-stream.md)
+- [map-stream](common-libraries/map-stream.md)
 
 ## car & cdr Flavors
 - [cddr](common-libraries/cddr.md)
