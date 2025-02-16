@@ -2,7 +2,6 @@
 using RainLisp.AbstractSyntaxTree;
 using RainLisp.Evaluation;
 using RainLisp.Evaluation.Results;
-using System.Linq.Expressions;
 using System.Text;
 
 namespace RainLispTests
@@ -1495,10 +1494,39 @@ b";
         [InlineData("(length (list 1 2 3))", 3d)]
         [InlineData("(length (cons 1 (cons 2 nil)))", 2d)]
         [InlineData("(length (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 4d)]
+        [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 3 4 5)))", 0d)]
+        [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 12 3 4 21 5)))", 2d)]
         [InlineData("(car (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 1d)]
         [InlineData("(cadr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 11d)]
         [InlineData("(caddr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 2d)]
         [InlineData("(cadddr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 12d)]
+        [InlineData("(car (make-range-stream 1 5))", 1d)]
+        [InlineData("(car (cdr-stream (make-range-stream 1 5)))", 2d)]
+        [InlineData("(car (cdr-stream (cdr-stream (make-range-stream 1 5))))", 3d)]
+        [InlineData("(car (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5)))))", 4d)]
+        [InlineData("(car (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5))))))", 5d)]
+        [InlineData("(car (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5000000))))))", 5d)]
+        [InlineData("(car (filter-stream (lambda(x) (= (% x 2) 0)) (make-range-stream 1 5000000)))", 2d)]
+        [InlineData("(car (cdr-stream (filter-stream (lambda(x) (= (% x 2) 0)) (make-range-stream 1 5000000))))", 4d)]
+        [InlineData("(car (cdr-stream (cdr-stream (filter-stream (lambda(x) (= (% x 2) 0)) (make-range-stream 1 5000000)))))", 6d)]
+        [InlineData("(length (filter-stream (lambda(x) (> x 10)) (make-range-stream 1 5)))", 0d)]
+        [InlineData("(length (filter-stream (lambda(x) (> x 20)) (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 5))))", 0d)]
+        [InlineData("(car (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 5000000)))", 11d)]
+        [InlineData("(car (cdr-stream (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 5000000))))", 12d)]
+        [InlineData("(car (cdr-stream (cdr-stream (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 5000000)))))", 13d)]
+        [InlineData(@"
+(car 
+    (cdr-stream 
+        (filter-stream (lambda(x) (= (% x 2) 0)) 
+                       (map-stream (lambda(x) (+ x 10)) 
+                                   (make-range-stream 1 5000000)))))", 14d)]
+        [InlineData(@"
+(car 
+    (cdr-stream
+        (cdr-stream 
+            (filter-stream (lambda(x) (= (% x 2) 0)) 
+                           (map-stream (lambda(x) (+ x 10)) 
+                                       (make-range-stream 1 5000000))))))", 16d)]
         public void Evaluate_LibraryFunctions_Correctly(string expression, double expectedResult)
         {
             // Arrange
@@ -1575,6 +1603,192 @@ b";
 
             // Assert
             Assert.Equal(NUMBER, result.Value);
+        }
+
+        [Theory]
+        [InlineData("(delay 1)", 1)]
+        [InlineData("(cdr (cons-stream 1 2))", 2)]
+        public void Evaluate_DelayedExpression_ReturnsLambda(string expression, double expectedDelayed)
+        {
+            // Arrange
+            // Act
+            var result = _interpreter.Evaluate(expression).Last() as MemoizedUserProcedure;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(1, result!.Body.Expressions.Count);
+            Assert.Equal(expectedDelayed, ((NumberLiteral)result!.Body.Expressions[0]).Value);
+        }
+
+        [Theory]
+        [InlineData("(force (delay 1))", 1)]
+        [InlineData("(force (cdr (cons-stream 1 2)))", 2)]
+        [InlineData("(cdr-stream (cons-stream 1 3))", 3)]
+        public void Evaluate_ForcedDelayedExpression_ReturnsNumberDatum(string expression, double expected)
+        {
+            // Arrange
+            // Act
+            var result = (NumberDatum)_interpreter.Evaluate(expression).Last();
+
+            // Assert
+            Assert.Equal(expected, result.Value);
+        }
+
+        [Theory]
+        [InlineData(@"
+(define x 1)
+
+(define (foo)
+    (set! x (+ x 1))
+    (set! x (+ x 1)))
+x
+(foo)
+x
+(foo)
+x")]
+        [InlineData(@"
+(define x 1)
+
+(define (foo)
+    (set! x (+ x 1))
+    (set! x (+ x 1)))
+x
+(force (delay (foo)))
+x
+(force (delay (foo)))
+x")]
+        public void Evaluate_ExpressionTwice_EvaluatesTwice(string code)
+        {
+            // Arrange
+            // Act
+            var results = _interpreter.Evaluate(code).ToList();
+
+            // Assert
+            Assert.True(results[2] is NumberDatum { Value: 1 });
+            Assert.True(results[4] is NumberDatum { Value: 3 });
+            Assert.True(results[6] is NumberDatum { Value: 5 });
+        }
+
+        [Theory]
+        [InlineData(@"
+(define x 1)
+
+(define (foo)
+    (set! x (+ x 1))
+    (set! x (+ x 1)))
+
+(define delayed (delay (foo)))
+x
+(force delayed)
+x
+(force delayed)
+x")]
+        [InlineData(@"
+(define x 1)
+x
+(define delayed
+  (delay
+    (begin
+        (set! x (+ x 1))
+        (set! x (+ x 1)))))
+x
+(force delayed)
+x
+(force delayed)
+x")]
+        [InlineData(@"
+(define x 1)
+
+(define (foo)
+    (set! x (+ x 1))
+    (set! x (+ x 1)))
+
+(define delayedPair (cons-stream x (foo)))
+x
+(cdr-stream delayedPair)
+x
+(cdr-stream delayedPair)
+x")]
+        public void Evaluate_ForcedMemoizedProcedureTwice_EvaluatesOnce(string code)
+        {
+            // Arrange
+            // Act
+            var results = _interpreter.Evaluate(code).ToList();
+
+            // Assert
+            Assert.True(results[3] is NumberDatum { Value: 1 });
+            Assert.True(results[5] is NumberDatum { Value: 3 });
+            Assert.True(results[7] is NumberDatum { Value: 3 });
+        }
+
+        [Fact]
+        public void Evaluate_ConsStream_PairOfEvaluatedAndDelayedExpressions()
+        {
+            // Arrange
+            const string CODE = "(cons-stream 0 7)";
+
+            // Act
+            var result = _interpreter.Evaluate(CODE).First() as Pair;
+            var first = result!.First as NumberDatum;
+            var second = result!.Second as MemoizedUserProcedure;
+
+            // Assert
+            Assert.Equal(0, first!.Value);
+            Assert.Equal(1, second!.Body.Expressions.Count);
+            Assert.True(second!.Body.Expressions[0] is NumberLiteral { Value: 7 });
+        }
+
+        [Fact]
+        public void Evaluate_MakeRangeStream_PairOfEvaluatedAndDelayedExpressions()
+        {
+            // Arrange
+            const string CODE = "(make-range-stream 1 5)";
+
+            // Act
+            var result = _interpreter.Evaluate(CODE).First() as Pair;
+            var first = result!.First as NumberDatum;
+            var second = result!.Second as MemoizedUserProcedure;
+
+            // Assert
+            Assert.Equal(1, first!.Value);
+            Assert.Equal(1, second!.Body.Expressions.Count);
+            Assert.True(second!.Body.Expressions[0] is Application { Operator: Identifier { Name: "make-range-stream" } });
+        }
+
+        [Theory]
+        [InlineData("(make-range-stream 1 5)", 1)]
+        [InlineData("(car (make-range-stream 1 5))", 1)]
+        [InlineData("(cdr (make-range-stream 1 5))", 1)]
+        [InlineData("(cdr-stream (make-range-stream 1 5))", 2)]
+        [InlineData("(car (cdr-stream (make-range-stream 1 5)))", 2)]
+        [InlineData("(cdr-stream (cdr-stream (make-range-stream 1 5)))", 3)]
+        [InlineData("(car (cdr-stream (cdr-stream (make-range-stream 1 5))))", 3)]
+        [InlineData("(cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5))))", 4)]
+        [InlineData("(cdr-stream (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5))))))", 6)]
+        [InlineData("(cdr-stream (cdr-stream (cdr-stream (cdr-stream (cdr-stream (make-range-stream 1 5000000))))))", 6)]
+        public void Evaluate_MakeRangeStream_DeferredRecursion(string makeRangeStreamCall, int expectedXValue)
+        {
+            // Arrange
+            string code = @$"
+(define x 1)
+
+; Redefine library procedure to increment x as part of the deferred recursion step.
+(define (make-range-stream start end)
+  (if (> start end)
+      nil
+      (cons-stream start 
+                   (begin
+                     (set! x (+ x 1))
+                     (make-range-stream (+ start 1) end)))))
+
+{makeRangeStreamCall}
+x";
+
+            // Act
+            var result = _interpreter.Evaluate(code).Last() as NumberDatum;
+
+            // Assert
+            Assert.Equal(expectedXValue, result!.Value);
         }
     }
 }

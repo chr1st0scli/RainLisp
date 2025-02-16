@@ -78,6 +78,14 @@
         /// </summary>
         Or,
         /// <summary>
+        /// The token is the delay keyword.
+        /// </summary>
+        Delay,
+        /// <summary>
+        /// The token is the cons-stream keyword.
+        /// </summary>
+        ConsStream,
+        /// <summary>
         /// The token represents the end of file.
         /// </summary>
         EOF

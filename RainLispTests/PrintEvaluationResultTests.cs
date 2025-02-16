@@ -76,6 +76,7 @@ namespace RainLispTests
         [InlineData("(define (foo x y) true) foo", "[UserProcedure] Parameters: x, y")]
         [InlineData("(define (foo ab cd ef) true) foo", "[UserProcedure] Parameters: ab, cd, ef")]
         [InlineData("(lambda (ab cd ef) true)", "[UserProcedure] Parameters: ab, cd, ef")]
+        [InlineData("(delay true)", "[UserProcedure] Parameters: 0")]
         public void Evaluate_ExpressionGivingUserProcedure_PrintsCorrectly(string expression, string expectedResult)
         {
             // Arrange
@@ -84,7 +85,7 @@ namespace RainLispTests
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
-            Assert.IsType<UserProcedure>(result);
+            Assert.True(result is UserProcedure);
             Assert.Equal(expectedResult, printedResult);
         }
 

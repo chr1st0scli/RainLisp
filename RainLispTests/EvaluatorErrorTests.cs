@@ -25,6 +25,7 @@ namespace RainLispTests
         [InlineData("a", typeof(UnknownIdentifierException))]
         [InlineData("(set! a 2)", typeof(UnknownIdentifierException))]
         [InlineData("(1)", typeof(NotProcedureException))]
+        [InlineData("(force true)", typeof(NotProcedureException))]
         [InlineData("(error 1)", typeof(UserException))]
         [InlineData("(round 2.5 -1)", typeof(InvalidValueException))]
         public void EvaluateAndPrint_WrongExpression_ReportsError(string expression, Type expectedExceptionType)
@@ -170,6 +171,10 @@ namespace RainLispTests
         [InlineData("(replace-string \"hello\" 1 \"world\")", typeof(NumberDatum), typeof(StringDatum))]
         [InlineData("(replace-string \"hello\" \"el\" +)", typeof(PrimitiveProcedure), typeof(StringDatum))]
         [InlineData("(replace-string \"hello\" \"el\" (lambda () 1))", typeof(UserProcedure), typeof(StringDatum))]
+        // Various
+        [InlineData("(length 1)", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(length (filter-stream (lambda(x) (> x 10)) (make-range-stream 1 50)))", typeof(MemoizedUserProcedure), typeof(Pair))]
+        [InlineData("(length (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 50)))", typeof(MemoizedUserProcedure), typeof(Pair))]
         public void Evaluate_WrongTypeOfArgument_Throws(string expression, Type actual, Type expected)
         {
             // Arrange
@@ -536,6 +541,7 @@ namespace RainLispTests
         [InlineData("((cons 1 2) 1)")]
         [InlineData("((newline))")]
         [InlineData("((newline) 1)")]
+        [InlineData("(force 1)")]
         public void Evaluate_ExpressionCallingNonProcedure_Throws(string expression)
         {
             Evaluate_WrongExpression_Throws<NotProcedureException>(expression);

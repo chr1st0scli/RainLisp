@@ -1,4 +1,7 @@
 # Primitives
+
+Primitives are procedures or semantics that require some kind of support from the underlying platform.
+
 - [+](primitives/plus.md)
 - [-](primitives/minus.md)
 - [*](primitives/multiply.md)

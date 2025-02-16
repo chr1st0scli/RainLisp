@@ -50,5 +50,5 @@ A comment starts with a semicolon character, as long as it is not inside a strin
 ## Special Forms/Derived Expressions
 Special forms and derived expressions are words with special meaning in the language that cannot be changed by the user.
 ```
-true|false|quote|set!|define|if|cond|else|begin|lambda|and|or|let
+true|false|quote|set!|define|if|cond|else|begin|lambda|and|or|let|delay|cons-stream
 ```

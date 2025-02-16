@@ -1,0 +1,24 @@
+{
+  "DefinitionsAndExpressions": [
+    {
+      "Operator": {
+        "Name": "cons",
+        "TypeName": "Identifier"
+      },
+      "Operands": [
+        {
+          "Value": 1.0,
+          "TypeName": "NumberLiteral"
+        },
+        {
+          "Delayed": {
+            "Value": 2.0,
+            "TypeName": "NumberLiteral"
+          },
+          "TypeName": "Delay"
+        }
+      ],
+      "TypeName": "Application"
+    }
+  ]
+}
