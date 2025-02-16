@@ -16,6 +16,23 @@ Semantic versioning is followed.
 
 ### Removed
 
+## [1.4.0] - 2025-02-16
+
+### Added
+- `delay` special form for supporting delayed expressions.
+- `force` library procedure to force the evaluation of a delayed expression.
+- `cons-stream` derived expression for creating infinite streams.
+- `cdr-stream` library procedure to enable walking through a stream.
+- `make-range-stream` library procedure to make a numerical range stream.
+- `map-stream` library procedure that projects elements of a stream.
+- `filter-stream` library procedure that filters elements of a stream.
+
+### Fixed
+
+### Changed
+
+### Removed
+
 ## [1.3.0] - 2024-06-30
 
 ### Added
