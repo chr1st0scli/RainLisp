@@ -1496,6 +1496,21 @@ b";
         [InlineData("(length (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 4d)]
         [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 3 4 5)))", 0d)]
         [InlineData("(length (filter (lambda(x) (> x 10)) (list 1 2 12 3 4 21 5)))", 2d)]
+        [InlineData("(at-list (cons 1 2) 0)", 1d)]
+        [InlineData("(at-list (cons 1 (cons 2 nil)) 1)", 2d)]
+        [InlineData("(at-list (list 1 2 3 4) -1)", 1d)]
+        [InlineData("(at-list (list 1 2 3 4) 0)", 1d)]
+        [InlineData("(at-list (list 1 2 3 4) 1)", 2d)]
+        [InlineData("(at-list (list 1 2 3 4) 2)", 3d)]
+        [InlineData("(at-list (list 1 2 3 4) 3)", 4d)]
+        [InlineData("(at-stream (cons-stream 1 (cons-stream 2 nil)) -1)", 1d)]
+        [InlineData("(at-stream (cons-stream 1 (cons-stream 2 nil)) 0)", 1d)]
+        [InlineData("(at-stream (cons-stream 1 (cons-stream 2 nil)) 1)", 2d)]
+        [InlineData("(at-stream (make-range-stream 1 4) -1)", 1d)]
+        [InlineData("(at-stream (make-range-stream 1 4) 0)", 1d)]
+        [InlineData("(at-stream (make-range-stream 1 4) 1)", 2d)]
+        [InlineData("(at-stream (make-range-stream 1 4) 2)", 3d)]
+        [InlineData("(at-stream (make-range-stream 1 4) 3)", 4d)]
         [InlineData("(car (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 1d)]
         [InlineData("(cadr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 11d)]
         [InlineData("(caddr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 2d)]
@@ -1789,6 +1804,32 @@ x";
 
             // Assert
             Assert.Equal(expectedXValue, result!.Value);
+        }
+
+        [Theory]
+        [InlineData("(at-stream two-powers 0)", 1d)]
+        [InlineData("(at-stream two-powers 1)", 2d)]
+        [InlineData("(at-stream two-powers 2)", 4d)]
+        [InlineData("(at-stream two-powers 3)", 8d)]
+        [InlineData("(at-stream two-powers 4)", 16d)]
+        [InlineData("(car (cdr-stream (cdr-stream (cdr-stream (cdr-stream two-powers)))))", 16d)]
+        public void Evaluate_PowersOfTwo_AsImplicitStream(string expression, double expectedResult)
+        {
+            // Arrange
+            string code = @$"
+(define two-powers
+    (cons-stream 1
+                (map-stream (lambda (x) (* x 2)) 
+                            two-powers)))
+
+{expression}
+";
+
+            // Act
+            var result = _interpreter.Evaluate(code).Last() as NumberDatum;
+
+            // Arrange
+            Assert.Equal(expectedResult, result!.Value);
         }
     }
 }

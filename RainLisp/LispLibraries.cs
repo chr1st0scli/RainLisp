@@ -47,6 +47,11 @@
 (define (length sequence)
   (fold-left (lambda (count n) (+ count 1)) 0 sequence))
 
+(define (at-list items index)
+    (if (<= index 0)
+        (car items)
+        (at-list (cdr items) (- index 1))))
+
 ; Stream related procedures.
 (define (force proc)
   (proc))
@@ -69,6 +74,11 @@
         ((predicate (car stream))
          (cons-stream (car stream) (filter-stream predicate (cdr-stream stream))))
         (else (filter-stream predicate (cdr-stream stream)))))
+
+(define (at-stream stream index)
+    (if (<= index 0)
+        (car stream)
+        (at-stream (cdr-stream stream) (- index 1))))
 
 ; car and cdr flavors.
 ; 2 levels.
