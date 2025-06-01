@@ -1511,6 +1511,7 @@ b";
         [InlineData("(at-stream (make-range-stream 1 4) 1)", 2d)]
         [InlineData("(at-stream (make-range-stream 1 4) 2)", 3d)]
         [InlineData("(at-stream (make-range-stream 1 4) 3)", 4d)]
+        [InlineData("(at-stream (make-range-stream 1 5000) 3)", 4d)]
         [InlineData("(car (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 1d)]
         [InlineData("(cadr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 11d)]
         [InlineData("(caddr (flatmap (lambda(x) (list x (+ x 10))) (list 1 2)))", 2d)]
