@@ -666,6 +666,38 @@ namespace RainLispTests
             Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
+        [Theory]
+        [InlineData("(at-stream fibs 1)", 1d)]
+        [InlineData("(at-stream fibs 2)", 1d)]
+        [InlineData("(at-stream fibs 3)", 2d)]
+        [InlineData("(at-stream fibs 4)", 3d)]
+        [InlineData("(at-stream fibs 5)", 5d)]
+        [InlineData("(at-stream fibs 6)", 8d)]
+        [InlineData("(at-stream fibs 7)", 13)]
+        [InlineData("(at-stream fibs 8)", 21d)]
+        [InlineData("(at-stream fibs 9)", 34d)]
+        [InlineData("(at-stream fibs 10)", 55d)]
+        [InlineData("(at-stream fibs 11)", 89d)]
+        [InlineData("(at-stream fibs 12)", 144d)]
+        [InlineData("(at-stream fibs 20)", 6765d)]
+        public void Evaluate_FibonacciAsStream(string call, double expectedResult)
+        {
+            // Arrange
+            string expression = $@"
+(define (fib-gen a b)
+    (cons-stream a (fib-gen b (+ a b))))
+
+(define fibs (fib-gen 0 1))
+
+{call}";
+
+            // Act
+            var result = _interpreter.Evaluate(expression).Last();
+
+            // Assert
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
+        }
+
         [Fact]
         public void Evaluate_MessagePassingStyle_Correctly()
         {
@@ -954,6 +986,50 @@ My pet's name is August. It's a dog, 16 years of age, it says ""woof"" and likes
 
             // Assert
             Assert.Equal(expectedStdOut.Replace("\r", "").Replace("\n", ""), sb.ToString().Replace("\r", "").Replace("\n", ""));
+        }
+
+        [Theory]
+        [InlineData("(at-stream primes 0)", 2d)]
+        [InlineData("(at-stream primes 1)", 3d)]
+        [InlineData("(at-stream primes 2)", 5d)]
+        [InlineData("(at-stream primes 3)", 7d)]
+        [InlineData("(at-stream primes 4)", 11d)]
+        [InlineData("(at-stream primes 5)", 13d)]
+        [InlineData("(at-stream primes 50)", 233d)]
+        public void Evaluate_PrimesWithEratosthenesSieveStream_Correctly(string call, double expectedResult)
+        {
+            // Arrange
+            string expression = $@"
+(define (integers-starting-from n)
+    (cons-stream n (integers-starting-from (+ n 1))))
+
+(define integers (integers-starting-from 1))
+
+(define (divisible? x y)
+    (= 0 (% x y)))
+
+; Eratosthenes
+(define (sieve stream)
+    (cons-stream
+        ; A prime number.
+        (car stream)
+        ; And a promise to sieve the next integers that are not divisable by the current prime number.
+        ; Note that the next delayed call to sieve will incorporate the same delayed filtering for consecutive calls.
+        ; It will result in a cascading style of excluding numbers that are divisable by the previously found prime numbers.
+        (sieve (filter-stream 
+                    (lambda (n)
+                        (not (divisible? n (car stream))))
+                    (cdr-stream stream)))))
+
+(define primes (sieve (integers-starting-from 2)))
+
+{call}";
+
+            // Act
+            var result = _interpreter.Evaluate(expression).Last();
+
+            // Assert
+            Assert.Equal(expectedResult, ((NumberDatum)result).Value);
         }
 
         [Fact]
