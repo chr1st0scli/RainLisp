@@ -1003,8 +1003,6 @@ My pet's name is August. It's a dog, 16 years of age, it says ""woof"" and likes
 (define (integers-starting-from n)
     (cons-stream n (integers-starting-from (+ n 1))))
 
-(define integers (integers-starting-from 1))
-
 (define (divisible? x y)
     (= 0 (% x y)))
 

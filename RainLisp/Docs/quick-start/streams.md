@@ -138,4 +138,71 @@ Needless to say, every next `a` is the previous `b` and every next `b` is the su
 So, we start with 0 and 1 and we effectively create as much as we require, i.e. we force 20 promises to be fulfilled to get the 21st number
 in the Fibonacci sequence which is 6765.
 
+## Mapping & Filtering
+As mentioned in the beginning of this section, we can combine the expressive elegance of map and filter operations with infinite sequences
+using the respective stream-friendly procedures `map-stream` and `filter-stream`. These map and filter on demand, as requested
+and they don't need the whole sequence to be built up front like their list equivalent cousins `map` and `filter`.
+
+Let's see an example of how we can find the 101st integer that is divisable with 7 using filtering.
+
+```scheme
+(define (integers-starting-from n)
+    (cons-stream n (integers-starting-from (+ n 1))))
+
+(define integers (integers-starting-from 1))
+
+(define (divisable? x y)
+    (= 0 (% x y)))
+
+(define integers-divisable-with-7
+    (filter-stream (lambda(n) (divisable? n 7))
+                   integers))
+
+(at-stream integers-divisable-with-7 100)
+```
+-> *707*
+
+We start by defining the integers stream as a procedure that builds consecutive delayed `cons-stream` calls. We also define the predicate that
+can support the desired condition `divisable?`.
+
+We then define the stream `integers-divisable-with-7` by calling `filter-stream` with the desired condition and the stream of integers.
+Note that `filter-stream` is used just like `filter` but with streams.
+
+Finally, we ask for the 101st number that satisfies the condition and get the result.
+
+If you see the code of [filter-stream](../common-libraries/filter-stream.md), you will notice that it returns the first element that satisifes
+a given condition and a promise to find the rest. This means that it keeps fulfilling promises, until it reaches the next element that satisfies the predicate.
+
+Similarly, [map-stream](../common-libraries/map-stream.md) returns the projection of the first element of a stream and a promise to project the
+rest of them as requested.
+
+### Sieve of Eratosthenes
+Let's see a more interesting problem. Let's find the 51st prime number with the sieve of Eratosthenes.
+
+```scheme
+(define (integers-starting-from n)
+    (cons-stream n (integers-starting-from (+ n 1))))
+
+(define (divisible? x y)
+    (= 0 (% x y)))
+
+; Eratosthenes
+(define (sieve stream)
+    (cons-stream
+        ; A prime number.
+        (car stream)
+        ; And a promise to sieve the next integers that are not divisable by the current prime number.
+        ; Note that the next delayed call to sieve will incorporate the same delayed filtering for consecutive calls.
+        ; It will result in a cascading style of excluding numbers that are divisable by the previously found prime numbers.
+        (sieve (filter-stream 
+                    (lambda (n)
+                        (not (divisible? n (car stream))))
+                    (cdr-stream stream)))))
+
+(define primes (sieve (integers-starting-from 2)))
+
+(at-stream primes 50)
+```
+-> *233*
+
 Next, we are catching our breath with something simpler, [message passing](message-passing.md).
