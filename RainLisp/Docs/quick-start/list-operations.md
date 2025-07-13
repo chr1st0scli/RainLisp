@@ -122,6 +122,7 @@ language itself and you can see and investigate their source code.
 The available list operations are:
 
 - [append](../common-libraries/append.md)
+- [at-list](../common-libraries/at-list.md)
 - [filter](../common-libraries/filter.md)
 - [flatmap](../common-libraries/flatmap.md)
 - [fold-left](../common-libraries/fold-left.md)
