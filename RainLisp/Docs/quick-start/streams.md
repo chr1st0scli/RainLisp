@@ -177,7 +177,8 @@ Similarly, [map-stream](../common-libraries/map-stream.md) returns the projectio
 rest of them as requested.
 
 ### Sieve of Eratosthenes
-Let's see a more interesting problem. Let's find the 51st prime number with the sieve of Eratosthenes.
+Let's see a more interesting filtering problem. Let's find the 51st prime number with the sieve of Eratosthenes. A prime number is one that is exactly
+divided, i.e. with no remainder, by itself and 1 alone.
 
 ```scheme
 (define (integers-starting-from n)
@@ -204,5 +205,68 @@ Let's see a more interesting problem. Let's find the 51st prime number with the 
 (at-stream primes 50)
 ```
 -> *233*
+
+The first prime number is 2, so we need to sieve the stream of integers starting from 2, i.e. 2, 3, 4, 5, 6, 7 and so on.
+
+At each step, to find the next prime, we examine the next number that is not divisible by all previously found prime numbers.
+
+- For the second one, we start from 3 and search for the first number that is not divisible by 2, which is 3.
+- For the third one, we start from 4 and search for the first number that is not divisible by 2 and 3, which is 5.
+- For the fourth one, we start from 6 and search for the first number that is not divisible by 2, 3 and 5, which is 7.
+- For the fifth one, we start from 8 and search for the first number that is not divisible by 2, 3, 5 and 7, which is 11 and so on.
+
+Note that the stream argument that is recursively fed to each sieve call is made in a way that contains consecutive filters that a prime
+needs to satisfy up to that point. For example the stream of the last step above, contains 
+1. The number 8 and a promise for the rest of the integers
+2. that is fed to `filter-stream` to find the next number not divisible by 2
+3. which is fed to `filter-stream` to find the next number not divisible by 3
+4. which is fed to `filter-stream` to find the next number not divisible by 5
+5. which is fed to `filter-stream` to find the next number not divisible by 7
+
+If you change the lambda that is used with `filter-stream` as below to print what is checked on each step, it might help
+you debug and understand the call stack described above.
+
+```scheme
+(lambda (n)
+    (if (>= n 8)
+        (begin
+            (display (+ "checking " (number-to-string n "0") " with " (number-to-string (car stream) "0")))
+            (newline)))
+    (not (divisible? n (car stream))))
+```
+
+Now, if you run the code below to get the fifth prime number, when we reach 8, the program will start printing what is checked.
+8 is discarded because it is divisable by 2, so we move on to 9 that is not divisable by 2 but it is by 3. So, we move on to 10
+that is discarded because it is divisable by 2, so we move to 11 which is checked that is not divisable by 2, 3, 5 and 7 in turn.
+
+```scheme
+(at-stream primes 4)
+```
+->
+```
+checking 8 with 2
+checking 9 with 2
+checking 9 with 3
+checking 10 with 2
+checking 11 with 2
+checking 11 with 3
+checking 11 with 5
+checking 11 with 7
+11
+```
+
+## Implicit Streams
+
+```scheme
+; Powers of two are 2^0, 2^1, 2^2, 2^3, 2^4... I.e. 1, 2, 4, 8, 16...
+(define two-powers
+    (cons-stream 1
+                (map-stream (lambda (x) (* x 2)) 
+                            two-powers)))
+
+(at-stream two-powers 4)
+```
+-> *16*
+
 
 Next, we are catching our breath with something simpler, [message passing](message-passing.md).
