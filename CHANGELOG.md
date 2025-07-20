@@ -23,6 +23,10 @@ Semantic versioning is followed.
 - `at-stream` library procedure that returns a stream item at a given position.
 - A tutorial section about streams.
 
+### Changed
+- Memoized user procedures involved in streams are printed to the standard
+output as such, instead of just user procedures.
+
 ## [1.4.0] - 2025-02-16
 
 ### Added

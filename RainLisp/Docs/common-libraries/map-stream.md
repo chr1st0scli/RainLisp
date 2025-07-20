@@ -19,7 +19,7 @@ Returns a new stream with the projection of the first element and a promise for 
   (lambda (n) (* n 10))
   (make-range-stream 1 5))
 ```
--> *(10 . [UserProcedure] Parameters: 0)*
+-> *(10 . [MemoizedUserProcedure] Parameters: 0)*
 
 ```scheme
 ; Create a stream of multiples of 10.

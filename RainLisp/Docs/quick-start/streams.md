@@ -57,7 +57,7 @@ Let's see an example.
 (define stream (cons-stream a b))
 stream
 ```
--> *(1 . [UserProcedure] Parameters: 0)*
+-> *(1 . [MemoizedUserProcedure] Parameters: 0)*
 
 By evaluating `stream`, we notice that it is just a pair of 1 and a delayed expression, i.e. a procedure
 that will evaluate `b` when called. Therefore, calling `car` on it gives 1.
@@ -82,7 +82,7 @@ we did with `cons` to make lists.
 (define stream (cons-stream 1 (cons-stream 2 (cons-stream 3 (cons-stream 4 nil)))))
 stream
 ```
--> *(1 . [UserProcedure] Parameters: 0)*
+-> *(1 . [MemoizedUserProcedure] Parameters: 0)*
 
 The stream in the above example is a pair made of `1` and a promise to give the rest of the stream.
 Note that the rest of the stream is not yet created. `2`, `3` and `4` are not evaluated yet.
@@ -91,14 +91,14 @@ When we ask for the first promise to be fulfilled, the result will be `2` and a 
 ```scheme
 (cdr-stream stream)
 ```
--> *(2 . [UserProcedure] Parameters: 0)*
+-> *(2 . [MemoizedUserProcedure] Parameters: 0)*
 
 When we ask for the second promise to be fulfilled, the result will be `3` along with a promise for the rest and so on.
 
 ```scheme
 (cdr-stream (cdr-stream stream))
 ```
--> *(3 . [UserProcedure] Parameters: 0)*
+-> *(3 . [MemoizedUserProcedure] Parameters: 0)*
 
 As said before, when we just want `3` we can use `car`, since streams are implemented with regular pairs.
 
@@ -291,7 +291,7 @@ So, we define that `two-powers` is a stream made of 1 and a promise to double th
 ```scheme
 two-powers
 ```
--> *(1 . [UserProcedure] Parameters: 0)*
+-> *(1 . [MemoizedUserProcedure] Parameters: 0)*
 
 When we force the promise, e.g. by applying the first `cdr-stream` to `two-powers`, the `map-stream` is executed which gives us 1 * 2 = 2
 and a promise to double the rest of `two-powers`.
@@ -299,7 +299,7 @@ and a promise to double the rest of `two-powers`.
 ```scheme
 (cdr-stream two-powers)
 ```
--> *(2 . [UserProcedure] Parameters: 0)*
+-> *(2 . [MemoizedUserProcedure] Parameters: 0)*
 
 But by looking at its definition above, the rest of `two-powers` is itself a promise to double the `two-powers`. That way, consecutive doublings
 are chained.
