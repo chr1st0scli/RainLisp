@@ -322,7 +322,7 @@ would be repeated many times. For example `(at-stream two-powers 3)` that gives 
 With memoization, each multiplication is performed only once because its result is cached. This is because,
 `two-streams` is made in a way that chains a promise to double the result of another promise to double another result and so on.
 At each step that we consume the stream with `at-stream`, the first part of the resulting pair, which is the result of the multiplication,
-is never carried on to the next step to contribute to the next one. Instead, the same procedure representing each step is carried on to be executed again
+is never carried on to contribute to the next one. Instead, the same procedure representing each step is carried on to be executed again
 for additional powers of two.
 
 It's like magic, isn't it? Try to rehearse this in your head but don't worry if you find it overwhelming. Often, in functional
