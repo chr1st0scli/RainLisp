@@ -1,7 +1,7 @@
 ﻿# Streams
 We have seen list operations like `map` and `filter` and their elegance in expressing operations on lists.
 But what if we want to operate on significantly large sets? Constructing a large list can be expensive both in
-terms of memory and CPU, let alone using `map` on it which will create yet another one with the element projections. 
+terms of memory and CPU, let alone using `map` on it, which will create yet another one with the elements' projections. 
 The amount of operations can be unbearable.
 
 What about infinite sets? What if we want to operate on all natural numbers, or all prime numbers? How do we even
@@ -13,7 +13,7 @@ up to the point that is absolutely needed and not fully created up front.
 Most programming languages have similar constructs dealing with this problem; C# uses iterator methods, Python uses generators
 and the list goes on. There are different ways a language can implement this, C# implements it with state machines behind
 the scenes. RainLisp, implements it with deferred procedures, i.e. procedures whose execution is postponed until explicitly
-asked for. You might have heard this concept as promises in other languages.
+asked for. You might have heard this concept as promises in other contexts.
 
 Let's dive in.
 
@@ -31,7 +31,7 @@ or call `force` on it to force its evaluation.
 (define delayed-a (delay a))
 
 (delayed-a)        ; Call it directly.
-(force delayed-a)  ; Use force.
+(force delayed-a)  ; Or use force.
 ```
 ->
 ```
@@ -115,7 +115,7 @@ Of course, it is preferable to use the procedure `at-stream` with the zero-based
 -> *3*
 
 Also, instead of defining the stream as we did above like `(define stream (cons-stream 1 (cons-stream 2 (cons-stream 3 (cons-stream 4 nil)))))`,
-we can simply use the procedure `make-range-stream` to easily create a numerical stream.
+we can simply use the procedure `make-range-stream` to easily create a numerical one.
 
 ```scheme
 (define stream (make-range-stream 1 4))
@@ -125,7 +125,7 @@ we can simply use the procedure `make-range-stream` to easily create a numerical
 
 ### Custom & Infinite Streams
 Now we can move to more interesting things. It's good to know we have `make-range-stream` to create a stream of consecutive numbers,
-but how would we create a custom infinite stream to operate on? The key is to create a procedure that calls `cons-stream` recursively.
+but how would we create a custom infinite one to operate on? The key is to create a procedure that calls `cons-stream` recursively.
 
 Let's create the Fibonacci sequence.
 
@@ -150,7 +150,7 @@ in the Fibonacci sequence, which is 6765.
 ## Mapping & Filtering
 As mentioned in the beginning of this section, we can combine the expressive elegance of map and filter operations with infinite sequences
 using the respective stream-friendly procedures `map-stream` and `filter-stream`. These map and filter on demand, as requested
-and they don't need the whole sequence to be built up front like their list equivalent cousins `map` and `filter`.
+and they don't need the whole sequence to be built up front like their list equivalent cousins `map` and `filter` do.
 
 Let's see an example of how we can find the 101st integer that is divisable with 7 using filtering.
 
@@ -245,8 +245,6 @@ you debug and understand the call stack described above.
 ```
 
 Now, if you run the code below to get the fifth prime number, when we reach 8, the program will start printing information.
-8 is discarded because it is divisable by 2, so we move on to 9 that is not divisable by 2, but it is by 3. So, we move on to 10
-that is discarded because it is divisable by 2 and move to 11 which is checked that is not divisable by 2, 3, 5 and 7 in turn.
 
 ```scheme
 (at-stream primes 4)
@@ -263,6 +261,10 @@ checking 11 with 5
 checking 11 with 7
 11
 ```
+
+We understand that 8 is discarded because it is divisable by 2, so we move on to 9 that is not divisable by 2, but it is by 3. So, we move on to 10
+that is discarded because it is divisable by 2 and move to 11 which satisfies the condition for 2, 3, 5 and 7 in turn. So, we have a match, 11 is
+indeed the 4th prime number.
 
 ## Implicit Streams
 We call implicit streams the ones that are defined in terms of their own merit and not with procedures that generate elements
@@ -313,20 +315,20 @@ Effectively, when we ask for the 3rd power of 2, we are asking for the fulfillme
 ```
 -> *8*
 
-Notice that the memoized user procedures that are related to promises shine with implicit streams. Without memoization, the same multiplications
+Notice that the memoized user procedures that relate to promises shine with implicit streams. Without memoization, the same multiplications
 would be repeated many times. For example `(at-stream two-powers 3)` that gives 8 would repeat 
-- 1 * 2, 3 times
-- 2 * 2, 2 times
+- 1 * 2, 3 times.
+- 2 * 2, 2 times.
 - 4 * 2, 1 time.
 
 With memoization, each multiplication is performed only once because its result is cached. This is because,
-`two-streams` is made in a way that chains a promise to double the result of another promise to double another result and so on.
+`two-streams` is made in a way that chains a promise to double the result of another promise that doubles another result and so on.
 At each step that we consume the stream with `at-stream`, the first part of the resulting pair, which is the result of the multiplication,
 is never carried on to contribute to the next one. Instead, the same procedure representing each step is carried on to be executed again
 for additional powers of two.
 
 It's like magic, isn't it? Try to rehearse this in your head but don't worry if you find it overwhelming. Often, in functional
-programming, people argue that you shouldn't need to explain every step, it's enough to see the overall picture and comprehend
+programming, people argue that you shouldn't need to backtrack every step, it's enough to see the overall picture and comprehend
 the expression in a higher level.
 
 Next, we are catching our breath with something simpler, [message passing](message-passing.md).
