@@ -4,6 +4,7 @@ Common libraries are procedures that are defined in the language itself.
 
 ## List Operations
 - [append](common-libraries/append.md)
+- [at-list](common-libraries/at-list.md)
 - [filter](common-libraries/filter.md)
 - [flatmap](common-libraries/flatmap.md)
 - [fold-left](common-libraries/fold-left.md)
@@ -14,6 +15,7 @@ Common libraries are procedures that are defined in the language itself.
 - [reverse](common-libraries/reverse.md)
 
 ## Stream Operations
+- [at-stream](common-libraries/at-stream.md)
 - [cdr-stream](common-libraries/cdr-stream.md)
 - [filter-stream](common-libraries/filter-stream.md)
 - [force](common-libraries/force.md)

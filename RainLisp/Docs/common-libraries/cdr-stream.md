@@ -9,4 +9,4 @@ Returns the rest of a stream, i.e. its next element by forcing its promise to be
 ```scheme
 (cdr-stream (make-range-stream 1 8000000))
 ```
--> *(2 . [UserProcedure] Parameters: 0)*
+-> *(2 . [MemoizedUserProcedure] Parameters: 0)*

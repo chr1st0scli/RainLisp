@@ -16,6 +16,17 @@ Semantic versioning is followed.
 
 ### Removed
 
+## [1.5.0] - 2025-06-10
+
+### Added
+- `at-list` library procedure that returns a list item at a given position.
+- `at-stream` library procedure that returns a stream item at a given position.
+- A tutorial section about streams.
+
+### Changed
+- Memoized user procedures involved in streams are printed to the standard
+output as such, instead of just user procedures.
+
 ## [1.4.0] - 2025-02-16
 
 ### Added
@@ -26,12 +37,6 @@ Semantic versioning is followed.
 - `make-range-stream` library procedure to make a numerical range stream.
 - `map-stream` library procedure that projects elements of a stream.
 - `filter-stream` library procedure that filters elements of a stream.
-
-### Fixed
-
-### Changed
-
-### Removed
 
 ## [1.3.0] - 2024-06-30
 
@@ -46,7 +51,7 @@ Semantic versioning is followed.
 ## [1.1.0] - 2024-01-28
 
 ### Added
-- Ceiling and floor primitive procedures.
+- `ceiling` and `floor` primitive procedures.
 
 ## [1.0.0] - 2023-07-20
 

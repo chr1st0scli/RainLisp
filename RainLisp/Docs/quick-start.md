@@ -37,6 +37,7 @@ Let's start our endeavor with [numbers](quick-start/numbers.md).
 
 ## Advanced Topics
 - [Advanced data structures](quick-start/advanced-data-structures.md)
+- [Streams](quick-start/streams.md)
 - [Message passing](quick-start/message-passing.md)
 - [Encapsulation a la functional](quick-start/encapsulation.md)
 - [Data-directed programming](quick-start/data-directed-programming.md)

@@ -58,6 +58,13 @@ namespace RainLisp.Evaluation
         T VisitUserProcedure(UserProcedure userProcedure);
 
         /// <summary>
+        /// Returns a <typeparamref name="T"/> by processing a memoized user procedure evaluation result.
+        /// </summary>
+        /// <param name="userProcedure">The memoized user procedure evaluation result to transform.</param>
+        /// <returns>A <typeparamref name="T"/> from the evaluation result.</returns>
+        T VisitMemoizedUserProcedure(MemoizedUserProcedure userProcedure);
+
+        /// <summary>
         /// Returns a <typeparamref name="T"/> by processing the unspecified evaluation result.
         /// </summary>
         /// <param name="unspecified">The unspecified evaluation result to transform.</param>

@@ -76,7 +76,7 @@ namespace RainLispTests
         [InlineData("(define (foo x y) true) foo", "[UserProcedure] Parameters: x, y")]
         [InlineData("(define (foo ab cd ef) true) foo", "[UserProcedure] Parameters: ab, cd, ef")]
         [InlineData("(lambda (ab cd ef) true)", "[UserProcedure] Parameters: ab, cd, ef")]
-        [InlineData("(delay true)", "[UserProcedure] Parameters: 0")]
+        [InlineData("(delay true)", "[MemoizedUserProcedure] Parameters: 0")]
         public void Evaluate_ExpressionGivingUserProcedure_PrintsCorrectly(string expression, string expectedResult)
         {
             // Arrange

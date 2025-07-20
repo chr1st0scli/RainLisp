@@ -95,13 +95,15 @@ namespace RainLisp.Evaluation
         /// <param name="userProcedure">The user procedure evaluation result to transform.</param>
         /// <returns>A string representation of the evaluation result.</returns>
         public string VisitUserProcedure(UserProcedure userProcedure)
-        {
-            string parameters = "0";
-            if (userProcedure.Parameters != null && userProcedure.Parameters.Count > 0)
-                parameters = string.Join(", ", userProcedure.Parameters);
+            => $"[{nameof(UserProcedure)}] {nameof(userProcedure.Parameters)}: {StringifyParameters(userProcedure)}";
 
-            return $"[{nameof(UserProcedure)}] {nameof(userProcedure.Parameters)}: {parameters}";
-        }
+        /// <summary>
+        /// Returns a string by processing a memoized user procedure evaluation result.
+        /// </summary>
+        /// <param name="userProcedure">The memoized user procedure evaluation result to transform.</param>
+        /// <returns>A string representation of the evaluation result.</returns>
+        public string VisitMemoizedUserProcedure(MemoizedUserProcedure userProcedure)
+            => $"[{nameof(MemoizedUserProcedure)}] {nameof(userProcedure.Parameters)}: {StringifyParameters(userProcedure)}";
 
         /// <summary>
         /// Returns a string by processing the unspecified evaluation result.
@@ -166,6 +168,15 @@ namespace RainLisp.Evaluation
             VisitPairRecursively(pair);
 
             return sb.ToString();
+        }
+
+        private static string StringifyParameters(UserProcedure userProcedure)
+        {
+            string parameters = "0";
+            if (userProcedure.Parameters != null && userProcedure.Parameters.Count > 0)
+                parameters = string.Join(", ", userProcedure.Parameters);
+
+            return parameters;
         }
     }
 }

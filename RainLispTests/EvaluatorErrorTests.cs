@@ -26,6 +26,8 @@ namespace RainLispTests
         [InlineData("(set! a 2)", typeof(UnknownIdentifierException))]
         [InlineData("(1)", typeof(NotProcedureException))]
         [InlineData("(force true)", typeof(NotProcedureException))]
+        [InlineData("(at-stream (cons 1 2) 1)", typeof(NotProcedureException))]
+        [InlineData("(at-stream (list 1 2 3 4) 4)", typeof(NotProcedureException))]
         [InlineData("(error 1)", typeof(UserException))]
         [InlineData("(round 2.5 -1)", typeof(InvalidValueException))]
         public void EvaluateAndPrint_WrongExpression_ReportsError(string expression, Type expectedExceptionType)
@@ -86,7 +88,7 @@ namespace RainLispTests
                 {
                     "not", "car", "cdr", "null?", "display", "debug", "trace", "error", "string-length", "to-lower", "to-upper",
                     "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc", "parse-number",
-                    "eval", "pair?", "ceiling", "floor"
+                    "eval", "pair?", "ceiling", "floor", "length"
                 }, expression, expected, false, actual);
         }
 
@@ -100,7 +102,7 @@ namespace RainLispTests
                 {
                     ">", ">=", "<", "<=", "=", "cons", "set-car!", "set-cdr!",
                     "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds", "number-to-string", "parse-number-culture",
-                    "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff", "parse-datetime", "datetime-to-string", "round"
+                    "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff", "parse-datetime", "datetime-to-string", "round", "at-list", "at-stream"
                 }, expression, expected, false, actual);
         }
 
@@ -173,6 +175,15 @@ namespace RainLispTests
         [InlineData("(replace-string \"hello\" \"el\" (lambda () 1))", typeof(UserProcedure), typeof(StringDatum))]
         // Various
         [InlineData("(length 1)", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(at-list 1 0)", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(at-list nil 0)", typeof(Nil), typeof(Pair))]
+        [InlineData("(at-list (cons 1 2) 1)", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(at-list (list 1 2 3 4) 4)", typeof(Nil), typeof(Pair))]
+        [InlineData("(at-list (cons-stream 1 2) 1)", typeof(MemoizedUserProcedure), typeof(Pair))]
+        [InlineData("(at-stream 1 0)", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(at-stream nil 0)", typeof(Nil), typeof(Pair))]
+        [InlineData("(at-stream (cons-stream 1 2) 1)", typeof(NumberDatum), typeof(Pair))]
+        [InlineData("(at-stream (make-range-stream 1 4) 4)", typeof(Nil), typeof(Pair))]
         [InlineData("(length (filter-stream (lambda(x) (> x 10)) (make-range-stream 1 50)))", typeof(MemoizedUserProcedure), typeof(Pair))]
         [InlineData("(length (map-stream (lambda(x) (+ x 10)) (make-range-stream 1 50)))", typeof(MemoizedUserProcedure), typeof(Pair))]
         public void Evaluate_WrongTypeOfArgument_Throws(string expression, Type actual, Type expected)

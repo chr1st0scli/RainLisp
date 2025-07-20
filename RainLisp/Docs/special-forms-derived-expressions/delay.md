@@ -10,7 +10,7 @@ The evaluation result is a procedure which evaluates the expression when called.
 ; Delay displaying "Hello World!".
 (delay (display "Hello World!"))
 ```
--> *[UserProcedure] Parameters: 0*
+-> *[MemoizedUserProcedure] Parameters: 0*
 
 ```scheme
 ; Assign the procedure to a variable and call it later.

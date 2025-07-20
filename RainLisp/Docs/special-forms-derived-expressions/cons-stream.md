@@ -11,7 +11,7 @@ is a pair made of the value of the first expression and a procedure which evalua
 ```scheme
 (cons-stream 1 2)
 ```
--> *(1 . [UserProcedure] Parameters: 0)*
+-> *(1 . [MemoizedUserProcedure] Parameters: 0)*
 
 ```scheme
 ; Assign the procedure to a variable and call it later.

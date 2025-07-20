@@ -20,7 +20,7 @@ Returns a new stream containing the first element of a stream that satisfies a c
   (lambda (n) (= 0 (% n 2)))
   (make-range-stream 1 8))
 ```
--> *(2 . [UserProcedure] Parameters: 0)*
+-> *(2 . [MemoizedUserProcedure] Parameters: 0)*
 
 ```scheme
 ; Create a stream of evens.

@@ -10,4 +10,4 @@ can be implemented.
 You can also have a look at [sets](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-16.html#%_sec_2.3.3),
 which are collections of distinct objects.
 
-Next, let's move on to [message passing](message-passing.md).
+Next, let's move on to [streams](streams.md).

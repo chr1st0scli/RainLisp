@@ -17,4 +17,4 @@ i.e. delayed until explicitly requested. If *start* is greater than *end*, [nil]
 ; Returns a stream made of the first element and a promise to fulfill the rest of it.
 (make-range-stream 7 5000000)
 ```
--> *(7 . [UserProcedure] Parameters: 0)*
+-> *(7 . [MemoizedUserProcedure] Parameters: 0)*
