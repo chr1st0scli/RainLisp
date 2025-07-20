@@ -1,24 +1,24 @@
 ﻿# Streams
 We have seen list operations like `map` and `filter` and their elegance in expressing operations on lists.
-But what if we want to operate on a significantly large set? Constructing such a large list is expensive both in
-terms of memory and CPU in the first place. Using `map` on it will create an equally large list and `filter` might
-also create a large list depending on the condition it is provided with. The amount of operations can be tremendous.
+But what if we want to operate on significantly large sets? Constructing a large list can be expensive both in
+terms of memory and CPU, let alone using `map` on it which will create yet another one with the element projections. 
+The amount of operations can be unbearable.
 
-What about infinite sets? What if we want to operate on all natural numbers, or all prime numbers. How do we even
-define such a set, let alone operate on it?
+What about infinite sets? What if we want to operate on all natural numbers, or all prime numbers? How do we even
+go about defining such a set, let alone operate on it?
 
-Streams come to the rescue. You can imagine streams like delayed lists, ones that are being constructed up to the point
-that is absolutely needed and not fully created up front.
+Streams come to the rescue. You can imagine streams like delayed lists, ones that are being constructed on demand;
+up to the point that is absolutely needed and not fully created up front.
 
-Most programming languages have similar constructs dealing with this problem, C# uses iterator methods, Python uses generators
+Most programming languages have similar constructs dealing with this problem; C# uses iterator methods, Python uses generators
 and the list goes on. There are different ways a language can implement this, C# implements it with state machines behind
 the scenes. RainLisp, implements it with deferred procedures, i.e. procedures whose execution is postponed until explicitly
-asked for.
+asked for. You might have heard this concept as promises in other languages.
 
 Let's dive in.
 
 ## Deferred Evaluation
-The basic building block for streams is the special form `delay`, which delays the evaluation of an expression by putting it
+The basic building block for streams is the special form [delay](../special-forms-derived-expressions/delay.md), which delays the evaluation of an expression by putting it
 inside a procedure to be called later. Note that based on the language's rules `(foo a)` would first evaluate the argument `a`
 and then call the procedure `foo` on it. But `(delay a)`, being a special form, doesn't evaluate `a` before calling
 `delay` on it, it is translated to `(lambda() a)`.
@@ -33,12 +33,20 @@ or call `force` on it to force its evaluation.
 (delayed-a)        ; Call it directly.
 (force delayed-a)  ; Use force.
 ```
+->
+```
+1
+1
+```
 
-> Note that the procedure created for the delayed expression is a memoized one. I.e. the expression is evaluated once when needed and subsequent calls will simply return the previously calculated value.
-This is done because it is very common to end up with usage patterns that would make too many unnecessary evaluations as we will later see.
+> Note that the procedure created for the delayed expression is a memoized one. I.e. the expression is evaluated once when needed.
+Subsequent calls to the same procedure will simply return the previously calculated value.
+This is done because it is very common to end up with usage patterns that would result to too many unnecessary evaluations, as we will later see.
 
-## Creating & Accessing Streams Basics
-To create a stream, you can use `cons-stream` which creates a pair of the first expression and a delayed second one.
+## Creating & Accessing Streams
+
+### Basics
+To create a stream, you can use [cons-stream](../special-forms-derived-expressions/cons-stream.md) which creates a pair of the first expression and a delayed second one.
 So, `(cons-stream a b)` is syntactic sugar for `(cons a (delay b))`.
 
 Let's see an example.
@@ -52,7 +60,7 @@ stream
 -> *(1 . [UserProcedure] Parameters: 0)*
 
 By evaluating `stream`, we notice that it is just a pair of 1 and a delayed expression, i.e. a procedure
-that will evaluate `b`. Therefore, calling `car` on it gives 1.
+that will evaluate `b` when called. Therefore, calling `car` on it gives 1.
 
 ```scheme
 (car stream)
@@ -67,7 +75,8 @@ called `cdr-stream` that does it for you, i.e. `(cdr-stream stream)` calls `(for
 ```
 -> *2*
 
-Let's try to create a larger stream to get a grasp of what they look like.
+Let's try to create a larger stream to get a grasp of what they look like. We are chaining `cons-stream` calls just as
+we did with `cons` to make lists.
 
 ```scheme
 (define stream (cons-stream 1 (cons-stream 2 (cons-stream 3 (cons-stream 4 nil)))))
@@ -91,7 +100,7 @@ When we ask for the second promise to be fulfilled, the result will be `3` along
 ```
 -> *(3 . [UserProcedure] Parameters: 0)*
 
-As said before, when we just want `3` we can use `car` since streams are implemented with regular pairs.
+As said before, when we just want `3` we can use `car`, since streams are implemented with regular pairs.
 
 ```scheme
 (car (cdr-stream (cdr-stream stream)))
@@ -114,7 +123,7 @@ we can simply use the procedure `make-range-stream` to easily create a numerical
 ```
 -> *4*
 
-## Custom & Infinite Streams
+### Custom & Infinite Streams
 Now we can move to more interesting things. It's good to know we have `make-range-stream` to create a stream of consecutive numbers,
 but how would we create a custom infinite stream to operate on? The key is to create a procedure that calls `cons-stream` recursively.
 
@@ -131,12 +140,12 @@ Let's create the Fibonacci sequence.
 -> *6765*
 
 Notice that `fib-gen` is a procedure that creates the Fibonacci stream by creating a pair of `a` and a promise to call
-itself recursively, so that our familiar `(cons-stream x (cons-stream y (cons-stream z ...)))` construct is created up to the
+itself recursively, in a way that our familiar `(cons-stream x (cons-stream y (cons-stream z ...)))` construct is created up to the
 point dictated by the `at-stream` call.
 
 Needless to say, every next `a` is the previous `b` and every next `b` is the sum of previous `a` and `b`, which is the Fibonacci sequence definition.
 So, we start with 0 and 1 and we effectively create as much as we require, i.e. we force 20 promises to be fulfilled to get the 21st number
-in the Fibonacci sequence which is 6765.
+in the Fibonacci sequence, which is 6765.
 
 ## Mapping & Filtering
 As mentioned in the beginning of this section, we can combine the expressive elegance of map and filter operations with infinite sequences
@@ -174,10 +183,10 @@ If you see the code of [filter-stream](../common-libraries/filter-stream.md), yo
 a given condition and a promise to find the rest. This means that it keeps fulfilling promises, until it reaches the next element that satisfies the predicate.
 
 Similarly, [map-stream](../common-libraries/map-stream.md) returns the projection of the first element of a stream and a promise to project the
-rest of them as requested.
+rest of them on a need-to-know basis.
 
 ### Sieve of Eratosthenes
-Let's see a more interesting filtering problem. Let's find the 51st prime number with the sieve of Eratosthenes. A prime number is one that is exactly
+Let's see a more interesting filtering problem. Let's find the 51st prime number with the sieve of Eratosthenes (276 BC). A prime number is one that is exactly
 divided, i.e. with no remainder, by itself and 1 alone.
 
 ```scheme
@@ -216,7 +225,7 @@ At each step, to find the next prime, we examine the next number that is not div
 - For the fifth one, we start from 8 and search for the first number that is not divisible by 2, 3, 5 and 7, which is 11 and so on.
 
 Note that the stream argument that is recursively fed to each sieve call is made in a way that contains consecutive filters that a prime
-needs to satisfy up to that point. For example the stream of the last step above, contains 
+needs to satisfy up to that point. For example, the stream at the last step above contains:
 1. The number 8 and a promise for the rest of the integers
 2. that is fed to `filter-stream` to find the next number not divisible by 2
 3. which is fed to `filter-stream` to find the next number not divisible by 3
@@ -235,9 +244,9 @@ you debug and understand the call stack described above.
     (not (divisible? n (car stream))))
 ```
 
-Now, if you run the code below to get the fifth prime number, when we reach 8, the program will start printing what is checked.
-8 is discarded because it is divisable by 2, so we move on to 9 that is not divisable by 2 but it is by 3. So, we move on to 10
-that is discarded because it is divisable by 2, so we move to 11 which is checked that is not divisable by 2, 3, 5 and 7 in turn.
+Now, if you run the code below to get the fifth prime number, when we reach 8, the program will start printing information.
+8 is discarded because it is divisable by 2, so we move on to 9 that is not divisable by 2, but it is by 3. So, we move on to 10
+that is discarded because it is divisable by 2 and move to 11 which is checked that is not divisable by 2, 3, 5 and 7 in turn.
 
 ```scheme
 (at-stream primes 4)
@@ -257,7 +266,7 @@ checking 11 with 7
 
 ## Implicit Streams
 We call implicit streams the ones that are defined in terms of their own merit and not with procedures that generate elements
-one by one like `fib-gen` that we have seen above.
+one by one like `fib-gen` and `integers-starting-from` that we have seen above.
 
 Let's see an example, we want to define a stream of powers of two and find the fifth one which is 16.
 
@@ -272,7 +281,7 @@ Let's see an example, we want to define a stream of powers of two and find the f
 ```
 -> *16*
 
-It's quite difficult to try to debug this in your head by following the evolution of returned pairs and promises within at each step.
+It's quite difficult to try to debug this in your head by following the evolution of returned pairs and promises at each step.
 But let's try to simplify things and give a general overview.
 
 So, we define that `two-powers` is a stream made of 1 and a promise to double the `two-powers`.
@@ -282,7 +291,7 @@ two-powers
 ```
 -> *(1 . [UserProcedure] Parameters: 0)*
 
-When we force the promise e.g. by applying the first cdr-stream to `two-powers`, the map-stream is executed which gives us 1 * 2 = 2
+When we force the promise, e.g. by applying the first `cdr-stream` to `two-powers`, the `map-stream` is executed which gives us 1 * 2 = 2
 and a promise to double the rest of `two-powers`.
 
 ```scheme
@@ -290,10 +299,10 @@ and a promise to double the rest of `two-powers`.
 ```
 -> *(2 . [UserProcedure] Parameters: 0)*
 
-But by looking at its definition, the rest of `two-powers` is itself a promise to double the `two-powers`. That way, consecutive doublings
-can be chained.
+But by looking at its definition above, the rest of `two-powers` is itself a promise to double the `two-powers`. That way, consecutive doublings
+are chained.
 
-Effectively, when we ask for the 3rd power of 2, we are asking for the fulfillment of a promise that performs the following multiplication.
+Effectively, when we ask for the 3rd power of 2, we are asking for the fulfillment of a promise that performs the following multiplications.
 - 2 * (2 * ( 2 * 1))
 - 2 * (2 * 2)
 - 2 * 4
@@ -310,10 +319,10 @@ would be repeated many times. For example `(at-stream two-powers 3)` that gives 
 - 2 * 2, 2 times
 - 4 * 2, 1 time.
 
-With memoization, each number is multiplied only once because the result of its multiplication is cached. This is because, the
-`two-streams` implicit stream is made in a way that chains a promise to double the result of another promise to double and so on. 
-At each step that we consume the stream with `at-stream`, the first part of the resultign pair, which is the result of the multiplication,
-is never carried on to the next step to contribute. Instead, the same procedure representing each step is carried on to be executed again
+With memoization, each multiplication is performed only once because its result is cached. This is because,
+`two-streams` is made in a way that chains a promise to double the result of another promise to double another result and so on.
+At each step that we consume the stream with `at-stream`, the first part of the resulting pair, which is the result of the multiplication,
+is never carried on to the next step to contribute to the next one. Instead, the same procedure representing each step is carried on to be executed again
 for additional powers of two.
 
 It's like magic, isn't it? Try to rehearse this in your head but don't worry if you find it overwhelming. Often, in functional
