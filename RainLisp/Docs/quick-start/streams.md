@@ -256,6 +256,10 @@ checking 11 with 7
 ```
 
 ## Implicit Streams
+We call implicit streams the ones that are defined in terms of their own merit and not with procedures that generate elements
+one by one like `fib-gen` that we have seen above.
+
+Let's see an example, we want to define a stream of powers of two and find the fifth one which is 16.
 
 ```scheme
 ; Powers of two are 2^0, 2^1, 2^2, 2^3, 2^4... I.e. 1, 2, 4, 8, 16...
@@ -268,5 +272,52 @@ checking 11 with 7
 ```
 -> *16*
 
+It's quite difficult to try to debug this in your head by following the evolution of returned pairs and promises within at each step.
+But let's try to simplify things and give a general overview.
+
+So, we define that `two-powers` is a stream made of 1 and a promise to double the `two-powers`.
+
+```scheme
+two-powers
+```
+-> *(1 . [UserProcedure] Parameters: 0)*
+
+When we force the promise e.g. by applying the first cdr-stream to `two-powers`, the map-stream is executed which gives us 1 * 2 = 2
+and a promise to double the rest of `two-powers`.
+
+```scheme
+(cdr-stream two-powers)
+```
+-> *(2 . [UserProcedure] Parameters: 0)*
+
+But by looking at its definition, the rest of `two-powers` is itself a promise to double the `two-powers`. That way, consecutive doublings
+can be chained.
+
+Effectively, when we ask for the 3rd power of 2, we are asking for the fulfillment of a promise that performs the following multiplication.
+- 2 * (2 * ( 2 * 1))
+- 2 * (2 * 2)
+- 2 * 4
+- 8
+
+```scheme
+(at-stream two-powers 3)
+```
+-> *8*
+
+Notice that the memoized user procedures that are related to promises shine with implicit streams. Without memoization, the same multiplications
+would be repeated many times. For example `(at-stream two-powers 3)` that gives 8 would repeat 
+- 1 * 2, 3 times
+- 2 * 2, 2 times
+- 4 * 2, 1 time.
+
+With memoization, each number is multiplied only once because the result of its multiplication is cached. This is because, the
+`two-streams` implicit stream is made in a way that chains a promise to double the result of another promise to double and so on. 
+At each step that we consume the stream with `at-stream`, the first part of the resultign pair, which is the result of the multiplication,
+is never carried on to the next step to contribute. Instead, the same procedure representing each step is carried on to be executed again
+for additional powers of two.
+
+It's like magic, isn't it? Try to rehearse this in your head but don't worry if you find it overwhelming. Often, in functional
+programming, people argue that you shouldn't need to explain every step, it's enough to see the overall picture and comprehend
+the expression in a higher level.
 
 Next, we are catching our breath with something simpler, [message passing](message-passing.md).
