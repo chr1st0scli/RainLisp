@@ -42,22 +42,22 @@ namespace RainLispTests
             // Force enumeration to evaluate everything.
             _ = interpreter.Evaluate(expression, ref environment).Last();
             // Check the effect of the evaluation on the global environment.
-            var environmentJObject = JObject.FromObject(environment, jsonSerializer);
+            var environmentJObject = JObject.FromObject(environment!, jsonSerializer);
 
             // Remove the circular references of all previous environments.
             foreach (var token in environmentJObject.SelectTokens("$.._previousEnvironment").ToList())
-                token.Parent.Remove();
+                token.Parent!.Remove();
 
             // Remove _quoteSymbols.
             foreach (var token in environmentJObject.SelectTokens("$.._quoteSymbols").ToList())
-                token.Parent.Remove();
+                token.Parent!.Remove();
 
             // Remove the primitives from the definitions output, because we are not interested to check them.
             var fields = typeof(Primitives).GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var field in fields)
             {
                 string? primitiveProcedureName = field?.GetRawConstantValue()?.ToString();
-                environmentJObject["actualEnvironment"]["_definitions"][primitiveProcedureName].Parent.Remove();
+                environmentJObject["actualEnvironment"]!["_definitions"]![primitiveProcedureName!]!.Parent!.Remove();
             }
 
             // Flatten the identifier values out of PrimitiveDatum.
@@ -70,7 +70,7 @@ namespace RainLispTests
                 }
 
                 // Rename _definitions to definitions to match the test files.
-                definitionToken.Parent.Replace(new JProperty("definitions", definitionToken));
+                definitionToken.Parent!.Replace(new JProperty("definitions", definitionToken));
             }
 
             string actualEnvironment = environmentJObject.ToString();

@@ -94,7 +94,7 @@ namespace RainLispTests
             static void RemoveProperty(JObject jObj, string propertyName)
             {
                 foreach (var token in jObj.SelectTokens($"$..{propertyName}").ToList())
-                    token.Parent.Remove();
+                    token.Parent!.Remove();
             }
 
             // Arrange

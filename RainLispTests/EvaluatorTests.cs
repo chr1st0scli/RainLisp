@@ -1706,8 +1706,8 @@ b";
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(1, result!.Body.Expressions.Count);
-            Assert.Equal(expectedDelayed, ((NumberLiteral)result!.Body.Expressions[0]).Value);
+            Assert.Single(result.Body.Expressions);
+            Assert.Equal(expectedDelayed, ((NumberLiteral)result.Body.Expressions[0]).Value);
         }
 
         [Theory]
@@ -1824,7 +1824,7 @@ x")]
 
             // Assert
             Assert.Equal(0, first!.Value);
-            Assert.Equal(1, second!.Body.Expressions.Count);
+            Assert.Single(second!.Body.Expressions);
             Assert.True(second!.Body.Expressions[0] is NumberLiteral { Value: 7 });
         }
 
@@ -1841,7 +1841,7 @@ x")]
 
             // Assert
             Assert.Equal(1, first!.Value);
-            Assert.Equal(1, second!.Body.Expressions.Count);
+            Assert.Single(second!.Body.Expressions);
             Assert.True(second!.Body.Expressions[0] is Application { Operator: Identifier { Name: "make-range-stream" } });
         }
 

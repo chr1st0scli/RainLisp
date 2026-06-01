@@ -698,7 +698,7 @@ namespace RainLispTests
             return exception!;
         }
 
-        private static TheoryData<string, IDebugInfo[]> GetCallStackData()
+        public static TheoryData<string, IDebugInfo[]> GetCallStackData()
         {
             var data = new TheoryData<string, IDebugInfo[]>
             {
