@@ -21,7 +21,7 @@ namespace RainLisp.Evaluation
         public EvaluationEnvironment()
         {
             _definitions = new Dictionary<string, EvaluationResult>();
-            _quoteSymbols = new Dictionary<string, QuoteSymbol>();
+            _quoteSymbols = [];
         }
 
         /// <summary>

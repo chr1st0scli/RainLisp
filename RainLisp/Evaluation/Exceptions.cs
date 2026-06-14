@@ -43,7 +43,7 @@
             if (!debugInfo.HasDebugInfo)
                 return;
 
-            CallStack ??= new List<IDebugInfo>();
+            CallStack ??= [];
             CallStack.Add(debugInfo);
         }
     }

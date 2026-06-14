@@ -91,7 +91,7 @@ namespace RainLisp.Parsing
         public void Require(TokenType tokenType)
         {
             if (!Match(tokenType))
-                throw new ParsingException(_currentToken.Line, _currentToken.Position, new[] { tokenType });
+                throw new ParsingException(_currentToken.Line, _currentToken.Position, [tokenType]);
         }
 
         /// <summary>

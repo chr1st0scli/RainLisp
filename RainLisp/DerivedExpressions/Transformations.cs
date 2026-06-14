@@ -120,8 +120,8 @@ namespace RainLisp.DerivedExpressions
             var parameterIdentifier = new Identifier(LAMBDA_PARAM_NAME);
             var ifExpression = new If(parameterIdentifier, parameterIdentifier, nestedExpression);
 
-            var lambdaBody = new Body(null, new List<Expression> { ifExpression });
-            var lambda = new Lambda(new List<string> { LAMBDA_PARAM_NAME }, lambdaBody);
+            var lambdaBody = new Body(null, [ifExpression]);
+            var lambda = new Lambda([LAMBDA_PARAM_NAME], lambdaBody);
             var lambdaOperands = new List<Expression> { expression };
 
             return new Application(lambda, lambdaOperands);

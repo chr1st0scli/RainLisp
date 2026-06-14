@@ -201,7 +201,7 @@ namespace RainLisp.Evaluation
         public EvaluationResult EvaluateDelay(Delay delay, IEvaluationEnvironment environment)
         {
             // An expression is delayed by simply putting it in a procedure body that will be called later.
-            var body = new Body(null, new List<Expression> { delay.Delayed });
+            var body = new Body(null, [delay.Delayed]);
 
             // A memoized user procedure caches the result of its first evaluation.
             return new MemoizedUserProcedure(null, body, environment);

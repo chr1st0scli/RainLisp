@@ -891,7 +891,7 @@ namespace RainLisp.Evaluation
             else if (values[0] is T2 t2)
                 return calculateAlt(t2, transformAlt(values[1]));
 
-            throw new WrongTypeOfArgumentException(values[0].GetType(), new[] { typeof(T1), typeof(T2) });
+            throw new WrongTypeOfArgumentException(values[0].GetType(), [typeof(T1), typeof(T2)]);
         }
 
         private static EvaluationResult ApplyUnaryOperator<T>(Transform<T> transform, CalculateUnary<T> calculate, EvaluationResult[]? values)
@@ -1005,7 +1005,7 @@ namespace RainLisp.Evaluation
                 RequireListOf<T>(secondInnerPair);
             // Ensure we are dealing with a list and not any pair.
             else
-                throw new WrongTypeOfArgumentException(pair.Second.GetType(), new[] { typeof(Pair), typeof(Nil) });
+                throw new WrongTypeOfArgumentException(pair.Second.GetType(), [typeof(Pair), typeof(Nil)]);
         }
         #endregion
     }

@@ -35,7 +35,7 @@ namespace RainLisp.Parsing
             if (_tokens.Check(TokenType.EOF))
                 return program;
 
-            program.DefinitionsAndExpressions = new List<Node>();
+            program.DefinitionsAndExpressions = [];
 
             do
             {
@@ -84,7 +84,7 @@ namespace RainLisp.Parsing
 
             if (DefinitionFollows())
             {
-                definitions = new() { Definition() };
+                definitions = [Definition()];
 
                 while (DefinitionFollows())
                     definitions.Add(Definition());
@@ -178,7 +178,7 @@ namespace RainLisp.Parsing
                 quotes = new List<Quotable> { new Quotable(Keywords.QUOTE), Quotable() };
 
             // All other tokens are valid for a singular (i.e. non list) quotable.
-            else if (_tokens.MatchAnyBut(new[] { TokenType.LParen, TokenType.RParen, TokenType.EOF }))
+            else if (_tokens.MatchAnyBut([TokenType.LParen, TokenType.RParen, TokenType.EOF]))
                 quoteText = currentToken.Value;
 
             else
