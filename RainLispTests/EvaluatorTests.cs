@@ -1685,7 +1685,7 @@ b";
             const double NUMBER = 12;
             var program = new Program
             {
-                DefinitionsAndExpressions = new List<Node> { new NumberLiteral(NUMBER) }
+                DefinitionsAndExpressions = [new NumberLiteral(NUMBER)]
             };
 
             // Act

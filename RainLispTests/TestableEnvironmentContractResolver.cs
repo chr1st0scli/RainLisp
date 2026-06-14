@@ -11,9 +11,9 @@ namespace RainLispTests
         {
             // Do not serialize the internal structure of primitive procedures.
             if (type == typeof(PrimitiveProcedure))
-                return new List<JsonProperty>();
+                return [];
 
-            string valuePropName = nameof(PrimitiveDatum<bool>.Value);
+            string valuePropName = nameof(PrimitiveDatum<>.Value);
             var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
             var props = type.GetProperties(flags)

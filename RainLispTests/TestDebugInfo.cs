@@ -2,17 +2,11 @@
 
 namespace RainLispTests
 {
-    internal class TestDebugInfo : IDebugInfo
+    internal class TestDebugInfo(uint line, uint position) : IDebugInfo
     {
-        public TestDebugInfo(uint line, uint position)
-        {
-            Line = line;
-            Position = position;
-        }
+        public uint Line { get; set; } = line;
 
-        public uint Line { get; set; }
-
-        public uint Position { get; set; }
+        public uint Position { get; set; } = position;
 
         public bool HasDebugInfo { get; set; }
     }

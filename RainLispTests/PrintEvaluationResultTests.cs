@@ -34,7 +34,7 @@ namespace RainLispTests
             string printedResult = result.AcceptVisitor(_printVisitor);
 
             // Assert
-            Assert.IsAssignableFrom<IPrimitiveDatum>(result);
+            Assert.True(result is IPrimitiveDatum);
             Assert.Equal(expectedResult, printedResult);
         }
 
