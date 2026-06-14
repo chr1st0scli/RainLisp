@@ -186,7 +186,7 @@ namespace RainLisp.Parsing
                 // Only tokens that can start an expression are reported. Other keywords, such as special forms and derived expressions, don't need to.
                 _tokens.Require(TokenType.LParen, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen);
 
-                quotes = new List<Quotable>();
+                quotes = [];
 
                 while (!_tokens.Match(TokenType.RParen))
                     quotes.Add(Quotable());
@@ -329,7 +329,7 @@ namespace RainLisp.Parsing
 
             if (!_tokens.Match(TokenType.RParen))
             {
-                operands = new() { Expression() };
+                operands = [Expression()];
 
                 while (!_tokens.Match(TokenType.RParen))
                     operands.Add(Expression());
@@ -380,7 +380,7 @@ namespace RainLisp.Parsing
             // Optional parameters
             if (!_tokens.Match(TokenType.RParen))
             {
-                parameters = new() { _tokens.RequireIdentifierName() };
+                parameters = [_tokens.RequireIdentifierName()];
 
                 while (!_tokens.Match(TokenType.RParen))
                     parameters.Add(_tokens.RequireIdentifierName());
