@@ -175,7 +175,7 @@ namespace RainLisp.Parsing
 
             // If the quotable itself is of the form '<quotable>, it gets converted to the equivalent list of quotables (quote <quotable>).
             if (_tokens.Match(TokenType.QuoteAlt))
-                quotes = new List<Quotable> { new Quotable(Keywords.QUOTE), Quotable() };
+                quotes = [new Quotable(Keywords.QUOTE), Quotable()];
 
             // All other tokens are valid for a singular (i.e. non list) quotable.
             else if (_tokens.MatchAnyBut([TokenType.LParen, TokenType.RParen, TokenType.EOF]))

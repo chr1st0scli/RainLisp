@@ -784,7 +784,7 @@ namespace RainLisp.Evaluation
                 return EvalCallback(pair);
             }
             else
-                throw new WrongTypeOfArgumentException(value.GetType(), new[] { typeof(QuoteSymbol), typeof(Pair) });
+                throw new WrongTypeOfArgumentException(value.GetType(), [typeof(QuoteSymbol), typeof(Pair)]);
         }
 
         #region Helpers

@@ -104,7 +104,7 @@ namespace RainLisp.DerivedExpressions
         /// <param name="consStream">The cons stream to convert.</param>
         /// <returns>An application of the cons primitive procedure on the first and the delayed second expressions.</returns>
         public static Application ToConsOnFirstAndDelayedSecond(this ConsStream consStream)
-            => new Application(new Identifier(Primitives.CONS), new[] { consStream.First, new Delay(consStream.Second) });
+            => new(new Identifier(Primitives.CONS), new[] { consStream.First, new Delay(consStream.Second) });
 
         private static Expression CreateIfForAnd(Expression expression, Expression nestedExpression)
             // The current and's operand becomes the if's predicate, the rest operands go inside
