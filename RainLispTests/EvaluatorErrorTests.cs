@@ -616,7 +616,7 @@ namespace RainLispTests
 
         [Theory]
         [MemberData(nameof(GetCallStackData))]
-        public void Evaluate_ExpressionWithError_ErrorWithCorrectCallStack(string expression, IDebugInfo[] expectedCallStack)
+        public void Evaluate_ExpressionWithError_ErrorWithCorrectCallStack(string expression, TestDebugInfo[] expectedCallStack)
         {
             // Arrange
             EvaluationException? exception = null;
@@ -698,9 +698,9 @@ namespace RainLispTests
             return exception!;
         }
 
-        public static TheoryData<string, IDebugInfo[]> GetCallStackData()
+        public static TheoryData<string, TestDebugInfo[]> GetCallStackData()
         {
-            var data = new TheoryData<string, IDebugInfo[]>
+            var data = new TheoryData<string, TestDebugInfo[]>
             {
                 { "(+ 12)", [new TestDebugInfo(1, 2)]},    // WrongNumberOfArgumentsException
                 { "(round \"hello\" 2)", [new TestDebugInfo(1, 2)]},   // WrongTypeOfArgumentException

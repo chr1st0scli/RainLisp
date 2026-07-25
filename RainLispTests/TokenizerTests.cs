@@ -13,8 +13,6 @@ namespace RainLispTests
             _tokenizer = new Tokenizer();
         }
 
-        public record ExpectedToken(TokenType TokenType, string Value, uint Position, uint Line = 1, double NumberValue = 0, bool BooleanValue = false, string StringValue = "");
-
         public static TheoryData<string, ExpectedToken[]> GetTokens()
         {
             static ExpectedToken Expect(TokenType tokenType, string value, uint position, uint line = 1, double numberValue = 0, bool booleanValue = false, string stringValue = "")
@@ -215,11 +213,11 @@ namespace RainLispTests
                 new(If, "if", 3),
                 new(LParen, "(", 6),
                 new(Identifier, ">", 7),
-                new(Number, "1", 9, NumberValue : 1d),
-                new(Number, "0", 11, NumberValue : 0d),
+                new(Number, "1", 9, numberValue : 1d),
+                new(Number, "0", 11, numberValue : 0d),
                 new(RParen, ")", 12),
-                new(Number, "1", 14, NumberValue : 1d),
-                new(Number, "0", 16, NumberValue : 0d),
+                new(Number, "1", 14, numberValue : 1d),
+                new(Number, "0", 16, numberValue : 0d),
                 new(RParen, ")", 18),
                 new(EOF, "", 19)
             };
@@ -241,22 +239,22 @@ namespace RainLispTests
                 new(LParen, "(", 8),
                 new(LParen, "(", 10),
                 new(Identifier, ">=", 12),
-                new(Number, "1", 15, NumberValue: 1d),
-                new(Number, "0", 17, NumberValue: 0d),
+                new(Number, "1", 15, numberValue: 1d),
+                new(Number, "0", 17, numberValue: 0d),
                 new(RParen, ")", 18),
-                new(Number, "0", 20, NumberValue: 0d),
+                new(Number, "0", 20, numberValue: 0d),
                 new(RParen, ")", 21),
                 new(LParen, "(", 23),
                 new(LParen, "(", 25),
                 new(Identifier, "<=", 27),
-                new(Number, "2", 30, NumberValue: 2d),
-                new(Number, "1", 32, NumberValue: 1d),
+                new(Number, "2", 30, numberValue: 2d),
+                new(Number, "1", 32, numberValue: 1d),
                 new(RParen, ")", 33),
-                new(Number, "1", 35, NumberValue: 1d),
+                new(Number, "1", 35, numberValue: 1d),
                 new(RParen, ")", 36),
                 new(LParen, "(", 38),
                 new(Else, "else", 40),
-                new(Number, "3", 45, NumberValue: 3d),
+                new(Number, "3", 45, numberValue: 3d),
                 new(RParen, ")", 46),
                 new(RParen, ")", 48),
                 new(EOF, "", 49)
@@ -317,15 +315,15 @@ namespace RainLispTests
                 new(LParen, "(", 7),
                 new(LParen, "(", 8),
                 new(Identifier, "a", 9),
-                new(Number, "1", 11, NumberValue: 1d),
+                new(Number, "1", 11, numberValue: 1d),
                 new(RParen, ")", 12),
                 new(LParen, "(", 14),
                 new(Identifier, "b", 15),
-                new(Number, "2", 17, NumberValue: 2d),
+                new(Number, "2", 17, numberValue: 2d),
                 new(RParen, ")", 18),
                 new(LParen, "(", 20),
                 new(Identifier, "c", 21),
-                new(Number, "3", 23, NumberValue: 3d),
+                new(Number, "3", 23, numberValue: 3d),
                 new(RParen, ")", 24),
                 new(RParen, ")", 25),
                 new(LParen, "(", 27),
@@ -455,11 +453,11 @@ namespace RainLispTests
             {
                 new(LParen, "(", 1),
                 new(Identifier, "+", 2),
-                new(Number, "1", 4, NumberValue: 1d),
-                new(Number, "2", 1, 2, NumberValue: 2d),
-                new(Number, "3", 1, 3, NumberValue: 3d),
-                new(Number, "4", 1, PickLine(4, 5), NumberValue: 4d),
-                new(Number, "5", 3, PickLine(4, 5), NumberValue: 5d),
+                new(Number, "1", 4, numberValue: 1d),
+                new(Number, "2", 1, 2, numberValue: 2d),
+                new(Number, "3", 1, 3, numberValue: 3d),
+                new(Number, "4", 1, PickLine(4, 5), numberValue: 4d),
+                new(Number, "5", 3, PickLine(4, 5), numberValue: 5d),
                 new(RParen, ")", 4, PickLine(4, 5)),
                 new(EOF, "", 5, PickLine(4, 5))
             };
