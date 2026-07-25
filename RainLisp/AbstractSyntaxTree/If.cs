@@ -6,35 +6,25 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// If expression in the abstract syntax tree.
     /// </summary>
-    public class If : Expression
+    /// <param name="predicate">The expression whose value determines whether the <paramref name="consequent"/> or <paramref name="alternative"/> is to be executed.</param>
+    /// <param name="consequent">The expression to be evaluated if <paramref name="predicate"/>'s value is true.</param>
+    /// <param name="alternative">The optional expression to be evaluated if <paramref name="predicate"/>'s value is false.</param>
+    public class If(Expression predicate, Expression consequent, Expression? alternative = null) : Expression
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="If"/> class.
-        /// </summary>
-        /// <param name="predicate">The expression whose value determines whether the <paramref name="consequent"/> or <paramref name="alternative"/> is to be executed.</param>
-        /// <param name="consequent">The expression to be evaluated if <paramref name="predicate"/>'s value is true.</param>
-        /// <param name="alternative">The optional expression to be evaluated if <paramref name="predicate"/>'s value is false.</param>
-        public If(Expression predicate, Expression consequent, Expression? alternative = null)
-        {
-            Predicate = predicate;
-            Consequent = consequent;
-            Alternative = alternative;
-        }
-
         /// <summary>
         /// Gets or sets the expression whose value determines whether the <see cref="Consequent"/> or <see cref="Alternative"/> is to be executed.
         /// </summary>
-        public Expression Predicate { get; init; }
+        public Expression Predicate { get; init; } = predicate;
 
         /// <summary>
         /// Gets or sets the expression to be evaluated if <see cref="Predicate"/>'s value is true.
         /// </summary>
-        public Expression Consequent { get; init; }
+        public Expression Consequent { get; init; } = consequent;
 
         /// <summary>
         /// Gets or sets the optional expression to be evaluated if <see cref="Predicate"/>'s value is false.
         /// </summary>
-        public Expression? Alternative { get; init; }
+        public Expression? Alternative { get; init; } = alternative;
 
         /// <summary>
         /// Evaluates the if expression and returns the result.

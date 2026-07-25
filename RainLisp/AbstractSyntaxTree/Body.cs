@@ -6,28 +6,19 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// Body of a function in the abstract syntax tree.
     /// </summary>
-    public class Body : Node
+    /// <param name="definitions">An optional list of definitions.</param>
+    /// <param name="expressions">The list of expressions included in the function's body.</param>
+    public class Body(IList<Definition>? definitions, IList<Expression> expressions) : Node
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Body"/> class.
-        /// </summary>
-        /// <param name="definitions">An optional list of definitions.</param>
-        /// <param name="expressions">The list of expressions included in the function's body.</param>
-        public Body(IList<Definition>? definitions, IList<Expression> expressions)
-        {
-            Definitions = definitions;
-            Expressions = expressions;
-        }
-
         /// <summary>
         /// Gets or sets the optional list of definitions.
         /// </summary>
-        public IList<Definition>? Definitions { get; init; }
+        public IList<Definition>? Definitions { get; init; } = definitions;
 
         /// <summary>
         /// Gets or sets the list of expressions included in the function's body.
         /// </summary>
-        public IList<Expression> Expressions { get; init; }
+        public IList<Expression> Expressions { get; init; } = expressions;
 
         /// <summary>
         /// Evaluates the function's body and returns the result.

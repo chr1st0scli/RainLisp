@@ -3,16 +3,9 @@
     /// <summary>
     /// Represents a boolean primitive datum as a result of an evaluation.
     /// </summary>
-    public class BoolDatum : PrimitiveDatum<bool>
+    /// <param name="value">The underlying primitive value.</param>
+    public class BoolDatum(bool value) : PrimitiveDatum<bool>(value)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BoolDatum"/> class.
-        /// </summary>
-        /// <param name="value">The underlying primitive value.</param>
-        public BoolDatum(bool value) : base(value)
-        {
-        }
-
         /// <summary>
         /// Accepts a visitor that performs some operation on the boolean primitive and returns a <typeparamref name="T"/>.
         /// </summary>

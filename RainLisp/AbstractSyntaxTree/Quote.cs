@@ -6,19 +6,13 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// Quote expression in the abstract syntax tree.
     /// </summary>
-    public class Quote : Expression
+    /// <param name="quotable">The quotable contained in the quote epression.</param>
+    public class Quote(Quotable quotable) : Expression
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Quote"/> class.
-        /// </summary>
-        /// <param name="quotable">The quotable contained in the quote epression.</param>
-        public Quote(Quotable quotable)
-            => Quotable = quotable;
-
         /// <summary>
         /// Gets or sets the quotable contained in the quote expression.
         /// </summary>
-        public Quotable Quotable { get; init; }
+        public Quotable Quotable { get; init; } = quotable;
 
         /// <summary>
         /// Evaluates the quote expression and returns the result.

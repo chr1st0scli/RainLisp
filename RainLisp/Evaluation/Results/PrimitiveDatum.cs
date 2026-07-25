@@ -4,19 +4,13 @@
     /// Represents a primitive datum as a result of an evaluation.
     /// </summary>
     /// <typeparam name="T">The underlying primitive datum's type.</typeparam>
-    public abstract class PrimitiveDatum<T> : EvaluationResult, IPrimitiveDatum where T : notnull
+    /// <param name="value">The underlying primitive datum's value.</param>
+    public abstract class PrimitiveDatum<T>(T value) : EvaluationResult, IPrimitiveDatum where T : notnull
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveDatum{T}"/> class.
-        /// </summary>
-        /// <param name="value">The underlying primitive datum's value.</param>
-        public PrimitiveDatum(T value)
-            => Value = value;
-
         /// <summary>
         /// Gets or sets the primitive datum's value.
         /// </summary>
-        public T Value { get; init; }
+        public T Value { get; init; } = value;
 
         /// <summary>
         /// Returns the underlying primitive datum's value as an object.

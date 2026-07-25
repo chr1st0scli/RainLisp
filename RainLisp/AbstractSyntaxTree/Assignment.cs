@@ -6,28 +6,19 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// Assignment of a value to an identifier in the abstract syntax tree.
     /// </summary>
-    public class Assignment : Expression
+    /// <param name="identifierName">The identifier name to be bound to the new value.</param>
+    /// <param name="value">The expression whose value is to be bound to <paramref name="identifierName"/>.</param>
+    public class Assignment(string identifierName, Expression value) : Expression
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Assignment"/> class.
-        /// </summary>
-        /// <param name="identifierName">The identifier name to be bound to the new value.</param>
-        /// <param name="value">The expression whose value is to be bound to <paramref name="identifierName"/>.</param>
-        public Assignment(string identifierName, Expression value)
-        {
-            IdentifierName = identifierName;
-            Value = value;
-        }
-
         /// <summary>
         /// Gets or sets the identifier name to be bound to the new value.
         /// </summary>
-        public string IdentifierName { get; init; }
+        public string IdentifierName { get; init; } = identifierName;
 
         /// <summary>
         /// Gets or sets the expression whose value is to be bound to <see cref="IdentifierName"/>.
         /// </summary>
-        public Expression Value { get; init; }
+        public Expression Value { get; init; } = value;
 
         /// <summary>
         /// Evaluates the assignment and returns the result.
