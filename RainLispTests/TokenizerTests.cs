@@ -203,7 +203,7 @@ namespace RainLispTests
 
             // Set different positions for the same expression.
             var defineExpectedTokens2 = defineExpectedTokens
-                .Zip(new[] { 1, 2, 8, 9, 13, 15, 16, 17, 18, 20, 22, 23, 24, 25 })
+                .Zip([1, 2, 8, 9, 13, 15, 16, 17, 18, 20, 22, 23, 24, 25])
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
                 .ToArray();
 
@@ -228,7 +228,7 @@ namespace RainLispTests
 
             // Set different positions for the same expression.
             var ifExpectedTokens2 = ifExpectedTokens
-                .Zip(new[] { 1, 2, 4, 5, 7, 9, 10, 12, 14, 15, 16 })
+                .Zip([1, 2, 4, 5, 7, 9, 10, 12, 14, 15, 16])
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second, numberValue: tokenPositionPair.First.NumberValue))
                 .ToArray();
 
@@ -266,13 +266,13 @@ namespace RainLispTests
 
             // Set different positions for the same expression.
             var condExpectedTokens2 = condExpectedTokens
-                .Zip(new[] { 1, 2, 6, 7, 8, 11, 13, 14, 16, 17, 18, 19, 20, 23, 25, 26, 28, 29, 30, 31, 36, 37, 38, 39 })
+                .Zip([1, 2, 6, 7, 8, 11, 13, 14, 16, 17, 18, 19, 20, 23, 25, 26, 28, 29, 30, 31, 36, 37, 38, 39])
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second, numberValue: tokenPositionPair.First.NumberValue))
                 .ToArray();
 
             data.Add("(cond((>= 1 0) 0)((<= 2 1) 1)(else 3))", condExpectedTokens2);
 
-            data.Add("(begin 1 2 3 4)", new[] {
+            data.Add("(begin 1 2 3 4)", [
                 Expect(LParen, "(", 1),
                 Expect(Begin, "begin", 2),
                 Expect(Number, "1", 8, numberValue: 1d),
@@ -281,7 +281,7 @@ namespace RainLispTests
                 Expect(Number, "4", 14, numberValue: 4d),
                 Expect(RParen, ")", 15),
                 Expect(EOF, "", 16)
-            });
+            ]);
 
             var lambdaExpectedTokens = new ExpectedToken[]
             {
@@ -304,7 +304,7 @@ namespace RainLispTests
 
             // Set different positions for the same expression.
             var lambdaExpectedTokens2 = lambdaExpectedTokens
-                .Zip(new[] { 1, 2, 8, 9, 11, 12, 13, 14, 16, 18, 19, 20, 21 })
+                .Zip([1, 2, 8, 9, 11, 12, 13, 14, 16, 18, 19, 20, 21])
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second))
                 .ToArray();
 
@@ -342,94 +342,94 @@ namespace RainLispTests
 
             // Set different positions for the same expression.
             var letExpectedTokens2 = letExpectedTokens
-                .Zip(new[] { 1, 2, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 25, 27, 29, 30, 31, 32 })
+                .Zip([1, 2, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 25, 27, 29, 30, 31, 32])
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, (uint)tokenPositionPair.Second, numberValue: tokenPositionPair.First.NumberValue))
                 .ToArray();
 
             data.Add("(let((a 1)(b 2)(c 3))(+ a b c))", letExpectedTokens2);
 
-            data.Add("(+ 1234.5678 23456.7891)", new[] {
+            data.Add("(+ 1234.5678 23456.7891)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "1234.5678", 4, numberValue: 1234.5678),
                 Expect(Number, "23456.7891", 14, numberValue: 23456.7891),
                 Expect(RParen, ")", 24),
                 Expect(EOF, "", 25)
-            });
+            ]);
 
-            data.Add("(+ 1 2)", new[] {
+            data.Add("(+ 1 2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "1", 4, numberValue: 1d),
                 Expect(Number, "2", 6, numberValue: 2d),
                 Expect(RParen, ")", 7),
                 Expect(EOF, "", 8)
-            });
+            ]);
 
-            data.Add("(+ +1 -2)", new[] {
+            data.Add("(+ +1 -2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "+1", 4, numberValue: 1d),
                 Expect(Number, "-2", 7, numberValue: -2d),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            });
+            ]);
 
-            data.Add("(* 1 2)", new[] {
+            data.Add("(* 1 2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "*", 2),
                 Expect(Number, "1", 4, numberValue: 1d),
                 Expect(Number, "2", 6, numberValue: 2d),
                 Expect(RParen, ")", 7),
                 Expect(EOF, "", 8)
-            });
+            ]);
 
-            data.Add("(* -1 +2)", new[] {
+            data.Add("(* -1 +2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "*", 2),
                 Expect(Number, "-1", 4, numberValue: -1d),
                 Expect(Number, "+2", 7, numberValue: 2d),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            });
+            ]);
 
-            data.Add("(/ 1 2)", new[] {
+            data.Add("(/ 1 2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "/", 2),
                 Expect(Number, "1", 4, numberValue: 1d),
                 Expect(Number, "2", 6, numberValue: 2d),
                 Expect(RParen, ")", 7),
                 Expect(EOF, "", 8)
-            });
+            ]);
 
-            data.Add("(/ -1 +2)", new[] {
+            data.Add("(/ -1 +2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "/", 2),
                 Expect(Number, "-1", 4, numberValue: -1d),
                 Expect(Number, "+2", 7, numberValue: 2d),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            });
+            ]);
 
-            data.Add("(% 1 2)", new[] {
+            data.Add("(% 1 2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "%", 2),
                 Expect(Number, "1", 4, numberValue: 1d),
                 Expect(Number, "2", 6, numberValue: 2d),
                 Expect(RParen, ")", 7),
                 Expect(EOF, "", 8)
-            });
+            ]);
 
-            data.Add("(% +1 -2)", new[] {
+            data.Add("(% +1 -2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "%", 2),
                 Expect(Number, "+1", 4, numberValue: 1d),
                 Expect(Number, "-2", 7, numberValue: -2d),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            });
+            ]);
 
-            data.Add("(+ 0 1 2)", new[] {
+            data.Add("(+ 0 1 2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "0", 4, numberValue: 0d),
@@ -437,9 +437,9 @@ namespace RainLispTests
                 Expect(Number, "2", 8, numberValue: 2d),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10)
-            });
+            ]);
 
-            data.Add("(+ 0 -1 2)", new[] {
+            data.Add("(+ 0 -1 2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "0", 4, numberValue: 0d),
@@ -447,9 +447,9 @@ namespace RainLispTests
                 Expect(Number, "2", 9, numberValue: 2d),
                 Expect(RParen, ")", 10),
                 Expect(EOF, "", 11)
-            });
+            ]);
 
-            data.Add("()", new[] { Expect(LParen, "(", 1), Expect(RParen, ")", 2), Expect(EOF, "", 3) });
+            data.Add("()", [Expect(LParen, "(", 1), Expect(RParen, ")", 2), Expect(EOF, "", 3)]);
 
             var tokensOnDifferentLines = new ExpectedToken[]
             {
@@ -468,7 +468,7 @@ namespace RainLispTests
 
             // Set different lines for the same expression.
             var tokensOnDifferentLines2 = tokensOnDifferentLines
-                .Zip(new[] { 1, 1, 1, 2, 3, 5, 5, 5, 5 })
+                .Zip([1, 1, 1, 2, 3, 5, 5, 5, 5])
                 .Select(tokenPositionPair => Expect(tokenPositionPair.First.TokenType, tokenPositionPair.First.Value, tokenPositionPair.First.Position, (uint)tokenPositionPair.Second, tokenPositionPair.First.NumberValue))
                 .ToArray();
 
@@ -476,52 +476,52 @@ namespace RainLispTests
             data.Add("(+ 1\n2\r3\r\r4\t5)", tokensOnDifferentLines2);
             data.Add("(+ 1\n2\r3\n\n4\t5)", tokensOnDifferentLines2);
 
-            data.Add("(and true false)", new[] {
+            data.Add("(and true false)", [
                 Expect(LParen, "(", 1),
                 Expect(And, "and", 2),
                 Expect(TokenType.Boolean, "true", 6, booleanValue: true),
                 Expect(TokenType.Boolean, "false", 11, booleanValue: false),
                 Expect(RParen, ")", 16),
                 Expect(EOF, "", 17)
-            });
+            ]);
 
-            data.Add("(or false true)", new[] {
+            data.Add("(or false true)", [
                 Expect(LParen, "(", 1),
                 Expect(Or, "or", 2),
                 Expect(TokenType.Boolean, "false", 5, booleanValue : false),
                 Expect(TokenType.Boolean, "true", 11, booleanValue : true),
                 Expect(RParen, ")", 15),
                 Expect(EOF, "", 16)
-            });
+            ]);
 
-            data.Add("(xor false true)", new[] {
+            data.Add("(xor false true)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "xor", 2),
                 Expect(TokenType.Boolean, "false", 6, booleanValue : false),
                 Expect(TokenType.Boolean, "true", 12, booleanValue : true),
                 Expect(RParen, ")", 16),
                 Expect(EOF, "", 17)
-            });
+            ]);
 
             data.Add(@"(+
 1
-2)", new[] {
+2)", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "1", 1, PickLine(2), numberValue: 1d),
                 Expect(Number, "2", 1, PickLine(3), numberValue: 2d),
                 Expect(RParen, ")", 2, PickLine(3)),
                 Expect(EOF, "", 3, PickLine(3))
-            });
+            ]);
 
-            data.Add("(+ 10 15);This is a comment, () \t\";", new[] {
+            data.Add("(+ 10 15);This is a comment, () \t\";", [
                 Expect(LParen, "(", 1),
                 Expect(Identifier, "+", 2),
                 Expect(Number, "10", 4, numberValue: 10d),
                 Expect(Number, "15", 7, numberValue: 15d),
                 Expect(RParen, ")", 9),
                 Expect(EOF, "", 10),
-            });
+            ]);
 
             data.Add(@"; A function for returning the max of two numbers.
 (define (max num1 num2) ; num1 and num2 are numbers
@@ -529,7 +529,7 @@ namespace RainLispTests
     (if (> num1 num2) num1
         num2))
 
-(max 55 21); Expecting 55.", new[] {
+(max 55 21); Expecting 55.", [
                 Expect(LParen, "(", 1, PickLine(2)),
                 Expect(Definition, "define", 2, PickLine(2)),
                 Expect(LParen, "(", 9, PickLine(2)),
@@ -554,14 +554,14 @@ namespace RainLispTests
                 Expect(Number, "21", 9, PickLine(7), numberValue: 21d),
                 Expect(RParen, ")", 11, PickLine(7)),
                 Expect(EOF, "", 12, PickLine(7)),
-            });
+            ]);
 
             data.Add(@"; Return the smallest of two numbers.
 (define (min num1 num2)
     (if (<= num1 num2) 
         num1 ; return num1
         num2)) ; return num2
-(min 7 4)", new[] {
+(min 7 4)", [
                 Expect(LParen, "(", 1, PickLine(2)),
                 Expect(Definition, "define", 2, PickLine(2)),
                 Expect(LParen, "(", 9, PickLine(2)),
@@ -586,7 +586,7 @@ namespace RainLispTests
                 Expect(Number, "4", 8, PickLine(6), numberValue: 4d),
                 Expect(RParen, ")", 9, PickLine(6)),
                 Expect(EOF, "", 10, PickLine(6)),
-            });
+            ]);
 
             return data;
         }
