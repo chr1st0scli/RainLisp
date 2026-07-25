@@ -236,7 +236,7 @@ namespace RainLisp
                 // It does not help the user if IPrimitiveDatum is reported. Report its concrete classes instead.
                 var expectedTypes = ex.Expected;
                 if (_primitiveTypes != null && _primitiveTypes.Length > 0)
-                    expectedTypes = expectedTypes.SelectMany(t => t == typeof(IPrimitiveDatum) ? _primitiveTypes : Enumerable.Repeat(t, 1)).ToArray();
+                    expectedTypes = [.. expectedTypes.SelectMany(t => t == typeof(IPrimitiveDatum) ? _primitiveTypes : Enumerable.Repeat(t, 1))];
 
                 if (expectedTypes.Length > 1)
                     message = string.Format(ErrorMessages.WRONG_TYPE_OF_ARGUMENT_FOR_MANY, string.Join(", ", expectedTypes.Select(t => t.Name)), ex.Actual.Name);

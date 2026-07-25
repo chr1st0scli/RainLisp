@@ -7,26 +7,15 @@ namespace RainLisp.Tokenization
     /// <summary>
     /// Represents a string tokenizer capable of performing lexical analysis on string literals.
     /// </summary>
-    public class StringTokenizer
+    /// <param name="stringCompletedAction">An action to be called when the current string being built is complete.</param>
+    /// <exception cref="ArgumentNullException">The <paramref name="stringCompletedAction"/> is null.</exception>
+    public class StringTokenizer(Action stringCompletedAction)
     {
         private bool _escaping;
-        private readonly StringBuilder _valueStringBuilder;
-        private readonly StringBuilder _literalStringBuilder;
-        private readonly Action _stringCompletedAction;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StringTokenizer"/> class.
-        /// </summary>
-        /// <param name="stringCompletedAction">An action to be called when the current string being built is complete.</param>
-        /// <exception cref="ArgumentNullException">The <paramref name="stringCompletedAction"/> is null.</exception>
-        public StringTokenizer(Action stringCompletedAction)
-        {
-            _stringCompletedAction = stringCompletedAction ?? throw new ArgumentNullException(nameof(stringCompletedAction));
-            _valueStringBuilder = new StringBuilder();
-            _literalStringBuilder = new StringBuilder();
-            _escaping = false;
-            CharactersProcessed = 0;
-        }
+        private readonly StringBuilder _valueStringBuilder = new();
+        private readonly StringBuilder _literalStringBuilder = new();
+        private readonly Action _stringCompletedAction = stringCompletedAction 
+            ?? throw new ArgumentNullException(nameof(stringCompletedAction));
 
         /// <summary>
         /// Clears the state of the string tokenizer so that it can start processing a new string literal.

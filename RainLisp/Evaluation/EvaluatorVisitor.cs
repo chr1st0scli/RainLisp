@@ -6,17 +6,12 @@ namespace RainLisp.Evaluation
     /// <summary>
     /// Represents an evaluator that is capable of evaluating an abstract syntax tree and its components.
     /// </summary>
-    public class EvaluatorVisitor : IEvaluatorVisitor
+    /// <param name="procedureApplicationVisitor">An evaluator that is capable of evaluating user and primitive procedure applications (calls).</param>
+    /// <exception cref="ArgumentNullException">The <paramref name="procedureApplicationVisitor"/> is null.</exception>
+    public class EvaluatorVisitor(IProcedureApplicationVisitor procedureApplicationVisitor) : IEvaluatorVisitor
     {
-        private readonly IProcedureApplicationVisitor _procedureApplicationVisitor;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EvaluatorVisitor"/> class.
-        /// </summary>
-        /// <param name="procedureApplicationVisitor">An evaluator that is capable of evaluating user and primitive procedure applications (calls).</param>
-        /// <exception cref="ArgumentNullException">The <paramref name="procedureApplicationVisitor"/> is null.</exception>
-        public EvaluatorVisitor(IProcedureApplicationVisitor procedureApplicationVisitor)
-            => _procedureApplicationVisitor = procedureApplicationVisitor ?? throw new ArgumentNullException(nameof(procedureApplicationVisitor));
+        private readonly IProcedureApplicationVisitor _procedureApplicationVisitor = procedureApplicationVisitor 
+            ?? throw new ArgumentNullException(nameof(procedureApplicationVisitor));
 
         /// <summary>
         /// Returns the result of evaluating a numeric literal.
@@ -74,9 +69,9 @@ namespace RainLisp.Evaluation
             EvaluationResult Evaluate()
             {
                 // Defer the evaluation of the expression to get the value to assign to the identifier, until it is certain that the definition exists.
-                var valueProvider = () => assignment.Value.AcceptVisitor(this, environment);
+                EvaluationResult ProvideValue() => assignment.Value.AcceptVisitor(this, environment);
 
-                environment.SetIdentifierValue(assignment.IdentifierName, valueProvider);
+                environment.SetIdentifierValue(assignment.IdentifierName, ProvideValue);
 
                 return Unspecified.GetUnspecified();
             }
