@@ -3,16 +3,9 @@
     /// <summary>
     /// Represents a date and time primitive datum as a result of an evaluation.
     /// </summary>
-    public class DateTimeDatum : PrimitiveDatum<DateTime>
+    /// <param name="value">The underlying primitive value.</param>
+    public class DateTimeDatum(DateTime value) : PrimitiveDatum<DateTime>(value)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DateTimeDatum"/> class.
-        /// </summary>
-        /// <param name="value">The underlying primitive value.</param>
-        public DateTimeDatum(DateTime value) : base(value)
-        {
-        }
-
         /// <summary>
         /// Accepts a visitor that performs some operation on the date and time primitive and returns a <typeparamref name="T"/>.
         /// </summary>

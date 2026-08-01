@@ -1,19 +1,32 @@
 ﻿using RainLisp;
+using Xunit.Abstractions;
 
 namespace RainLispTests
 {
-    internal class TestDebugInfo : IDebugInfo
+    public class TestDebugInfo(uint line, uint position) : IDebugInfo, IXunitSerializable
     {
-        public TestDebugInfo(uint line, uint position)
+        public TestDebugInfo() : this(0, 0)
         {
-            Line = line;
-            Position = position;
         }
 
-        public uint Line { get; set; }
+        public uint Line { get; set; } = line;
 
-        public uint Position { get; set; }
+        public uint Position { get; set; } = position;
 
         public bool HasDebugInfo { get; set; }
+
+        public void Deserialize(IXunitSerializationInfo info)
+        {
+            Line = info.GetValue<uint>(nameof(Line));
+            Position = info.GetValue<uint>(nameof(Position));
+            HasDebugInfo = info.GetValue<bool>(nameof(HasDebugInfo));
+        }
+
+        public void Serialize(IXunitSerializationInfo info)
+        {
+            info.AddValue(nameof(Line), Line);
+            info.AddValue(nameof(Position), Position);
+            info.AddValue(nameof(HasDebugInfo), HasDebugInfo);
+        }
     }
 }

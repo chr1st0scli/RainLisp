@@ -76,7 +76,7 @@ namespace RainLispTests
         [InlineData("({0} 1 2)", 0, 2)]
         public void Evaluate_CallExpectingZeroWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
         {
-            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "newline", "now", "utc-now" }, expression, expected, false, actual);
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(["newline", "now", "utc-now"], expression, expected, false, actual);
         }
 
         [Theory]
@@ -84,12 +84,12 @@ namespace RainLispTests
         [InlineData("({0} 1 2)", 1, 2)]
         public void Evaluate_CallExpectingOneWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
         {
-            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
-                {
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(
+                [
                     "not", "car", "cdr", "null?", "display", "debug", "trace", "error", "string-length", "to-lower", "to-upper",
                     "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc", "parse-number",
                     "eval", "pair?", "ceiling", "floor", "length"
-                }, expression, expected, false, actual);
+                ], expression, expected, false, actual);
         }
 
         [Theory]
@@ -98,12 +98,12 @@ namespace RainLispTests
         [InlineData("({0} 1 2 3)", 2, 3)]
         public void Evaluate_CallExpectingTwoWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
         {
-            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[]
-                {
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(
+                [
                     ">", ">=", "<", "<=", "=", "cons", "set-car!", "set-cdr!",
                     "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds", "number-to-string", "parse-number-culture",
                     "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff", "parse-datetime", "datetime-to-string", "round", "at-list", "at-stream"
-                }, expression, expected, false, actual);
+                ], expression, expected, false, actual);
         }
 
         [Theory]
@@ -111,7 +111,7 @@ namespace RainLispTests
         [InlineData("({0} 1)", 2, 1)]
         public void Evaluate_CallExpectingTwoOrMoreWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
         {
-            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "+", "-", "*", "/", "%", "xor" }, expression, expected, true, actual);
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(["+", "-", "*", "/", "%", "xor"], expression, expected, true, actual);
         }
 
         [Theory]
@@ -121,7 +121,7 @@ namespace RainLispTests
         [InlineData("({0} 1 2 3 4)", 3, 4)]
         public void Evaluate_CallExpectingThreeWithWrongNumberOfArguments_Throws(string expression, int expected, int actual)
         {
-            Evaluate_CallsWithWrongNumberOfArguments_Throws(new[] { "substring", "index-of-string", "replace-string" }, expression, expected, false, actual);
+            Evaluate_CallsWithWrongNumberOfArguments_Throws(["substring", "index-of-string", "replace-string"], expression, expected, false, actual);
         }
 
         [Theory]
@@ -231,7 +231,7 @@ namespace RainLispTests
         [InlineData("({0} (newline) (newline))", typeof(Unspecified), typeof(NumberDatum), typeof(StringDatum))]
         public void Evaluate_CallExpectingNumbersOrStringsWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "+" }, expression, actual, expected);
+            Evaluate_CallsWithWrongExpression_Throws(["+"], expression, actual, expected);
         }
 
         [Theory]
@@ -246,7 +246,7 @@ namespace RainLispTests
         [InlineData("({0} (newline))", typeof(Unspecified))]
         public void Evaluate_CallExpectingNumberWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "ceiling", "floor" }, expression, actual, typeof(NumberDatum));
+            Evaluate_CallsWithWrongExpression_Throws(["ceiling", "floor"], expression, actual, typeof(NumberDatum));
         }
 
         [Theory]
@@ -276,7 +276,7 @@ namespace RainLispTests
         [InlineData("({0} (newline) (newline))", typeof(Unspecified))]
         public void Evaluate_CallExpectingNumbersWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "-", "*", "/", "%", "round" }, expression, actual, typeof(NumberDatum));
+            Evaluate_CallsWithWrongExpression_Throws(["-", "*", "/", "%", "round"], expression, actual, typeof(NumberDatum));
         }
 
         [Theory]
@@ -305,7 +305,7 @@ namespace RainLispTests
         [InlineData("({0} (newline) (newline))", typeof(Unspecified), typeof(NumberDatum), typeof(DateTimeDatum))]
         public void Evaluate_CallExpectingNumbersOrDateTimesWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { ">", ">=", "<", "<=" }, expression, actual, expected);
+            Evaluate_CallsWithWrongExpression_Throws([">", ">=", "<", "<="], expression, actual, expected);
         }
 
         [Theory]
@@ -319,7 +319,7 @@ namespace RainLispTests
         [InlineData("({0} -)", typeof(PrimitiveProcedure))]
         public void Evaluate_CallExpectingPairWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "car", "cdr" }, expression, actual, typeof(Pair));
+            Evaluate_CallsWithWrongExpression_Throws(["car", "cdr"], expression, actual, typeof(Pair));
         }
 
         [Theory]
@@ -333,7 +333,7 @@ namespace RainLispTests
         [InlineData("({0} - 1)", typeof(PrimitiveProcedure))]
         public void Evaluate_CallExpectingPairAndAnythingWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "set-car!", "set-cdr!" }, expression, actual, typeof(Pair));
+            Evaluate_CallsWithWrongExpression_Throws(["set-car!", "set-cdr!"], expression, actual, typeof(Pair));
         }
 
         [Theory]
@@ -344,7 +344,7 @@ namespace RainLispTests
         [InlineData("({0} (lambda () 1))", typeof(UserProcedure))]
         public void Evaluate_CallExpectingPrimitiveWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "display", "debug", "trace", "error" }, expression, actual, typeof(IPrimitiveDatum));
+            Evaluate_CallsWithWrongExpression_Throws(["display", "debug", "trace", "error"], expression, actual, typeof(IPrimitiveDatum));
         }
 
         [Theory]
@@ -357,7 +357,7 @@ namespace RainLispTests
         [InlineData("({0} \"hello\")", typeof(StringDatum))]
         public void Evaluate_CallExpectingDateTimeWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc" }, expression, actual, typeof(DateTimeDatum));
+            Evaluate_CallsWithWrongExpression_Throws(["year", "month", "day", "hour", "minute", "second", "millisecond", "utc?", "to-local", "to-utc"], expression, actual, typeof(DateTimeDatum));
         }
 
         [Theory]
@@ -379,7 +379,7 @@ namespace RainLispTests
         [InlineData("({0} (now) (now))", typeof(DateTimeDatum), typeof(NumberDatum))]
         public void Evaluate_CallExpectingDateTimeAndNumberWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds" }, expression, actual, expected);
+            Evaluate_CallsWithWrongExpression_Throws(["add-years", "add-months", "add-days", "add-hours", "add-minutes", "add-seconds", "add-milliseconds"], expression, actual, expected);
         }
 
         [Theory]
@@ -401,7 +401,7 @@ namespace RainLispTests
         [InlineData("({0} (now) \"hello\")", typeof(StringDatum))]
         public void Evaluate_CallExpecting2DateTimesWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff" }, expression, actual, typeof(DateTimeDatum));
+            Evaluate_CallsWithWrongExpression_Throws(["days-diff", "hours-diff", "minutes-diff", "seconds-diff", "milliseconds-diff"], expression, actual, typeof(DateTimeDatum));
         }
 
         [Theory]
@@ -415,7 +415,7 @@ namespace RainLispTests
         [InlineData("({0} 1)", typeof(NumberDatum))]
         public void Evaluate_CallExpectingStringWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "string-length", "to-lower", "to-upper", "parse-number" }, expression, actual, typeof(StringDatum));
+            Evaluate_CallsWithWrongExpression_Throws(["string-length", "to-lower", "to-upper", "parse-number"], expression, actual, typeof(StringDatum));
         }
 
         [Theory]
@@ -436,7 +436,7 @@ namespace RainLispTests
         [InlineData("({0} \"hello\" true)", typeof(BoolDatum))]
         public void Evaluate_CallExpecting2StringsWithWrongTypeOfArgument_Throws(string expression, Type actual)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "parse-datetime", "parse-number-culture" }, expression, actual, typeof(StringDatum));
+            Evaluate_CallsWithWrongExpression_Throws(["parse-datetime", "parse-number-culture"], expression, actual, typeof(StringDatum));
         }
 
         [Theory]
@@ -458,7 +458,7 @@ namespace RainLispTests
         [InlineData("({0} (now) (now))", typeof(DateTimeDatum), typeof(StringDatum))]
         public void Evaluate_CallExpectingDateTimeAndStringWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "datetime-to-string" }, expression, actual, expected);
+            Evaluate_CallsWithWrongExpression_Throws(["datetime-to-string"], expression, actual, expected);
         }
 
         [Theory]
@@ -480,7 +480,7 @@ namespace RainLispTests
         [InlineData("({0} 1 (now))", typeof(DateTimeDatum), typeof(StringDatum))]
         public void Evaluate_CallExpectingNumberAndStringWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "number-to-string" }, expression, actual, expected);
+            Evaluate_CallsWithWrongExpression_Throws(["number-to-string"], expression, actual, expected);
         }
 
         [Theory]
@@ -501,7 +501,7 @@ namespace RainLispTests
         [InlineData("({0} (list 'ab (list 'cd 'ef) (list (list 'gh \"\")) 'ik))", typeof(StringDatum), typeof(QuoteSymbol))]
         public void Evaluate_EvalPrimitiveWithWrongTypeOfArgument_Throws(string expression, Type actual, params Type[] expected)
         {
-            Evaluate_CallsWithWrongExpression_Throws(new[] { "eval" }, expression, actual, expected);
+            Evaluate_CallsWithWrongExpression_Throws(["eval"], expression, actual, expected);
         }
 
         [Theory]
@@ -616,7 +616,7 @@ namespace RainLispTests
 
         [Theory]
         [MemberData(nameof(GetCallStackData))]
-        public void Evaluate_ExpressionWithError_ErrorWithCorrectCallStack(string expression, IDebugInfo[] expectedCallStack)
+        public void Evaluate_ExpressionWithError_ErrorWithCorrectCallStack(string expression, TestDebugInfo[] expectedCallStack)
         {
             // Arrange
             EvaluationException? exception = null;
@@ -698,17 +698,17 @@ namespace RainLispTests
             return exception!;
         }
 
-        private static TheoryData<string, IDebugInfo[]> GetCallStackData()
+        public static TheoryData<string, TestDebugInfo[]> GetCallStackData()
         {
-            var data = new TheoryData<string, IDebugInfo[]>
+            var data = new TheoryData<string, TestDebugInfo[]>
             {
-                { "(+ 12)", new[] { new TestDebugInfo(1, 2) } },    // WrongNumberOfArgumentsException
-                { "(round \"hello\" 2)", new[] { new TestDebugInfo(1, 2) } },   // WrongTypeOfArgumentException
-                { "a", new[] { new TestDebugInfo(1, 1) } },   // UnknownIdentifierException
-                { "(set! a 3)", new[] { new TestDebugInfo(1, 2) } },   // UnknownIdentifierException
-                { "(1)", new[] { new TestDebugInfo(1, 2) } },   // NotProcedureException
-                { "(error \"user error\")", new[] { new TestDebugInfo(1, 2) } },   // UserException
-                { "(index-of-string \"hello world\" \"lo wo\" -1)", new[] { new TestDebugInfo(1, 2) } },   // InvalidValueException
+                { "(+ 12)", [new TestDebugInfo(1, 2)]},    // WrongNumberOfArgumentsException
+                { "(round \"hello\" 2)", [new TestDebugInfo(1, 2)]},   // WrongTypeOfArgumentException
+                { "a", [new TestDebugInfo(1, 1)]},   // UnknownIdentifierException
+                { "(set! a 3)", [new TestDebugInfo(1, 2)]},   // UnknownIdentifierException
+                { "(1)", [new TestDebugInfo(1, 2)]},   // NotProcedureException
+                { "(error \"user error\")", [new TestDebugInfo(1, 2)]},   // UserException
+                { "(index-of-string \"hello world\" \"lo wo\" -1)", [new TestDebugInfo(1, 2)]},   // InvalidValueException
             };
 
             string code = @"
@@ -716,31 +716,31 @@ namespace RainLispTests
     2
     3
     (+))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(5), 6) });
+            data.Add(code, [new TestDebugInfo(PickLine(5), 6)]);
 
             code = @"
 (if true
     (+)
     (-))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(3), 6) });
+            data.Add(code, [new TestDebugInfo(PickLine(3), 6)]);
 
             code = @"
 (if false
     (+)
     (-))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(4), 6) });
+            data.Add(code, [new TestDebugInfo(PickLine(4), 6)]);
 
             code = @"
 (let ((a 1) 
       (b (+ 1))) 
      (+ a))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(3), 11), new TestDebugInfo(PickLine(2), 2) });
+            data.Add(code, [new TestDebugInfo(PickLine(3), 11), new TestDebugInfo(PickLine(2), 2)]);
 
             code = @"
 (let ((a 1) 
       (b (+ 1 2))) 
      (+ a))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(4), 7), new TestDebugInfo(PickLine(2), 2) });
+            data.Add(code, [new TestDebugInfo(PickLine(4), 7), new TestDebugInfo(PickLine(2), 2)]);
 
             code = @"
 (define (get-lambda)
@@ -748,21 +748,21 @@ namespace RainLispTests
         (+)))
 
 ((get-lambda))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(4), 10), new TestDebugInfo(PickLine(6), 2) });
+            data.Add(code, [new TestDebugInfo(PickLine(4), 10), new TestDebugInfo(PickLine(6), 2)]);
 
             code = @"
 ((lambda () 
     (+ 3)) 43)";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(2), 2) });
+            data.Add(code, [new TestDebugInfo(PickLine(2), 2)]);
 
             code = @"
 ((lambda () 
     (+ 3)))";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(3), 6), new TestDebugInfo(PickLine(2), 2) });
+            data.Add(code, [new TestDebugInfo(PickLine(3), 6), new TestDebugInfo(PickLine(2), 2)]);
 
             // Application of an identifier is two calls in the evaluation stack, identifier evaluation and then application.
             code = "(a)";
-            data.Add(code, new[] { new TestDebugInfo(1, 2), new TestDebugInfo(1, 2) });
+            data.Add(code, [new TestDebugInfo(1, 2), new TestDebugInfo(1, 2)]);
 
             code = @"
 (define (foo)
@@ -775,7 +775,7 @@ namespace RainLispTests
     (+))
 
 (foo)";
-            data.Add(code, new[] { new TestDebugInfo(PickLine(9), 6), new TestDebugInfo(PickLine(6), 6), new TestDebugInfo(PickLine(3), 6), new TestDebugInfo(PickLine(11), 2) });
+            data.Add(code, [new TestDebugInfo(PickLine(9), 6), new TestDebugInfo(PickLine(6), 6), new TestDebugInfo(PickLine(3), 6), new TestDebugInfo(PickLine(11), 2)]);
 
             return data;
         }

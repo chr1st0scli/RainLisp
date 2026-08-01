@@ -31,7 +31,7 @@ namespace RainLispTests
             string logFileName = result.String();
 
             // Assert
-            Assert.True(!string.IsNullOrEmpty(logFileName));
+            Assert.False(string.IsNullOrEmpty(logFileName));
         }
 
         [Fact]
@@ -63,10 +63,7 @@ namespace RainLispTests
 
             var program = new Program
             {
-                DefinitionsAndExpressions = new List<Node>
-                {
-                    new NumberLiteral(NUMBER)
-                }
+                DefinitionsAndExpressions = [new NumberLiteral(NUMBER)]
             };
 
             // Act
@@ -101,11 +98,11 @@ namespace RainLispTests
 
             var procedureCallProgram = new Program
             {
-                DefinitionsAndExpressions = new List<Node>
-                {
+                DefinitionsAndExpressions =
+                [
                     // Call to get-monthly-ratio with an argument of 2 which is February.
-                    new Application(new Identifier("get-monthly-ratio"), new List<Expression> { new NumberLiteral(2) })
-                }
+                    new Application(new Identifier("get-monthly-ratio"), [new NumberLiteral(2)])
+                ]
             };
 
             var result = _interpreter.Execute(procedureCallProgram, ref environment);

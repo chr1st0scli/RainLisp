@@ -35,7 +35,7 @@ namespace RainLisp.Parsing
             if (_tokens.Check(TokenType.EOF))
                 return program;
 
-            program.DefinitionsAndExpressions = new List<Node>();
+            program.DefinitionsAndExpressions = [];
 
             do
             {
@@ -84,7 +84,7 @@ namespace RainLisp.Parsing
 
             if (DefinitionFollows())
             {
-                definitions = new() { Definition() };
+                definitions = [Definition()];
 
                 while (DefinitionFollows())
                     definitions.Add(Definition());
@@ -175,10 +175,10 @@ namespace RainLisp.Parsing
 
             // If the quotable itself is of the form '<quotable>, it gets converted to the equivalent list of quotables (quote <quotable>).
             if (_tokens.Match(TokenType.QuoteAlt))
-                quotes = new List<Quotable> { new Quotable(Keywords.QUOTE), Quotable() };
+                quotes = [new Quotable(Keywords.QUOTE), Quotable()];
 
             // All other tokens are valid for a singular (i.e. non list) quotable.
-            else if (_tokens.MatchAnyBut(new[] { TokenType.LParen, TokenType.RParen, TokenType.EOF }))
+            else if (_tokens.MatchAnyBut([TokenType.LParen, TokenType.RParen, TokenType.EOF]))
                 quoteText = currentToken.Value;
 
             else
@@ -186,7 +186,7 @@ namespace RainLisp.Parsing
                 // Only tokens that can start an expression are reported. Other keywords, such as special forms and derived expressions, don't need to.
                 _tokens.Require(TokenType.LParen, TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen);
 
-                quotes = new List<Quotable>();
+                quotes = [];
 
                 while (!_tokens.Match(TokenType.RParen))
                     quotes.Add(Quotable());
@@ -329,7 +329,7 @@ namespace RainLisp.Parsing
 
             if (!_tokens.Match(TokenType.RParen))
             {
-                operands = new() { Expression() };
+                operands = [Expression()];
 
                 while (!_tokens.Match(TokenType.RParen))
                     operands.Add(Expression());
@@ -380,7 +380,7 @@ namespace RainLisp.Parsing
             // Optional parameters
             if (!_tokens.Match(TokenType.RParen))
             {
-                parameters = new() { _tokens.RequireIdentifierName() };
+                parameters = [_tokens.RequireIdentifierName()];
 
                 while (!_tokens.Match(TokenType.RParen))
                     parameters.Add(_tokens.RequireIdentifierName());

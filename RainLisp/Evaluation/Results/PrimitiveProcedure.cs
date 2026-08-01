@@ -3,28 +3,19 @@
     /// <summary>
     /// Represents a primitive procedure as a result of an evaluation.
     /// </summary>
-    public class PrimitiveProcedure : EvaluationResult
+    /// <param name="name">The name of the primitive procedure.</param>
+    /// <param name="implementation">A callback that implements the procedure. It accepts optional evaluated arguments and returns an evaluation result.</param>
+    public class PrimitiveProcedure(string name, Func<EvaluationResult[]?, EvaluationResult> implementation) : EvaluationResult
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveProcedure"/> class.
-        /// </summary>
-        /// <param name="name">The name of the primitive procedure.</param>
-        /// <param name="implementation">A callback that implements the procedure. It accepts optional evaluated arguments and returns an evaluation result.</param>
-        public PrimitiveProcedure(string name, Func<EvaluationResult[]?, EvaluationResult> implementation)
-        {
-            Name = name;
-            Implementation = implementation;
-        }
-
         /// <summary>
         /// Gets or sets the name of the primitive procedure.
         /// </summary>
-        public string Name { get; init; }
+        public string Name { get; init; } = name;
 
         /// <summary>
         /// Gets or sets the callback that implements the procedure. It accepts optional evaluated arguments and returns an evaluation result.
         /// </summary>
-        public Func<EvaluationResult[]?, EvaluationResult> Implementation { get; init; }
+        public Func<EvaluationResult[]?, EvaluationResult> Implementation { get; init; } = implementation;
 
         /// <summary>
         /// Accepts a visitor that performs some operation on the primitive procedure and returns a <typeparamref name="T"/>.

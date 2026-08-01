@@ -6,28 +6,19 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// Function application in the abstract syntax tree.
     /// </summary>
-    public class Application : Expression
+    /// <param name="operatorToApply">The expression whose value is the function to apply.</param>
+    /// <param name="operands">An optional list of expressions whose values are to be passed as arguments to the function.</param>
+    public class Application(Expression operatorToApply, IList<Expression>? operands) : Expression
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Application"/> class.
-        /// </summary>
-        /// <param name="operatorToApply">The expression whose value is the function to apply.</param>
-        /// <param name="operands">An optional list of expressions whose values are to be passed as arguments to the function.</param>
-        public Application(Expression operatorToApply, IList<Expression>? operands)
-        {
-            Operator = operatorToApply;
-            Operands = operands;
-        }
-
         /// <summary>
         /// Gets or sets the expression whose value is the function to apply.
         /// </summary>
-        public Expression Operator { get; init; }
+        public Expression Operator { get; init; } = operatorToApply;
 
         /// <summary>
         /// Gets or sets an optional list of expressions whose values are to be passed as arguments to the function.
         /// </summary>
-        public IList<Expression>? Operands { get; init; }
+        public IList<Expression>? Operands { get; init; } = operands;
 
         /// <summary>
         /// Evaluates the function application and returns the result.

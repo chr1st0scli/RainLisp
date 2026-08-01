@@ -21,7 +21,7 @@ namespace RainLisp.Evaluation
         public EvaluationEnvironment()
         {
             _definitions = new Dictionary<string, EvaluationResult>();
-            _quoteSymbols = new Dictionary<string, QuoteSymbol>();
+            _quoteSymbols = [];
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace RainLisp.Evaluation
         /// </summary>
         /// <returns>The identifier names that are defined in the current environment.</returns>
         public string[] GetIdentifierNames()
-            => _definitions.Keys.ToArray();
+            => [.. _definitions.Keys];
 
         /// <summary>
         /// Registers a quote symbol in the current environment. Quote symbols are commonly unique in an environment chain.

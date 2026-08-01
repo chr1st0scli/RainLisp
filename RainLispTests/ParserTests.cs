@@ -8,7 +8,7 @@ namespace RainLispTests
 {
     public class ParserTests
     {
-        private readonly ITokenizer _tokenizer;
+        private readonly Tokenizer _tokenizer;
         private readonly Parser _parser;
 
         public ParserTests()
@@ -94,7 +94,7 @@ namespace RainLispTests
             static void RemoveProperty(JObject jObj, string propertyName)
             {
                 foreach (var token in jObj.SelectTokens($"$..{propertyName}").ToList())
-                    token.Parent.Remove();
+                    token.Parent!.Remove();
             }
 
             // Arrange
@@ -299,12 +299,12 @@ namespace RainLispTests
         {
             // Arrange
             ParsingException? exception = null;
-            var expectedMissingSymbols = expectedError switch
+            TokenType[] expectedMissingSymbols = expectedError switch
             {
-                ParsingError.MissingDefinition => new[] { TokenType.Identifier, TokenType.LParen },
-                ParsingError.MissingExpression => new[] { TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen },
-                ParsingError.MissingSymbol => new[] { expectedMissingToken!.Value },
-                ParsingError.MissingRightOrLeftParen => new[] { TokenType.RParen, TokenType.LParen },
+                ParsingError.MissingDefinition => [TokenType.Identifier, TokenType.LParen],
+                ParsingError.MissingExpression => [TokenType.Number, TokenType.String, TokenType.Boolean, TokenType.Identifier, TokenType.QuoteAlt, TokenType.LParen],
+                ParsingError.MissingSymbol => [expectedMissingToken!.Value],
+                ParsingError.MissingRightOrLeftParen => [TokenType.RParen, TokenType.LParen],
                 _ => throw new NotImplementedException()
             };
 

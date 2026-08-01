@@ -5,35 +5,25 @@ namespace RainLisp.Evaluation.Results
     /// <summary>
     /// Represents a user procedure as a result of an evaluation.
     /// </summary>
-    public class UserProcedure : EvaluationResult
+    /// <param name="parameters">An optional list of the procedure's parameter names.</param>
+    /// <param name="body">The procedure's body.</param>
+    /// <param name="environment">The evaluation environment the procedure is created in.</param>
+    public class UserProcedure(IList<string>? parameters, Body body, IEvaluationEnvironment environment) : EvaluationResult
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserProcedure"/> class.
-        /// </summary>
-        /// <param name="parameters">An optional list of the procedure's parameter names.</param>
-        /// <param name="body">The procedure's body.</param>
-        /// <param name="environment">The evaluation environment the procedure is created in.</param>
-        public UserProcedure(IList<string>? parameters, Body body, IEvaluationEnvironment environment)
-        {
-            Parameters = parameters;
-            Body = body;
-            Environment = environment;
-        }
-
         /// <summary>
         /// Gets or sets the optional list of the procedure's parameter names.
         /// </summary>
-        public IList<string>? Parameters { get; init; }
+        public IList<string>? Parameters { get; init; } = parameters;
 
         /// <summary>
         /// Gets or sets the procedure's body.
         /// </summary>
-        public Body Body { get; init; }
+        public Body Body { get; init; } = body;
 
         /// <summary>
         /// Gets or sets the evaluation environment the procedure belongs to.
         /// </summary>
-        public IEvaluationEnvironment Environment { get; init; }
+        public IEvaluationEnvironment Environment { get; init; } = environment;
 
         /// <summary>
         /// Accepts a visitor that performs some operation on the user procedure and returns a <typeparamref name="T"/>.

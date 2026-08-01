@@ -6,19 +6,13 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// String literal expression in the abstract syntax tree.
     /// </summary>
-    public class StringLiteral : Expression
+    /// <param name="value">The contained string value.</param>
+    public class StringLiteral(string value) : Expression
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StringLiteral"/> class.
-        /// </summary>
-        /// <param name="value">The contained string value.</param>
-        public StringLiteral(string value)
-            => Value = value;
-
         /// <summary>
         /// Gets or sets the contained string value of the current literal.
         /// </summary>
-        public string Value { get; init; }
+        public string Value { get; init; } = value;
 
         /// <summary>
         /// Evaluates the string literal and returns the result.

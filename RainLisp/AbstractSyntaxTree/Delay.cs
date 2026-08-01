@@ -6,19 +6,13 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// Delayed expression in the abstract syntax tree.
     /// </summary>
-    public class Delay : Expression
+    /// <param name="delayed">The expression whose evaluation is meant to be delayed.</param>
+    public class Delay(Expression delayed) : Expression
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Delay"/> class.
-        /// </summary>
-        /// <param name="delayed">The expression whose evaluation is meant to be delayed.</param>
-        public Delay(Expression delayed)
-            => Delayed = delayed;
-
         /// <summary>
         /// Gets ot sets the expression whose evaluation is meant to be delayed.
         /// </summary>
-        public Expression Delayed { get; init; }
+        public Expression Delayed { get; init; } = delayed;
 
         /// <summary>
         /// Evaluates the delay expression and returns the result.

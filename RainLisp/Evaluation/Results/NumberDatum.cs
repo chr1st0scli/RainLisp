@@ -3,16 +3,9 @@
     /// <summary>
     /// Represents a numeric primitive datum as a result of an evaluation.
     /// </summary>
-    public class NumberDatum : PrimitiveDatum<double>
+    /// <param name="value">The underlying primitive value.</param>
+    public class NumberDatum(double value) : PrimitiveDatum<double>(value)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NumberDatum"/> class.
-        /// </summary>
-        /// <param name="value">The underlying primitive value.</param>
-        public NumberDatum(double value) : base(value)
-        {
-        }
-
         /// <summary>
         /// Accepts a visitor that performs some operation on the numeric primitive and returns a <typeparamref name="T"/>.
         /// </summary>

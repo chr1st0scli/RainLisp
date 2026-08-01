@@ -6,19 +6,13 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// Number literal expression in the abstract syntax tree.
     /// </summary>
-    public class NumberLiteral : Expression
+    /// <param name="value">The contained numeric value.</param>
+    public class NumberLiteral(double value) : Expression
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NumberLiteral"/> class.
-        /// </summary>
-        /// <param name="value">The contained numeric value.</param>
-        public NumberLiteral(double value)
-            => Value = value;
-
         /// <summary>
         /// Gets or sets the contained numeric value of the current literal.
         /// </summary>
-        public double Value { get; init; }
+        public double Value { get; init; } = value;
 
         /// <summary>
         /// Evaluates the number literal and returns the result.

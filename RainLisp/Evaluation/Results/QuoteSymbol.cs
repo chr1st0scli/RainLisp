@@ -3,19 +3,13 @@
     /// <summary>
     /// Represents a quote symbol as a result of an evaluation.
     /// </summary>
-    public class QuoteSymbol : EvaluationResult
+    /// <param name="symbolText">The text of the quote symbol.</param>
+    public class QuoteSymbol(string symbolText) : EvaluationResult
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuoteSymbol"/> class.
-        /// </summary>
-        /// <param name="symbolText">The text of the quote symbol.</param>
-        public QuoteSymbol(string symbolText)
-            => SymbolText = symbolText;
-
         /// <summary>
         /// Gets or sets the text of the quote symbol.
         /// </summary>
-        public string SymbolText { get; init; }
+        public string SymbolText { get; init; } = symbolText;
 
         /// <summary>
         /// Accepts a visitor that performs some operation on the quote symbol and returns a <typeparamref name="T"/>.

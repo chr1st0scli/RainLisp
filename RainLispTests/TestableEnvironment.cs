@@ -11,12 +11,12 @@ namespace RainLispTests
     internal class TestableEnvironment : IEvaluationEnvironment
     {
         private IEvaluationEnvironment actualEnvironment;
-        private readonly IList<IEvaluationEnvironment> nextEnvironments;
+        private readonly List<IEvaluationEnvironment> nextEnvironments;
 
         public TestableEnvironment()
         {
             actualEnvironment = new EvaluationEnvironment();
-            nextEnvironments = new List<IEvaluationEnvironment>();
+            nextEnvironments = [];
         }
 
         public void DefineIdentifier(string identifierName, EvaluationResult value)

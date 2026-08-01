@@ -784,7 +784,7 @@ namespace RainLisp.Evaluation
                 return EvalCallback(pair);
             }
             else
-                throw new WrongTypeOfArgumentException(value.GetType(), new[] { typeof(QuoteSymbol), typeof(Pair) });
+                throw new WrongTypeOfArgumentException(value.GetType(), [typeof(QuoteSymbol), typeof(Pair)]);
         }
 
         #region Helpers
@@ -834,7 +834,7 @@ namespace RainLisp.Evaluation
                 return resultTransformAlt(accumulator);
             }
 
-            throw new WrongTypeOfArgumentException(values[0].GetType(), new[] { typeof(T1), typeof(T2) });
+            throw new WrongTypeOfArgumentException(values[0].GetType(), [typeof(T1), typeof(T2)]);
         }
 
         private static T AccumulateRest<T>(Transform<T> transform, CalculateMultiple<T> calculate, T initial, EvaluationResult[] values)
@@ -891,7 +891,7 @@ namespace RainLisp.Evaluation
             else if (values[0] is T2 t2)
                 return calculateAlt(t2, transformAlt(values[1]));
 
-            throw new WrongTypeOfArgumentException(values[0].GetType(), new[] { typeof(T1), typeof(T2) });
+            throw new WrongTypeOfArgumentException(values[0].GetType(), [typeof(T1), typeof(T2)]);
         }
 
         private static EvaluationResult ApplyUnaryOperator<T>(Transform<T> transform, CalculateUnary<T> calculate, EvaluationResult[]? values)
@@ -935,7 +935,7 @@ namespace RainLisp.Evaluation
             if (value is T t)
                 return t;
 
-            throw new WrongTypeOfArgumentException(value.GetType(), new[] { typeof(T) });
+            throw new WrongTypeOfArgumentException(value.GetType(), [typeof(T)]);
         }
 
         private static EvaluationResult ApplyFoldRightOperator(CalculateMultiple<EvaluationResult> foldOperator, EvaluationResult initial, EvaluationResult[] values, int valueIndex = 0)
@@ -948,8 +948,7 @@ namespace RainLisp.Evaluation
 
         private static void RequireMoreThanZero([NotNull] EvaluationResult[]? values, int expected, bool orMore = false)
         {
-            if (expected <= 0)
-                throw new ArgumentOutOfRangeException(nameof(expected));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(expected, nameof(expected));
 
             if (values == null)
                 throw new WrongNumberOfArgumentsException(0, expected, orMore);
@@ -1005,7 +1004,7 @@ namespace RainLisp.Evaluation
                 RequireListOf<T>(secondInnerPair);
             // Ensure we are dealing with a list and not any pair.
             else
-                throw new WrongTypeOfArgumentException(pair.Second.GetType(), new[] { typeof(Pair), typeof(Nil) });
+                throw new WrongTypeOfArgumentException(pair.Second.GetType(), [typeof(Pair), typeof(Nil)]);
         }
         #endregion
     }

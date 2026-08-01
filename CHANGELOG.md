@@ -16,6 +16,11 @@ Semantic versioning is followed.
 
 ### Removed
 
+## [3.0.0] - 2026-08-01
+
+### Changed
+- Target .NET 10.
+
 ## [2.0.0] - 2025-12-14
 
 ### Changed

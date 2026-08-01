@@ -3,16 +3,9 @@
     /// <summary>
     /// Represents a string primitive datum as a result of an evaluation.
     /// </summary>
-    public class StringDatum : PrimitiveDatum<string>
+    /// <param name="value">The underlying primitive value.</param>
+    public class StringDatum(string value) : PrimitiveDatum<string>(value)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StringDatum"/> class.
-        /// </summary>
-        /// <param name="value">The underlying primitive value.</param>
-        public StringDatum(string value) : base(value)
-        {
-        }
-
         /// <summary>
         /// Accepts a visitor that performs some operation on the string primitive and returns a <typeparamref name="T"/>.
         /// </summary>

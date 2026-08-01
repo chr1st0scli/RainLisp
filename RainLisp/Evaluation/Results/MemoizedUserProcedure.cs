@@ -5,19 +5,12 @@ namespace RainLisp.Evaluation.Results
     /// <summary>
     /// Represents a memoized user procedure as a result of an evaluation.
     /// </summary>
-    public class MemoizedUserProcedure : UserProcedure
+    /// <param name="parameters">An optional list of the procedure's parameter names.</param>
+    /// <param name="body">The procedure's body.</param>
+    /// <param name="environment">The evaluation environment the procedure is created in.</param>
+    public class MemoizedUserProcedure(IList<string>? parameters, Body body, IEvaluationEnvironment environment) : UserProcedure(parameters, body, environment)
     {
         private EvaluationResult? _evaluationResult;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MemoizedUserProcedure"/> class.
-        /// </summary>
-        /// <param name="parameters">An optional list of the procedure's parameter names.</param>
-        /// <param name="body">The procedure's body.</param>
-        /// <param name="environment">The evaluation environment the procedure is created in.</param>
-        public MemoizedUserProcedure(IList<string>? parameters, Body body, IEvaluationEnvironment environment) : base(parameters, body, environment)
-        {
-        }
 
         /// <summary>
         /// Accepts a visitor that performs some operation on the memoized user procedure and returns a <typeparamref name="T"/>.

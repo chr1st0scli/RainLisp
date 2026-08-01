@@ -6,19 +6,13 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// Boolean literal expression in the abstract syntax tree.
     /// </summary>
-    public class BooleanLiteral : Expression
+    /// <param name="value">The contained boolean value.</param>
+    public class BooleanLiteral(bool value) : Expression
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BooleanLiteral"/> class.
-        /// </summary>
-        /// <param name="value">The contained boolean value.</param>
-        public BooleanLiteral(bool value)
-            => Value = value;
-
         /// <summary>
         /// Gets or sets the contained boolean value of the current literal.
         /// </summary>
-        public bool Value { get; init; }
+        public bool Value { get; init; } = value;
 
         /// <summary>
         /// Evaluates the boolean literal and returns the result.

@@ -20,7 +20,7 @@ namespace RainLisp.Tokenization
         private readonly StringTokenizer _stringTokenizer;
         private readonly NumberTokenizer _numberTokenizer;
         private readonly StringBuilder _lexemeStringBuilder;
-        private readonly IList<Token> _tokens;
+        private readonly List<Token> _tokens;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Tokenizer"/> class.
@@ -31,7 +31,7 @@ namespace RainLisp.Tokenization
             _stringTokenizer = new StringTokenizer(RegisterStringLiteralToken);
             _numberTokenizer = new NumberTokenizer();
             _lexemeStringBuilder = new StringBuilder();
-            _tokens = new List<Token>();
+            _tokens = [];
         }
 
         /// <summary>

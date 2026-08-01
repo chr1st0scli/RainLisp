@@ -6,19 +6,13 @@ namespace RainLisp.AbstractSyntaxTree
     /// <summary>
     /// Identifier in the abstract syntax tree.
     /// </summary>
-    public class Identifier : Expression
+    /// <param name="name">The name of the identifier.</param>
+    public class Identifier(string name) : Expression
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Identifier"/> class.
-        /// </summary>
-        /// <param name="name">The name of the identifier.</param>
-        public Identifier(string name)
-            => Name = name;
-
         /// <summary>
         /// Gets or sets the name of the identifier.
         /// </summary>
-        public string Name { get; init; }
+        public string Name { get; init; } = name;
 
         /// <summary>
         /// Evaluates the identifier and returns the result.
